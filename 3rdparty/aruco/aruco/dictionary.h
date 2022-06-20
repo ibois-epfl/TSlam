@@ -1,29 +1,17 @@
 /**
-Copyright 2017 Rafael Muñoz Salinas. All rights reserved.
+Copyright 2020 Rafael Muñoz Salinas. All rights reserved.
 
-Redistribution and use in source and binary forms, with or without modification, are
-permitted provided that the following conditions are met:
+  This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation version 3 of the License.
 
-   1. Redistributions of source code must retain the above copyright notice, this list of
-      conditions and the following disclaimer.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-   2. Redistributions in binary form must reproduce the above copyright notice, this list
-      of conditions and the following disclaimer in the documentation and/or other materials
-      provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY Rafael Muñoz Salinas ''AS IS'' AND ANY EXPRESS OR IMPLIED
-WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
-FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL Rafael Muñoz Salinas OR
-CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-The views and conclusions contained in the software and documentation are those of the
-authors and should not be interpreted as representing official policies, either expressed
-or implied, of Rafael Muñoz Salinas.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #ifndef ARUCO_DICTIONARY_
@@ -55,25 +43,6 @@ namespace aruco
     public:
         // loads from a set of predefined ones
         enum DICT_TYPES:
-//        uint64_t{
-//            ARUCO_MIP_36h12=0x8,  //*** recommended
-//            ARUCO=0x1,  // original aruco dictionary. By default
-//            ARUCO_MIP_25h7=0x2,
-//            ARUCO_MIP_16h3=0x4,
-//            ARTAG=0x10,            //
-//            ARTOOLKITPLUS=0x20,
-//            ARTOOLKITPLUSBCH=0x40,  //
-//            TAG16h5=0x80,
-//            TAG25h7=0x100,
-//            TAG25h9=0x200,
-//            TAG36h11=0x400,
-//            TAG36h10=0x800,   // april tags
-//            CHILITAGS=0x1000,  // chili tags dictionary . NOT RECOMMENDED. It has distance 0. Markers 806 and 682 should not be
-//                        // used!!!
-//            CUSTOM=0x4000 , // for used defined dictionaries  (using loadFromfile).
-//            ALL_DICTS=0xFFFF
-//        };
-
                 uint64_t{
                     ALL_DICTS=0,
                     ARUCO_MIP_36h12=1,  //*** recommended
@@ -145,6 +114,8 @@ namespace aruco
         //@param enclosed_corners if true, extra rectagles are added touching the marker corners. it can be used to
         //allow subpixel refinement
         cv::Mat getMarkerImage_id(int id, int bit_size, bool addWaterMark = true, bool enclosed_corners = false,bool printExternalWhiteBorder=false,bool centralCircle=false);
+
+     //   cv::Mat getMarkerMatrix_id(int id);
 
         // used for boards
         MarkerMap createMarkerMap(cv::Size gridSize, int MarkerSize, int MarkerDistance, const std::vector<int>& Ids,

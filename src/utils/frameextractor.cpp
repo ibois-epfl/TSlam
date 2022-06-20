@@ -666,6 +666,7 @@ void FrameExtractor::extractFrame(const ImgInfo &Iinfo,   Frame &frame, uint32_t
         }
     });
 
+    // TODO: change marker detector
     std::thread aruco_thread( [&]{
         if (_detectMarkers){
             auto markers=_mdetector->detect(Iinfo.im_org);
@@ -692,8 +693,6 @@ void FrameExtractor::extractFrame(const ImgInfo &Iinfo,   Frame &frame, uint32_t
     );
     kp_thread.join();
     aruco_thread.join();
-
-
 
 
     if (debug::Debug::getLevel()>=100|| _ucoslamParams.saveImageInMap){

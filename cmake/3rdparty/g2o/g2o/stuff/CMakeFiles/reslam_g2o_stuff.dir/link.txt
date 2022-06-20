@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC  -fopenmp  -std=c++11 -mmmx -msse -msse2 -msse3  -mavx   -O3 -g0  -DNDEBUG  -shared -Wl,-soname,libreslam_g2o_stuff.so.1.2 -o ../../../../libs/libreslam_g2o_stuff.so.1.2.4 CMakeFiles/reslam_g2o_stuff.dir/property.cpp.o CMakeFiles/reslam_g2o_stuff.dir/string_tools.cpp.o CMakeFiles/reslam_g2o_stuff.dir/timeutil.cpp.o   -L/home/tpp/Downloads/trunk/cmake/libs 
