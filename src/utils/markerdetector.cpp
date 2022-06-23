@@ -47,16 +47,13 @@ void ArucoMarkerDetector:: fromStream(std::istream &str){
 ////////////////////////////
 // STagDetector interface //
 ////////////////////////////
-
-STagDetector::STagDetector(){
-    _mdetector=std::make_shared<aruco::MarkerDetector>();
-}
-STagDetector::STagDetector(int libraryHD = 11, int errorCorrection = 7, bool inKeepLogs = false){
+STagDetector::STagDetector(int libraryHD, int errorCorrection, bool inKeepLogs){
     _mdetector=std::make_shared<aruco::MarkerDetector>();
     _stag = Stag(libraryHD, errorCorrection, inKeepLogs);
 }
-STagDetector::STagDetector(const Params &p){
+STagDetector::STagDetector(const Params &p, int libraryHD, int errorCorrection, bool inKeepLogs){
     _mdetector=std::make_shared<aruco::MarkerDetector>();
+    _stag = Stag(libraryHD, errorCorrection, inKeepLogs);
     setParams(p);
 }
 
@@ -72,7 +69,7 @@ void STagDetector::setParams(const Params &p){
 
 std::vector<MarkerDetection> STagDetector::detect(const cv::Mat &Image){
     std::vector<MarkerDetection> markers;
-    _stag.detectMarkers(Image)
+    _stag.detectMarkers(Image);
 
     for(const auto m : _stag.getMarkerList()){
         MarkerDetection uslm_marker;
@@ -80,11 +77,16 @@ std::vector<MarkerDetection> STagDetector::detect(const cv::Mat &Image){
         uslm_marker.id=m.id;
         
         // Just leave it
-        uslm_marker.points3d=m.get3DPoints(_p.aruco_markerSize);
+        float halfSize = _p.aruco_markerSize / 2.f;
+        uslm_marker.points3d={cv::Point3f(-halfSize, halfSize, 0),cv::Point3f(halfSize, halfSize, 0),cv::Point3f(halfSize,-halfSize, 0),cv::Point3f(-halfSize, -halfSize, 0)};
 
         // here: vector<cv::Point2f> corners
         // stag: vector<cv::Point2d> corners
-        uslm_marker.corners=m.corners;
+        std::vector<cv::Point2f> corners;
+        for (auto c: m.corners){
+            corners.push_back(cv::Point2f(c.x, c.y));
+        }
+        uslm_marker.corners=corners;
 
         // The info seems not to be used
         uslm_marker.info="m.dict_info";

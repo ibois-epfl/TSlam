@@ -807,7 +807,7 @@ make_shared miGVtxwiqbDQsG6KBslZU 	MapInitializer mNF0G2xPBB22gI9XzMk2L
     	make_shared mbVOLbjVZO0YI60Vuguaq 	 
    reslam miuOs6oIdxnQEMrFFk2n_ 	 
     	  
-   STagMarkerDetector mVIm1AJSzhahLlgKO9xQK 	 
+   STagDetector mVIm1AJSzhahLlgKO9xQK 	 
     	  
     		   
      
@@ -1079,7 +1079,7 @@ std mNQimRrYQ8Mz6YI9KM7Fn
      
  
   make_shared mJCQ17ktBLqNw7sHF60R1 	 
-    STagMarkerDetector mpBV2mt4yeFwcVEC5cxVw 	 
+    STagDetector mpBV2mt4yeFwcVEC5cxVw 	 
     	  
     		   
      

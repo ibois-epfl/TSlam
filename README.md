@@ -3,6 +3,8 @@ UcoSLAM modified for augmented carpentry project
 
 - The official document of UcoSLAM:  [link](https://docs.google.com/document/d/12EGJ3cI-m8XMXgI5bYW1dLi5lBO-vxxr6Cf769wQzJc)
 
+- [Dev Log](./dev_log)
+
 ## Build
 ```bash
 # install library
@@ -17,6 +19,11 @@ make -j4
 ```
 
 ## Usage
+- Run with monocular video:
+```
+./build/utils/reslam_monocular '/home/tpp/Downloads/stag_test.mp4' '/home/tpp/Downloads/ucoslam/test_result/calibration_px.yml'
+```
+
 - Run GUI:
 ```
 ./build/gui/UcoSLAM_GUI

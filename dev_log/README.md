@@ -9,15 +9,21 @@ auto markers=_mdetector->detect(Iinfo.im_org); // Iinfo.im_org is cv::Mat
 ```
 - Marker's attribute (in `src/utils/markerdetector.h`):
 ```cpp
-//unique marker id
+// unique marker id
 uint32_t id;
 
-//three dimentional points of the marker wrt its center
+// three dimentional points of the marker wrt its center
+// (This is something like [-0.5 * marker_size, 0.5 * marker_size, 0 ... ])
 std::vector<cv::Point3f> points3d;
 
-//original corners in the image
+// original corners in the image
 std::vector<cv::Point2f> corners;
 
-//optional info about the marker
+// optional info about the marker
+// (This attribute is probably not used)
 std::string info;
 ```
+
+## Now it works with STag
+![](./demo.gif)
+- However, the tracking of feature points disappears at some point, not sure why.
