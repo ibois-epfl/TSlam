@@ -25,5 +25,6 @@ std::string info;
 ```
 
 ## Now it works with STag
+![](./screenshot.png)
 ![](./demo.gif)
 - However, the tracking of feature points disappears at some point, not sure why.
