@@ -394,7 +394,7 @@ void VideoPlayer::updateImage(){
     if (imIn.empty()) return ;
     imIn.copyTo(imshown);
     if (_processImageWithArucoDetector){
-        detectedMarkers=ArucoMarkerDetector::get().detect(imshown);
+        detectedMarkers=STagMarkerDetector::get().detect(imshown);
         for(auto m:detectedMarkers) m.draw(imshown);
     }
     setImage(imshown);
@@ -417,7 +417,7 @@ bool VideoPlayer::grabAndShow(){
     imIn.copyTo(imshown);
 
     if (_processImageWithArucoDetector){
-        detectedMarkers=ArucoMarkerDetector::get().detect(imshown);
+        detectedMarkers=STagMarkerDetector::get().detect(imshown);
         for(auto m:detectedMarkers) m.draw(imshown);
     }
     setImage(imshown);
@@ -439,7 +439,7 @@ void VideoPlayer::retrieveAndShow(){
     imIn.copyTo(imshown);
 
     if (_processImageWithArucoDetector){
-        detectedMarkers=ArucoMarkerDetector::get().detect(imshown);
+        detectedMarkers=STagMarkerDetector::get().detect(imshown);
         for(auto m:detectedMarkers) m.draw(imshown);
     }
     setImage(imshown);

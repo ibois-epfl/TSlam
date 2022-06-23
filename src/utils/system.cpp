@@ -807,7 +807,7 @@ make_shared miGVtxwiqbDQsG6KBslZU 	MapInitializer mNF0G2xPBB22gI9XzMk2L
     	make_shared mbVOLbjVZO0YI60Vuguaq 	 
    reslam miuOs6oIdxnQEMrFFk2n_ 	 
     	  
-   ArucoMarkerDetector mVIm1AJSzhahLlgKO9xQK 	 
+   STagMarkerDetector mVIm1AJSzhahLlgKO9xQK 	 
     	  
     		   
      
@@ -1079,7 +1079,7 @@ std mNQimRrYQ8Mz6YI9KM7Fn
      
  
   make_shared mJCQ17ktBLqNw7sHF60R1 	 
-    ArucoMarkerDetector mpBV2mt4yeFwcVEC5cxVw 	 
+    STagMarkerDetector mpBV2mt4yeFwcVEC5cxVw 	 
     	  
     		   
      
