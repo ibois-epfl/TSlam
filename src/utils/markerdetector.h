@@ -23,6 +23,7 @@
 #include <memory>
 #include <opencv2/core/core.hpp>
 #include "reslamtypes.h"
+#include "Stag.h"
 namespace aruco {
 class MarkerDetector;
 }
@@ -66,6 +67,21 @@ public:
     void fromStream(std::istream &str)override;
 
 };
+
+class STagDetector:public MarkerDetector{
+    Stag _stag;
+    Params _p;
+    std::shared_ptr<aruco::MarkerDetector> _mdetector;
+public:
+    STagDetector();
+    STagDetector(int libraryHD = 11, int errorCorrection = 7, bool inKeepLogs = true);
+    STagDetector(const Params &p);
+    void setParams(const Params &p)override;
+    std::string getName()const override{return "stag";}
+    std::vector<MarkerDetection> detect(const cv::Mat &Image)override;
+    void toStream(std::ostream &str)const override;
+    void fromStream(std::istream &str)override;
+}
 
 }
 #endif
