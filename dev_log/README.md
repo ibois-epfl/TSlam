@@ -1,6 +1,6 @@
 `June 20`
 - Replaced 3rd party library [ArUco](https://www.uco.es/investiga/grupos/ava/node/26) to version `3.1.15` to avoid the uglified code in the original repo.
-- Added `Stag` in this repo, edited `CMakeLists.txt` to make it work.
+- Added `Stag` in this repo, edited `CMakeLists.txt`, `cmake/dependencies.cmake`, and `cmake/options.cmake` to make it work.
 
 ## Note of code
 - Markers are detected in `src/utils/frameextractor.cpp`, line 670
@@ -25,6 +25,13 @@ std::string info;
 ```
 
 ## Now it works with STag
-![](./screenshot.png)
+![](./ucoslam_with_stag.png)
 ![](./demo.gif)
 - However, the tracking of feature points disappears at some point, not sure why.
+    > This problem has been figured out. It's probably because the  vocabulary is no specified. Also, the unconsistency of the marker size may be the reason that cause the distortion.
+
+---
+
+`June 4`
+- I tried to used the `-nokeypoints` flag to map the timber, but the program would crash. The solution is to downgrade the UcoSLAM from 1.2.4 to 1.1.0, which is tagged "stable" in the releasing website. However, the result is unpromising (worse than the result with key points).
+![](./mapping_nokeypoints.png)
