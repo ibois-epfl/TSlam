@@ -12,7 +12,7 @@ set(CMAKE_CXX_EXTENSIONS ON) #...with compiler extensions like gnu++11
 set(CMAKE_CXX_STANDARD 11) # C++11...
 
 IF(NOT CMAKE_BUILD_TYPE )
-   SET( CMAKE_BUILD_TYPE "Release" )
+   SET( CMAKE_BUILD_TYPE "release" )
 ENDIF()
 
 #------------------------------------------------------

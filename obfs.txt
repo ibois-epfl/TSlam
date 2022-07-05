@@ -1,4 +1,3 @@
-
 files=            mapmanager.cpp mapinitializer.cpp loopdetector.cpp system.cpp  frameextractor.cpp 
 keepnames=        mapmanager.cpp mapinitializer.cpp loopdetector.cpp system.cpp  frameextractor.cpp
 files-explicit=   mapmanager.h   mapinitializer.h   loopdetector.h   system.h    frameextractor.h
@@ -19,5 +18,3 @@ args=
 -I${PROJECT_ROOT}/optimization
 -I${PROJECT_ROOT}/private_basictypes
 -I${PROJECT_ROOT}/utils
-
- 

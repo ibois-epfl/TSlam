@@ -594,23 +594,60 @@ void FrameExtractor::preprocessArrayImages(float scaleFactor,const std::vector<c
     }
 }
 
+void enhanceImageBGR(const cv::Mat &imgIn, cv::Mat &imgOut){
+    // Start CLAHE Contrast Limited and Adaptive Histogram Equalization
+
+    //Get Intesity image
+    cv::Mat Lab_image;
+    cvtColor(imgIn, Lab_image, cv::COLOR_BGR2Lab);
+    std::vector<cv::Mat> Lab_planes(3);
+    cv::split(Lab_image, Lab_planes);  // now we have the L image in lab_planes[0]
+
+    // apply the CLAHE algorithm to the L channel
+    cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
+    clahe->setClipLimit(4);
+    // clahe->setTilesGridSize(cv::Size(10, 10));
+    cv::Mat clahe_L;
+    clahe->apply(Lab_planes[0], clahe_L);
+
+    // Merge the color planes back into an Lab image
+    clahe_L.copyTo(Lab_planes[0]);
+    cv::merge(Lab_planes, Lab_image);
+
+    // convert back to RGB
+    cv::cvtColor(Lab_image, imgOut, cv::COLOR_Lab2BGR);
+}
+
 void FrameExtractor::preprocessImages(float scaleFactor,const cv::Mat &im1,const ImageParams &ip,const cv::Mat &im2){
 
     assert(im1.size()==ip.CamSize) ;
     assert(im2.empty() || ( im2.size()==ip.CamSize));
+
     int nI=1;
+    
     if(! im2.empty())
         nI++;
+    
     InputImages.resize(nI);
-    if( im1.channels()==3)
-        cv::cvtColor(im1,InputImages[0].im_org,CV_BGR2GRAY);
-    else    InputImages[0].im_org=im1;
+    
+    if( im1.channels()==3){
+        enhanceImageBGR(im1, InputImages[0].im_org);
+        cv::cvtColor(InputImages[0].im_org, InputImages[0].im_org,CV_BGR2GRAY);
+    } else {
+        InputImages[0].im_org=im1;
+    }
+        
+
     InputImages[0].ip_org=ip;
+
     if(! im2.empty())
     {
-        if( im2.channels()==3)
-            cv::cvtColor(im2,InputImages[1].im_org,CV_BGR2GRAY);
-        else    InputImages[1].im_org=im2;
+        if( im2.channels()==3) {
+            enhanceImageBGR(im2, InputImages[1].im_org);
+            cv::cvtColor(InputImages[1].im_org, InputImages[1].im_org,CV_BGR2GRAY);
+        } else {
+            InputImages[1].im_org=im2;
+        }
         InputImages[1].ip_org=ip;
     }
 

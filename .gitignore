@@ -1,3 +1,5 @@
+.archive
 .vscode
 build
 test_result
+*.map
