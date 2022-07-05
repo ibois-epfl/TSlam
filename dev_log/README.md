@@ -55,3 +55,17 @@ std::string info;
       ![](./with_aug.png)
     - Without augmentation:
       ![](./with_out_aug.png)
+
+## Failure
+- It lost tracking (the camera position is not recovered) when keypoints are not matching (but marker is detected). This should be fixed.
+![](./lost_tracking.gif)
+
+## Remove Tag
+- Testing on removing some tags (simulating cutting)
+![](./tracking_remove_tag_out.gif)
+
+## TODO List
+- [ ] Fixing the failure (?)
+- [ ] Testing on the longer beam
+- [ ] Marker PDF generation
+- [ ] CMake on the main project
