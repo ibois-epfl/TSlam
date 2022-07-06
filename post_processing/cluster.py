@@ -5,11 +5,12 @@ import yaml
 import sympy as sp
 import random
 
-exported_tag_yml = "/home/tpp/Downloads/ucoslam/test_result/move_6f_tag_export.yml"
-# exported_tag_yml = "/home/tpp/Downloads/ucoslam/post_processing/out.yml"
-
+exported_tag_yml = '/home/tpp/UCOSlam-IBOIS/build/utils/long_piece_fullba.yml' 
 threshold_norm = 0.5
-threshold_dist = 0.05
+threshold_dist = 100
+
+marker_rescale_factor = 1.9
+
 
 def rn():
     return random.random()
@@ -42,19 +43,15 @@ with open(exported_tag_yml, "r") as stream:
     stream = stream.read().replace('d:', 'd: ').replace("%YAML:1.0\n---","")
     map_data = yaml.safe_load(stream)
 
-    # device = o3d.core.Device("CPU:0")
-    # mesh = o3d.geometry.TriangleMesh(device)
-
-    # pcd = o3d.geometry.PointCloud()
-
     ids = []
 
+    timber_mesh = o3d.geometry.TriangleMesh()
     meshes = []
     labels = []
 
     for marker in map_data["aruco_bc_markers"]:
         ids.append(marker["id"])
-        corners = np.array(marker["corners"])
+        corners = np.array(marker["corners"]) * marker_rescale_factor
 
         mesh = o3d.geometry.TriangleMesh()
         mesh.vertices = o3d.utility.Vector3dVector(corners)
@@ -181,8 +178,11 @@ with open(exported_tag_yml, "r") as stream:
         cluster.bbox_mesh.triangles = o3d.utility.Vector3iVector(np.array([[0]+p0_neighbors, [p0_diagonal]+p0_neighbors]))
         cluster.bbox_mesh.paint_uniform_color(cluster.color)
 
+        timber_mesh += cluster.bbox_mesh 
         meshes.append(cluster.bbox_mesh)
 
+    o3d.io.write_triangle_mesh("exported.ply", timber_mesh)
+    
     o3d.visualization.draw_geometries(meshes,
                                         mesh_show_back_face=True,
                                         point_show_normal=True,

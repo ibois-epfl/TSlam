@@ -67,7 +67,10 @@ std::string info;
   ![](./tracking_remove_tag_out.gif)
 
 
+## Others
+- Done the sticker generation (`stag_util/sticker_generator.py`)
+- Post processing now exports an .ply
+
 ## TODO List
-- [ ] Fixing the failure (?)
-- [ ] Testing on the longer beam
+- [ ] Fixing the failure (?) => The code is hidden in the obfuscated code
 - [ ] CMake on the main project

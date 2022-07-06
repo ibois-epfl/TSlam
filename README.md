@@ -21,7 +21,7 @@ make -j4
 ## Usage
 ### Run with example (monocular video):
 - Mapping
-```
+```-
 ./build/utils/reslam_monocular './example/STag23mm_smallCube/mapping.mp4' './example/calibration_pixel3.yml' -aurco-markerSize 0.023 -voc './orb.fbow' -out example_map -noX
 ```
 > [!] Vocabulary is not required, but it will not be able to relocalization with keypoints if not specified.
