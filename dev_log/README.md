@@ -48,7 +48,8 @@ std::string info;
 | Mapping w/o keypoints |   X   |   O   |
 | Mapping w/ keypoints  |   O   | slow  |
 | Tracking              |   Yes, but Not w/ GUI   | X    |
-> So now, we go back to 1.2.4
+> So now, we go back to 1.2.4.
+> This table may be wrong :P
 
 - Contrast augmentation is added
     - With augmentation:
@@ -66,11 +67,28 @@ std::string info;
 
   ![](./tracking_remove_tag_out.gif)
 
-
 ## Others
 - Done the sticker generation (`stag_util/sticker_generator.py`)
 - Post processing now exports an .ply
 
+## Testing with the sticker
+![](./sticker.gif)
+
 ## TODO List
-- [ ] Fixing the failure (?) => The code is hidden in the obfuscated code
+- [ ] Enhancement / preprocessing
 - [ ] CMake on the main project
+- [ ] Fixing the failure (?) => The code is hidden in the obfuscated code
+
+## Bugs to deal with
+### The lags
+- Seems to come out when inconstency introduced in the scene, I guess it's doing optimization on the map.
+    - During Mapping
+        > 2-phase mapping, which reduce this situation, but may still happen
+        > Move the code cause the lag into another thread, and let the main thread keep going => but this probably causes problem
+        - This mostly happens when the timber is moved, so
+            > Mapping with only the markers: tried, the accuracy is not good
+            > Sementic segmentaion which get rid of the background
+    - During intance
+        > Not updating Map -> timmer
+        > Move the code cause the lag into another thread, and let the main thread keep going
+        > Just cancel it
