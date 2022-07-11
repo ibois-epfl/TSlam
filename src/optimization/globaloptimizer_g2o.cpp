@@ -445,7 +445,6 @@ void GlobalOptimizerG2O::setParams(std::shared_ptr<Map> map, const ParamSet &xp 
 }
 
 void GlobalOptimizerG2O::optimize(std::shared_ptr<Map> map, const ParamSet &p ) {
-    std::cout << "void GlobalOptimizerG2O::optimize(std::shared_ptr<Map> map, const ParamSet &p )" << std::endl;
     __UCOSLAM_ADDTIMER__
         setParams(map,p);
     __UCOSLAM_TIMER_EVENT__("Setparams");
@@ -453,7 +452,6 @@ void GlobalOptimizerG2O::optimize(std::shared_ptr<Map> map, const ParamSet &p ) 
     __UCOSLAM_TIMER_EVENT__("Optmize");
     getResults(map);
     __UCOSLAM_TIMER_EVENT__("getResults");
-    std::cout << "void GlobalOptimizerG2O::optimize(std::shared_ptr<Map> map, const ParamSet &p ) ends" << std::endl;
 }
 
 
@@ -461,8 +459,6 @@ void GlobalOptimizerG2O::optimize(std::shared_ptr<Map> map, const ParamSet &p ) 
 
 
 void GlobalOptimizerG2O::optimize(bool *stopASAP ){
-    return;
-    std::cout << "void GlobalOptimizerG2O::optimize(bool *stopASAP )" << std::endl;
     __UCOSLAM_ADDTIMER__
         Optimizer->initializeOptimization();
     Optimizer->setForceStopFlag(stopASAP);
@@ -509,13 +505,11 @@ void GlobalOptimizerG2O::optimize(bool *stopASAP ){
         Optimizer->optimize(_params.nIters*2,1);
 
     }
-    std::cout << "void GlobalOptimizerG2O::optimize(bool *stopASAP ) ends" << std::endl;
 
 }
 
 void GlobalOptimizerG2O::getResults(std::shared_ptr<Map>  map){
 __UCOSLAM_ADDTIMER__
-    std::cout << "void getResults" << std::endl;
     auto toCvMat=[](const g2o::SE3Quat &SE3)
     {
         Eigen::Matrix<double,4,4> eigMat = SE3.to_homogeneous_matrix();
@@ -583,7 +577,6 @@ __UCOSLAM_ADDTIMER__
     for( auto &mp_id:usedMapPoints)
         map->updatePointNormalAndDistances(mp_id);
     __UCOSLAM_TIMER_EVENT__("Updated points and normal distances");
-    std::cout << "void getResults ends"  << std::endl;
 }
 
 

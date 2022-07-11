@@ -111,6 +111,7 @@ void Params::toStream(ostream &str)const{
     str.write((char*)&autoAdjustKpSensitivity,sizeof(autoAdjustKpSensitivity));
     str.write((char*)&reLocalizationWithKeyPoints,sizeof(reLocalizationWithKeyPoints));
     str.write((char*)&reLocalizationWithMarkers,sizeof(reLocalizationWithMarkers));
+    str.write((char*)&isInstancing,sizeof(isInstancing));
     str.write((char*)&inPlaneMarkers,sizeof(inPlaneMarkers));
 
 
@@ -173,6 +174,7 @@ void Params::fromStream(istream &str){
     str.read((char*)&autoAdjustKpSensitivity,sizeof(autoAdjustKpSensitivity));
     str.read((char*)&reLocalizationWithKeyPoints,sizeof(reLocalizationWithKeyPoints));
     str.read((char*)&reLocalizationWithMarkers,sizeof(reLocalizationWithMarkers));
+    str.read((char*)&isInstancing,sizeof(isInstancing));
     str.read((char*)&inPlaneMarkers,sizeof(inPlaneMarkers));
     fromStream__(extraParams,str);
 
@@ -223,6 +225,7 @@ uint64_t  Params::getSignature()const{
     sig+=autoAdjustKpSensitivity;
     sig+=reLocalizationWithKeyPoints;
     sig+=reLocalizationWithMarkers;
+    sig+=isInstancing;
     sig+=inPlaneMarkers;
 
   return sig;
@@ -250,6 +253,7 @@ void Params::saveToYMLFile(const string &path){
     fs<<"aruco_allowOneFrameInitialization" <<aruco_allowOneFrameInitialization;
     fs<<"reLocalizationWithKeyPoints" <<reLocalizationWithKeyPoints;
     fs<<"reLocalizationWithMarkers" <<reLocalizationWithMarkers;
+    fs<<"isInstancing" <<isInstancing;
     fs<<"inPlaneMarkers" <<inPlaneMarkers;
     fs<<"saveImageInMap"<<saveImageInMap;
 
@@ -330,6 +334,7 @@ std::cout <<"Params:"<< filePath<< std::endl;
     attemtpRead("autoAdjustKpSensitivity",autoAdjustKpSensitivity,fs);
     attemtpRead("reLocalizationWithKeyPoints",reLocalizationWithKeyPoints,fs);
     attemtpRead("reLocalizationWithMarkers",reLocalizationWithMarkers,fs);
+    attemtpRead("isInstancing",isInstancing,fs);
     attemtpRead("inPlaneMarkers",inPlaneMarkers,fs);
     attemtpRead("saveImageInMap",    saveImageInMap,fs);
 

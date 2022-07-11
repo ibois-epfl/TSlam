@@ -104,7 +104,7 @@ void overwriteParamsByCommandLine(CmdLineParser &cml,ucoslam::Params &params){
     if (cml["-KFMinConfidence"])  params.KFMinConfidence =stof(cml("-KFMinConfidence"));
     if(cml["-nonmax"])    params.KPNonMaximaSuppresion=true;
     if(cml["-saveImages"])    params.saveImageInMap=true;
-
+    if(cml["-isInstancing"]) params.isInstancing=true;
     if(cml["-autoAdjustKpSensitivity"])    params.autoAdjustKpSensitivity=true;
     if(cml["-extra_params"])    params.extraParams=cml("-extra_params");
 
