@@ -16,13 +16,13 @@
 * You should have received a copy of the GNU General Public License
 * along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
-#include "reslam.h"
 #include "basictypes/debug.h"
-#include "mapviewer.h"
 #include "basictypes/timers.h"
-#include "map.h"
-#include "inputreader.h"
 #include "basictypes/cvversioning.h"
+#include "inputreader.h"
+#include "mapviewer.h"
+#include "map.h"
+#include "reslam.h"
 
 
 cv::Mat getImage(cv::VideoCapture &vcap,int frameIdx){
@@ -291,7 +291,7 @@ int main(int argc,char **argv){
             //            Slam.drawMatches(in_image);
             //    char k = TheViewer.show(&Slam, in_image,"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
             char k =0;
-            if(!cml["-noX"]) k=TheViewer.show(TheMap,   in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam.getCurrentKeyFrameIndex());
+            if(!cml["-noX"]) k=TheViewer.show(TheMap, in_image, camPose_c2g, "#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam.getCurrentKeyFrameIndex());
             if (int(k) == 27 || k=='q')finish = true;//pressed ESC
             TimerDraw.stop();
 

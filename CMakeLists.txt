@@ -12,7 +12,7 @@ set(CMAKE_CXX_EXTENSIONS ON) #...with compiler extensions like gnu++11
 set(CMAKE_CXX_STANDARD 11) # C++11...
 
 IF(NOT CMAKE_BUILD_TYPE )
-   SET( CMAKE_BUILD_TYPE "release" )
+   SET( CMAKE_BUILD_TYPE "debug" )
 ENDIF()
 
 #------------------------------------------------------
@@ -42,27 +42,27 @@ IF (BUILD_UTILS)
 ADD_SUBDIRECTORY(utils)
 ENDIF()
 
-IF(BUILD_UTILS_RGBD)
-ADD_SUBDIRECTORY(utils_rgbd)
-ENDIF()
-IF (BUILD_UTILS_DEVELOPER)
-  ADD_SUBDIRECTORY(utils_developer)
-ENDIF()
-IF (BUILD_TESTS)
-ADD_SUBDIRECTORY(tests)
-#ADD_SUBDIRECTORY(old_tests)
-ENDIF()
-IF(BUILD_DEBUGTESTS)
-ADD_SUBDIRECTORY(debugtests)
-ENDIF()
+# IF(BUILD_UTILS_RGBD)
+# ADD_SUBDIRECTORY(utils_rgbd)
+# ENDIF()
+# IF (BUILD_UTILS_DEVELOPER)
+#   ADD_SUBDIRECTORY(utils_developer)
+# ENDIF()
+# IF (BUILD_TESTS)
+# ADD_SUBDIRECTORY(tests)
+# #ADD_SUBDIRECTORY(old_tests)
+# ENDIF()
+# IF(BUILD_DEBUGTESTS)
+# ADD_SUBDIRECTORY(debugtests)
+# ENDIF()
 
-IF (BUILD_UTILS_ARRAY)
-ADD_SUBDIRECTORY(utils_array)
-ENDIF()
+# IF (BUILD_UTILS_ARRAY)
+# ADD_SUBDIRECTORY(utils_array)
+# ENDIF()
 
-IF (BUILD_UTILS_REALSENSE)
-ADD_SUBDIRECTORY(utils_realsense)
-ENDIF()
+# IF (BUILD_UTILS_REALSENSE)
+# ADD_SUBDIRECTORY(utils_realsense)
+# ENDIF()
 
 
 # ----------------------------------------------------------------------------

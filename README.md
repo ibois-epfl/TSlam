@@ -1,7 +1,7 @@
 # UcoSLAM-IBOIS
 ![](./example/tracking_demo.gif)
 
-The modified version of UcoSLAM for augmented carpentry project, which we intregrat [STag](https://github.com/bbenligiray/stag) and add [CLAHE](https://en.wikipedia.org/wiki/Adaptive_histogram_equalization) for preprocessing.
+The modified version of [UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62) for augmented carpentry project, which we intregrat [STag](https://github.com/bbenligiray/stag) and add [CLAHE](https://en.wikipedia.org/wiki/Adaptive_histogram_equalization) for preprocessing.
 - The official document of UcoSLAM:  [link](https://docs.google.com/document/d/12EGJ3cI-m8XMXgI5bYW1dLi5lBO-vxxr6Cf769wQzJc)
 - [STag ROS](https://github.com/usrl-uofsc/stag_ros): Code of STag is from this repo. This one upgrade the original STag from OpenCV 3 to OpenCV 4.
 - [Dev Log of this modification](./dev_log)
