@@ -83,7 +83,7 @@ std::string info;
 ### The lags
 - Seems to come out when inconstency introduced in the scene, I guess it's doing optimization on the map.
     - During Mapping
-        > 2-phase mapping, which reduce this situation, but may still happen
+        > ✔️ 2-phase mapping, which reduce this situation, but may still happen
 
         > Move the code cause the lag into another thread, and let the main thread keep going => but this probably causes problem
         
