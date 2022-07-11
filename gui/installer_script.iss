@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "UcoSLAMGUI"
-#define MyAppVersion "1.2.4"
+#define MyAppVersion "1.1.0"
 #define MyAppPublisher "Ava group"
 #define MyAppURL "http://www.uco.es/grupos/ava/"
 #define MyAppExeName "ucoslam_gui.exe"

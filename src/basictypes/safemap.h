@@ -19,7 +19,7 @@
 #ifndef _SafeMap_H
 #define _SafeMap_H
 #include <map>
-namespace reslam{
+namespace ucoslam{
 template<typename Key,typename Val>
 class SafeMap:public std::map<Key,Val>{
       public:

@@ -30,7 +30,7 @@
 #include "map.h"
 #include "pnpsolver.h"
 #include "basictypes/cvversioning.h"
-namespace reslam{
+namespace ucoslam{
 int g2o_solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::vector<cv::DMatch> &map_matches, cv::Mat  &pose_io ,int64_t currentKeyFrame);
 
 //matches_io: trainIdx must be mappoints ids and queryIdx must be frame ids
@@ -94,7 +94,7 @@ bool PnPSolver::solvePnPRansac( const Frame &frame, std::shared_ptr<Map> map, st
             if(distX*distX+distY*distY<maxErr){
                 //check visual angle with camera centre
                 //take the point and see the angle
-                const reslam::MapPoint &mapPoint=map->map_points[ matches_io[j].trainIdx];
+                const ucoslam::MapPoint &mapPoint=map->map_points[ matches_io[j].trainIdx];
                 if (mapPoint.getViewCos(camCenter)<0.5) continue;
                 nInliers++;
                 inliers.push_back(j);
@@ -179,11 +179,9 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
 
     const float Chi2D =  5.99;
     const float Chi3D =  7.815;
-    const float Chi4D =  9.488;
     const float Chi8D = 15.507;
     const float thHuber2D =  sqrt(5.99);
     const float thHuber3D= sqrt(7.815);
-    const float thHuber4D= sqrt(9.488);
     const float thHuber8D = sqrt(15.507);
 
 
@@ -192,14 +190,8 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
     float cx=frame.imageParams.cx();
     float cy=frame.imageParams.cy();
 
-    //vector<float> invScaleFactor(frame.scaleFactors);
-//    //for(auto &v:invScaleFactor)v=1./v;
-//    vector<float> invScaleFactor;
-//    for(int i=frame.scaleFactors.size()-1; i>=0; i--)
-//        invScaleFactor.push_back(1./frame.scaleFactors[i]);
-    vector<float> invScaleFactor;
-    for(int i=TheMap->_maxOctaveLevel; i>=0; i--)
-        invScaleFactor.push_back(1./pow(TheMap->_scaleFactor, i));
+    vector<float> invScaleFactor(frame.scaleFactors);
+    for(auto &v:invScaleFactor)v=1./v;
 
 
     struct edgeinfo{
@@ -216,15 +208,8 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
         auto kpt=frame.und_kpts[ map_matches[i].queryIdx] ;
         auto &mp=TheMap->map_points[ map_matches[i].trainIdx];
         auto p3d=mp.getCoordinates();
-        double edge_weight=1;
+        float edge_weight=1;
         if( !mp.isStable()) edge_weight=0.5;
-        float weight_map;
-
-        if( mp.isFromMapOriginal())
-            weight_map=1;
-        else
-           weight_map=0.5;//0.5
-
 
 
         float depth=frame.getDepth(map_matches[i].queryIdx);
@@ -241,7 +226,7 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
             e->setMeasurement(obs);
 
             const float invSigma2 = invScaleFactor[kpt.octave];
-            e->setInformation(Eigen::Matrix2d::Identity()*invSigma2*weight_map);
+            e->setInformation(Eigen::Matrix2d::Identity()*invSigma2);
 
             WeightedHubberRobustKernel* rk = new WeightedHubberRobustKernel;
             rk->set(thHuber2D,edge_weight);
@@ -254,98 +239,47 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
         }
         //stereo point
         else{
-            if( frame.imageParams.isArray()){
-                float x = ((kpt.pt.x - frame.imageParams.cx(0)) * depth)/frame.imageParams.fx(0);
-                float y = ((kpt.pt.y - frame.imageParams.cy(0)) * depth)/frame.imageParams.fy(0);
-                cv::Mat p3d_c1(4,1,CV_32F), p3d_c2(4,1,CV_32F);
-                p3d_c1=(cv::Mat_<float>(4,1) << x,y,depth,1);
 
-                cv::Mat Q2T = getRTMatrix(frame.imageParams.arrayRvec[0], frame.imageParams.arrayTvec[0]);
-                p3d_c2 = Q2T * p3d_c1;
+            //SET EDGE
+            Eigen::Matrix<double,3,1> obs;
+            //compute the right proyection difference
+            float mbf=frame.imageParams.bl*frame.imageParams.fx();
+            const float kp_ur = kpt.pt.x - mbf/depth;
+            obs << kpt.pt.x, kpt.pt.y, kp_ur;
 
-                //Project 3d point in cam2
-                float zinv = 1.0/p3d_c2.at<float>(2);
-                float im2_x = p3d_c2.at<float>(0)*frame.imageParams.fx(1)*zinv+frame.imageParams.cx(1);
-                float im2_y = p3d_c2.at<float>(1)*frame.imageParams.fy(1)*zinv+frame.imageParams.cy(1);
-
-                Eigen::Matrix<double,4,1> obs;
-                obs << kpt.pt.x, kpt.pt.y, im2_x, im2_y;
-
-                EdgeMultiCam2_SE3ProjectXYZOnlyPose* e = new  EdgeMultiCam2_SE3ProjectXYZOnlyPose();
-                e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(G2oVertexCamera));
-                e->setMeasurement(obs);
-                const float invSigma2 = invScaleFactor[kpt.octave];
-                Eigen::Matrix4d Info = Eigen::Matrix4d::Identity()*invSigma2*weight_map;
-                e->setInformation(Info);
-
-                edge_weight*=2;
-                WeightedHubberRobustKernel* rk = new WeightedHubberRobustKernel;
-                rk->set(thHuber4D,edge_weight);
-                e->setRobustKernel(rk);
-
-                e->fx_1 = frame.imageParams.fx(0);
-                e->fy_1 = frame.imageParams.fy(0);
-                e->cx_1 = frame.imageParams.cx(0);
-                e->cy_1 = frame.imageParams.cy(0);
-
-                e->fx_2 = frame.imageParams.fx(1);
-                e->fy_2 = frame.imageParams.fy(1);
-                e->cx_2 = frame.imageParams.cx(1);
-                e->cy_2 = frame.imageParams.cy(1);
-
-                e->Q2T = Q2T;
-                e->Xw[0] = p3d.x;
-                e->Xw[1] = p3d.y;
-                e->Xw[2] = p3d.z;
-
-                optimizer.addEdge(e);
-
-                edgesInfo[i].ptr=(void*)e;
-                edgesInfo[i].MaxChi=Chi4D;
-            }
-            else
-            {
-                //SET EDGE
-                Eigen::Matrix<double,3,1> obs;
-                //compute the right proyection difference
-                float mbf=frame.imageParams.bl*frame.imageParams.fx();
-                const float kp_ur = kpt.pt.x - mbf/depth;
-                obs << kpt.pt.x, kpt.pt.y, kp_ur;
-
-                EdgeStereoSE3ProjectXYZOnlyPose* e = new  EdgeStereoSE3ProjectXYZOnlyPose();
-                e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(G2oVertexCamera));
-                e->setMeasurement(obs);
-                const float invSigma2 = invScaleFactor[kpt.octave];
-                Eigen::Matrix3d Info = Eigen::Matrix3d::Identity()*invSigma2*weight_map;
-                e->setInformation(Info);
+            EdgeStereoSE3ProjectXYZOnlyPose* e = new  EdgeStereoSE3ProjectXYZOnlyPose();
+            e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(G2oVertexCamera));
+            e->setMeasurement(obs);
+            const float invSigma2 = 1./frame.scaleFactors[kpt.octave];
+            Eigen::Matrix3d Info = Eigen::Matrix3d::Identity()*invSigma2;
+            e->setInformation(Info);
 
 
-                edge_weight*=2;
-                WeightedHubberRobustKernel* rk = new WeightedHubberRobustKernel;
-                rk->set(thHuber3D,edge_weight);
-                e->setRobustKernel(rk);
+            edge_weight*=2;
+            WeightedHubberRobustKernel* rk = new WeightedHubberRobustKernel;
+            rk->set(thHuber3D,edge_weight);
+            e->setRobustKernel(rk);
 
-                e->fx = fx;
-                e->fy = fy;
-                e->cx = cx;
-                e->cy = cy;
-                e->bf = mbf;
-                e->Xw[0] = p3d.x;
-                e->Xw[1] = p3d.y;
-                e->Xw[2] = p3d.z;
+            e->fx = fx;
+            e->fy = fy;
+            e->cx = cx;
+            e->cy = cy;
+            e->bf = mbf;
+            e->Xw[0] = p3d.x;
+            e->Xw[1] = p3d.y;
+            e->Xw[2] = p3d.z;
 
-                optimizer.addEdge(e);
+            optimizer.addEdge(e);
 
-                edgesInfo[i].ptr=(void*)e;
-                edgesInfo[i].MaxChi=Chi3D;
-            }
+            edgesInfo[i].ptr=(void*)e;
+            edgesInfo[i].MaxChi=Chi3D;
         }
         KpWeightSum+=edge_weight;
 
     }
 
         //now, markers
-        std::vector<std::pair<reslam::Marker,reslam::MarkerObservation> > marker_poses;
+        std::vector<std::pair<ucoslam::Marker,ucoslam::MarkerObservation> > marker_poses;
         if ( frame.markers.size()!=0 && currentKeyFrame!=-1){
             //get all neighbors
             auto neigh=TheMap->getNeighborKeyFrames(currentKeyFrame,true);

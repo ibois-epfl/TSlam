@@ -20,7 +20,7 @@
 #define _UCOSLAM_GlobalOptimizerH_
 #include "map.h"
 #include <unordered_set>
-namespace reslam{
+namespace ucoslam{
 class System;
 
 /**Base class for global optimization of points,markers and camera locations

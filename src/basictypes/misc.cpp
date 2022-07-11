@@ -25,7 +25,7 @@
 #include "optimization/ippe.h"
 #include "cvversioning.h"
 using namespace std;
-namespace reslam{
+namespace ucoslam{
 
 /**
    * Given a Rotation and a Translation expressed both as a vector, returns the corresponding 4x4 matrix
@@ -641,14 +641,14 @@ cv::Point3f angular_error_minimization(cv::Point3f point, const vector<se3> &pos
 }
 
 
-cv::Mat  ARUCO_initialize(const std::vector<reslam::MarkerObservation> &markers1,
-                                      const std::vector<reslam::MarkerObservation> &markers2,
-                                      const reslam::ImageParams &cp, float markerSize,
+cv::Mat  ARUCO_initialize(const std::vector<ucoslam::MarkerObservation> &markers1,
+                                      const std::vector<ucoslam::MarkerObservation> &markers2,
+                                      const ucoslam::ImageParams &cp, float markerSize,
                                       float  minCornerPixDist,float repj_err_Thres, float minDistance,
                                       std::map<uint32_t,se3> &_marker_poses){
 
-    const std::vector<reslam::MarkerObservation> &ms1_in=markers1;
-    const std::vector<reslam::MarkerObservation> &ms2_in=markers2;
+    const std::vector<ucoslam::MarkerObservation> &ms1_in=markers1;
+    const std::vector<ucoslam::MarkerObservation> &ms2_in=markers2;
 
     //find matches of markers in both images
     vector< std::pair<uint32_t,uint32_t> > matches;
@@ -660,7 +660,7 @@ cv::Mat  ARUCO_initialize(const std::vector<reslam::MarkerObservation> &markers1
     if (matches.size()==0)return cv::Mat();
 
     //create vectors with matched elements so that the elements are in order in both ms1 and ms2
-    std::vector<reslam::MarkerObservation> ms1,ms2;
+    std::vector<ucoslam::MarkerObservation> ms1,ms2;
     for(auto m:matches){
         ms1.push_back( ms1_in[m.first]);
         ms2.push_back( ms2_in[m.second]);
@@ -787,7 +787,7 @@ cv::Mat  ARUCO_initialize(const std::vector<reslam::MarkerObservation> &markers1
      return   cv::Mat();
 }
 
-cv::Mat ARUCO_bestMarkerPose(const vector<reslam::MarkerObservation> &marker_views, const vector<se3> &frameposes_f2g, const reslam::ImageParams &cp ){
+cv::Mat ARUCO_bestMarkerPose(const vector<ucoslam::MarkerObservation> &marker_views, const vector<se3> &frameposes_f2g, const ucoslam::ImageParams &cp ){
     
     assert( marker_views.size()>=2);
     
@@ -916,22 +916,8 @@ vector<int> outlierFiltering(const vector<float> &data,int ntimes,float *mean_ou
       const auto &CameraMatrix2=Query.imageParams.CameraMatrix;
 
       vector<float> invScaleFactorsQuery,invScaleFactorsTrain;
-      invScaleFactorsQuery.resize(Query.scaleFactors.size());
-      invScaleFactorsTrain.resize(Train.scaleFactors.size());
-      for(size_t n=0; n<Query.scaleFactors.size(); n++)
-      {
-         size_t idx=Query.scaleFactors.size()-1-n;
-         invScaleFactorsQuery[n]= 1.f/(Query.scaleFactors[idx]*Query.scaleFactors[idx]);
-      }
-
-      for(size_t n=0; n<Train.scaleFactors.size(); n++)
-      {
-          size_t idx=Train.scaleFactors.size()-1-n;
-         invScaleFactorsTrain[n]= 1.f/(Train.scaleFactors[idx]*Train.scaleFactors[idx]);
-      }
-
-//      for(auto f:Train.scaleFactors)           invScaleFactorsQuery.push_back(1.f/(f*f));
-//      for(auto f:Query.scaleFactors)           invScaleFactorsTrain.push_back(1.f/(f*f));
+      for(auto f:Train.scaleFactors)           invScaleFactorsQuery.push_back(1.f/(f*f));
+      for(auto f:Query.scaleFactors)           invScaleFactorsTrain.push_back(1.f/(f*f));
       cv::Mat R=RT_Q2T(cv::Range(0,3),cv::Range(0,3));
       cv::Mat R_t=R.t();
       cv::Mat t=RT_Q2T(cv::Range(0,3),cv::Range(3,4));
@@ -1001,7 +987,8 @@ vector<int> outlierFiltering(const vector<float> &data,int ntimes,float *mean_ou
           // Check reprojection error in first image
           float invZ1 = 1.f/p3dC1.at<float>(2);
           cv::Point2f queryReprj(  fx1*p3dC1.at<float>(0)*invZ1+cx1,fy1*p3dC1.at<float>(1)*invZ1+cy1);
-          float chi2 =  invScaleFactorsTrain[kp1.octave] *   ((queryReprj.x-kp1.pt.x)*(queryReprj.x-kp1.pt.x)+(queryReprj.y-kp1.pt.y)*(queryReprj.y-kp1.pt.y));
+          float chi2 =  invScaleFactorsQuery[kp1.octave] *   ((queryReprj.x-kp1.pt.x)*(queryReprj.x-kp1.pt.x)+(queryReprj.y-kp1.pt.y)*(queryReprj.y-kp1.pt.y));
+
           if(chi2>maxChi2)
               continue;
 
@@ -1009,7 +996,7 @@ vector<int> outlierFiltering(const vector<float> &data,int ntimes,float *mean_ou
           float invZ2 = 1.f/p3dC2.at<float>(2);
           cv::Point2f trainReprj(fx2*p3dC2.at<float>(0)*invZ2+cx2,fy2*p3dC2.at<float>(1)*invZ2+cy2);
 
-          chi2 = invScaleFactorsQuery[kp2.octave]  * ((trainReprj.x-kp2.pt.x)*(trainReprj.x-kp2.pt.x)+( trainReprj.y-kp2.pt.y)*( trainReprj.y-kp2.pt.y));
+          chi2 = invScaleFactorsTrain[kp2.octave]  * ((trainReprj.x-kp2.pt.x)*(trainReprj.x-kp2.pt.x)+( trainReprj.y-kp2.pt.y)*( trainReprj.y-kp2.pt.y));
 
           if(chi2>maxChi2)
               continue;

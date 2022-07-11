@@ -19,14 +19,14 @@
 #ifndef _ucoslam_MinMaxBags_H
 #define _ucoslam_MinMaxBags_H
 #include "heap.h"
-namespace reslam{
+namespace ucoslam{
 /** Class that represent where you can only add X elements and only these with min values are kept.
  * If the number of elements introduced is greater than the limit, the bag only kepts the lowest values
  */
 template<typename T>
 class MinBag{
     size_t _maxSize=0;
-    reslam::Heap<T,std::greater<T>> heap;
+    ucoslam::Heap<T,std::greater<T>> heap;
 public:
 
     MinBag(int maxSize=-1) {setMaxSize(maxSize);}
@@ -52,7 +52,7 @@ public:
 template<typename T>
 class MaxBag{
     size_t _maxSize=0;
-    reslam::Heap<T,std::less<T>> heap;
+    ucoslam::Heap<T,std::less<T>> heap;
 public:
 
     MaxBag(int maxSize=-1) {setMaxSize(maxSize);}

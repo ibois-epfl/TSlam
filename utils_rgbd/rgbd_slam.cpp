@@ -16,8 +16,8 @@
 * You should have received a copy of the GNU General Public License
 * along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
-#include "reslamtypes.h"
-#include "reslam.h"
+#include "ucoslamtypes.h"
+#include "ucoslam.h"
 #include "basictypes/debug.h"
 #include "mapviewer.h"
 #include "basictypes/timers.h"
@@ -40,15 +40,15 @@ cv::Mat resize(cv::Mat &in,cv::Size size){
     return ret;
 }
 
-reslam::ImageParams getASUSImageParams(){
+ucoslam::ImageParams getASUSImageParams(){
 
-    reslam::ImageParams  IP;
+    ucoslam::ImageParams  IP;
     IP.CameraMatrix= (cv::Mat_<float>(3,3) <<  517.306408,0,318.643040,0,516.469215,255.313989,0,0,1);
     IP.Distorsion= (cv::Mat_<float>(1,5) <<  0.262383,-0.953104, -0.005358,0.002628,1.163314);
 //    IP.Distorsion= (cv::Mat_<float>(1,5) <<  0,0,0,0,0);
     IP.CamSize=cv::Size(640,480);
     IP.bl=0.07;//camera base line
-    //IP.cameraType=reslam::ImageParams::CAMTYPE_STEREO;
+    //IP.cameraType=ucoslam::ImageParams::CAMTYPE_STEREO;
     IP.rgb_depthscale=1e-3;//scale factor to convert into the desired scale
 
     return IP;
@@ -83,16 +83,16 @@ int main(int argc,char **argv){
         if(!calib_path.empty())
             reader->readCalib(calib_path);
 
-        reslam::ReSlam Slam;
+        ucoslam::UcoSlam Slam;
         Slam.setDebugLevel(stoi(cml("-debug", "0")));
         cv::Mat in_image,in_depth;
 
 
-        reslam::ImageParams image_params=getASUSImageParams();
+        ucoslam::ImageParams image_params=getASUSImageParams();
         image_params.CameraMatrix=cv::Mat(cv::Matx33f(reader->getColorCamMat()));
         image_params.Distorsion=cv::Mat(cv::Matx<float,5,1>(reader->getColorDistCoeffs()));
         image_params.CamSize=reader->getColorImageSize();
-        reslam::Params params;
+        ucoslam::Params params;
 
         params.aruco_markerSize = stof(cml("-size", "1"));
         params.aruco_minMarkerSize= stod(cml("-marker_minsize", "0.025"));
@@ -100,7 +100,7 @@ int main(int argc,char **argv){
         params.detectKeyPoints = !cml["-nokeypoints"];
         params.runSequential = cml["-sequential"];
         params.nthreads_feature_detector = stoi(cml("-fdt", "2"));
-        params.kpDescriptorType = reslam::DescriptorTypes::fromString(cml("-d", "orb"));
+        params.kpDescriptorType = ucoslam::DescriptorTypes::fromString(cml("-d", "orb"));
         if(cml["-KFMinConfidence"])
              params.KFMinConfidence=stof(cml("-KFMinConfidence"));
 
@@ -108,7 +108,7 @@ int main(int argc,char **argv){
          cout<<"PPP="<<params.KFMinConfidence<<endl;
         //create an empty map and give it to the class
 
-        std::shared_ptr<reslam::Map> TheMap=std::make_shared<reslam::Map>();
+        std::shared_ptr<ucoslam::Map> TheMap=std::make_shared<ucoslam::Map>();
         if (cml["-in"])
             TheMap->readFromFile(cml("-in"));
 
@@ -134,13 +134,13 @@ int main(int argc,char **argv){
 
         }
 
-        if (cml["-loc_only"]) Slam.setMode(reslam::MODE_LOCALIZATION);
+        if (cml["-loc_only"]) Slam.setMode(ucoslam::MODE_LOCALIZATION);
 
 
-        reslam::TimerAvrg Fps;
+        ucoslam::TimerAvrg Fps;
         int waitTimeWindow = cml["-st"] ? 0 : 10;
         bool finish = false;
-        reslam::MapViewer TheViewer;
+        ucoslam::MapViewer TheViewer;
         while (!finish && reader->getNextFrame(in_depth,in_image)) {
 
             if (in_image.empty() || in_depth.empty())continue;

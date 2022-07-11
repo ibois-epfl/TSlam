@@ -30,8 +30,8 @@
 #include "basictypes/reusablecontainer.h"
 #include "basictypes/flag.h"
 #include "imageparams.h"
-#include "reslamtypes.h"
-#include "reslam_exports.h"
+#include "ucoslamtypes.h"
+#include "ucoslam_exports.h"
 #include "marker.h"
 using namespace  std;
 namespace fbow {
@@ -39,13 +39,13 @@ struct fBow;
 struct fBow2;
 }
 
-namespace reslam {
+namespace ucoslam {
 
 
 
 
 //A image frame
-class RESLAM_API Frame{
+class UCOSLAM_API Frame{
     friend class FrameExtractor;
     struct KdTreeKeyPoints{
         inline float operator()(const cv::KeyPoint&kp,int dim)const{
@@ -58,7 +58,7 @@ public:
 
     Frame();
     uint32_t idx=std::numeric_limits<uint32_t>::max();//frame identifier
-    std::vector<reslam::MarkerObservation> markers;//set of orginal markers detected with in the image
+    std::vector<ucoslam::MarkerObservation> markers;//set of orginal markers detected with in the image
     picoflann::KdTreeIndex<2,KdTreeKeyPoints> keypoint_kdtree;
     cv::Mat desc;//set of descriptors
     std::vector<uint32_t> ids;//for each keypoint, the MapPoint it belongs to (std::numeric_limits<uint32_t>::max() is used if not assigned)
@@ -76,15 +76,12 @@ public:
     ImageParams imageParams;//camera with which it was taken
     bool isBad( )const{return frame_flags.is(FLAG_BAD); }
     void setBad(bool v){ frame_flags.set(FLAG_BAD,v);}
-    bool isFromMapOriginal( )const{return fromMapOriginal;}
-    void setFromMapOriginal(bool v){ fromMapOriginal = v;}
     DescriptorTypes::Type KpDescType=DescriptorTypes::DESC_NONE;//keypoint descriptor type (orb,akaze,...)
     //returns a map point observation from the current information
     cv::Point minXY=cv::Point2f(0,0),maxXY=cv::Point2f(std::numeric_limits<float>::max(),std::numeric_limits<float>::max());//projection limits. Affected by image distortion
     float getDepth(int idx)const;//returns the depth of the idx-th keypoint. If no depth, return 0
 private:
     Flag frame_flags;
-    bool fromMapOriginal=true;
     std::vector<float> depth;//depth if rgbd or stereo camera
 public:
 
@@ -129,29 +126,13 @@ public:
         assert(imageParams.CamSize.area()!=0);
     }
 
-//    inline int predictScale( float  currentDist, float MaxDistance){
-//        int mnScaleLevels=scaleFactors.size();
-//        auto mfLogScaleFactor=log( scaleFactors[1]);
-//       int nScale = ceil(log(MaxDistance/currentDist)/ mfLogScaleFactor);
-//       if(nScale<0) return 0;
-//       if(nScale>= mnScaleLevels) return mnScaleLevels-1;
-//       return nScale;
-//    }
-//    inline int predictScale( float  currentDist, float MinDistance){
-//        int mnScaleLevels=scaleFactors.size();
-//        auto mfLogScaleFactor=log( scaleFactors[1]);
-//        int nScale = floor(log(currentDist/MinDistance)/ mfLogScaleFactor);
-//        if(nScale<0) return 0;
-//        if(nScale>= mnScaleLevels) return mnScaleLevels-1;
-//        return nScale;
-//    }
-
-    inline int predictScale( float  currentDist, float MaxDistance, int maxScaleLevel){
+    inline int predictScale( float  currentDist, float MaxDistance){
+        int mnScaleLevels=scaleFactors.size();
         auto mfLogScaleFactor=log( scaleFactors[1]);
-        int nScale = floor(maxScaleLevel - (log(MaxDistance/currentDist)/ mfLogScaleFactor));
-        if(nScale<0) return 0;
-        if(nScale>= maxScaleLevel) return maxScaleLevel-1;
-        return nScale;
+       int nScale = ceil(log(MaxDistance/currentDist)/ mfLogScaleFactor);
+       if(nScale<0) return 0;
+       if(nScale>= mnScaleLevels) return mnScaleLevels-1;
+       return nScale;
     }
     //given the 3d point in global coordinates, projects it in the frame
     //returns a nan,nan point if the point is not in front of camera
@@ -203,6 +184,9 @@ public:
     //free space by removing the unused keypoints. This can be a time consuming process
     void removeUnUsedKeyPoints();
 
+
+    void removeOldKeyPoints();
+
     //if the jpeg buffer has data, decompress and return the image
     cv::Mat getImage();
 
@@ -224,7 +208,7 @@ cv::Point3f Frame::getCameraCenter()const{
 
 //! \class FrameSet
 //! \brief A set of image frames
-class FrameSet :public  ReusableContainer<reslam::Frame> {// std::map<uint32_t,reslam::Frame>{
+class FrameSet :public  ReusableContainer<ucoslam::Frame> {// std::map<uint32_t,ucoslam::Frame>{
 public:
     FrameSet(){ }
 
@@ -234,8 +218,8 @@ public:
     uint32_t getNextFrameIndex()const{return getNextPosition();}
 
     //! Adds new frame to set and returns its idx (if not set, a new one is assigned)
-    inline uint32_t addFrame(const reslam::Frame & frame){
-         auto  inserted=ReusableContainer<reslam::Frame>::insert(frame);
+    inline uint32_t addFrame(const ucoslam::Frame & frame){
+         auto  inserted=ReusableContainer<ucoslam::Frame>::insert(frame);
          inserted.first->idx=inserted.second;//set the idx to the inserted frame
          return inserted.first->idx;
     }

@@ -44,7 +44,7 @@ qt5_add_resources(qtproject_RCC appresources.qrc)
 
 add_executable(UcoSLAM_GUI  ${qtproject_UIS_HDRS} ${qtproject_SRCS}  ${qtproject_RCC} ${qtproject_HDRS} ${qtproject_UIS_HDRS})
 qt5_use_modules(UcoSLAM_GUI  Widgets Network)
-TARGET_LINK_LIBRARIES(UcoSLAM_GUI   ${QTTOOLS_REQUIRED_LIBRARIES} ${USED_MODULES} ${EXTRALIBNAME}moduletools ${EXTRALIBNAME}gparam ${EXTRALIBNAME}gparam_qt ${EXTRALIBNAME}qtgl ${RESLAM_REQUIRED_LIBRARIES} reslam)
+TARGET_LINK_LIBRARIES(UcoSLAM_GUI   ${QTTOOLS_REQUIRED_LIBRARIES} ${USED_MODULES} ${EXTRALIBNAME}moduletools ${EXTRALIBNAME}gparam ${EXTRALIBNAME}gparam_qt ${EXTRALIBNAME}qtgl ${UCOSLAM_REQUIRED_LIBRARIES} ucoslam)
 INSTALL(TARGETS UcoSLAM_GUI  RUNTIME DESTINATION bin)
 
 

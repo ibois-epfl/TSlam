@@ -2,86 +2,11 @@
 #include <opencv2/highgui.hpp>
 #include "levmarq.h"
 
-/**
-    * @brief getRTfromMatrix44
-    * @param M
-    * @param R
-    * @param T
-    * @param useSVD
-    */
-void getRTfromMatrix44 ( const cv::Mat &M,  cv::Mat &R,cv::Mat &T,bool useSVD=false) {
-
-    assert ( M.cols==M.rows && M.cols==4 );
-    assert ( M.type() ==CV_32F || M.type() ==CV_64F );
-    //extract the rotation part
-    cv::Mat r33=cv::Mat ( M,cv::Rect ( 0,0,3,3 ) );
-    if (useSVD){
-        cv::SVD svd ( r33 );
-        cv::Mat Rpure=svd.u*svd.vt;
-        cv::Rodrigues ( Rpure,R );
-    }else
-        cv::Rodrigues ( r33,R );
-
-    T.create ( 1,3,M.type() );
-    if ( M.type() ==CV_32F )
-        for ( int i=0; i<3; i++ )
-            T.ptr<float> ( 0 ) [i]=M.at<float> ( i,3 );
-    else
-        for ( int i=0; i<3; i++ )
-            T.ptr<double> ( 0 ) [i]=M.at<double> ( i,3 );
-}
-
-/**
-   * Given a Rotation and a Translation expressed both as a vector, returns the corresponding 4x4 matrix
-   */
-cv::Mat getRTMatrix ( const cv::Mat &R_,const cv::Mat &T_ ,int forceType=-1 ) {
-    cv::Mat M;
-    cv::Mat R,T;
-    R_.copyTo ( R );
-    T_.copyTo ( T );
-    if ( R.type() ==CV_64F ) {
-        assert ( T.type() ==CV_64F );
-        cv::Mat Matrix=cv::Mat::eye ( 4,4,CV_64FC1 );
-
-        cv::Mat R33=cv::Mat ( Matrix,cv::Rect ( 0,0,3,3 ) );
-        if ( R.total() ==3 ) {
-            cv::Rodrigues ( R,R33 );
-        } else if ( R.total() ==9 ) {
-            cv::Mat R64;
-            R.convertTo ( R64,CV_64F );
-            R.copyTo ( R33 );
-        }
-        for ( int i=0; i<3; i++ )
-            Matrix.at<double> ( i,3 ) =T.ptr<double> ( 0 ) [i];
-        M=Matrix;
-    } else if ( R.depth() ==CV_32F ) {
-        cv::Mat Matrix=cv::Mat::eye ( 4,4,CV_32FC1 );
-        cv::Mat R33=cv::Mat ( Matrix,cv::Rect ( 0,0,3,3 ) );
-        if ( R.total() ==3 ) {
-            cv::Rodrigues ( R,R33 );
-        } else if ( R.total() ==9 ) {
-            cv::Mat R32;
-            R.convertTo ( R32,CV_32F );
-            R.copyTo ( R33 );
-        }
-
-        for ( int i=0; i<3; i++ )
-            Matrix.at<float> ( i,3 ) =T.ptr<float> ( 0 ) [i];
-        M=Matrix;
-    }
-
-    if ( forceType==-1 ) return M;
-    else {
-        cv::Mat MTyped;
-        M.convertTo ( MTyped,forceType );
-        return MTyped;
-    }
-}
 
 double reprj_error( const std::vector<cv::Point3f> &objPoints, const std::vector<cv::Point2f>points2d, const aruco::CameraParameters &imp,const cv::Mat &rt44){
     std::vector<cv::Point2f> prepj;
      cv::Mat rv,tv;
-     getRTfromMatrix44(rt44,rv,tv);
+    ucoslam::getRTfromMatrix44(rt44,rv,tv);
     cv::projectPoints(objPoints,rv,tv,imp.CameraMatrix,imp.Distorsion,prepj);
     double sum=0;
     int nvalid=0;
@@ -158,16 +83,17 @@ double __stereo_solve(const std::vector<std::vector<std::vector<cv::Point3f>>>& 
         }
 
         for(size_t i=0; i<cp.size(); i++){
-            sol(14 + i*5) = cp[i].Distorsion.ptr<float>(0)[0]; //k1
-            sol(15 + i*5) = cp[i].Distorsion.ptr<float>(0)[1]; //k2
-            sol(16 + i*5) = cp[i].Distorsion.ptr<float>(0)[2]; //p1
-            sol(17 + i*5) = cp[i].Distorsion.ptr<float>(0)[3]; //p2
-            sol(18 + i*5) = cp[i].Distorsion.ptr<float>(0)[4]; //p3
+            sol(14 + i*4) = cp[i].Distorsion.ptr<float>(0)[0]; //k1
+            sol(15 + i*4) = cp[i].Distorsion.ptr<float>(0)[1]; //k2
+            sol(16 + i*4) = cp[i].Distorsion.ptr<float>(0)[2]; //p1
+            sol(17 + i*4) = cp[i].Distorsion.ptr<float>(0)[3]; //p2
+            sol(18 + i*4) = cp[i].Distorsion.ptr<float>(0)[4]; //p3
         }
         return sol;
     };
     auto fromSol = [](const typename LevMarq<T>::eVector& sol, cv::Mat& r, cv::Mat& t, std::vector<aruco::CameraParameters>& _camParams) {
-
+        r.create(1, 3, CV_32F);
+        t.create(1, 3, CV_32F);
         for (int i = 0; i < 3; i++)
         {
             r.ptr<float>(0)[i] = sol(i);
@@ -185,21 +111,22 @@ double __stereo_solve(const std::vector<std::vector<std::vector<cv::Point3f>>>& 
             _camParams[i].CameraMatrix.ptr<float>(2)[1] = 0;
             _camParams[i].CameraMatrix.ptr<float>(2)[2] = 1;
 
-            _camParams[i].Distorsion.ptr<float>(0)[0] = sol(14 + i*5); //k1
-            _camParams[i].Distorsion.ptr<float>(0)[1] = sol(15 + i*5); //k2
-            _camParams[i].Distorsion.ptr<float>(0)[2] = sol(16 + i*5); //p1
-            _camParams[i].Distorsion.ptr<float>(0)[3] = sol(17 + i*5); //p2
-            _camParams[i].Distorsion.ptr<float>(0)[4] = sol(18 + i*5); //p3
+            _camParams[i].Distorsion.ptr<float>(0)[0] = sol(14 + i*4); //k1
+            _camParams[i].Distorsion.ptr<float>(0)[1] = sol(15 + i*4); //k2
+            _camParams[i].Distorsion.ptr<float>(0)[2] = sol(16 + i*4); //p1
+            _camParams[i].Distorsion.ptr<float>(0)[3] = sol(17 + i*4); //p2
+            _camParams[i].Distorsion.ptr<float>(0)[4] = sol(18 + i*4); //p3
         }
     };
 
     auto err_f = [&](const typename LevMarq<T>::eVector& sol, typename LevMarq<T>::eVector& err) {
 
         std::vector<cv::Point2f> p2d_rej;
+        cv::Mat r, t;
 
-        fromSol(sol, r_io, t_io, camParams);
+        fromSol(sol, r, t, camParams);
 
-        cv::Mat X = getRTMatrix(r_io, t_io);
+        cv::Mat X = ucoslam::getRTMatrix(r, t);
 
         int el=0;
         for(uint imgId=0; imgId<cameraPose[0].size(); imgId++)
@@ -213,8 +140,8 @@ double __stereo_solve(const std::vector<std::vector<std::vector<cv::Point3f>>>& 
             std::vector<cv::Mat> vt;
             vr.resize(2);
             vt.resize(2);
-            getRTfromMatrix44(X*cameraPose[1][imgId], vr[0], vt[0]);
-            getRTfromMatrix44(X.inv()*cameraPose[0][imgId], vr[1], vt[1]);
+            ucoslam::getRTfromMatrix44(X*cameraPose[1][imgId], vr[0], vt[0]);
+            ucoslam::getRTfromMatrix44(X.inv()*cameraPose[0][imgId], vr[1], vt[1]);
 
 
             //cross error using extrinsic
@@ -233,7 +160,7 @@ double __stereo_solve(const std::vector<std::vector<std::vector<cv::Point3f>>>& 
             for(size_t c=0; c<camParams.size(); c++)
             {
                 cv::Mat r,t;
-                getRTfromMatrix44(cameraPose[c][imgId], r, t);
+                ucoslam::getRTfromMatrix44(cameraPose[c][imgId], r, t);
                 cv::projectPoints(calib3d[c][imgId], r, t, camParams[c].CameraMatrix, camParams[c].Distorsion, p2d_rej);
                 for (size_t i = 0; i < p2d_rej.size(); i++)
                 {
@@ -245,7 +172,7 @@ double __stereo_solve(const std::vector<std::vector<std::vector<cv::Point3f>>>& 
      };
 
     LevMarq<T> solver;
-    solver.setParams(500, 0.01, 0.001);
+    solver.setParams(100, 0.01, 0.01);
     solver.verbose()=true;
     typename LevMarq<T>::eVector sol = toSol(r_io, t_io, camParams);
     auto err = solver.solve(sol, err_f);
@@ -342,8 +269,6 @@ void StereoCalibration::calibration(const std::vector<std::string>& imagelist, b
         vector<cv::Mat> vr, vt;
         cv::calibrateCamera(calib_p3d[c], calib_p2d[c], _camParams[c].CamSize, _camParams[c].CameraMatrix, _camParams[c].Distorsion, vr, vt);
 
-        _camParams[c].saveToFile("");
-
         //compute the average reprojection error
         std::pair<double,int> sum={0,0};
         for(size_t v=0;v<calib_p2d[c].size();v++){
@@ -378,9 +303,6 @@ void StereoCalibration::calibration(const std::vector<std::string>& imagelist, b
         for(k = 0; k < ncameras; k++ )
         {
             MSPoseTrackers[k].reset();
-            //At least 4 markers
-            if(detected_markers[k][i].size()<5) break;
-
             if(MSPoseTrackers[k].estimatePose(detected_markers[k][i]))
                 cameraPose[k][j] = MSPoseTrackers[k].getRTMatrix();
             else
@@ -397,8 +319,6 @@ void StereoCalibration::calibration(const std::vector<std::string>& imagelist, b
         }
         if(k==ncameras)
             j++;
-        else
-            std::cout << "Removed imgs id;"<<i<<std::endl;
     }
 
     for(k=0; k<ncameras; k++)
@@ -411,7 +331,7 @@ void StereoCalibration::calibration(const std::vector<std::string>& imagelist, b
     stereo_solve(calib_p3d, calib_p2d, cameraPose, _rvec, _tvec);
 }
 
-void StereoCalibration::stereo_solve(const std::vector<std::vector<std::vector<cv::Point3f>>>& calib3d,
+double StereoCalibration::stereo_solve(const std::vector<std::vector<std::vector<cv::Point3f>>>& calib3d,
                     const std::vector<std::vector<std::vector<cv::Point2f>>>& calib2d,
                     const std::vector<std::vector<cv::Mat>>& cameraPose,
                     cv::Mat& r_io, cv::Mat& t_io)
@@ -430,7 +350,7 @@ void StereoCalibration::stereo_solve(const std::vector<std::vector<std::vector<c
             err+=reprj_error( calib3d[k][i], calib2d[k][i], _camParams[k], cameraPose[k][i]);
         err/= ncameras;
 
-        getRTfromMatrix44(cameraPose[0][i]*cameraPose[1][i].inv(), r_io, t_io);
+        ucoslam::getRTfromMatrix44(cameraPose[0][i]*cameraPose[1][i].inv(), r_io, t_io);
 
         if(err < minErr)
         {
@@ -440,12 +360,11 @@ void StereoCalibration::stereo_solve(const std::vector<std::vector<std::vector<c
     }
 
     //initial rvec, tvec
-    getRTfromMatrix44(cameraPose[0][minErrId]*cameraPose[1][minErrId].inv(), r_io, t_io);
+    ucoslam::getRTfromMatrix44(cameraPose[0][minErrId]*cameraPose[1][minErrId].inv(), r_io, t_io);
     //stero calibration
     __stereo_solve<double>(calib3d, calib2d, cameraPose, _camParams, r_io, t_io);
 
     //Show reprj error using new intrinsic params
-    std::pair<double, double>errs={0.0, 0.0};
     for(int i=0; i<nimages; i++)
     {
         //Prj error individual cameras
@@ -453,22 +372,20 @@ void StereoCalibration::stereo_solve(const std::vector<std::vector<std::vector<c
         for(int k=0; k<ncameras; k++)
             err+=reprj_error( calib3d[k][i], calib2d[k][i], _camParams[k], cameraPose[k][i]);
         err/= ncameras;
-        errs.first+=err;
+
 
         //Cross error
         std::vector<cv::Mat> Transf;
         Transf.resize(2);
-        Transf[0] = getRTMatrix(r_io, t_io)*cameraPose[1][i];
-        Transf[1] = getRTMatrix(r_io, t_io).inv()*cameraPose[0][i];
+        Transf[0] = ucoslam::getRTMatrix(r_io, t_io)*cameraPose[1][i];
+        Transf[1] = ucoslam::getRTMatrix(r_io, t_io).inv()*cameraPose[0][i];
         float err2=0.f;
         for(int k=0; k<ncameras; k++)
             err2+=reprj_error( calib3d[k][i], calib2d[k][i], _camParams[k], Transf[k]);
         err2/= ncameras;
-        errs.second+=err2;
 
         std::cout <<"Image("<<i<<"/"<<nimages-1<<") Avrg prj error:"<< err<< ", Avrg cross error:"<< err2<< std::endl;
     }
-    std::cout <<"GLOBAL prj error:"<< errs.first/nimages<< ", cross error:"<< errs.second/nimages<< std::endl;
 }
 
 

@@ -15,8 +15,8 @@
 #include "global_gparams.h"
 #include "imageparams.h"
 #include "tools/qtgl/glviewer.h"
-namespace reslam{
-class  ReSlam;
+namespace ucoslam{
+class  UcoSlam;
 class  Map;
 struct  Params;
 
@@ -49,7 +49,7 @@ private slots:
 
 private:
 
-    bool load(const std::string &videoFile,const std::string &cameraFile,  const reslam::Params &params,const std::string &vocfile);
+    bool load(const std::string &videoFile,const std::string &cameraFile,  const ucoslam::Params &params,const std::string &vocfile);
     QString getVocabularyPath();
 
 
@@ -66,9 +66,9 @@ private:
     std::shared_ptr<MapDrawer> mapdrawer;
 
 
-    std::shared_ptr<reslam::ReSlam> _UcoSLAM;
-    std::shared_ptr<reslam::Map> _Map;
-    reslam::ImageParams _imageParams;
+    std::shared_ptr<ucoslam::UcoSlam> _UcoSLAM;
+    std::shared_ptr<ucoslam::Map> _Map;
+    ucoslam::ImageParams _imageParams;
     cv::Mat _lastPose;
 
     float _inputScaleFactor=1;

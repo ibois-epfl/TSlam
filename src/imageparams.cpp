@@ -21,7 +21,7 @@
 #include "basictypes/hash.h"
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-namespace reslam {
+namespace ucoslam {
 
 ImageParams::ImageParams(){
     CamSize=cv::Size(-1,-1);
@@ -50,7 +50,6 @@ ImageParams& ImageParams::operator=(const ImageParams& IP){
     multicams_cs = IP.multicams_cs;
 
     bl=IP.bl;//stereo camera base line
-    closedPointThr=IP.closedPointThr;
     rgb_depthscale=IP.rgb_depthscale;//scale to obtain depth from the rgbd values
     return *this;
 }
@@ -93,8 +92,8 @@ void ImageParams::resize(cv::Size size, int cam)
         if (size == multicams_cs[cam-1])
             return;
 
-        float AxFactor = float(size.width) / float(multicams_cs[cam-1].width);
-        float AyFactor = float(size.height) / float(multicams_cs[cam-1].height);
+        float AxFactor = float(size.width) / float(CamSize.width);
+        float AyFactor = float(size.height) / float(CamSize.height);
         arrayCamMatrix[cam-1].at<float>(0, 0) *= AxFactor;
         arrayCamMatrix[cam-1].at<float>(0, 2) *= AxFactor;
         arrayCamMatrix[cam-1].at<float>(1, 1) *= AyFactor;
@@ -141,13 +140,7 @@ uint64_t ImageParams::getSignature()const{
     Sig+=CameraMatrix;
     Sig+=Distorsion;
     Sig.add(CamSize);
-    for(auto e:arrayCamMatrix) Sig.add(e);
-    for(auto e:arrayDistorsion) Sig.add(e);
-    for(auto e:arrayRvec) Sig.add(e);
-    for(auto e:arrayTvec) Sig.add(e);
-    for(auto e:multicams_cs) Sig.add(e);
     Sig.add(bl);
-    Sig.add(closedPointThr);
     Sig.add(rgb_depthscale);
     return Sig;
 }
@@ -273,42 +266,23 @@ void ImageParams::saveToXMLFile(std::string path )
 }
 
 void ImageParams::toStream(std::ostream &str) const {
+
     toStream__(CameraMatrix,str);
     toStream__(Distorsion,str);
     str.write((char*)&CamSize,sizeof(CamSize));
-    io_write<uint32_t>(arrayCamMatrix.size(),str);
-    for(size_t i=0;i<arrayCamMatrix.size();i++){
-        toStream__(arrayCamMatrix[i],str);
-        toStream__(arrayDistorsion[i],str);
-        toStream__(arrayRvec[i],str);
-        toStream__(arrayTvec[i],str);
-    }
-    toStream__(multicams_cs,str);
     str.write((char*)&bl,sizeof(bl));
-    str.write((char*)&closedPointThr,sizeof(closedPointThr));
     str.write((char*)&rgb_depthscale,sizeof(rgb_depthscale));
     str.write((char*)&fisheye_model,sizeof(fisheye_model));
+
 }
 
 void ImageParams::fromStream(std::istream &str) {
     fromStream__(CameraMatrix,str);
     fromStream__(Distorsion,str);
     str.read((char*)&CamSize,sizeof(CamSize));
-    size_t s=io_read<uint32_t>(str);
-    arrayCamMatrix.resize(s);
-    arrayDistorsion.resize(s);
-    arrayRvec.resize(s);
-    arrayTvec.resize(s);
-    for(size_t i=0;i<s;i++){
-        fromStream__(arrayCamMatrix[i],str);
-        fromStream__(arrayDistorsion[i],str);
-        fromStream__(arrayRvec[i],str);
-        fromStream__(arrayTvec[i],str);
-    }
-    fromStream__(multicams_cs,str);
     str.read((char*)&bl,sizeof(bl));
-    str.read((char*)&closedPointThr,sizeof(closedPointThr));
     str.read((char*)&rgb_depthscale,sizeof(rgb_depthscale));
     str.read((char*)&fisheye_model,sizeof(fisheye_model));
+
 }
 }

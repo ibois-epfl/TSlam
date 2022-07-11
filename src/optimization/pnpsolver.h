@@ -23,7 +23,7 @@
 #include "basictypes/se3.h"
 #include "map_types/frame.h"
 #include "map.h"
-namespace reslam{
+namespace ucoslam{
 
 
 

@@ -16,8 +16,8 @@
 * You should have received a copy of the GNU General Public License
 * along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
-#include "reslamtypes.h"
-#include "reslam.h"
+#include "ucoslamtypes.h"
+#include "ucoslam.h"
 #include "basictypes/debug.h"
 #include "mapviewer.h"
 #include "basictypes/timers.h"
@@ -43,15 +43,15 @@ cv::Mat resize(cv::Mat &in,cv::Size size){
 
 
 
-reslam::ImageParams getASUSImageParams() {
+ucoslam::ImageParams getASUSImageParams() {
 
-    reslam::ImageParams  IP;
+    ucoslam::ImageParams  IP;
     IP.CameraMatrix= (cv::Mat_<float>(3,3) <<  517.306408,0,318.643040,0,516.469215,255.313989,0,0,1);
     IP.Distorsion= (cv::Mat_<float>(1,5) <<  0.262383,-0.953104, -0.005358,0.002628,1.163314);
 //    IP.Distorsion= (cv::Mat_<float>(1,5) <<  0,0,0,0,0);
     IP.CamSize=cv::Size(640,480);
     IP.bl=0.07;//camera base line
-    //IP.cameraType=reslam::ImageParams::CAMTYPE_STEREO;
+    //IP.cameraType=ucoslam::ImageParams::CAMTYPE_STEREO;
     IP.rgb_depthscale=1e-3;//scale factor to convert into the desired scale
 
     return IP;
@@ -82,13 +82,13 @@ int main(int argc,char **argv){
         if (!vcap.isOpen())
             throw std::runtime_error("Video not opened");
 
-        reslam::ReSlam Slam;
+        ucoslam::UcoSlam Slam;
         Slam.setDebugLevel(stoi(cml("-debug", "0")));
         cv::Mat in_image,in_depth;
 
 
-        reslam::ImageParams image_params=getASUSImageParams();
-        reslam::Params params;
+        ucoslam::ImageParams image_params=getASUSImageParams();
+        ucoslam::Params params;
 
          params.aruco_markerSize = stof(cml("-size", "1"));
         params.aruco_minMarkerSize= stod(cml("-marker_minsize", "0.025"));
@@ -96,20 +96,15 @@ int main(int argc,char **argv){
         params.detectKeyPoints = !cml["-nokeypoints"];
         params.runSequential = cml["-sequential"];
         params.nthreads_feature_detector = stoi(cml("-fdt", "2"));
-         params.kpDescriptorType = reslam::DescriptorTypes::fromString(cml("-d", "orb"));
+         params.kpDescriptorType = ucoslam::DescriptorTypes::fromString(cml("-d", "orb"));
          if(cml["-KFMinConfidence"])
              params.KFMinConfidence=stof(cml("-KFMinConfidence"));
-
-         if(cml["-minFocalLength"])params.minFocalLength=stof(cml("-minFocalLength","200"));
-         if(cml["-featuresFirstLevel"])params.featuresFirstLevel=stoi(cml("-featuresFirstLevel","140"));
-         if(cml["-featuresFactor"])params.featuresFactor=stof(cml("-featuresFactor","1"));
-         if(cml["-nKFMatcher"]) params.nKFMatcher=stof(cml("-nKFMatcher","0.3"));
 
 
          cout<<"PPP="<<params.KFMinConfidence<<endl;
         //create an empty map and give it to the class
 
-        std::shared_ptr<reslam::Map> TheMap=std::make_shared<reslam::Map>();
+        std::shared_ptr<ucoslam::Map> TheMap=std::make_shared<ucoslam::Map>();
         if (cml["-in"])
             TheMap->readFromFile(cml("-in"));
 
@@ -135,15 +130,15 @@ int main(int argc,char **argv){
 
         }
 
-        if (cml["-loc_only"]) Slam.setMode(reslam::MODE_LOCALIZATION);
+        if (cml["-loc_only"]) Slam.setMode(ucoslam::MODE_LOCALIZATION);
 
 
         bool showWindows=!cml["-noX"];
 
-        reslam::TimerAvrg Fps;
+        ucoslam::TimerAvrg Fps;
         int waitTimeWindow = cml["-st"] ? 0 : 10;
         bool finish = false;
-        reslam::MapViewer TheViewer;
+        ucoslam::MapViewer TheViewer;
         char k=0;
         while (!finish && vcap.grab()) {
             vcap.retrieve(in_image,in_depth);

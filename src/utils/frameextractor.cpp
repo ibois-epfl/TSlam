@@ -1,22 +1,4 @@
-/**
-* This file is part of  UCOSLAM
-*
-* Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
-*
-* UCOSLAM is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* UCOSLAM is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
-*/
-#include "frameextractor.h"
+#include "utils/frameextractor.h"
 #include <thread>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -24,786 +6,2654 @@
 #include "basictypes/misc.h"
 #include "optimization/ippe.h"
 #include "map_types/mappoint.h"
-#include <aruco/markerdetector.h>
+#include "utils/markerdetector.h"
 #include "basictypes/osadapter.h"
 #include "basictypes/cvversioning.h"
 #include "xflann/xflann.h"
-#include "framematcher.h"
-
-
-namespace reslam {
-
-
-void FrameExtractor::toStream(std::ostream &str)const
-{
-    uint64_t sig=1923123;
-    str.write((char*)&sig,sizeof(sig));
-    _fdetector->toStream(str);
-    str.write((char*)&_counter,sizeof(_counter));
-    str.write((char*)&_removeFromMarkers,sizeof(_removeFromMarkers));
-    str.write((char*)&_detectMarkers,sizeof(_detectMarkers));
-    str.write((char*)&_detectKeyPoints,sizeof(_detectKeyPoints));
-    str.write((char*)&_markerSize,sizeof(_markerSize));
-
-    str.write((char*)&_featParams,sizeof(_featParams));
-    str.write((char*)&_maxDescDist,sizeof(_maxDescDist));
-  //  _mdetector->toStream(str);
-    _ucoslamParams.toStream(str);
-}
-
-void FrameExtractor::fromStream(std::istream &str){
-    uint64_t sig=1923123;
-    str.read((char*)&sig,sizeof(sig));
-    if (sig!=1923123) throw std::runtime_error(string(__PRETTY_FUNCTION__)+"invalid signature");
-    _fdetector= Feature2DSerializable::fromStream(str);
-    str.read((char*)&_counter,sizeof(_counter));
-    str.read((char*)&_removeFromMarkers,sizeof(_removeFromMarkers));
-    str.read((char*)&_detectMarkers,sizeof(_detectMarkers));
-    str.read((char*)&_detectKeyPoints,sizeof(_detectKeyPoints));
-    str.read((char*)&_markerSize,sizeof(_markerSize));
-    str.read((char*)&_featParams,sizeof(_featParams));
-    str.read((char*)&_maxDescDist,sizeof(_maxDescDist));
-//    _mdetector->fromStream(str);
-    _ucoslamParams.fromStream(str);
-}
-
-FrameExtractor::FrameExtractor(){
-}
-
-
-void FrameExtractor::setParams(std::shared_ptr<Feature2DSerializable> feature_detector,   const Params &params, std::shared_ptr<reslam::MarkerDetector> mdetector){
-    _fdetector=feature_detector;
-    if(!mdetector)throw  std::runtime_error("FrameExtractor::setParams invalid marker detector");
-    _mdetector=mdetector;
-
-    _ucoslamParams=params;
-    _detectMarkers=params.detectMarkers;
-    _detectKeyPoints=params.detectKeyPoints;
-    _markerSize=params.aruco_markerSize;
-    _maxDescDist=params.maxDescDistance;
-}
-
-void FrameExtractor::initFeatParams(const ImageParams &ip)
-{
-    if(_featParams.nOctaveLevels>0) return;
-
-    //Take camera id with minimun focal. With cameras stero with same focal, it is no necessary
-    int _idFocal=0;
-    for(int i=1; i<ip.arraySize(); i++)
-    {
-        if(ip.fx(i)<ip.fx(_idFocal))
-            _idFocal= i;
-    }
-
-
-    float maxFocalLength;
-    if(_ucoslamParams.maxOctave!=-1)
-        maxFocalLength =  std::min(_ucoslamParams.minFocalLength * pow(_ucoslamParams.scaleFactor, _ucoslamParams.maxOctave), (double)ip.fx(_idFocal));
-    else
-        maxFocalLength = ip.fx(_idFocal) * _ucoslamParams.kptImageScaleFactor;
-
-
-
-    //Get nOctaveLevels and maxFeatures using scaleFactor param
-    int _nOctaveLevels=0;
-    int _maxFeatures=0;
-
-
-    float focal=_ucoslamParams.minFocalLength;
-    while(focal<=maxFocalLength)
-    {
-        //Total features
-        _maxFeatures+=_ucoslamParams.featuresFirstLevel*pow(_ucoslamParams.scaleFactor, _nOctaveLevels);
-        _nOctaveLevels++;
-        focal*=_ucoslamParams.scaleFactor;
-    }
-    //Scale the max number of features
-    _ucoslamParams.maxFeatures*=_ucoslamParams.featuresFactor;
-
-    std::cout << "Original focal length:" << ip.fx(_idFocal)<<std::endl;
-    std::cout << "Scaled focal length:" << _ucoslamParams.minFocalLength * pow(_ucoslamParams.scaleFactor,_nOctaveLevels-1)<<std::endl;
-    std::cout << "Max features: "<<_maxFeatures<<std::endl;
-    std::cout << "Total scales: "<<_nOctaveLevels<<std::endl;
-
-    _ucoslamParams.maxOctave=_nOctaveLevels-1;
-
-    _featParams = Feature2DSerializable::FeatParams(_maxFeatures,_nOctaveLevels,_ucoslamParams.scaleFactor, _ucoslamParams.nthreads_feature_detector);
-}
-
-void FrameExtractor::setSensitivity(float v){
-    if(_fdetector)
-        _fdetector->setSensitivity(v);
-}
-
-float  FrameExtractor::getSensitivity(){
-    if(!_fdetector)throw std::runtime_error(string(__PRETTY_FUNCTION__)+"Should not call this function since the class is not initialized");
-    return _fdetector->getSensitivity();
-}
-
-
-void FrameExtractor::processArray(const vector<cv::Mat> &images, const ImageParams &ArrayCamParams , Frame &frame, uint32_t frameseq_idx, const std::shared_ptr<MapInitializer> map_init)
-{
-    std::vector<cv::DMatch> matches;
-
-    assert(ArrayCamParams.isArray());
-    preprocessArrayImages(_ucoslamParams.kptImageScaleFactor,images,ArrayCamParams);
-    extractFrame(InputImages[0],frame,frameseq_idx);
-
-    frame.depth.resize(frame.und_kpts.size());
-    for(size_t i=0;i<frame.depth.size();i++) frame.depth[i]=0;
-
-    vector<cv::KeyPoint> trainKpts;
-    cv::Mat trainDesc;
-    _fdetector->detectAndCompute(InputImages[1].im_resized, cv::Mat(),trainKpts,trainDesc,_featParams);
-
-    //Undistort train kpoints
-    vector<cv::Point2f> und_trainPnts; und_trainPnts.reserve(trainKpts.size());
-    for(auto p:trainKpts) und_trainPnts.push_back(p.pt);
-    InputImages[0].ip_resized.undistortPoints(und_trainPnts,nullptr,1);
-
-    vector<cv::KeyPoint> und_trainKpts;
-    und_trainKpts = trainKpts;
-    for ( size_t i=0; i<trainKpts.size(); i++ )
-        und_trainKpts[i].pt=und_trainPnts[i];
-
-    map_init->fmatcher.setParams(frame,FrameMatcher::MODE_ALL,map_init->_params.minDescDistance,map_init->_params.nn_match_ratio,true);
-    //Fundamental matrix
-    cv::Mat Fund = map_init->fmatcher.getFund12( InputImages[0].ip_resized.CameraMatrix,InputImages[0].ip_resized.arrayCamMatrix[0],
-            getRTMatrix(InputImages[0].ip_resized.arrayRvec[0], InputImages[0].ip_resized.arrayTvec[0]).inv());
-
-    getMatches(matches, frame, und_trainKpts, Fund, trainDesc, 0);
-
-    filter_ambiguous_train(matches);
-
-    std::vector<cv::KeyPoint> r_kpts;
-    std::vector<cv::KeyPoint> l_kpts;
-    for(size_t m=0; m<matches.size(); m++)
-    {
-        l_kpts.push_back(frame.und_kpts[matches[m].queryIdx]);
-        r_kpts.push_back(und_trainKpts[matches[m].trainIdx]);
-    }
-
-    std::vector<cv::Point3f> p3d;
-    std::vector<bool> vbGood;
-    int goods = triangulate_(getRTMatrix(ArrayCamParams.arrayRvec[0],ArrayCamParams.arrayTvec[0]).inv(), l_kpts, r_kpts,
-            InputImages[0].ip_resized.CameraMatrix, InputImages[0].ip_resized.arrayCamMatrix[0],
-            p3d,frame.scaleFactors,vbGood);
-
-
-    for(uint i=0; i<vbGood.size(); i++)
-        if(vbGood[i])
-            frame.depth[matches[i].queryIdx]=p3d[i].z;
-
-/////////**
-///// Draw matches
-/////////**
-//    std::vector<cv::DMatch> g_matches;
-//    g_matches.resize(goods);
-//    int k=0;
-//    for(uint i=0; i<vbGood.size(); i++)
-//    {
-//        if(vbGood[i]){
-//            g_matches[k] = matches[i];
-//            k++;
-//        }
-//    }
-
-//    cv::Mat img_match2, lCopy, rCopy;
-
-//    cv::undistort(InputImages[0].im_resized, lCopy, InputImages[0].ip_resized.CameraMatrix,
-//            InputImages[0].ip_resized.Distorsion, cv::noArray());
-//    cv::undistort(InputImages[1].im_resized, rCopy, InputImages[0].ip_resized.arrayCamMatrix[0],
-//            InputImages[0].ip_resized.arrayDistorsion[0], cv::noArray());
-
-//    drawMatches(lCopy, frame.und_kpts , rCopy, und_trainKpts, g_matches, img_match2);
-//    cv::resize(img_match2, img_match2, cv::Size(1800,900));
-//    imshow("Matches2", img_match2);
-//    cv::waitKey();
-///////**
-
-    _debug_msg_(" num matches:"<<matches.size());
-}
-
-void FrameExtractor::getMatches(std::vector<cv::DMatch>& matches,  const Frame &frame, const std::vector<cv::KeyPoint> &trainKpts,
-                                const cv::Mat &Fund, const cv::Mat &trainDesc, int t)
-{
-    cv::Mat indices,distances;
-    if(t==0)
-    {
-        int maxSearch=16;
-        int nn=10;
-        xflann::Index trainIndex;
-        trainIndex.build(trainDesc, xflann::HKMeansParams(32,0));
-        trainIndex.search(frame.desc,nn,indices,distances ,xflann::KnnSearchParams(maxSearch,false));
-        if ( distances.type()==CV_32S)
-            distances.convertTo(distances,CV_32F);
-    }
-
-
-    vector<float> scaleFactor2;
-    for(int i=frame.scaleFactors.size()-1; i>=0; i-- )
-        scaleFactor2.push_back(frame.scaleFactors[i]*frame.scaleFactors[i]);
-    int nval=0;
-
-    for(size_t queryIdx=0; queryIdx<frame.und_kpts.size(); queryIdx++)
-    {
-        //Epipolar line
-        float ep_a = frame.und_kpts[queryIdx].pt.x*Fund.at<float>(0,0)+frame.und_kpts[queryIdx].pt.y*Fund.at<float>(1,0)+Fund.at<float>(2,0);
-        float ep_b = frame.und_kpts[queryIdx].pt.x*Fund.at<float>(0,1)+frame.und_kpts[queryIdx].pt.y*Fund.at<float>(1,1)+Fund.at<float>(2,1);
-        float ep_c = frame.und_kpts[queryIdx].pt.x*Fund.at<float>(0,2)+frame.und_kpts[queryIdx].pt.y*Fund.at<float>(1,2)+Fund.at<float>(2,2);
-
-////////Draw
-//        cv::Mat leftImg, rightImg;
-//        cv::undistort(InputImages[0].im_resized, leftImg, InputImages[0].ip_resized.CameraMatrix,
-//                InputImages[0].ip_resized.Distorsion, cv::noArray());
-//        cv::undistort(InputImages[1].im_resized, rightImg, InputImages[0].ip_resized.arrayCamMatrix[0],
-//                InputImages[0].ip_resized.arrayDistorsion[0], cv::noArray());
-//        cv::cvtColor(leftImg,leftImg,cv::COLOR_GRAY2BGR);
-//        cv::cvtColor(rightImg,rightImg,cv::COLOR_GRAY2BGR);
-////        cv::drawKeypoints(leftImg,frame.und_kpts,leftImg);
-////        cv::drawKeypoints(rightImg,trainKpts,rightImg);
-//        cv::circle(leftImg, frame.und_kpts[queryIdx].pt, 4, cv::Scalar(0,0,255),-1);
-//////////
-
-        float _bestDist1=std::numeric_limits<float>::max(),_bestDist2=std::numeric_limits<float>::max();
-        int64_t _bestTrain=-1, _bestQuery=-1, _octaveBest2=-1;
-
-        if(t==0)
-        {
-            for(int j=0; j<indices.cols; j++)
-            {
-
-                int trainIdx= indices.at<int>(queryIdx,j);
-
-                ////////Draw: epipolar & right point
-//                cv::Point2f p1 = cv::Point2f(0,-ep_c/ep_b);
-//                float xx=InputImages[1].im_resized.cols-1;
-//                cv::Point2f p2 = cv::Point2f(xx, (-ep_a*xx-ep_c)/ep_b);
-//                cv::line(rightImg, p1, p2, cv::Scalar(0,0,255), 1);
-//                cv::circle(rightImg, trainKpts[trainIdx].pt, 4, cv::Scalar(0,0,255),-1);
-//                cv::imshow("Left",leftImg);
-//                cv::imshow("Right",rightImg);
-//                cv::waitKey();
-                ////////
-
-                if(std::abs(frame.und_kpts[queryIdx].octave - trainKpts[trainIdx].octave) > 1) continue;
-
-                float d = epipolarLineSqDist(frame.und_kpts[queryIdx].pt, trainKpts[trainIdx].pt, Fund);
-                if (d >=3.84*scaleFactor2[frame.und_kpts[queryIdx].octave])continue;
-
-
-
-                if ( distances.at<float>(queryIdx,j)>_maxDescDist) continue;
-
-
-
-
-                if (distances.at<float>(queryIdx,j)<_bestDist2)
-                {
-                    if (distances.at<float>(queryIdx,j)<_bestDist1)
-                    {
-                        nval++;
-
-                        _bestDist1=distances.at<float>(queryIdx,j);
-                        _bestQuery = queryIdx;
-                        _bestTrain=trainIdx;
-                    }
-                    else
-                    {
-                        _bestDist2=distances.at<float>(queryIdx,j);
-                        _octaveBest2=trainKpts[trainIdx].octave;
-                    }
-                }
-            }
-        }
-        else if(t==1){
-            //Search good matches in the other img
-            for(size_t trainIdx=0; trainIdx<trainKpts.size(); trainIdx++)
-            {
-
-                float dst = fabs(ep_a*trainKpts[trainIdx].pt.x + ep_b*trainKpts[trainIdx].pt.y + ep_c) / sqrt(pow(ep_a,2) + pow(ep_b,2));
-
-                if (dst >=3.84*scaleFactor2[frame.und_kpts[queryIdx].octave]) continue;
-
-//////////Draw: epipolar & right point
-//                cv::Point2f p1 = cv::Point2f(0,-ep_c/ep_b);
-//                float xx=InputImages[1].im_resized.cols-1;
-//                cv::Point2f p2 = cv::Point2f(xx, (-ep_a*xx-ep_c)/ep_b);
-//                cv::line(rightImg, p1, p2, cv::Scalar(0,0,255), 1);
-
-//                cv::circle(rightImg, trainKpts[trainIdx].pt, 4, cv::Scalar(0,0,255),-1);
-//////////
-
-                if(std::abs(frame.und_kpts[queryIdx].octave - trainKpts[trainIdx].octave) > 1) continue;
-
-                auto distDesc=MapPoint::getDescDistance(frame.desc,queryIdx,trainDesc,trainIdx);
-                if ( distDesc>_maxDescDist) continue;
-
-                if (distDesc<_bestDist2)
-                {
-                    if (distDesc<_bestDist1)
-                    {
-                        _bestDist1=distDesc;
-                        _bestQuery = queryIdx;
-                        _bestTrain=trainIdx;
-                    }
-                    else
-                    {
-                        _bestDist2=distDesc;
-                        _octaveBest2=trainKpts[trainIdx].octave;
-                    }
-                }
-            }
-        }
-        /////////
-//        cv::imshow("Left",leftImg);
-//        cv::imshow("Right",rightImg);
-//        cv::waitKey();
-        /////////
-
-
-
-        if ( _bestQuery!=-1){
-            if(!( _octaveBest2==frame.und_kpts[_bestQuery].octave &&  _bestDist1 > _bestDist2*0.8f  ))
-            {
-                cv::DMatch  match;
-                match.queryIdx=_bestQuery;
-                match.trainIdx=_bestTrain;
-                match.distance=_bestDist1;
-                matches.push_back(match);
-
-/////////
-//                std::vector<cv::DMatch> test_match;
-//                test_match.push_back(match);
-//                cv::Mat rightCopy;
-//                cv::undistort(InputImages[1].im_resized, rightCopy, InputImages[0].ip_resized.arrayCamMatrix[0],
-//                        InputImages[0].ip_resized.arrayDistorsion[0], cv::noArray());
-
-//                //Draw epipolar
-//                cv::Point2f undist_p1 = cv::Point2f(0,-ep_c/ep_b);
-//                float xx=InputImages[1].im_resized.cols-1;
-//                cv::Point2f undist_p2 = cv::Point2f(xx, (-ep_a*xx-ep_c)/ep_b);
-//                cv::line(rightCopy, undist_p1, undist_p2, cv::Scalar(0,0,255), 1);
-
-//                cv::Mat matchesImg;
-//                drawMatches(InputImages[0].im_resized,frame.und_kpts , rightCopy,
-//                        trainKpts, test_match, matchesImg);
-
-//                cv::resize(matchesImg, matchesImg, cv::Size(1800,900));
-//                imshow("Matches Img", matchesImg);
-//                cv::waitKey();
-///////
-            }
-        }
-    }
-}
-
-void FrameExtractor::processStereo(const cv::Mat &LeftRect, const cv::Mat &RightRect, const ImageParams &ip, Frame &frame, uint32_t frameseq_idx)
-{
-    assert(ip.bl>0);
-
-    preprocessImages(_ucoslamParams.kptImageScaleFactor,LeftRect,ip,RightRect );
-    extractFrame(InputImages[0],frame,frameseq_idx);
-
-    frame.depth.resize(frame.und_kpts.size());
-    for(size_t i=0;i<frame.depth.size();i++) frame.depth[i]=0;
-
-
-    vector<cv::KeyPoint> rightKPs;
-    cv::Mat rightdesc;
-    _fdetector->detectAndCompute(InputImages[1].im_resized,cv::Mat(),rightKPs,rightdesc,_featParams);
-
-    vector<vector<int>> y_keypoints(InputImages[1].im_resized.rows);
-    for(size_t i=0; i<rightKPs.size(); i++){
-        double position_radius=0;//rightKPs[i].size/100;
-        double y=rightKPs[i].pt.y;
-        int min_y=std::max(0,int(std::round(y-position_radius)));
-        int max_y=std::min(InputImages[1].im_resized.rows-1,int(std::round(y+position_radius)));
-        for(int y=min_y;y<=max_y;y++)
-            y_keypoints[y].push_back(i);
-    }
-
-    //vector<cv::DMatch> matches;
-    int num_matches=0;
-    //#pragma omp parallel for
-    for(size_t i=0; i<frame.und_kpts.size(); i++){
-        //get the vector of right keypoints associated with the same y as the right keypoint
-        int y=std::round(frame.und_kpts[i].pt.y);
-        vector<int> &rkpts=y_keypoints[y];
-        //get a copy of the left keypoint
-        //cv::KeyPoint shifted_lkp=frame.kpts[i];
-        //vars to keep the best match on the right
-        int best_rkpt=-1;
-        double best_rkpt_sad=std::numeric_limits<double>::max();
-        //go through the vector
-        //std::cout<<rkpts.size()<<std::endl;
-
-        for(size_t j=0; j<rkpts.size(); j++){
-            int rkpt_index=rkpts[j];
-            if(rightKPs[rkpt_index].pt.x > frame.und_kpts[i].pt.x || std::abs(rightKPs[rkpt_index].octave-frame.und_kpts[i].octave)>1 )
-                continue;
-            //shifted_lkp.pt.x=rightKPs[rkpt_index].pt.x;
-            //if(cv::KeyPoint::overlap(rightKPs[rkpt_index],shifted_lkp)>0.90){
-
-                auto dist=MapPoint::getDescDistance(frame.desc,i,rightdesc,rkpt_index);
-
-                if(dist< _maxDescDist){
-                    //cout<<SAD<<endl;
-                    if(dist<best_rkpt_sad){
-                        best_rkpt_sad=dist;
-                        best_rkpt=rkpt_index;
-                    }
-                }
-            //}
-        }
-
-        if(best_rkpt != -1){
-            //matches.push_back(cv::DMatch(i,best_rkpt,best_rkpt_sad));
-            //calculate the depth
-
-            //refine the position of the match on the right
-
-            int patch_size=7;
-            int half_patch_size=patch_size/2;
-
-            int left_patch_x=std::round(frame.und_kpts[i].pt.x);
-            int left_patch_y=std::round(frame.und_kpts[i].pt.y);
-
-            if(left_patch_x<half_patch_size || left_patch_x+half_patch_size>=LeftRect.cols)
-                continue;
-
-            if(left_patch_y<half_patch_size || left_patch_y+half_patch_size>=LeftRect.rows)
-                continue;
-
-            int right_patch_x=std::round(rightKPs[best_rkpt].pt.x);
-            int right_patch_y=std::round(rightKPs[best_rkpt].pt.y);
-
-            if(right_patch_x<half_patch_size || right_patch_x+half_patch_size>=RightRect.cols)
-                continue;
-
-            if(right_patch_y<half_patch_size || right_patch_y+half_patch_size>=RightRect.rows)
-                continue;
-
-            int search_bound=7;
-            int search_window_size=search_bound*2+1;
-            vector<double> correlations(search_window_size);
-
-            cv::Mat left_patch= InputImages[0].im_resized(cv::Range(left_patch_y-half_patch_size,left_patch_y+half_patch_size),cv::Range(left_patch_x-half_patch_size,left_patch_x+half_patch_size));
-             //cout<<"num channels:"<<left_patch.channels()<<endl;
-            int min_delta=std::max(-search_bound,-right_patch_x);
-            int max_delta=std::min(search_bound,RightRect.cols-1-right_patch_x);
-
-            double min_correlation=std::numeric_limits<double>::max();
-            int min_c_index=-1;
-            for(int delta=min_delta;delta<=max_delta;delta++){
-                int c_index=delta+search_bound;
-                int rx=right_patch_x+delta;
-                cv::Mat right_patch=InputImages[1].im_resized(cv::Range(right_patch_y-half_patch_size,right_patch_y+half_patch_size),cv::Range(rx-half_patch_size,rx+half_patch_size));
-                cv::Mat abs_diff;
-                cv::absdiff(left_patch,right_patch,abs_diff);
-                double correlation=cv::sum(abs_diff)[0];
-                if(correlation<min_correlation){
-                    min_correlation=correlation;
-                    min_c_index=c_index;
-                }
-                correlations[c_index]=correlation;
-            }
-
-            if(min_c_index>min_delta+search_bound && min_c_index<max_delta+search_bound){//if it is not the first and the last value
-                //interpolate the extremum
-                double f1=correlations[min_c_index-1];
-                double f2=correlations[min_c_index];
-                double f3=correlations[min_c_index+1];
-                double delta_min=0.5*(f1-f3)/(f1+f3-2*f2)+min_c_index-search_bound;
-                double optimal_right_pos=rightKPs[best_rkpt].pt.x+delta_min;
-                frame.depth[i]=(ip.bl*ip.fx())/(frame.und_kpts[i].pt.x-optimal_right_pos);
-                num_matches ++;
-            }
-        }
-    }
-    _debug_msg_(" num matches:"<<num_matches);
+#include "utils/framematcher.h"
+
+# 1 "/app/example.cpp"
+# 1 "/app//"
+# 1 "<built-in>"
+# 1 "<command-line>"
+# 1 "/usr/include/stdc-predef.h" 1 3 4
+# 1 "<command-line>" 2
+# 1 "/app/example.cpp"
+# 634 "/app/example.cpp"
+ namespace
+
+ucoslam {
+
+ void
+
+     FrameExtractor ::
+     toStream ( 
+     std ::
+
+         ostream &_11093822381060 )
+const
+ {
+
+    uint64_t _11093822380353 =         1923123 ;
+
+    _11093822381060.write ( 
+  ( char* )
+    &_11093822380353,sizeof ( 
+   _11093822380353 )
+        ) ;
+
+    _8033463663468506753 ->
+
+  toStream ( 
+  _11093822381060 )
+ ;
+
+    _11093822381060.write (     ( char* )
+&_12273370977065616393,sizeof ( 
+ _12273370977065616393 )
+  )
+    ;
+
+    _11093822381060.write ( 
+   ( 
+      char* )
+&_12350051723532614025,sizeof ( 
+   _12350051723532614025 )
+   )
+ ;
+
+    _11093822381060.write ( 
+    ( 
+ char* )     &_3566717627060593117,sizeof ( 
+   _3566717627060593117 )
+          )
+      ;
+
+    _11093822381060.write (    ( char* )
+ &_4309197024622458338,sizeof (_4309197024622458338 )    )
+  ;
+
+    _11093822381060.write (     ( 
+char* )
+  &_12693418215446769236,sizeof ( 
+    _12693418215446769236 )
+       )
+      ;
+
+    _11093822381060.write ( 
+   ( 
+     char* )
+ &_10675870925382111478,sizeof ( 
+   _10675870925382111478 )
+    )  ;
+
+    _11093822381060.write ( 
+   ( 
+    char* )
+&_13206983270957238750,sizeof ( 
+  _13206983270957238750 )
+      )
+         ;
+
+    _13116459431724108758.toStream ( _11093822381060 )
+   ;
+
  }
 
-void FrameExtractor::process_rgbd(const cv::Mat &image, const cv::Mat &depthImage,const ImageParams &ip,Frame &frame, uint32_t frameseq_idx ){
-    assert(ip.bl>0);
-    assert(depthImage.type()==CV_16UC1);
+ void
 
-    preprocessImages(1,image,ip);
-    extractFrame(InputImages[0],frame,frameseq_idx);
-    //process(image,ip,frame,frameseq_idx);
+  FrameExtractor ::
+   fromStream ( std ::
 
-    frame.depth.resize(frame.und_kpts.size());
+istream &_11093822381060 )    {
 
-    for(size_t i=0;i<frame.depth.size();i++) frame.depth[i]=0;
-    //now, add the extra info to the points
-    for(size_t i=0;i<frame.kpts.size();i++){
-        //convert depth
-        if (depthImage.at<uint16_t>(frame.kpts[i])!=0  ){
-            frame.depth[i]=depthImage.at<uint16_t>(frame.kpts[i])*ip.rgb_depthscale;
-        }
-    }
-}
+    uint64_t _11093822380353 = 1923123 ;
 
+    _11093822381060.read ( 
+ ( 
+char* ) &_11093822380353,sizeof ( 
+_11093822380353 )
+    )
+          ;
 
-void FrameExtractor::process(const cv::Mat &image, const ImageParams &ip,Frame &frame, uint32_t frameseq_idx)
-{
+     if
 
-    preprocessImages(_ucoslamParams.kptImageScaleFactor,  image,ip);
-    extractFrame(InputImages[0],frame,frameseq_idx);
-}
+   ( 
+    _11093822380353 !=       1923123 )
+        throw std ::
 
-void FrameExtractor::preprocessArrayImages(float scaleFactor,const std::vector<cv::Mat> &images,const ImageParams &ip){
+        runtime_error ( 
+string ( 
+  __PRETTY_FUNCTION__ )
++"\x69\x6e\x76\x61\x6c\x69\x64\x20\x73\x69\x67\x6e\x61\x74\x75\x72\x65" )        ;
 
+    _8033463663468506753 =      Feature2DSerializable ::
 
-    assert(images[0].size()==ip.CamSize) ;
-    for(uint i=0; i<ip.multicams_cs.size(); i++)
-        assert(images[i+1].size() == ip.multicams_cs[i]);
+ fromStream ( 
+ _11093822381060 ) ;
 
-    InputImages.resize(images.size());
-    for(uint i=0; i<images.size(); i++) {
-        if( images[i].channels()==3)
-            cv::cvtColor( images[i],InputImages[i].im_org,CV_BGR2GRAY);
-        else    InputImages[i].im_org= images[i];
-    }
+    _11093822381060.read ( 
+  ( 
+ char* )
+        &_12273370977065616393,sizeof ( 
+_12273370977065616393 ) )   ;
 
-    //Image params are shared by all the cameras (InputImages[0])
-    InputImages[0].ip_org=ip;
-    InputImages[0].ip_resized=ip;
+    _11093822381060.read ( 
+ (  char* )
+&_12350051723532614025,sizeof ( 
+ _12350051723532614025 )
+   )
+     ;
 
-    float newFocalLength = _ucoslamParams.minFocalLength * pow(_ucoslamParams.scaleFactor, _featParams.nOctaveLevels-1);
-    for(uint i=0; i<images.size(); i++) {
-        float rate = newFocalLength/InputImages[0].ip_org.fx(i);
+    _11093822381060.read ( 
+          ( 
+         char* )
+      &_3566717627060593117,sizeof ( 
+        _3566717627060593117 )     )
+     ;
 
-        if(fabs(1-rate)>1e-3) {
-//                    std::cout << "Rate" <<rate << std::endl;
-            cv::Size ns(images[i].cols*rate,images[i].rows*rate);
-            //ensure the size has zero padding
-            if(ns.width%4!=0)
-                ns.width+=4-ns.width%4;
-            if(ns.height%2!=0)ns.height++;
-            cv::resize(InputImages[i].im_org,InputImages[i].im_resized,ns);
-            InputImages[0].ip_resized.resize(ns, i);
+    _11093822381060.read (       ( 
+ char* )   &_4309197024622458338,sizeof (   _4309197024622458338 )
+     )
+ ;
 
-            InputImages[i].scaleFactor.first= float(ns.width)/float(images[i].cols) ;
-            InputImages[i].scaleFactor.second= float(ns.height)/float(images[i].rows) ;
-        }
-        else{
-            InputImages[i].im_resized=InputImages[i].im_org;
-            InputImages[i].scaleFactor=std::pair<float,float>(1,1);
-        }
-    }
-}
+    _11093822381060.read ( 
+      ( 
+ char* )
+&_12693418215446769236,sizeof ( 
+        _12693418215446769236 )
+   )
+    ;
+    _11093822381060.read (      (char* )
+     &_10675870925382111478,sizeof ( 
+        _10675870925382111478 )
+  )  ;
 
-void enhanceImageBGR(const cv::Mat &imgIn, cv::Mat &imgOut){
-    // Start CLAHE Contrast Limited and Adaptive Histogram Equalization
+    _11093822381060.read ( ( 
+ char* )
+  &_13206983270957238750,sizeof ( 
+ _13206983270957238750 )
+   )
+   ;
 
-    //Get Intesity image
-    cv::Mat Lab_image;
-    cvtColor(imgIn, Lab_image, cv::COLOR_BGR2Lab);
-    std::vector<cv::Mat> Lab_planes(3);
-    cv::split(Lab_image, Lab_planes);  // now we have the L image in lab_planes[0]
+    _13116459431724108758.fromStream ( 
+_11093822381060 )
+ ;
 
-    // apply the CLAHE algorithm to the L channel
-    cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
-    clahe->setClipLimit(4);
-    // clahe->setTilesGridSize(cv::Size(10, 10));
-    cv::Mat clahe_L;
-    clahe->apply(Lab_planes[0], clahe_L);
-
-    // Merge the color planes back into an Lab image
-    clahe_L.copyTo(Lab_planes[0]);
-    cv::merge(Lab_planes, Lab_image);
-
-    // convert back to RGB
-    cv::cvtColor(Lab_image, imgOut, cv::COLOR_Lab2BGR);
-}
-
-void FrameExtractor::preprocessImages(float scaleFactor,const cv::Mat &im1,const ImageParams &ip,const cv::Mat &im2){
-
-    assert(im1.size()==ip.CamSize) ;
-    assert(im2.empty() || ( im2.size()==ip.CamSize));
-
-    int nI=1;
-    
-    if(! im2.empty())
-        nI++;
-    
-    InputImages.resize(nI);
-    
-    if( im1.channels()==3){
-        enhanceImageBGR(im1, InputImages[0].im_org);
-        cv::cvtColor(InputImages[0].im_org, InputImages[0].im_org,CV_BGR2GRAY);
-    } else {
-        InputImages[0].im_org=im1;
-    }
-        
-
-    InputImages[0].ip_org=ip;
-
-    if(! im2.empty())
-    {
-        if( im2.channels()==3) {
-            enhanceImageBGR(im2, InputImages[1].im_org);
-            cv::cvtColor(InputImages[1].im_org, InputImages[1].im_org,CV_BGR2GRAY);
-        } else {
-            InputImages[1].im_org=im2;
-        }
-        InputImages[1].ip_org=ip;
-    }
-
-
-    int newFocalLength = _ucoslamParams.minFocalLength * pow(_ucoslamParams.scaleFactor, _featParams.nOctaveLevels-1);
-    float rate = newFocalLength/InputImages[0].ip_org.fx();
-//    std::cout << "Rate" <<rate << std::endl;
-
-    if(fabs(1-rate)>1e-3){
-//    if(fabs(1-rate)>0.1f){
-        cv::Size ns(im1.cols*rate,im1.rows*rate);
-        //ensure the size has zero padding
-        if(ns.width%4!=0)
-            ns.width+=4-ns.width%4;
-        if(ns.height%2!=0)ns.height++;
-        cv::resize(InputImages[0].im_org,InputImages[0].im_resized,ns);
-        InputImages[0].ip_resized=InputImages[0].ip_org;
-        InputImages[0].ip_resized.resize(ns);
-
-        InputImages[0].scaleFactor.first= float(ns.height)/float(im1.rows) ;
-        InputImages[0].scaleFactor.second= float(ns.width)/float(im1.cols) ;
-
-        if(!im2.empty()){
-            InputImages[1].im_resized=InputImages[1].im_org;
-            cv::resize(InputImages[1].im_org,InputImages[1].im_resized,ns);
-            InputImages[1].ip_resized=InputImages[1].ip_org;
-            InputImages[1].ip_resized.resize(ns);
-            InputImages[1].scaleFactor.first= float(ns.height) /float(im2.rows);
-            InputImages[1].scaleFactor.second= float(ns.width)/float(im2.cols) ;
-        }
-    }
-    else{
-        for(int i=0;i<InputImages.size();i++){
-            InputImages[i].im_resized=InputImages[i].im_org;
-            InputImages[i].ip_resized=InputImages[i].ip_org;
-            InputImages[i].scaleFactor=std::pair<float,float>(1,1);
-        }
-    }
  }
 
+FrameExtractor ::
+    FrameExtractor ()
+   {
 
-void FrameExtractor::extractFrame(const ImgInfo &Iinfo,   Frame &frame, uint32_t frameseq_idx){
+ }
 
-    frame.clear();
-    __UCOSLAM_ADDTIMER__
+ void
 
-    vector<cv::KeyPoint> frame_kpts;
-    std::thread kp_thread( [&]{
-        if(_detectKeyPoints){
-            _fdetector->detectAndCompute(InputImages[0].im_resized, cv::Mat(),frame_kpts,frame.desc,_featParams);
+ FrameExtractor ::
+setParams ( 
+         std ::
 
-            frame.KpDescType=_fdetector->getDescriptorType();
-        }
-    });
+ shared_ptr < Feature2DSerializable >
 
-    std::thread aruco_thread( [&]{
-        if (_detectMarkers){
-            auto markers=_mdetector->detect(Iinfo.im_org);
-            for(const auto&m:markers){
-                reslam::MarkerObservation uslm_marker;
-                uslm_marker.id=m.id;
-                uslm_marker.points3d=m.points3d;
-                uslm_marker.corners=m.corners;
-                uslm_marker.dict_info=m.info;
-                auto sols=IPPE::solvePnP_(m.points3d ,m.corners, Iinfo.ip_org.CameraMatrix,Iinfo.ip_org.Distorsion);
-                for(int a=0;a<2;a++){
-                    uslm_marker.poses.errs[a]=sols[a].second;
-                    uslm_marker.poses.sols[a]=sols[a].first.clone();
-                }
-                uslm_marker.poses.err_ratio=sols[1].second/sols[0].second;
-                for(auto &c:uslm_marker.corners) {
-                    c.x*=Iinfo.scaleFactor.first;//scale
-                    c.y*=Iinfo.scaleFactor.second;//scale
-                }
-                frame.markers.push_back(uslm_marker);
-            }
-        }
-    }
-    );
-    kp_thread.join();
-    aruco_thread.join();
+    _11022048600091140151, const Params &_3005399798454910266, std ::
 
+shared_ptr <
 
-    if (debug::Debug::getLevel()>=100|| _ucoslamParams.saveImageInMap){
-            //encode
-            std::vector<uchar> buf;
-            cv::imencode(".jpg",Iinfo.im_org,buf,{cv::IMWRITE_JPEG_QUALITY,90});
-            frame.jpeg_buffer.create(1,buf.size(),CV_8UC1);
-            memcpy(frame.jpeg_buffer.ptr<uchar>(0),&buf[0],buf.size());
-    }
+      ucoslam ::
 
+   MarkerDetector > _1516358670470627782 )    {
 
-    //remove keypoints into markers??
+    _8033463663468506753 =   _11022048600091140151 ;
 
-    __UCOSLAM_TIMER_EVENT__("Keypoint/Frames detection");
+     if( 
+ ! _1516358670470627782 )
+     throw std ::
 
-    //Create the scale factors vector
-    frame.scaleFactors.resize(_fdetector->getParams().nOctaveLevels);
-    double sf=_fdetector->getParams().scaleFactor;
-    frame.scaleFactors[0]=1;
-    for(size_t i=1;i<frame.scaleFactors.size();i++)
-        frame.scaleFactors[i]=frame.scaleFactors[i-1]*sf;
+   runtime_error ("\x46\x72\x61\x6d\x65\x45\x78\x74\x72\x61\x63\x74\x6f\x72\x3a\x3a\x73\x65\x74\x50\x61\x72\x61\x6d\x73\x20\x69\x6e\x76\x61\x6c\x69\x64\x20\x6d\x61\x72\x6b\x65\x72\x20\x64\x65\x74\x65\x63\x74\x6f\x72" ) ;
 
-    __UCOSLAM_TIMER_EVENT__("remove from markers");
+    _8000946946827829134 = _1516358670470627782 ;
 
-    //remove distortion
+    _13116459431724108758 = _3005399798454910266 ;
 
-    if (frame_kpts.size()>0){
-        vector<cv::Point2f> pin;pin.reserve(frame_kpts.size());
-        for(auto p:frame_kpts) pin.push_back(p.pt);
-        InputImages[0].ip_resized.undistortPoints(pin );
+    _3566717627060593117 =   _3005399798454910266.detectMarkers ;
 
-        frame.und_kpts=frame_kpts;
-        frame.kpts.resize(frame_kpts.size());
-        for ( size_t i=0; i<frame_kpts.size(); i++ ){
-            frame.kpts[i]=frame_kpts[i].pt;
-            frame.und_kpts[i].pt=pin[i];
-        }
-    }
+    _4309197024622458338 = _3005399798454910266.detectKeyPoints ;
 
-    __UCOSLAM_TIMER_EVENT__("undistort");
-    //remove distortion of the marker corners if any
-    for(auto &m:frame.markers){
-        m.und_corners=m.corners;
-        InputImages[0].ip_resized.undistortPoints(m.und_corners);
-    }
+    _12693418215446769236 =     _3005399798454910266.aruco_markerSize ;
 
+    _10675870925382111478 =     Feature2DSerializable ::
+       FeatParams ( 
+  _3005399798454910266.maxFeatures,_3005399798454910266.nOctaveLevels,_3005399798454910266.scaleFactor, _3005399798454910266.nthreads_feature_detector )
+  ;
 
-    frame.flags.resize(frame.und_kpts.size());
-    for(auto &v:frame.flags) v.reset();
+    _13206983270957238750 =    _3005399798454910266.maxDescDistance ;
 
-    frame.ids.resize(frame.und_kpts.size());
-    //set the keypoint ids vector to invalid
-    uint32_t mval=std::numeric_limits<uint32_t>::max();
-    for(auto &ids:frame.ids) ids=mval;
-    //create the grid for fast access
+ }
 
+ void
 
-    frame.idx=std::numeric_limits<uint32_t>::max();
-    frame.fseq_idx=frameseq_idx;
-    frame.imageParams=InputImages[0].ip_resized;
+       FrameExtractor ::
 
-    frame.create_kdtree();//last thing
+ setSensitivity ( 
+     float _2654435887 )
+   {
 
-    //set image projection limits
-    frame.minXY=cv::Point2f(0,0);
-    frame.maxXY=cv::Point2f(frame.imageParams.CamSize.width,frame.imageParams.CamSize.height);
-    if(frame.imageParams.Distorsion.total()!=0){
-        //take the points and remove distortion
-        vector<cv::Point2f> corners={frame.minXY,frame.maxXY};
-        frame.imageParams.undistortPoints(corners);
-        frame.minXY=corners[0];
-        frame.maxXY=corners[1];
-    }
+     if( 
+ _8033463663468506753 )
+        _8033463663468506753 ->
+    setSensitivity (     _2654435887 )
+      ;
 
+ }
 
-}
+ float
 
-}
+   FrameExtractor ::
+getSensitivity () {
+
+     if( 
+   !
+
+_8033463663468506753 )
+     throw std ::
+
+    runtime_error ( 
+ string (   __PRETTY_FUNCTION__ )+"\x53\x68\x6f\x75\x6c\x64\x20\x6e\x6f\x74\x20\x63\x61\x6c\x6c\x20\x74\x68\x69\x73\x20\x66\x75\x6e\x63\x74\x69\x6f\x6e\x20\x73\x69\x6e\x63\x65\x20\x74\x68\x65\x20\x63\x6c\x61\x73\x73\x20\x69\x73\x20\x6e\x6f\x74\x20\x69\x6e\x69\x74\x69\x61\x6c\x69\x7a\x65\x64" )
+      ;
+
+     return _8033463663468506753 ->
+
+        getSensitivity ()
+  ;
+
+ }
+
+ void FrameExtractor ::
+
+    processArray ( const vector <
+
+  cv ::
+  Mat >
+
+  &_3005401535270843804, ImageParams &_4702029808027735906 , Frame &_46082543180066935, uint32_t
+   _9933887380370137445, const std ::
+
+   shared_ptr <
+
+   MapInitializer >
+
+     _16937373753903353427 )
+ {
+
+    std ::
+
+    vector <
+     cv ::
+    DMatch >
+
+        _6807036698572949990 ;
+
+    _10230054520346001887 ( 
+    _13116459431724108758.kptImageScaleFactor,_3005401535270843804,_4702029808027735906 )
+ ;
+
+    _17131366770609715580 ( 
+ _12800511165451773841 [ 0 ]
+
+  ,_46082543180066935,_9933887380370137445 )
+      ;
+
+    vector <
+
+  float >
+
+         _8152716818190584743 ( 
+  _46082543180066935.scaleFactors )
+   ;
+
+     for(auto &_2654435887:_8152716818190584743 ) _2654435887 =  _2654435887*_2654435887 ;
+
+    _46082543180066935.depth.resize ( 
+     _46082543180066935.und_kpts.size ()
+  )
+     ;
+
+     for( 
+      size_t _2654435874 =      0 ;
+
+    _2654435874 <
+
+     _46082543180066935.depth.size ()
+     ;
+
+  _2654435874 ++
+
+       )
+ _46082543180066935.depth [
+
+_2654435874 ]
+
+    =        0 ;
+
+    vector <
+      cv ::
+
+  KeyPoint >
+
+    _15583426435820593759 ;
+
+    cv ::
+
+       Mat _15583426435822513722 ;
+
+    _8033463663468506753 ->
+
+  detectAndCompute ( 
+_12800511165451773841 [
+
+     1 ]
+
+._8358128829407646415,cv ::
+
+      Mat ()    ,_15583426435820593759,_15583426435822513722,_10675870925382111478 )
+         ;
+
+    vector <
+
+ cv ::
+      Point2f >
+
+    _988585936380730887 ;
+
+ _988585936380730887.reserve ( _15583426435820593759.size ()
+ )
+    ;
+
+     for( auto _2654435881:_15583426435820593759 )
+    _988585936380730887.push_back ( 
+    _2654435881.pt )
+      ;
+
+    _12800511165451773841 [
+
+ 0 ]
+
+    ._5505640830793117477.undistortPoints ( 
+   _988585936380730887,nullptr,1 )
+        ;
+
+    vector <
+  cv ::
+
+    KeyPoint > _988585933247351277 ;
+
+    _988585933247351277 =          _15583426435820593759 ;
+
+     for
+
+    ( 
+     size_t _2654435874 = 0 ;
+
+        _2654435874 <
+
+     _15583426435820593759.size ()
+    ;
+
+       _2654435874 ++
+
+  )
+        _988585933247351277 [
+
+  _2654435874 ]
+       .pt = _988585936380730887 [
+
+     _2654435874 ]
+
+ ;
+
+    _16937373753903353427 ->
+
+    fmatcher.setParams ( 
+     _46082543180066935,FrameMatcher ::
+
+     MODE_ALL,_16937373753903353427 ->
+ _params.minDescDistance,_16937373753903353427 ->
+    _params.nn_match_ratio,true )
+     ;
+
+    cv :: Mat _706246338686106 =     _16937373753903353427 ->
+
+    fmatcher.getFund12 ( 
+  _12800511165451773841 [
+
+         0 ]
+
+        ._5505640830793117477.CameraMatrix,_12800511165451773841 [ 0 ]
+   ._5505640830793117477.arrayCamMatrix [
+
+0 ]
+
+ ,
+            getRTMatrix ( 
+_12800511165451773841 [
+   0 ]
+    ._5505640830793117477.arrayRvec [
+
+   0 ]
+
+ , _12800511165451773841 [ 0 ]
+
+  ._5505640830793117477.arrayTvec [ 0 ]
+
+   )
+   .inv ()
+    )
+ ;
+
+    getMatches ( 
+      _6807036698572949990, _46082543180066935, _988585933247351277, _706246338686106, _15583426435822513722, 0 )
+   ;
+
+    filter_ambiguous_train (_6807036698572949990 )
+   ;
+
+    std ::
+
+ vector <
+
+   cv ::
+
+  KeyPoint >
+
+         _3005399818393709360 ;
+
+    std ::
+
+      vector <
+
+   cv :: KeyPoint >
+
+      _3005401586147246007 ;
+
+     for( 
+ size_t _2654435878 = 0 ;
+    _2654435878 <
+
+       _6807036698572949990.size ()
+          ;
+
+ _2654435878 ++
+      )
+     {
+
+        _3005401586147246007.push_back ( 
+ _46082543180066935.und_kpts [
+      _6807036698572949990 [
+
+  _2654435878 ]
+
+  .queryIdx ]
+
+   )        ;
+
+        _3005399818393709360.push_back ( 
+_988585933247351277 [ _6807036698572949990 [
+
+  _2654435878 ]
+
+ .trainIdx ]
+   )
+      ;
+
+     }
+
+    std ::
+
+ vector <
+
+     cv ::
+
+         Point3f >
+    _11093822296219 ;
+
+    std :: vector <
+
+     bool >
+       _3005399809928654743 ;
+
+     int _46082544198958862 =   triangulate_ ( 
+     getRTMatrix ( 
+  _4702029808027735906.arrayRvec [
+
+ 0 ]
+
+     ,_4702029808027735906.arrayTvec [
+
+   0 ]
+
+ )   .inv ()
+, _3005401586147246007, _3005399818393709360,
+            _12800511165451773841 [
+
+0 ]
+
+    ._5505640830793117477.CameraMatrix, _12800511165451773841 [
+0 ]
+
+     ._5505640830793117477.arrayCamMatrix [
+
+0 ]
+
+      ,
+            _11093822296219,_46082543180066935.scaleFactors,_3005399809928654743 )
+      ;
+
+     for( 
+     uint _2654435874 =     0 ; _2654435874 <
+
+       _3005399809928654743.size ()    ;
+
+  _2654435874 ++
+
+     )
+         if( 
+  _3005399809928654743 [
+
+        _2654435874 ]
+
+      )
+            _46082543180066935.depth [
+
+   _6807036698572949990 [
+
+    _2654435874 ]
+
+.queryIdx ]
+       =   _11093822296219 [
+
+   _2654435874 ]
+
+  .z ;
+# 1975 "/app/example.cpp"
+ }
+
+ void
+
+   FrameExtractor ::
+getMatches (  std ::
+
+   vector <
+
+    cv ::
+
+DMatch >
+      & _6807036698572949990, const Frame &_46082543180066935, const std ::
+
+   vector < cv ::
+     KeyPoint >
+
+   &_15583426435820593759,
+                                const cv ::
+
+   Mat &_706246338686106, const cv ::
+
+       Mat &_15583426435822513722, int
+
+_2654435885 )
+ {
+
+    cv ::
+
+  Mat _6807141016749312283,_16988745808691518194 ;
+
+     if( 
+    _2654435885 ==  0 )
+     {
+
+         int
+
+_1522768718325991990 = 16 ;
+
+         int
+
+  _175247759447 =      10 ;
+
+        xflann ::
+    Index _11434284364572095166 ;
+
+        _11434284364572095166.build (   _15583426435822513722, xflann ::
+
+    HKMeansParams (     32,0 )
+     )
+   ;
+
+        _11434284364572095166.search ( 
+ _46082543180066935.desc,_175247759447,_6807141016749312283,_16988745808691518194 ,xflann :: KnnSearchParams (     _1522768718325991990,false )
+  )
+        ;
+
+         if
+
+ ( 
+ _16988745808691518194.type () ==  CV_32S )
+            _16988745808691518194.convertTo ( 
+     _16988745808691518194,CV_32F )      ;
+
+     }
+
+    vector <
+
+       float >
+
+     _8152716818190584743 ( 
+  _46082543180066935.scaleFactors )       ;
+
+     for( 
+  auto &_2654435887:_8152716818190584743 )    _2654435887 =        _2654435887*_2654435887 ;
+     int
+  _706246333095486 =   0 ;
+
+     for( 
+    size_t _16937466872311873851 =        0 ;
+
+      _16937466872311873851 <
+   _46082543180066935.und_kpts.size ()
+     ;
+
+   _16937466872311873851 ++
+    )
+     {
+
+         float
+
+_706246330899664 =        _46082543180066935.und_kpts [
+
+   _16937466872311873851 ]
+
+  .pt.x*_706246338686106.at <
+
+  float >
+
+        ( 
+        0,0 )
+         +_46082543180066935.und_kpts [
+ _16937466872311873851 ]
+
+  .pt.y*_706246338686106.at <
+
+  float >
+
+  (  1,0 )     +_706246338686106.at <
+
+     float >
+    ( 
+2,0 )
+   ;
+
+         float
+
+   _706246330899667 = _46082543180066935.und_kpts [
+
+       _16937466872311873851 ]
+
+        .pt.x*_706246338686106.at <
+
+   float >
+
+ ( 
+    0,1 )
+  +_46082543180066935.und_kpts [
+
+    _16937466872311873851 ]
+
+    .pt.y*_706246338686106.at <
+
+  float >
+
+   ( 
+     1,1 )
+ +_706246338686106.at <
+
+       float >
+
+    ( 
+         2,1 )
+ ;
+         float
+
+   _706246330899666 = _46082543180066935.und_kpts [
+
+   _16937466872311873851 ] .pt.x*_706246338686106.at <
+
+float >
+
+      ( 
+0,2 )
+  +_46082543180066935.und_kpts [
+   _16937466872311873851 ]
+
+  .pt.y*_706246338686106.at < float >
+
+  ( 
+     1,2 )
++_706246338686106.at <
+
+     float >
+
+         ( 
+ 2,2 ) ;
+# 2385 "/app/example.cpp"
+         float _6461801683607599397 =    std ::
+
+numeric_limits <
+
+        float > ::
+
+    max ()       ,_6461801683607599396 =        std ::
+
+  numeric_limits <
+
+     float > ::
+
+      max ()
+          ;
+
+        int64_t _6461801682275966366 =     -1, _6461801682249544409 =      -1, _12031385974440167876 =  -1 ;
+
+         if( 
+    _2654435885 ==        0 )
+         {
+
+             for( 
+       int _2654435875 =       0 ;
+
+         _2654435875 <
+
+     _6807141016749312283.cols ;
+       _2654435875 ++
+     )
+             {
+
+                 int
+
+     _16997329059161965027 =    _6807141016749312283.at <
+  int >
+
+ ( 
+    _16937466872311873851,_2654435875 )
+    ;
+# 2493 "/app/example.cpp"
+                 if( 
+    std ::
+
+  abs ( 
+ _46082543180066935.und_kpts [
+
+    _16937466872311873851 ]
+
+   .octave - _15583426435820593759 [
+
+  _16997329059161965027 ]
+
+.octave )       >
+    1 )  continue ;
+
+                 float
+
+ _2654435869 =  epipolarLineSqDist ( 
+   _46082543180066935.und_kpts [
+
+   _16937466872311873851 ]
+
+ .pt, _15583426435820593759 [
+
+  _16997329059161965027 ]
+
+   .pt, _706246338686106 )
+ ;
+
+                 if ( 
+     _2654435869 >= 3.84*_8152716818190584743 [
+
+  _46082543180066935.und_kpts [
+
+ _16937466872311873851 ]
+       .octave ] )
+   continue ;
+
+                 if
+
+     ( _16988745808691518194.at <
+
+float >
+
+        ( 
+  _16937466872311873851,_2654435875 )       >
+
+ _13206983270957238750 )
+    continue ;
+
+                 if
+
+ ( 
+_16988745808691518194.at <
+
+    float >
+
+  ( 
+ _16937466872311873851,_2654435875 )
+       <
+
+    _6461801683607599396 )
+                 {
+
+                     if
+     ( 
+    _16988745808691518194.at <
+
+      float >
+
+  ( 
+_16937466872311873851,_2654435875 )
+     < _6461801683607599397 )
+                     {
+
+                        _706246333095486 ++
+  ;
+
+                        _6461801683607599397 =   _16988745808691518194.at <
+
+float >
+
+    ( 
+    _16937466872311873851,_2654435875 )       ;
+
+                        _6461801682249544409 =   _16937466872311873851 ;
+
+                        _6461801682275966366 =  _16997329059161965027 ;
+
+                     }
+
+                    else
+                     {
+                        _6461801683607599396 = _16988745808691518194.at <
+    float >
+
+    (     _16937466872311873851,_2654435875 )
+   ;
+
+                        _12031385974440167876 =        _15583426435820593759 [
+
+    _16997329059161965027 ]
+
+  .octave ;
+
+                     }
+
+                 }
+
+             }
+
+         }
+
+         else
+
+    if( 
+     _2654435885 ==   1 )        {
+
+             for( 
+size_t _16997329059161965027 = 0 ;
+        _16997329059161965027 <
+
+  _15583426435820593759.size ()
+   ;
+
+  _16997329059161965027 ++
+
+         )
+             {
+
+                 float
+
+    _11093822061254 =     fabs ( 
+     _706246330899664*_15583426435820593759 [
+
+_16997329059161965027 ]
+
+.pt.x + _706246330899667*_15583426435820593759 [
+
+         _16997329059161965027 ]
+       .pt.y + _706246330899666 )
+      / sqrt ( 
+pow ( 
+  _706246330899664,2 )
+    + pow ( 
+   _706246330899667,2 )
+  )
+ ;
+
+                 if
+
+  ( 
+     _11093822061254 >= 3.84*_8152716818190584743 [
+
+   _46082543180066935.und_kpts [
+
+    _16937466872311873851 ]
+
+.octave ]
+     )       continue ;
+# 2854 "/app/example.cpp"
+                 if(std ::
+
+   abs ( 
+  _46082543180066935.und_kpts [
+
+  _16937466872311873851 ]
+
+   .octave - _15583426435820593759 [
+
+ _16997329059161965027 ]
+       .octave )
+         >
+
+  1 )
+         continue ;
+
+                 auto
+      _16940388568078030328 = MapPoint ::
+
+getDescDistance ( 
+        _46082543180066935.desc,_16937466872311873851,_15583426435822513722,_16997329059161965027 )
+  ;
+
+                 if
+
+   ( _16940388568078030328 >
+   _13206983270957238750 )
+    continue ;
+
+                 if
+
+  ( 
+   _16940388568078030328 <
+
+   _6461801683607599396 )
+                 {
+
+                     if
+
+      ( 
+_16940388568078030328 <
+
+_6461801683607599397 )
+                     {
+
+                        _6461801683607599397 =        _16940388568078030328 ;
+                        _6461801682249544409 =      _16937466872311873851 ;
+
+                        _6461801682275966366 =  _16997329059161965027 ;
+
+                     }
+
+                    else
+                     {
+
+                        _6461801683607599396 =    _16940388568078030328 ;
+
+                        _12031385974440167876 =   _15583426435820593759 [
+    _16997329059161965027 ]
+
+      .octave ;
+
+                     }
+
+                 }
+
+             }
+
+         }
+
+         if
+
+     ( 
+     _6461801682249544409 !=  
+-1 )
+ {
+
+             if( !
+
+  ( 
+ _12031385974440167876 ==         _46082543180066935.und_kpts [
+
+  _6461801682249544409 ]
+.octave &&
+
+       _6461801683607599397 >
+   _6461801683607599396*0.8f )
+    )
+             {
+
+                cv :: DMatch _46082575882272165 ;
+
+                _46082575882272165.queryIdx =         _6461801682249544409 ;
+
+                _46082575882272165.trainIdx =       _6461801682275966366 ;
+
+                _46082575882272165.distance =    _6461801683607599397 ;
+                _6807036698572949990.push_back ( _46082575882272165 )
+    ;
+# 3130 "/app/example.cpp"
+             }
+
+         }
+
+     }
+
+ }
+
+ void
+
+         FrameExtractor ::
+ processStereo ( 
+   const cv ::
+       Mat &_16937270569698259356, const cv :: Mat &_1705492249324718059, const ImageParams &_175247760147, Frame &_46082543180066935, uint32_t _9933887380370137445 )
+ {
+    _14329080428242784455 ( 
+         _13116459431724108758.kptImageScaleFactor,_16937270569698259356,_175247760147,_1705492249324718059 )
+  ;
+    _17131366770609715580 ( 
+ _12800511165451773841 [
+
+  0 ]
+
+,_46082543180066935,_9933887380370137445 )
+ ;
+
+    _46082543180066935.depth.resize ( 
+  _46082543180066935.und_kpts.size ()
+   )
+     ;
+
+     for( 
+size_t _2654435874 = 0 ;
+
+        _2654435874 <
+
+       _46082543180066935.depth.size ()
+ ;
+
+   _2654435874 ++
+
+   )
+    _46082543180066935.depth [
+    _2654435874 ]
+
+         =         0 ;
+
+    vector <
+
+    cv ::
+
+   KeyPoint >
+   _16937465944335025110 ;
+
+    cv ::
+
+     Mat _1534768455952794120 ;
+
+    _8033463663468506753 ->
+
+ detectAndCompute ( _12800511165451773841 [
+
+1 ]
+
+ ._8358128829407646415,cv :: Mat ()
+ ,_16937465944335025110,_1534768455952794120,_10675870925382111478 )
+ ;
+
+    vector <
+
+        vector <
+
+int >>
+
+   _13925384095147685413 (   _12800511165451773841 [
+
+  1 ]
+
+        ._8358128829407646415.rows )
+ ;
+
+     for( 
+size_t _2654435874 =  
+0 ;
+
+   _2654435874 <
+
+ _16937465944335025110.size ()
+    ;
+
+  _2654435874 ++ )
+  {
+
+         double
+  _12827320108209534756 =        0 ;
+
+         double
+       _2654435890 =      _16937465944335025110 [
+
+ _2654435874 ]
+   .pt.y ;
+
+         int
+
+_46082575884402673 =     std ::
+
+       max ( 
+       0,int ( 
+     std ::
+
+ round ( 
+       _2654435890-_12827320108209534756 )
+       )
+          )
+    ;
+
+         int
+
+     _46082575882517952 =  
+std ::
+
+ min ( 
+  _12800511165451773841 [
+
+   1 ] ._8358128829407646415.rows-1,int ( 
+     std ::
+  round ( 
+_2654435890+_12827320108209534756 ) )
+     )
+          ;
+
+         for( 
+ int _2654435890 =  
+_46082575884402673 ;
+
+       _2654435890 <=   _46082575882517952 ;
+
+    _2654435890 ++
+   )
+            _13925384095147685413 [
+
+  _2654435890 ]
+
+ .push_back ( 
+ _2654435874 ) ;
+     }
+
+     int
+
+  _14197860223095419442 =    0 ;
+
+     for(      size_t _2654435874 = 0 ;
+
+   _2654435874 <
+
+_46082543180066935.und_kpts.size () ;
+        _2654435874 ++
+      )
+ {
+
+         int
+
+     _2654435890 = std ::
+
+ round (    _46082543180066935.und_kpts [
+
+_2654435874 ]
+
+       .pt.y )
+          ;
+
+        vector <
+       int >
+
+     &_46082575733867251 =    _13925384095147685413 [ _2654435890 ]
+
+   ;
+
+         int
+
+  _16992066382187640319 =   -1 ;
+
+         double
+      _12757546498867192361 =  std ::
+
+        numeric_limits <
+ double >
+      ::
+
+      max ()
+     ;
+# 3575 "/app/example.cpp"
+         for(    size_t _2654435875 =    0 ;
+   _2654435875 <
+
+_46082575733867251.size ()
+     ;
+
+ _2654435875 ++
+
+   )      {
+             int
+
+      _5555178974982484866 =   _46082575733867251 [
+       _2654435875 ]
+
+   ;
+
+             if( 
+   _16937465944335025110 [
+
+    _5555178974982484866 ]
+
+    .pt.x >
+
+   _46082543180066935.und_kpts [
+
+_2654435874 ]
+
+     .pt.x ||
+
+    std ::
+
+abs ( 
+   _16937465944335025110 [
+
+    _5555178974982484866 ]
+
+   .octave-_46082543180066935.und_kpts [
+_2654435874 ]
+
+  .octave )        >
+
+  1 )
+                continue ;
+
+                 auto
+
+   _706246353090457 =  
+MapPoint ::
+
+ getDescDistance ( 
+_46082543180066935.desc,_2654435874,_1534768455952794120,_5555178974982484866 )
+    ;
+
+                 if( 
+_706246353090457 <
+
+   _13206983270957238750 )    {
+
+                     if( 
+_706246353090457 <
+
+ _12757546498867192361 )
+  {
+
+                        _12757546498867192361 =   _706246353090457 ;
+
+                        _16992066382187640319 =  
+_5555178974982484866 ;
+
+                     }
+
+                 }
+
+         }
+
+         if( 
+     _16992066382187640319 !=  -1 )      {
+
+             int
+
+ _5820950562624380433 =  7 ;
+
+             int
+
+    _11450180203511629323 =   _5820950562624380433/2 ;
+
+             int
+
+     _1588944432958720138 =  
+std ::
+
+  round ( 
+     _46082543180066935.und_kpts [
+       _2654435874 ]
+
+  .pt.x )
+       ;
+
+             int
+
+_1588944432958720141 =    std ::
+  round ( _46082543180066935.und_kpts [
+
+_2654435874 ]
+.pt.y )
+    ;
+
+             if( 
+        _1588944432958720138 <
+
+ _11450180203511629323 || _1588944432958720138+_11450180203511629323 >=    _16937270569698259356.cols )
+                continue ;
+
+             if(  _1588944432958720141 <
+
+     _11450180203511629323 ||
+       _1588944432958720141+_11450180203511629323 >=      _16937270569698259356.rows )
+                continue ;
+             int
+
+   _4939411723264461086 =  
+std ::
+
+  round ( _16937465944335025110 [
+_16992066382187640319 ]
+
+  .pt.x )
+  ;
+
+             int
+
+ _4939411723264461085 =     std ::
+
+  round ( 
+     _16937465944335025110 [
+
+    _16992066382187640319 ]
+ .pt.y )        ;
+
+             if( 
+    _4939411723264461086 <
+     _11450180203511629323 ||
+
+     _4939411723264461086+_11450180203511629323 >=  _1705492249324718059.cols )
+                continue ;
+
+             if(    _4939411723264461085 <
+     _11450180203511629323 ||
+
+   _4939411723264461085+_11450180203511629323 >=        _1705492249324718059.rows )
+                continue ;
+
+             int
+    _192620453243540296 = 7 ;
+
+             int
+_3558714157307424502 = _192620453243540296*2+1 ;
+
+            vector <
+
+double >
+        _15505236697521787868 ( 
+_3558714157307424502 )
+     ;
+
+            cv ::
+
+   Mat _10158787605014054164 =       _12800511165451773841 [
+
+    0 ]
+
+ ._8358128829407646415 (     cv ::
+
+         Range (     _1588944432958720141-_11450180203511629323,_1588944432958720141+_11450180203511629323 )
+   ,cv ::
+
+   Range ( _1588944432958720138-_11450180203511629323,_1588944432958720138+_11450180203511629323 )
+    )
+ ;
+
+             int
+
+ _1522763743271507664 =      std ::
+
+max ( 
+         -_192620453243540296,-_4939411723264461086 )
+      ;
+
+             int
+    _1522768890174422034 =  std ::
+    min (_192620453243540296,_1705492249324718059.cols-1-_4939411723264461086 )
+  ;
+
+             double
+
+    _3817788760850917717 = std ::
+
+numeric_limits < double >
+        ::
+
+  max () ;
+
+             int
+
+     _1700310074658306154 =        -1 ;
+
+             for( 
+ int _46082575015037928 = _1522763743271507664 ;
+
+       _46082575015037928 <= _1522768890174422034 ;
+
+       _46082575015037928 ++ )
+  {
+
+                 int
+  _6806984958533886427 =   _46082575015037928+_192620453243540296 ;
+
+                 int
+
+_175247759696 =  
+_4939411723264461086+_46082575015037928 ;
+                cv ::
+   Mat _3285624572702585059 =  
+_12800511165451773841 [
+      1 ] ._8358128829407646415 ( 
+    cv ::
+
+     Range ( 
+        _4939411723264461085-_11450180203511629323,_4939411723264461085+_11450180203511629323 )
+    ,cv ::
+     Range ( 
+   _175247759696-_11450180203511629323,_175247759696+_11450180203511629323 )        )
+      ;
+
+                cv ::
+
+Mat _16937296004896083966 ;
+
+                cv ::
+
+     absdiff (   _10158787605014054164,_3285624572702585059,_16937296004896083966 )
+ ;
+
+                 double
+_6175753848998664490 = cv ::
+
+       sum ( 
+  _16937296004896083966 )
+  [
+
+  0 ]
+        ;
+
+                 if( 
+   _6175753848998664490 <
+
+    _3817788760850917717 )
+  {
+
+                    _3817788760850917717 = _6175753848998664490 ;
+
+                    _1700310074658306154 =     _6806984958533886427 ;
+
+                 }
+                _15505236697521787868 [
+
+  _6806984958533886427 ]
+
+      =  
+_6175753848998664490 ;
+
+             }
+
+             if( 
+  _1700310074658306154 >
+
+_1522763743271507664+_192620453243540296 &&
+
+       _1700310074658306154 <
+
+ _1522768890174422034+_192620453243540296 )
+  {
+
+                 double
+       _175247759918 =         _15505236697521787868 [
+
+        _1700310074658306154-1 ]
+
+          ;
+
+                 double
+
+    _175247759917 =  
+_15505236697521787868 [
+
+  _1700310074658306154 ] ;
+
+                 double
+
+  _175247759916 =  
+_15505236697521787868 [
+
+ _1700310074658306154+1 ]
+     ;
+
+                 double
+
+    _16989176769678974579 =   0.5* ( 
+     _175247759918-_175247759916 )
+     / ( 
+    _175247759918+_175247759916-2*_175247759917 )
+ +_1700310074658306154-_192620453243540296 ;
+
+                 double
+      _3378217371725605483 =    _16937465944335025110 [
+_16992066382187640319 ]
+
+        .pt.x+_16989176769678974579 ;
+
+                _46082543180066935.depth [
+
+ _2654435874 ]
+
+          = ( _175247760147.bl*_175247760147.fx ()
+        )
+  / ( 
+ _46082543180066935.und_kpts [
+   _2654435874 ]
+
+  .pt.x-_3378217371725605483 )
+       ;
+
+                _14197860223095419442 ++
+      ;
+
+             }
+
+         }
+
+     }
+
+  }
+
+ void
+
+FrameExtractor ::
+
+    process_rgbd ( 
+  const cv ::
+ Mat &_46082544231248938, const cv ::
+
+        Mat &_14382598117525421800,const ImageParams &_175247760147,Frame &_46082543180066935, uint32_t _9933887380370137445 ) {
+    _14329080428242784455 ( 1,_46082544231248938,_175247760147 )
+     ;
+
+    _17131366770609715580 ( 
+_12800511165451773841 [
+
+  0 ]
+     ,_46082543180066935,_9933887380370137445 )
+  ;
+
+    _46082543180066935.depth.resize (     _46082543180066935.und_kpts.size ()
+ ) ;
+
+     for( 
+   size_t _2654435874 =         0 ;
+
+ _2654435874 < _46082543180066935.depth.size () ;
+
+    _2654435874 ++
+
+         )
+        _46082543180066935.depth [
+
+ _2654435874 ]
+
+     =       0 ;
+
+     for( 
+size_t _2654435874 =    0 ;
+
+   _2654435874 <
+
+  _46082543180066935.kpts.size ()      ;
+
+ _2654435874 ++
+
+  )
+      {
+
+         if
+
+  ( _14382598117525421800.at <
+
+   uint16_t >
+
+   ( _46082543180066935.kpts [
+
+   _2654435874 ]
+
+       )
+      !=        0 )
+     {
+
+            _46082543180066935.depth [
+      _2654435874 ]
+
+  =       _14382598117525421800.at <
+
+  uint16_t >
+
+ ( 
+     _46082543180066935.kpts [
+ _2654435874 ]
+
+       )
+*_175247760147.rgb_depthscale ;
+
+         }
+
+     }
+
+ }
+
+ void
+  FrameExtractor ::
+
+     process ( 
+    const cv ::
+
+      Mat &_46082544231248938, const ImageParams &_175247760147,Frame &_46082543180066935, uint32_t
+
+     _9933887380370137445 )
+ {
+
+    _14329080428242784455 ( 
+     _13116459431724108758.kptImageScaleFactor, _46082544231248938,_175247760147 )  ;
+
+    _17131366770609715580 ( 
+   _12800511165451773841 [
+
+    0 ]
+
+ ,_46082543180066935,_9933887380370137445 )
+  ;
+
+ }
+
+ void
+
+FrameExtractor ::
+  _10230054520346001887 (  float _17370277987955713200,const std ::
+
+  vector <
+
+ cv ::
+
+       Mat > &_3005401535270843804,const ImageParams &_175247760147 )   {
+     for( 
+     uint _2654435874 =    0 ;
+       _2654435874 < _175247760147.multicams_cs.size ()
+    ;
+
+     _2654435874 ++
+        )
+    _12800511165451773841.resize ( _3005401535270843804.size ()
+      )
+   ;
+
+     for( 
+uint _2654435874 =   0 ;
+    _2654435874 <
+
+ _3005401535270843804.size ()  ;
+
+ _2654435874 ++
+
+     )
+      {
+
+         if( 
+         _3005401535270843804 [
+
+     _2654435874 ]
+
+     .channels ()
+    == 3 )
+            cv ::
+
+     cvtColor ( 
+  _3005401535270843804 [
+
+  _2654435874 ]
+
+,_12800511165451773841 [
+
+_2654435874 ]
+
+    ._15530082771795719302,CV_BGR2GRAY )       ;
+
+         else
+
+   _12800511165451773841 [
+
+     _2654435874 ]
+   ._15530082771795719302 =  _3005401535270843804 [
+
+   _2654435874 ]
+
+   ;
+
+     }
+
+    _12800511165451773841 [
+
+ 0 ]
+     ._15530082765074651952 =   _175247760147 ;
+
+    _12800511165451773841 [
+
+   0 ]
+  ._5505640830793117477 = _175247760147 ;
+
+     if( 
+fabs ( 
+ 1-_17370277987955713200 )
+ >
+
+  1e-3 )     {
+
+         for( 
+  uint _2654435874 =   0 ;
+
+   _2654435874 <
+
+    _3005401535270843804.size ()
+   ;
+
+  _2654435874 ++
+
+     )
+  {
+
+            cv ::
+
+Size _175247759442 ( 
+ _3005401535270843804 [
+
+      _2654435874 ]
+     .cols*_17370277987955713200,_3005401535270843804 [
+
+  _2654435874 ]
+
+     .rows*_17370277987955713200 )
+  ;
+
+             if( 
+_175247759442.width%4 !=   0 )
+                _175247759442.width += 4-_175247759442.width%4 ;
+
+             if( 
+_175247759442.height%2 !=   0 )
+     _175247759442.height ++
+
+ ;
+
+            cv ::
+
+     resize ( 
+   _12800511165451773841 [
+
+   _2654435874 ]
+
+ ._15530082771795719302,_12800511165451773841 [
+
+  _2654435874 ]
+  ._8358128829407646415,_175247759442 )
+   ;
+
+            _12800511165451773841 [
+
+   0 ]
+
+  ._5505640830793117477.resize ( 
+    _175247759442, _2654435874 )
+  ;
+
+            _12800511165451773841 [
+      _2654435874 ]
+       ._6972553715263421613.first =  float ( 
+_175247759442.height )     /float ( 
+    _3005401535270843804 [
+
+   _2654435874 ]
+
+   .rows ) ;
+
+            _12800511165451773841 [
+    _2654435874 ]
+._6972553715263421613.second =      float ( _175247759442.width )
+  /float ( 
+_3005401535270843804 [
+_2654435874 ]
+   .cols )
+    ;
+
+         }
+
+     }
+
+    else {
+
+         for( 
+    uint _2654435874 =   0 ;
+ _2654435874 <
+   _12800511165451773841.size ()
+ ;
+
+  _2654435874 ++
+
+    ) {
+            _12800511165451773841 [
+
+     _2654435874 ]
+
+   ._8358128829407646415 =    _12800511165451773841 [
+
+         _2654435874 ]
+    ._15530082771795719302 ;
+
+            _12800511165451773841 [
+
+ _2654435874 ]
+
+         ._6972553715263421613 = std ::
+
+  pair <
+       float,float >
+
+  ( 
+ 1,1 )
+    ;
+
+         }
+
+     }
+
+     float
+
+   _706246336197678 =           ( 
+ _12800511165451773841 [
+
+         0 ] ._15530082765074651952.fx ( 
+     0 )
++_12800511165451773841 [
+      0 ]
+
+ ._15530082765074651952.fy ( 
+0 )
+        ) / (   _12800511165451773841 [
+
+  0 ] ._15530082765074651952.fx ( 
+   1 )
+ +_12800511165451773841 [
+
+      0 ]
+
+     ._15530082765074651952.fy ( 
+1 )    )     ;
+
+     if( 
+_706246336197678 !=    1 )
+     {
+
+         int
+  _11093822060392 =  1 ;
+
+         if( 
+ _706246336197678 >
+
+   1 )
+  {
+
+            _11093822060392 =         0 ;
+
+            _706246336197678 = 1.0/_706246336197678 ;
+
+         }
+
+        cv ::
+
+ Size _175247759442 ( 
+  _12800511165451773841 [
+
+    _11093822060392 ]
+
+       ._8358128829407646415.cols*_706246336197678, _12800511165451773841 [
+ _11093822060392 ]
+
+._8358128829407646415.rows*_706246336197678 )
+  ;
+
+        cv ::
+
+      resize ( 
+         _12800511165451773841 [
+
+       _11093822060392 ]
+
+  ._8358128829407646415,_12800511165451773841 [
+
+    _11093822060392 ]
+
+     ._8358128829407646415,_175247759442 )
+ ;
+
+        _12800511165451773841 [
+    _11093822060392 ]
+
+._6972553715263421613.first =   float (  _175247759442.height )
+ /float ( 
+     _3005401535270843804 [
+
+    _11093822060392 ]
+.rows )
+      ;
+
+        _12800511165451773841 [
+
+_11093822060392 ]
+
+   ._6972553715263421613.second =   float ( 
+ _175247759442.width ) /float ( 
+   _3005401535270843804 [
+
+_11093822060392 ]
+
+.cols )
+          ;
+
+        _12800511165451773841 [
+
+   0 ]
+
+ ._5505640830793117477.resize (    _175247759442, _11093822060392 )
+     ;
+
+     }
+
+ }
+
+ void
+
+ FrameExtractor ::
+_14329080428242784455 (   float _17370277987955713200,const cv :: Mat &_11093822404769,const ImageParams &_175247760147,const cv ::
+
+Mat &_11093822404770 )
+ {
+
+     int
+
+ _175247759468 = 1 ;
+
+     if( 
+ ! _11093822404770.empty ()
+   )
+        _175247759468 ++
+
+   ;
+
+    _12800511165451773841.resize ( 
+   _175247759468 )
+     ;
+
+     if(  _11093822404769.channels ()
+     ==     3 )
+        cv ::
+
+  cvtColor ( _11093822404769,_12800511165451773841 [
+0 ]
+
+._15530082771795719302,CV_BGR2GRAY )    ;
+
+     else
+
+    _12800511165451773841 [
+
+        0 ] ._15530082771795719302 =     _11093822404769 ;
+
+    _12800511165451773841 [
+
+    0 ]
+
+   ._15530082765074651952 =      _175247760147 ;
+
+     if( !
+
+       _11093822404770.empty ()  )     {
+
+         if( _11093822404770.channels ()       ==         3 )
+            cv ::
+
+  cvtColor ( 
+        _11093822404770,_12800511165451773841 [
+    1 ]
+   ._15530082771795719302,CV_BGR2GRAY )
+       ;
+
+         else
+
+     _12800511165451773841 [
+
+ 1 ]
+
+._15530082771795719302 =     _11093822404770 ;
+
+        _12800511165451773841 [
+
+  1 ]
+       ._15530082765074651952 =    _175247760147 ;
+
+     }
+
+     if( fabs (   1-_17370277987955713200 )       >
+
+1e-3 )
+   {
+
+        cv ::
+
+   Size _175247759442 ( 
+  _11093822404769.cols*_17370277987955713200,_11093822404769.rows*_17370277987955713200 )
+  ;
+
+         if( 
+_175247759442.width%4 != 0 )
+            _175247759442.width +=     4-_175247759442.width%4 ;
+
+         if( 
+_175247759442.height%2 != 0 )
+ _175247759442.height ++
+
+ ;
+
+        cv ::
+
+ resize ( _12800511165451773841 [
+       0 ]
+
+     ._15530082771795719302,_12800511165451773841 [
+
+   0 ]
+
+ ._8358128829407646415,_175247759442 )
+          ;
+
+        _12800511165451773841 [
+
+    0 ]
+
+._5505640830793117477 = _12800511165451773841 [ 0 ]
+
+._15530082765074651952 ;
+
+        _12800511165451773841 [
+
+0 ]
+
+    ._5505640830793117477.resize ( 
+      _175247759442 ) ;
+
+        _12800511165451773841 [
+
+  0 ]
+       ._6972553715263421613.first =          float ( 
+ _175247759442.height )/float ( 
+    _11093822404769.rows )
+     ;
+
+        _12800511165451773841 [
+0 ]
+
+     ._6972553715263421613.second =     float ( 
+ _175247759442.width )
+   /float ( 
+        _11093822404769.cols )
+   ;
+
+         if(!
+
+    _11093822404770.empty ()
+   )       {
+
+            cv ::
+     resize ( 
+   _12800511165451773841 [
+
+   1 ]
+
+._15530082771795719302,_12800511165451773841 [
+
+1 ]
+
+._8358128829407646415,_175247759442 )        ;
+
+            _12800511165451773841 [
+
+1 ]
+
+       ._5505640830793117477 =   _12800511165451773841 [
+   2 ]
+
+    ._15530082765074651952 ;
+            _12800511165451773841 [
+    1 ]
+     ._5505640830793117477.resize ( 
+     _175247759442 )
+ ;
+
+            _12800511165451773841 [
+
+1 ]
+
+    ._6972553715263421613.first =     float ( _175247759442.height )
+  /float ( 
+_11093822404770.rows )
+  ;
+
+            _12800511165451773841 [
+   1 ]
+
+._6972553715263421613.second =   float ( 
+        _175247759442.width )
+    /float ( 
+   _11093822404770.cols )
+   ;
+
+         }
+     }
+
+    else {
+
+         for(  int _2654435874 = 0 ;
+
+   _2654435874 <
+
+_12800511165451773841.size ()
+     ;
+    _2654435874 ++
+
+     )
+         {
+
+            _12800511165451773841 [
+
+   _2654435874 ]
+
+   ._8358128829407646415 =     _12800511165451773841 [
+
+  _2654435874 ]
+
+  ._15530082771795719302 ;
+
+            _12800511165451773841 [
+
+_2654435874 ]
+
+    ._5505640830793117477 =    _12800511165451773841 [
+
+    _2654435874 ]
+
+   ._15530082765074651952 ;
+
+            _12800511165451773841 [
+     _2654435874 ]
+
+ ._6972553715263421613 =         std ::
+      pair <
+    float,float >
+
+    ( 
+1,1 ) ;
+
+         }
+
+     }
+
+  }
+
+ void
+
+     FrameExtractor ::
+
+   _17131366770609715580 ( 
+      const _1921178215606755952 &_46082576028426834, Frame &_46082543180066935, uint32_t
+      _9933887380370137445 )
+   {
+
+    _46082543180066935.clear ()
+  ;
+
+    vector <
+
+   cv ::
+
+KeyPoint >
+
+      _9811310495564694013 ;
+
+    std ::
+
+     thread _15593584088352382451 (   [
+
+      & ]
+
+      {
+
+         if( 
+   _4309197024622458338 )
+  {
+
+            _8033463663468506753 ->
+       detectAndCompute ( 
+   _12800511165451773841 [
+
+    0 ]
+
+    ._8358128829407646415,cv ::
+
+Mat () ,_9811310495564694013,_46082543180066935.desc,_10675870925382111478 )
+      ;
+
+            _46082543180066935.KpDescType =   _8033463663468506753 ->
+
+    getDescriptorType ()
+   ;
+
+         }
+
+     }
+
+ )
+   ;
+
+    std ::
+
+  thread _5221495899814560498 ( 
+      [
+
+     & ]
+
+          {
+
+         if
+
+ ( 
+_3566717627060593117 )
+     {
+             auto
+
+     _6807036698426592110 =  
+_8000946946827829134 ->
+
+        detect ( 
+  _46082576028426834._15530082771795719302 )
+         ;
+
+             for( 
+         const auto&_2654435878:_6807036698426592110 )
+   {
+
+                ucoslam ::
+
+MarkerObservation _8214686538440707422 ;
+
+                _8214686538440707422.id =  
+_2654435878.id ;
+
+                _8214686538440707422.points3d = _2654435878.points3d ;
+
+                _8214686538440707422.corners =    _2654435878.corners ;
+
+                _8214686538440707422.dict_info = _2654435878.info ;
+
+                 auto
+
+  _706246330434227 =  
+IPPE ::
+
+        solvePnP_ (   _2654435878.points3d ,_2654435878.corners, _46082576028426834._15530082765074651952.CameraMatrix,_46082576028426834._15530082765074651952.Distorsion )
+  ;
+
+                 for( 
+int _2654435866 = 0 ; _2654435866 <
+
+      2 ;
+
+    _2654435866 ++
+ )
+   {
+
+                    _8214686538440707422.poses.errs [
+
+   _2654435866 ]
+
+  =     _706246330434227 [
+
+  _2654435866 ]
+
+.second ;
+
+                    _8214686538440707422.poses.sols [
+
+ _2654435866 ]
+
+     =   _706246330434227 [
+
+ _2654435866 ]
+       .first.clone ()
+    ;
+
+                 }
+
+                _8214686538440707422.poses.err_ratio =     _706246330434227 [
+1 ]
+
+ .second/_706246330434227 [
+       0 ]
+
+      .second ;
+
+                 for( 
+auto &_2654435868:_8214686538440707422.corners )
+   {
+
+                    _2654435868.x *=     _46082576028426834._6972553715263421613.first ;
+
+                    _2654435868.y *=    _46082576028426834._6972553715263421613.second ;
+
+                 }
+
+                _46082543180066935.markers.push_back ( 
+_8214686538440707422 )
+     ;
+             }
+
+         }
+
+     }
+
+     )
+   ;
+
+    _15593584088352382451.join ()
+  ;
+
+    _5221495899814560498.join ()
+   ;
+
+     if
+
+    ( 
+  debug ::
+   Debug ::
+    getLevel ()
+     >=  100 ||
+
+  _13116459431724108758.saveImageInMap )
+   {
+
+            std ::
+
+ vector <
+
+   uchar >
+
+         _11093821971029 ;
+
+            cv ::
+
+imencode ( 
+  "\x2e\x6a\x70\x67",_46082576028426834._15530082771795719302,_11093821971029, {
+
+cv ::
+
+   IMWRITE_JPEG_QUALITY,90 }
+
+   )
+  ;
+
+            _46082543180066935.jpeg_buffer.create ( 
+   1,_11093821971029.size ()
+   ,CV_8UC1 )
+         ;
+
+            mempcpy ( 
+     _46082543180066935.jpeg_buffer.ptr <
+
+       uchar > ( 
+     0 )
+,&_11093821971029 [ 0 ]
+     ,_11093821971029.size ()
+  )
+ ;
+
+     }
+# 6410 "/app/example.cpp"
+    _46082543180066935.scaleFactors.resize ( 
+_8033463663468506753 ->
+
+  getParams () .nOctaveLevels )
+     ;
+
+     double
+
+ _175247759750 =       _8033463663468506753 -> getParams ()
+   .scaleFactor ;
+
+    _46082543180066935.scaleFactors [
+  0 ]
+
+     =  1 ;
+
+     for( 
+   size_t _2654435874 = 1 ;
+
+_2654435874 <
+
+  _46082543180066935.scaleFactors.size ()  ;
+    _2654435874 ++
+
+  )        _46082543180066935.scaleFactors [
+
+   _2654435874 ]
+
+     =  _46082543180066935.scaleFactors [
+    _2654435874-1 ]
+
+  *_175247759750 ;
+
+     if
+
+          (     _9811310495564694013.size ()
+  >
+
+   0 )
+   {
+
+        vector <
+
+        cv ::
+
+ Point2f >
+
+  _11093822294365 ;
+      _11093822294365.reserve ( 
+_9811310495564694013.size ()
+      )
+ ;
+
+         for( 
+    auto _2654435881:_9811310495564694013 )
+     _11093822294365.push_back ( 
+ _2654435881.pt )
+         ;
+
+        _12800511165451773841 [
+
+         0 ]
+._5505640830793117477.undistortPoints ( 
+ _11093822294365 )
+     ;
+
+        _46082543180066935.und_kpts =       _9811310495564694013 ;
+
+        _46082543180066935.kpts.resize ( 
+ _9811310495564694013.size ()
+ )
+       ;
+
+         for
+
+  ( 
+ size_t _2654435874 = 0 ;
+
+    _2654435874 <
+
+    _9811310495564694013.size ()
+    ;
+
+    _2654435874 ++
+
+   )        {
+
+            _46082543180066935.kpts [
+
+   _2654435874 ]
+
+  = _9811310495564694013 [
+
+     _2654435874 ]
+
+.pt ;
+
+            _46082543180066935.und_kpts [ _2654435874 ]
+
+ .pt =    _11093822294365 [
+    _2654435874 ]
+
+         ;
+
+         }
+
+     }
+
+     for( 
+    auto &_2654435878:_46082543180066935.markers )     {
+
+        _2654435878.und_corners =    _2654435878.corners ;
+
+        _12800511165451773841 [
+
+   0 ]
+
+    ._5505640830793117477.undistortPoints ( 
+  _2654435878.und_corners )      ;
+
+     }
+
+    _46082543180066935.flags.resize ( 
+    _46082543180066935.und_kpts.size ()  )
+ ;
+
+     for( 
+ auto &_2654435887:_46082543180066935.flags )
+   _2654435887.reset ()
+      ;
+
+    _46082543180066935.ids.resize ( 
+    _46082543180066935.und_kpts.size ()
+      )
+  ;
+
+     uint32_t
+
+      _706246332827243 = std ::
+
+   numeric_limits <
+
+    uint32_t >
+
+ ::
+
+    max ()
+   ;
+
+     for( 
+ auto &_11093822405034:_46082543180066935.ids )
+  _11093822405034 =    _706246332827243 ;
+
+    _46082543180066935.idx =      std ::
+
+  numeric_limits <
+
+     uint32_t >
+
+     ::
+
+  max ()
+      ;
+
+    _46082543180066935.fseq_idx =       _9933887380370137445 ;
+
+    _46082543180066935.imageParams =       _12800511165451773841 [
+ 0 ]
+
+      ._5505640830793117477 ;
+
+    _46082543180066935.create_kdtree () ;
+
+    _46082543180066935.minXY =        cv ::
+      Point2f ( 
+   0,0 )
+ ;
+
+    _46082543180066935.maxXY =   cv ::
+
+Point2f ( _46082543180066935.imageParams.CamSize.width,_46082543180066935.imageParams.CamSize.height )     ;
+
+     if(  _46082543180066935.imageParams.Distorsion.total () !=  0 )
+    {
+
+        vector <
+
+cv ::
+
+    Point2f >
+
+    _6806985041881495917 = {
+   _46082543180066935.minXY,_46082543180066935.maxXY }
+     ;
+
+        _46082543180066935.imageParams.undistortPoints (    _6806985041881495917 )
+  ;
+
+        _46082543180066935.minXY = _6806985041881495917 [
+
+0 ]
+   ;
+
+        _46082543180066935.maxXY =   _6806985041881495917 [ 1 ]
+
+ ;
+
+     }
+
+ }
+
+ }

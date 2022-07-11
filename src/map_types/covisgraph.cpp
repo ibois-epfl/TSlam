@@ -21,7 +21,7 @@
 #include <fstream>
 #include <iostream>
 #include <list>
-namespace reslam
+namespace ucoslam
 {
 CovisGraph::CovisGraph(){
 

@@ -20,7 +20,7 @@
 #define ucoslam_FrameMatcher_H
 
 #include "map_types/frame.h"
-namespace reslam {
+namespace  ucoslam {
 
 /**
  * Class to analyze matches between two frames.

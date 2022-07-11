@@ -1,17 +1,29 @@
 /**
-Copyright 2020 Rafael Muñoz Salinas. All rights reserved.
+Copyright 2017 Rafael Muñoz Salinas. All rights reserved.
 
-  This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation version 3 of the License.
+Redistribution and use in source and binary forms, with or without modification, are
+permitted provided that the following conditions are met:
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+   1. Redistributions of source code must retain the above copyright notice, this list of
+      conditions and the following disclaimer.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+   2. Redistributions in binary form must reproduce the above copyright notice, this list
+      of conditions and the following disclaimer in the documentation and/or other materials
+      provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY Rafael Muñoz Salinas ''AS IS'' AND ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL Rafael Muñoz Salinas OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+The views and conclusions contained in the software and documentation are those of the
+authors and should not be interpreted as representing official policies, either expressed
+or implied, of Rafael Muñoz Salinas.
 */
 
 #include "posetracker.h"
@@ -282,6 +294,7 @@ inline double getHubberMonoWeight(double SqErr,double Information){
             std::vector<cv::Point2f> p2d_rej;
             cv::Mat r, t;
             fromSol(sol, r, t);
+
             cv::projectPoints(p3d, r, t, cam_matrix, dist, p2d_rej, Jacb);
             err.resize(p3d.size() * 2);
             int err_idx = 0;
@@ -309,7 +322,7 @@ inline double getHubberMonoWeight(double SqErr,double Information){
 
         LevMarq<T> solver;
         solver.setParams(100, 0.01, 0.01);
-        //  solver.verbose()=true;
+          solver.verbose()=false;
         typename LevMarq<T>::eVector sol = toSol(r_io, t_io);
         auto err = solver.solve(sol, err_f, jac_f);
 
@@ -329,7 +342,9 @@ inline double getHubberMonoWeight(double SqErr,double Information){
 //#ifdef DOUBLE_PRECISION_PNP
 //        return __aruco_solve_pnp<double>(p3d, p2d, cam_matrix, dist, r_io, t_io);
 //#else
-        return __aruco_solve_pnp<float>(p3d, p2d, cam_matrix, dist, r_io, t_io);
+         float r = __aruco_solve_pnp<float>(p3d, p2d, cam_matrix, dist, r_io, t_io);
+        return r;
+
 //#endif
 //#endif
     }
@@ -413,7 +428,7 @@ inline double getHubberMonoWeight(double SqErr,double Information){
             double err;
         };
         struct se3{float rt[6];};
-        
+
         cv::Mat pose_f2g_out;//result
         //estimate the markers locations and see if there is at least one good enough
         std::vector<minfo> good_marker_locations;
@@ -433,8 +448,8 @@ inline double getHubberMonoWeight(double SqErr,double Information){
             all_marker_locations.push_back(mi);
 
         }
-    
-    
+
+
         //try using more than one marker approach
         if (mapMarkers.size()>=2) {
             //collect all the markers 3d locations
@@ -445,7 +460,7 @@ inline double getHubberMonoWeight(double SqErr,double Information){
                 auto p3d= _map_mm[marker.id].points;
                 markerPoints3d.insert(markerPoints3d.end(),p3d.begin(),p3d.end());
             }
-    
+
             //take the all poses and select the one that minimizes the global reproj error
             for(auto & ml:all_marker_locations){
                 auto pose= ml.rt_f2m *marker_m2g[ml.id];
@@ -458,7 +473,7 @@ inline double getHubberMonoWeight(double SqErr,double Information){
             auto &best=all_marker_locations.front();
             pose_f2g_out=best.rt_f2m *marker_m2g[best.id];
         }
-    
+
         if ( pose_f2g_out.empty()  &&  good_marker_locations.size()>0){
             std::sort(good_marker_locations.begin(),good_marker_locations.end(),[](const minfo &a,const minfo &b){return a.err<b.err;});
             auto best=good_marker_locations[0];

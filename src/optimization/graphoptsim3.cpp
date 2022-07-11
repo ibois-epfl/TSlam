@@ -26,7 +26,7 @@
 #include <Eigen/Geometry>
 #include <iostream>
 using namespace std;
-namespace reslam{
+namespace ucoslam{
 namespace gop_sim3 {
 
 g2o::Sim3 getSim3 (const cv::Mat &T,float s=1){
@@ -75,7 +75,7 @@ void    loopClosurePathOptimizationg2o(const std::vector<std::pair<uint32_t,uint
                                        uint32_t IdClosesLoopOld, cv::Mat expectedPoseNew, std::map<uint32_t, cv::Mat> &optimPoses,
                                        bool bFixScale,std::map<uint64_t,float> edgeWeight){
 
-
+    return;
     auto isClosingLoopEdge=[&](const std::pair<uint32_t,uint32_t> &edge){
          return( (edge.first==IdClosesLoopNew && edge.second==IdClosesLoopOld) || (edge.second==IdClosesLoopNew && edge.first==IdClosesLoopOld));
     };

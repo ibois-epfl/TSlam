@@ -23,7 +23,7 @@
 #include <cstdint>
 #include <iostream>
 #include "expansiblecontainer.h"
-namespace reslam{
+namespace ucoslam{
 /**A container in which removed elements are reused later
  */
 template<typename T >

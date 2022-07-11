@@ -19,7 +19,7 @@
 #ifndef ucoslam_Se3Transform_H
 #define ucoslam_Se3Transform_H
 #include "se3.h"
-namespace reslam{
+namespace ucoslam{
 class Se3Transform:public cv::Mat{
 public:
     Se3Transform(bool makeInvalid=false){

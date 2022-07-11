@@ -21,13 +21,13 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
-#include "reslam_exports.h"
+#include "ucoslam_exports.h"
 #include <map>
 #include <string>
-namespace reslam{
+namespace ucoslam{
 
 namespace debug{
-class  RESLAM_API Debug{
+class  UCOSLAM_API Debug{
 private:
     static  int level;//0(no debug), 1 medium, 2 high
     static bool isInited;

@@ -24,7 +24,7 @@
 #include <iostream>
 #include <utility>
 #include <opencv2/core/core.hpp>
-namespace reslam{
+namespace ucoslam{
 
 template<typename T>
 inline T io_read(std::istream &str){

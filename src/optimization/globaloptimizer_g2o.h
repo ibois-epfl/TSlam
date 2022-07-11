@@ -24,7 +24,7 @@ namespace g2o{
 class SparseOptimizer;
 };
 
-namespace reslam{
+namespace ucoslam{
 
 /**Performs a global optimization of points,markers and camera locations
  */
@@ -111,12 +111,11 @@ private:
 
     const float Chi2D = 5.99;
     const float Chi3D = 7.815;
-    const float Chi4D = 9.488;
+    const float Chi4D = 9.49;
     const float Chi8D = 15.507;
 
     const float thHuber2D = sqrt(Chi2D);
     const float thHuber3D= sqrt(Chi3D);
-    const float thHuber4D= sqrt(Chi4D);
     const float thHuber8D = sqrt(Chi8D);
 
 };

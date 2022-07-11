@@ -68,7 +68,7 @@
 using namespace cv;
 using namespace std;
 
-namespace reslam
+namespace ucoslam
 {
 
 const int PATCH_SIZE = 31;
@@ -1153,7 +1153,7 @@ void print(cv::KeyPoint &kp){
     cout<<kp.angle<<" "<<kp.octave<<" "<<kp.pt<<" "<<kp.size<<" "<<kp.response<<endl;
 }
 void ORBextractor::processLevel(int level ){
-   // reslam::__ARUCO_ADDTIMER__; Timer("RBextractor::Process level :"+to_string(level)+" "+to_string(mvImagePyramid[level].cols)+"x"+to_string(mvImagePyramid[level].rows));
+   // ucoslam::__ARUCO_ADDTIMER__; Timer("RBextractor::Process level :"+to_string(level)+" "+to_string(mvImagePyramid[level].cols)+"x"+to_string(mvImagePyramid[level].rows));
    if (1)
     ComputeKeyPoints_thread(&_allKeypoints, {level});
    else
@@ -1239,7 +1239,7 @@ void ORBextractor::processLevel_thread(int id ){
 }
 template<typename T>
 void printHash(string label,const T &v){
-    reslam::Hash imgH;
+    ucoslam::Hash imgH;
     imgH+=v;
     cout<<label<<" "<<imgH<<endl;
 

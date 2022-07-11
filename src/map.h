@@ -15,9 +15,7 @@
 *
 * You should have received a copy of the GNU General Public License
 * along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
-*/
-
-#ifndef _UCOSLAM_MAP_H
+*/#ifndef _UCOSLAM_MAP_H
 #define _UCOSLAM_MAP_H
 #include <mutex>
 
@@ -27,21 +25,20 @@
 #include "map_types/frame.h"
 #include "map_types/marker.h"
 #include "basictypes/safemap.h"
-#include "reslam_exports.h"
-namespace reslam {
+#include "ucoslam_exports.h"
+namespace ucoslam {
 
 
 /**
  * @brief The Map class represents a map of the environment.
  *
  */
-class RESLAM_API Map {
+class UCOSLAM_API Map {
+
+
 
 
 public:
-    enum STATE: std::int8_t {ORIGINAL=0, MODIFIED=1};
-
-
     //set of keypoints of the environments
     ReusableContainer<MapPoint> map_points;
     //set of markers detected in the environment
@@ -61,7 +58,9 @@ public:
     //saves the set of markers to a marker map file that can be used with aruco.
     void saveToMarkerMap(std::string filepath)const ;
     //cleans the unused keypoints from the frames. This will reduce a lot of space
-        void removeUnUsedKeyPoints();
+    void removeUnUsedKeyPoints();
+    
+    void removeOldKeyPoints();
     //returns a unique hash value that identify the current status
     uint64_t getSignature(bool print=false)const;
     //exports the  a file for visualization. Possible formats are  .ply and .pcd (pcl library)
@@ -79,12 +78,6 @@ public:
     //makes the indicates makerid the center of the map
     bool centerRefSystemInMarker(uint32_t markerId);
 
-    inline void setMapState(STATE newState){state=newState;};
-    inline STATE getMapState(){return state;};
-
-    inline float getMaxOctave(){return _maxOctaveLevel;};
-    inline float getScaleFactor(){return _scaleFactor;};
-
 
 //private use
    inline void lock(const std::string &func_name,const std::string &file, int line  ){IoMutex.lock();}
@@ -93,7 +86,6 @@ public:
    CovisGraph TheKpGraph;
    //A database of keyframes employed for relocalization. It uses bag of words technique
    KeyFrameDataBase TheKFDataBase;
-
 private:
 
    friend class LoopDetector;
@@ -103,6 +95,7 @@ private:
    friend class GlobalOptimizerG2O;
    friend class PnPSolver;
    friend class DebugTest;
+
 
 
     //returns the target focus of the map. If -1, it means that there is no keyframe yet
@@ -117,7 +110,7 @@ private:
     Frame &addKeyFrame(const Frame&f );
 
     //adds a marker too the map and returns a reference to it
-    Marker &addMarker(const reslam::MarkerObservation &m);
+    Marker &addMarker(const ucoslam::MarkerObservation &m);
 
     //Given a frame with assigned ids, returns the reference keyframe
     int64_t getReferenceKeyFrame(const Frame &frame,   float minDist=std::numeric_limits<float>::max());
@@ -209,9 +202,6 @@ private:
     std::vector<cv::Vec4f> getPcdPoints(const vector<cv::Point3f> &mpoints,cv::Scalar color,int npoints=100 )const;
     std::vector<cv::Vec4f>  getMarkerIdPcd(const Marker &marker,  cv::Scalar color )const;
 
-    int _maxOctaveLevel=-1;
-    float _scaleFactor=-1;
-    STATE state=STATE::ORIGINAL;
 };
 
 template<typename Iterator>

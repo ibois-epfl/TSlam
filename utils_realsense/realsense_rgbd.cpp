@@ -1,5 +1,5 @@
-#include "reslamtypes.h"
-#include "reslam.h"
+#include "ucoslamtypes.h"
+#include "ucoslam.h"
 #include "basictypes/debug.h"
 #include "mapviewer.h"
 #include "basictypes/timers.h"
@@ -18,9 +18,9 @@ rs2::device device;
 bool getNextFrame(cv::Mat& in_depth, cv::Mat& in_image);
 float get_depth_scale(rs2::device dev);
 
-reslam::ImageParams getRealSenseImageParams(const std::shared_ptr<rs2::pipeline>& pipe){
+ucoslam::ImageParams getRealSenseImageParams(const std::shared_ptr<rs2::pipeline>& pipe){
 
-    reslam::ImageParams  IP;
+    ucoslam::ImageParams  IP;
 
     rs2_intrinsics intr = pipe->get_active_profile().get_stream(RS2_STREAM_COLOR).as<rs2::video_stream_profile>().get_intrinsics();
 
@@ -62,7 +62,6 @@ int main(int argc,char **argv){
             pipe->start(cfg); //File will be opened in read mode at this point
             device = pipe->get_active_profile().get_device();
             device.as<rs2::playback>().set_real_time(false);
-            device.as<rs2::playback>().resume();
         }
         else
         {
@@ -77,29 +76,29 @@ int main(int argc,char **argv){
             device = pipe->get_active_profile().get_device();
         }
 
-        reslam::ReSlam Slam;
+        ucoslam::UcoSlam Slam;
 
 
-        reslam::ImageParams image_params = getRealSenseImageParams(pipe);
+        ucoslam::ImageParams image_params = getRealSenseImageParams(pipe);
 
-        reslam::Params params;
+        ucoslam::Params params;
         params.aruco_markerSize = stof(cml("-size", "1"));
         params.aruco_minMarkerSize= stod(cml("-marker_minsize", "0.025"));
         params.detectMarkers = !cml["-nomarkers"]; //work only with keypoints!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         params.detectKeyPoints = !cml["-nokeypoints"];
         params.runSequential = cml["-sequential"];
         params.nthreads_feature_detector = stoi(cml("-fdt", "2"));
-        params.kpDescriptorType = reslam::DescriptorTypes::fromString(cml("-d", "orb"));
+        params.kpDescriptorType = ucoslam::DescriptorTypes::fromString(cml("-d", "orb"));
         if(cml["-KFMinConfidence"])
              params.KFMinConfidence=stof(cml("-KFMinConfidence"));
 
-        std::shared_ptr<reslam::Map> TheMap=std::make_shared<reslam::Map>();
+        std::shared_ptr<ucoslam::Map> TheMap=std::make_shared<ucoslam::Map>();
         if (cml["-in"])
             TheMap->readFromFile(cml("-in"));
 
         Slam.setParams( TheMap,params,cml("-voc"));
 
-        if (cml["-loc_only"]) Slam.setMode(reslam::MODE_LOCALIZATION);
+        if (cml["-loc_only"]) Slam.setMode(ucoslam::MODE_LOCALIZATION);
 
         bool showWindows=!cml["-noX"];
 
@@ -107,8 +106,8 @@ int main(int argc,char **argv){
 
         char k=0;
         bool finish = false;
-        reslam::MapViewer TheViewer;
-        reslam::TimerAvrg Fps;
+        ucoslam::MapViewer TheViewer;
+        ucoslam::TimerAvrg Fps;
         cv::Mat in_image, in_depth;
         while(!finish && getNextFrame(in_depth, in_image)){
 
@@ -121,7 +120,7 @@ int main(int argc,char **argv){
             if(showWindows)
                 k=TheViewer.show( TheMap, in_image ,pose_f2gT,"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
 
-            if (int(k) == 'q')finish = true;//pressed ESC
+            if (int(k) == 27)finish = true;//pressed ESC
 
             if (k=='e'){
                 string number = std::to_string(currentFrameIndex);
@@ -143,7 +142,7 @@ int main(int argc,char **argv){
                 cv::Mat imwrite;
                 TheViewer.getImage(imwrite);
                 if (!vwrite.isOpened())
-                    vwrite.open(videoPath, cv::VideoWriter::fourcc('X', '2', '6', '4'),stoi(cml("-fps","30")),imwrite.size()  , imwrite.channels()!=1);
+                    vwrite.open(videoPath, CV_FOURCC('X', '2', '6', '4'),stoi(cml("-fps","30")),imwrite.size()  , imwrite.channels()!=1);
                 vwrite<<imwrite;
             }
 

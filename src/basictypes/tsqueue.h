@@ -21,7 +21,7 @@
 #include <vector>
 #include <mutex>
 #include <condition_variable>
-namespace reslam{
+namespace ucoslam{
 //A thread safe queue to implement producer consumer
 
 template<typename T>

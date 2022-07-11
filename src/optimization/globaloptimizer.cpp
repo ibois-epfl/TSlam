@@ -23,7 +23,7 @@
 //#include "globaloptimizer_cvba_pba.h"
 //#include "globaloptimizer_cvba_ucosba.h"
 //#endif
-namespace reslam{
+namespace ucoslam{
 std::shared_ptr<GlobalOptimizer> GlobalOptimizer::create(string type){
     if(type.empty() || type=="g2o")
         return std::make_shared<GlobalOptimizerG2O>();

@@ -1,5 +1,5 @@
-#include "reslamtypes.h"
-#include "reslam.h"
+#include "ucoslamtypes.h"
+#include "ucoslam.h"
 #include "basictypes/debug.h"
 #include "mapviewer.h"
 #include "basictypes/timers.h"

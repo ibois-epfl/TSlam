@@ -66,7 +66,7 @@
 #include <condition_variable>
 #include "feature2dserializable.h"
 
-namespace reslam
+namespace ucoslam
 {
 
 class ExtractorNode

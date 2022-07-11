@@ -21,7 +21,7 @@
 #include <cstdint>
 #include <iostream>
 #include <opencv2/core/core.hpp>
-namespace reslam {
+namespace ucoslam {
 /**
  * @brief The Hash struct creates a hash by adding elements. It is used to check the integrity of data stored in files in debug mode
  */

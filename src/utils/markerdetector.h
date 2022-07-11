@@ -22,21 +22,21 @@
 
 #include <memory>
 #include <opencv2/core/core.hpp>
-#include "reslamtypes.h"
+#include "ucoslamtypes.h"
 #include "stag/Stag.h"
 namespace aruco {
 class MarkerDetector;
 }
 
-namespace  reslam {
+namespace  ucoslam {
 
 
 //minimal information that must be provided by a marker detector
 struct MarkerDetection{
-    uint32_t id;//unique marker id
+    uint32_t id;
     std::vector<cv::Point3f> points3d;//three dimentional points of the marker wrt its center
     std::vector<cv::Point2f> corners;//original corners in the image
-    std::string info;//optional info about the marker
+    std::string info;
 };
 
 //Base class for marker detectors
@@ -68,6 +68,7 @@ public:
 
 };
 
+//STag detector
 class STagDetector:public MarkerDetector{
     Stag _stag;
     Params _p;
@@ -81,6 +82,7 @@ public:
     void toStream(std::ostream &str)const override;
     void fromStream(std::istream &str)override;
 };
+
 
 }
 #endif

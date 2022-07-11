@@ -1,4 +1,3 @@
-# project(Stag)
 SET (LIBNAME ${EXTRALIBNAME}stag)
 
 find_package(OpenCV REQUIRED)
@@ -34,36 +33,3 @@ IF(STAG_DEVINSTALL)
     INSTALL(FILES ${SRC_FILE1} DESTINATION include/stag COMPONENT main)
     INSTALL(FILES ${SRC_FILE2} DESTINATION include/stag COMPONENT main)
 ENDIF()
-
-
-# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/app)
-
-# add_executable(
-#     testrun
-#     testrun.cpp
-# )
-
-# target_link_libraries(
-#     testrun
-#     Stag
-# )
-
-# add_executable(
-#     testrun_video
-#     testrun_video.cpp
-# )
-
-# target_link_libraries(
-#     testrun_video
-#     Stag
-# )
-
-# add_executable(
-#     testrun_video_cam
-#     testrun_video_cam.cpp
-# )
-
-# target_link_libraries(
-#     testrun_video_cam
-#     Stag
-# )

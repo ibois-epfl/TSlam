@@ -18,13 +18,13 @@
 */#ifndef ucoslam_ImageParmas_H
 #define ucoslam_ImageParmas_H
 #include <opencv2/core/core.hpp>
-#include "reslam_exports.h"
-namespace reslam{
+#include "ucoslam_exports.h"
+namespace ucoslam{
 
     /**
  * @brief The ImageParams class represents the parameters of the employed camera
  */
-    class  RESLAM_API ImageParams {
+    class  UCOSLAM_API ImageParams {
 
     public:
 
@@ -45,7 +45,6 @@ namespace reslam{
         float bl=0;//stereo camera base line
         float rgb_depthscale=1;//scale to obtain depth from the rgbd values
         int fisheye_model=0;//is a fisheye camera
-        float closedPointThr=40;//Threshold to evaluate if a point is closed
 
         ImageParams();
         ImageParams(const ImageParams &IP);
@@ -77,29 +76,8 @@ namespace reslam{
         inline float fy(int cam=0)const{
             if(cam==0)return  CameraMatrix.ptr<float>(0)[4];
             else return arrayCamMatrix[cam-1].ptr<float>(0)[4];}
-        inline float cy(int cam=0)const
-            {if(cam==0)return  CameraMatrix.ptr<float>(0)[5];
+        inline float cy(int cam=0)const{if(cam==0)return  CameraMatrix.ptr<float>(0)[5];
             else return arrayCamMatrix[cam-1].ptr<float>(0)[5];}
-
-        inline void set_fx(int cam=0, float val=0){
-            if(cam==0) CameraMatrix.at<float>(0,0)=val;
-            else arrayCamMatrix[cam-1].at<float>(0,0)=val;}
-        inline void set_cx(int cam=0, float val=0){
-            if(cam==0) CameraMatrix.at<float>(0,2)=val;
-            else arrayCamMatrix[cam-1].at<float>(0,2)=val;}
-        inline void set_fy(int cam=0, float val=0){
-            if(cam==0) CameraMatrix.at<float>(1,1)=val;
-            else arrayCamMatrix[cam-1].at<float>(1,1)=val;}
-        inline void set_cy(int cam=0, float val=0){
-            if(cam==0) CameraMatrix.at<float>(1,2)=val;
-            else arrayCamMatrix[cam-1].at<float>(1,2)=val;}
-
-        inline void set_dist(int cam=0, int p=0, float val=0)
-        {
-            if(cam==0) Distorsion.ptr<float>(0)[p]=val;
-            else arrayDistorsion[cam-1].ptr<float>(0)[p]=val;
-        }
-
 
         /**Indicates whether this object is valid
      */
@@ -151,7 +129,7 @@ namespace reslam{
         bool isStereoCamera()const{return bl!=0;}
         //indicates if a depth point is close or far
         inline bool isClosePoint(float z)const{
-            return z<closedPointThr*bl;
+            return z<40*bl;
         }
 
 

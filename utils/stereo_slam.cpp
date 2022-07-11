@@ -16,7 +16,7 @@
 * You should have received a copy of the GNU General Public License
 * along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
-#include "reslam.h"
+#include "ucoslam.h"
 #include "map.h"
 #include "mapviewer.h"
 #include <opencv2/highgui/highgui.hpp>
@@ -52,8 +52,8 @@ int main(int argc, char* argv[]){
         cout<<"Usage: <video1> <video2> <stereo_calibration_file> [-voc path] [-params ucoslamparams.yml]"<<endl;
         return -1;
     }
-    reslam::StereoRectify Rectifier;
-    reslam::ImageParams imp;
+    ucoslam::StereoRectify Rectifier;
+    ucoslam::ImageParams imp;
      Rectifier.readFromXMLFile(argv[3]);
 
     cv::Mat inImage[2];
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]){
             throw runtime_error(string("Cannot open video file at:")+argv[i+1]);
     }
 
-    reslam::Params sparams;
+    ucoslam::Params sparams;
     sparams.detectMarkers=false;
     sparams.KFMinConfidence=0.8;
     sparams.runSequential=cml["-sequential"];
@@ -72,11 +72,9 @@ int main(int argc, char* argv[]){
     if(cml["-params"])
         sparams.readFromYMLFile(cml("-params"));
 
-    auto smap=make_shared<reslam::Map>();
-    if ( cml["-map"]) smap->readFromFile(cml("-map"));
-
-    reslam::ReSlam system;
-    reslam::MapViewer mv;
+    auto smap=make_shared<ucoslam::Map>();
+    ucoslam::UcoSlam system;
+    ucoslam::MapViewer mv;
     system.setParams(smap,sparams,cml("-voc",""));
     char key=0;
     while( video[0].grab() && video[1].grab() && key!=27){
@@ -89,7 +87,7 @@ int main(int argc, char* argv[]){
         cv::Mat pose=system.processStereo(Rectifier.getLeft(),Rectifier.getRight(),Rectifier.getImageParams(),frameNumber );
         key=mv.show(smap,Rectifier.getLeft(),pose,"");
     }
-    smap->saveToFile(cml("-out","world") +".map");
+    smap->saveToFile("world.map");
 
     return 0;
 }

@@ -12,7 +12,7 @@
 #include <vector>
 #include <chrono>
 #include <iomanip>
-namespace reslam{
+namespace ucoslam{
 //Sparse Levenberg-Marquardt method for general problems
 //Inspired in
 //@MISC\{IMM2004-03215,

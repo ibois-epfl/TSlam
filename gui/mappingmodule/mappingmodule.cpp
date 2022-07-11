@@ -8,7 +8,7 @@
 #include <QDockWidget>
 #include <QMainWindow>
 #include <QMessageBox>
-#include "reslam.h"
+#include "ucoslam.h"
 #include <QInputDialog>
 #include <QFileInfo>
 #include <QTemporaryFile>
@@ -106,7 +106,7 @@ MappingModule::MappingModule(ModuleSetMainWindow *parent):AppModule(parent) {
 
 
 
-    _Map=std::make_shared<reslam::Map>();
+    _Map=std::make_shared<ucoslam::Map>();
 
 
     //register the elements created
@@ -130,7 +130,7 @@ void MappingModule::on_resetMap(){
     if(_Map->keyframes.size()!=0){
         if( QMessageBox::question( (QWidget*)parent(),tr ( "Reset Map" ),tr ( "Are you sure you want to reset the current map?" ),QMessageBox::Yes|QMessageBox::No)==QMessageBox::No ) return;
         _UcoSLAM.reset();
-        _Map=std::make_shared<reslam::Map>();
+        _Map=std::make_shared<ucoslam::Map>();
         videoPlayer->reset();
 //        _UcoSLAM->clear();
         _lastPose=cv::Mat();
@@ -204,7 +204,7 @@ void MappingModule::on_openExistingMap()
 
 
         try{
-            _Map=std::make_shared<reslam::Map>();
+            _Map=std::make_shared<ucoslam::Map>();
             _Map->readFromFile(file.toStdString());
             _UcoSLAM.reset();
             updateMapView();
@@ -251,7 +251,7 @@ void MappingModule::on_new_fromvideo(){
             settings.setValue ( "currDir",QFileInfo (  params.find("Video file").asString().c_str() ).absolutePath() );
 
 
-            reslam::ImageParams imageParams;
+            ucoslam::ImageParams imageParams;
             try {
                 _imageParams.readFromXMLFile(params["Camera Parameters File"].asString());
             } catch (std::exception &ex) {
@@ -259,12 +259,12 @@ void MappingModule::on_new_fromvideo(){
                 return ;
             }
 
-            _UcoSLAM=std::make_shared<reslam::ReSlam>();
-            reslam::Params ucoslamparams;
+            _UcoSLAM=std::make_shared<ucoslam::UcoSlam>();
+            ucoslam::Params ucoslamparams;
             UcoSlamGParamsRunTime rtp;
             rtp.update(ucoslamparams);
             rtp["Mode"]="Track Only";
-            _UcoSLAM->setMode(reslam::MODE_LOCALIZATION);
+            _UcoSLAM->setMode(ucoslam::MODE_LOCALIZATION);
             if(_Map->map_markers.size()==0) ucoslamparams.detectMarkers=false;
             else
                 ucoslamparams.aruco_Dictionary= _Map->map_markers.begin()->second.dict_info;
@@ -339,7 +339,7 @@ void MappingModule::on_new_fromvideo(){
         }
     }
 
-    reslam::Params params;
+    ucoslam::Params params;
     mfp.update(params);
     load(mfp.find("Video file").asString(),mfp.find("Camera Parameters File").asString(),params,  voc_filepath.absoluteFilePath().toStdString() );
 
@@ -360,7 +360,7 @@ void MappingModule::onNewImage(cv::Mat &image){
     if(_UcoSLAM){
         if( fabs(_inputScaleFactor-1)>1e-3){
             cv::Mat resizedImage;
-            reslam::ImageParams imageParams=_imageParams;
+            ucoslam::ImageParams imageParams=_imageParams;
             cv::Size newSize=cv::Size(image.cols*_inputScaleFactor,image.rows*_inputScaleFactor);
             cv::resize(image,resizedImage,newSize);
             imageParams.resize(newSize);
@@ -374,8 +374,8 @@ void MappingModule::onNewImage(cv::Mat &image){
     }
 }
 
-bool MappingModule::load(const std::string &videoFile,const std::string &cameraFile,    const reslam::Params &params,const std::string &vocfile){
-    reslam::ImageParams imageParams;
+bool MappingModule::load(const std::string &videoFile,const std::string &cameraFile,    const ucoslam::Params &params,const std::string &vocfile){
+    ucoslam::ImageParams imageParams;
     try {
         _imageParams.readFromXMLFile(cameraFile);
     } catch (std::exception &ex) {
@@ -383,7 +383,7 @@ bool MappingModule::load(const std::string &videoFile,const std::string &cameraF
         return false;
     }
 
-    _UcoSLAM=std::make_shared<reslam::ReSlam>();
+    _UcoSLAM=std::make_shared<ucoslam::UcoSlam>();
     _UcoSLAM->setParams(_Map,params,vocfile);
     if(!videoPlayer->openVideoFilePath(videoFile.c_str())){
         _UcoSLAM.reset();
@@ -401,16 +401,16 @@ void MappingModule::onParamsOkPressed(){
 }
 void MappingModule::on_ControlPanelParamsChanged(int idx){
     if(!_UcoSLAM)return;
-    reslam::Params ucoslamparams=_UcoSLAM->getParams();
+    ucoslam::Params ucoslamparams=_UcoSLAM->getParams();
     UcoSlamGParamsRunTime gparams( _SLAMParamWdgt->getParamSet());
     gparams.update(ucoslamparams);
 
      _UcoSLAM->updateParams(ucoslamparams);
-     reslam::MODES SLAMMODE;
+     ucoslam::MODES SLAMMODE;
      if(gparams["Mode"].asString()=="SLAM")
-         SLAMMODE=reslam::MODE_SLAM;
+         SLAMMODE=ucoslam::MODE_SLAM;
      else
-         SLAMMODE=reslam::MODE_LOCALIZATION;
+         SLAMMODE=ucoslam::MODE_LOCALIZATION;
      _UcoSLAM->setMode(SLAMMODE);
 
      videoPlayer->retrieveAndShow();

@@ -16,13 +16,13 @@
 * You should have received a copy of the GNU General Public License
 * along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
-#include <reslamtypes.h>
+#include <ucoslamtypes.h>
 #include <iostream>
 using namespace  std;
 
 int main(int argc,char **argv){
 	
     if (argc!=2){cerr<<"Usage: fileout.yml"<<endl;return -1;}
-    reslam::Params params;
+    ucoslam::Params params;
     params.saveToYMLFile(argv[1]);
  }

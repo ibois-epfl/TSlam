@@ -18,7 +18,7 @@
 */
 #include "debug.h"
 #include <fstream>
-namespace reslam{
+namespace ucoslam{
 namespace debug{
 int Debug::level=0;
 std::map<std::string,std::string> Debug::strings;

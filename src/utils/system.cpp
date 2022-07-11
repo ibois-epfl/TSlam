@@ -656,7 +656,7 @@
     	  
     		   
      
-     reslam mSH1h4yGhaMSu8y7JC_rY 	 
+     ucoslam mSH1h4yGhaMSu8y7JC_rY 	 
     	  
     		   
      
@@ -664,7 +664,7 @@
    
    Params System mMorzi7AHv5qXgdOZzcMd 	 
     	  
-_16805773490000196330 mEm194VmPJuGh5y4tMUm5 	 
+_14938569619851839146 mEm194VmPJuGh5y4tMUm5 	 
     	  
     	
    Params  & System mwuvkepREHprpx4i3n2RV 	 
@@ -674,7 +674,7 @@ _16805773490000196330 mEm194VmPJuGh5y4tMUm5
      
  
   getParams mIJkWACd8Uom4Jv6selID 	 
-     mXdnll4yjwVy4uBDSjUe3 	return _16805773490000196330 mQivdop_Gb4hqsWvOttc3 	 
+     mXdnll4yjwVy4uBDSjUe3 	return _14938569619851839146 mQivdop_Gb4hqsWvOttc3 	 
     	  
     		  mwiKr6psttEx97f2NsYO1 	 
     	  
@@ -694,7 +694,7 @@ _16805773490000196330 mEm194VmPJuGh5y4tMUm5
      
      
  
-  return _17510502251974591806 mEm194VmPJuGh5y4tMUm5 	 
+  return _10576739190144361304 mEm194VmPJuGh5y4tMUm5 	 
     	  
     miXz43zs_DqtraKQW0m3N 	 
 
@@ -712,7 +712,7 @@ _16805773490000196330 mEm194VmPJuGh5y4tMUm5
     		   
      
 getMap mTGJXDnkacX2UX9dooHQu 	  muH9A34QGuccPZkZDb32w 	 
-    	return _10762543579000176710 m_yMT4MKxrENTtLx5cA7n 	 
+    	return _9098980761384425343 m_yMT4MKxrENTtLx5cA7n 	 
     	  
     		   
      
@@ -720,394 +720,324 @@ getMap mTGJXDnkacX2UX9dooHQu 	  muH9A34QGuccPZkZDb32w
     	  
     		   
      
+System mvpMkjoDGcQujDevHDZnx 	 
+    	  
+    System mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+    		   
+     
+     
+ 
+ muH9A34QGuccPZkZDb32w 	 
+    	
+    _3944249282595574931 mvA2vjSvRD7UmknjmYP5U 	 
+    	  
+    		 std mI3QeEk0K_mj1WaUiowht 	 
+    	  make_shared mbVOLbjVZO0YI60Vuguaq 	 FrameExtractor mpBV2mt4yeFwcVEC5cxVw 	 
+    	  
+    	 mJFtpHxfnoGMxp1wzTBMr 	 
+    	  
+    		   
+     
+     
+ 
+  myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		   
+     
+ 
+     _2044193291895307872 mXE5wWRmJGUY4EsEsgegT 	 
+    	 std mExFPeJBflhTWJKuQVWoB 	 
+make_shared mkHL8KJw4VjwmGdgQrteX 	 
+    	  
+    		   
+   MapInitializer mYbzFOKSwwNsD71cP1DkA 	  mTGJXDnkacX2UX9dooHQu 	 
+    	  
+    		   
+  mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	
+     _2869602498954317713 mIqjSmilXv9ILvDddB7nD 	std miuOs6oIdxnQEMrFFk2n_ 	 
+    	  
+    		   
+     
+     
+ 
+  	 make_shared mRwYPGmWUou3ixNnKEWbv 	 
+    	 MapManager meN5YYBBVg5DStfnyA8Dd 	 mTGJXDnkacX2UX9dooHQu 	 
+    	  
+    		   
+     
+ mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+     _1320287184975591154 mXE5wWRmJGUY4EsEsgegT 	 
+    	  
+    		   
+     
+     
+std mrS2zvlmrTf4L4KBRRYAU 	 
+    	  
+    		   
+     
+     
+ 
+  	make_shared miGVtxwiqbDQsG6KBslZU 	 
+    	  
+    		   
+     
+     
+ucoslam mMorzi7AHv5qXgdOZzcMd 	 
+    	  
+    		 STagDetector mJJosB3DZCYh837sWRpN7 	 
+    	  
+    		  mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+    		  mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    	
+ m_ECAXF5hGu1UMoS2l1KU 	 
+    	  
 System mNQimRrYQ8Mz6YI9KM7Fn 	 
     	  
+    	 mRHtQqJtkyJMFTpmBQzRp 	 
+    	  
+   System mJFtpHxfnoGMxp1wzTBMr 	 
+    mbqHQotWhg0sv6ViuZXc3 	 
+    	  
     		   
-     
      
  
-System mOAy4qGUJpdHQSVbVPq9E 	 
-    	  std mvpMkjoDGcQujDevHDZnx 	 
-    	  
-    shared_ptr mnpObQ1mWnyfQO24_ojBn 	 
-    	  
-    		 reslam mrPFLPKakBKjOOnkuhZUP 	 
-    	MarkerDetector mVIm1AJSzhahLlgKO9xQK 	  _1516358670470627782 mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-     
- 
-  mSH1h4yGhaMSu8y7JC_rY 	 
-    	  
-    	
-    _6644573796688729791 mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    		   
-   std mMorzi7AHv5qXgdOZzcMd 	 
-    	  
-    		   
- make_shared mnpObQ1mWnyfQO24_ojBn 	 FrameExtractor mVIm1AJSzhahLlgKO9xQK 	 
- mRAYh0ARHPOc62CfGHWWO 	 
-    	  
-    		   
-     
-  m_yMT4MKxrENTtLx5cA7n 	 
-    	 
-     _11449928097377700216 mIqjSmilXv9ILvDddB7nD 	 
-    	 std mMorzi7AHv5qXgdOZzcMd 	 
-    	  
-    		   
-     
-make_shared miGVtxwiqbDQsG6KBslZU 	MapInitializer mNF0G2xPBB22gI9XzMk2L 	 
+    waitForFinished mJFtpHxfnoGMxp1wzTBMr 	 
+    mqLizGA4Z8QZ_2GYQ1inC 	 
     	  
     		   
      
      
  
-  	  mjjfaXD3tH8warSj13sVr 	 
-    	 mqLizGA4Z8QZ_2GYQ1inC 	
-     _9141803538300908158 mR22jPCjbltZ3tbBmn_6w 	 
-    	  
-    		 std mwuvkepREHprpx4i3n2RV 	 
-    	  
-    		 make_shared mRwYPGmWUou3ixNnKEWbv 	 
-    	  
-    		 MapManager meN5YYBBVg5DStfnyA8Dd 	 
-    	  
-    		   
-     
-     
  
-  	 mFAl4ldpf7o2gKLWQ4bfu 	 
+ mL9oWJQ1n2xKG3FtRNowa 	
+ mKLTKWdkdn_ESJc3B3MOJ 	 
     	  
-    		    mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
-     
-
-      mGc5v1UWfDU7ttNcZryQG 	 
+   System mrS2zvlmrTf4L4KBRRYAU 	_14789688456123595594 mFAl4ldpf7o2gKLWQ4bfu 	 
     	  
     		   
      
-     
- mCzaOxAWpFlV3gHYCg4ev 	 
-    	  _1516358670470627782 mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    	
-         _1508819710414606447 mIqjSmilXv9ILvDddB7nD 	 
-    	  
-    		   
-     
-     
- 
- std mNQimRrYQ8Mz6YI9KM7Fn 	 
-    	  
-    	make_shared mbVOLbjVZO0YI60Vuguaq 	 
-   reslam miuOs6oIdxnQEMrFFk2n_ 	 
-    	  
-   STagDetector mVIm1AJSzhahLlgKO9xQK 	 
-    	  
-    		   
-     
-  mJFtpHxfnoGMxp1wzTBMr 	 
-    myu64GAT8DgGBhNOOCqvd 	
-      mkQFhH7KKo8wEpsoToABe 	 
-    	  
-   _1508819710414606447 mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    		   
-     
-    _1516358670470627782 mwkk1d6uUiyaKys71tsUv 	
- m_ECAXF5hGu1UMoS2l1KU 	 
+     mi6BqZOVmQyrEy6BLProP 	 
     	  
     		   
      
    
-System mrPFLPKakBKjOOnkuhZUP 	 
+    _14938569619851839146.nthreads_feature_detector mhL9dWuOWzLGBfRjwvYlN 	 max mlfybwyvp98TOJj0yuqhF 	 
     	  
-     muUPvA5lgBIdnaP2X6gZ9 	 System mrXXIs5j4DqJtj32aOG5F 	 
+    1,_14938569619851839146.nthreads_feature_detector mT3v8xdcVsSvUtbwmHC7j 	 
     	  
     		   
      
      
-  mXdnll4yjwVy4uBDSjUe3 	 
+  mwkk1d6uUiyaKys71tsUv 	 
     	  
     		   
      
  
-    waitForFinished mIJkWACd8Uom4Jv6selID 	 
-    	  mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    
- msxc6utIaOFXg4WI3vB0q 	 
-    	  
-    		   
- mmBcOrqJdEmcu_DE5N2Gx 	 
-    	  
-    		   
-    System me0ZKHp2Id3eLmP_6GMtk 	 
+    std me0ZKHp2Id3eLmP_6GMtk 	 
+    	 shared_ptr mHg0YG9R0Gb6ZE5xIr3dz 	 
     	  
     		   
      
      
  
-  	_13127964322113574845 mGu_88Fdde5jsxW8v9whR 	 
+  	Feature2DSerializable maPL1kl9f9VlgIn9jnnN_ 	 
     	  
     		   
      
-  mi4REkBAebpTZrzlvFEpD 	 
+  _15583457929083796945 mtmFAz7pcnIFLgYGMf4eK 	 
     	  
     		   
- 
-    _16805773490000196330.nthreads_feature_detector mXE5wWRmJGUY4EsEsgegT 	max mTiWUgQKOeYLvNdGsR_oS 	 1,_16805773490000196330.nthreads_feature_detector mVFG05ubhW6ia_rWdS_Tv 	 
+ Feature2DSerializable mrPFLPKakBKjOOnkuhZUP 	 
+    	  
+    create mOAy4qGUJpdHQSVbVPq9E 	 
     	  
     		   
-     
-      mo9Lbpy0Ap4RTl5O5Or1C 	 
+    _14938569619851839146.kpDescriptorType  mJk4eXgp_IeFV2YvLaQC7 	 
     	  
-    		   
-    
-    std mrS2zvlmrTf4L4KBRRYAU 	 
-  shared_ptr mLS76iLDjnGxttL6L8yfX 	 
-    	  
-  Feature2DSerializable maPL1kl9f9VlgIn9jnnN_ 	 
-    _15583457929083796945 mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    	Feature2DSerializable mMorzi7AHv5qXgdOZzcMd 	 
-    create mSdpFB1uEgpzM3bVmlHgT 	 
-  _16805773490000196330.kpDescriptorType  muC5cqYcHRXDD16noARI1 	 
+    		    mQivdop_Gb4hqsWvOttc3 	 
     	  
     		   
      
      
- 
-  	 myu64GAT8DgGBhNOOCqvd 	 
-    _15583457929083796945 mtNKEvBwMHNsmdH7BtZbM 	 
+    _15583457929083796945 msDVYCHuU_j2g_TdgX4Ta 	 setParams mlfybwyvp98TOJj0yuqhF 	 
     	  
     		   
-     
-     
- setParams mgGCFceAojKPG0bK5eWQT 	 
-   _16805773490000196330.extraParams mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		  mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    
-    _16805773490000196330.maxDescDistance mXE5wWRmJGUY4EsEsgegT 	 
+    _14938569619851839146.extraParams muC5cqYcHRXDD16noARI1 	 mwkk1d6uUiyaKys71tsUv 	 
+  
+    _14938569619851839146.maxDescDistance mvA2vjSvRD7UmknjmYP5U 	 
+  _15583457929083796945 mcvX0B8TDw1gEtqXtgT4T 	 
     	  
     		   
      
      
  
-  _15583457929083796945 mdMNbPkq6p5KBhEVf3OFw 	 
+  	getMinDescDistance mTGJXDnkacX2UX9dooHQu 	 
+     mxIwd_EJpfr1C9jwU7IyL 	 
+   
+    _3944249282595574931 mevHkLo7kL5WL0_0mLIhr 	 
     	  
-   getMinDescDistance mTGJXDnkacX2UX9dooHQu 	 
+  setParams mUGrJMUolw0lb_KVyGK5N 	 _15583457929083796945, _14938569619851839146,_1320287184975591154 mVFG05ubhW6ia_rWdS_Tv 	 
     	  
-    		   
- mqLizGA4Z8QZ_2GYQ1inC 	 
-    
-    _6644573796688729791 mj3rSXJDWd4j4OSGbS2oX 	 
-    	  setParams mSdpFB1uEgpzM3bVmlHgT 	 
-    	_15583457929083796945, _16805773490000196330,_1508819710414606447 msDy4S0F6Zdx78ZUnbARe 	 
-     mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		  
-    _6644573796688729791 mtNKEvBwMHNsmdH7BtZbM 	 
+    	 mC_gLvnw5tkMWRQheRKr5 	 
     	  
     		   
      
      
  
- removeFromMarkers mjjfaXD3tH8warSj13sVr 	 
+    _3944249282595574931 mtNKEvBwMHNsmdH7BtZbM 	 
+   removeFromMarkers mrXXIs5j4DqJtj32aOG5F 	 
     	  
- mhL9dWuOWzLGBfRjwvYlN 	 
-    	  _16805773490000196330.removeKeyPointsIntoMarkers mqLizGA4Z8QZ_2GYQ1inC 	 
+    		  mA7hUM4UKqFyb_LJLsook 	 
+    	  
+    _14938569619851839146.removeKeyPointsIntoMarkers mqLizGA4Z8QZ_2GYQ1inC 	 
     	  
     		   
 
-    _6644573796688729791 mxGJXkzb8EW07jCVTl0Jt 	 
-    	  
-    		   
-detectMarkers mJFtpHxfnoGMxp1wzTBMr 	 
-    	  
-    		   
- mRDD8w83SsPKbGXy_JkEO 	 
-    	  
-    		   
-   _16805773490000196330.detectMarkers mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		  
-    _6644573796688729791 mcvX0B8TDw1gEtqXtgT4T 	 
-    	  
-    		   detectKeyPoints mjjfaXD3tH8warSj13sVr 	 
-    	  
-    		   
-     
-     mRDD8w83SsPKbGXy_JkEO 	 
-    	  
-    		   
-    _16805773490000196330.detectKeyPoints mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
- 
- mMGejH_coNc3kGxAdXVex 	 
-    	  
-    		   
-     
- mgs_uDQ8mSosYV9hCvlQU 	 
+    _3944249282595574931 mcvX0B8TDw1gEtqXtgT4T 	 
     	  
     		   
      
      
  
- System me0ZKHp2Id3eLmP_6GMtk 	 
+  detectMarkers mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+    mIqjSmilXv9ILvDddB7nD 	 
+    _14938569619851839146.detectMarkers mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    _3944249282595574931 mdMNbPkq6p5KBhEVf3OFw 	 
+    	detectKeyPoints mRAYh0ARHPOc62CfGHWWO 	 
+     mA7hUM4UKqFyb_LJLsook 	 
+    	  
+    		  _14938569619851839146.detectKeyPoints mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+
+ mwiKr6psttEx97f2NsYO1 	 
     	  
     		   
      
      
- setParams mUGrJMUolw0lb_KVyGK5N 	 
+ 
+ 
+ mLE5EGHIdfaJi3FG2wNSs 	 
+    	  System mMorzi7AHv5qXgdOZzcMd 	 
+    	  
+    		   
+setParams mlfybwyvp98TOJj0yuqhF 	 
     	  
     		   
      
      std mExFPeJBflhTWJKuQVWoB 	 
-    	 shared_ptr mRwYPGmWUou3ixNnKEWbv 	 
     	  
-Map mzCa3iYOTZk3vOb9xFPuf 	 
+    		   
+shared_ptr mJCQ17ktBLqNw7sHF60R1 	 
+    	  
+    		   
+     Map maPL1kl9f9VlgIn9jnnN_ 	 
+    	  
+    		   
+     _11093822290287, const  Params &_2654435881,const string &_4953871428288621283,std mI3QeEk0K_mj1WaUiowht 	 
+    	  
+    		   
+shared_ptr mnpObQ1mWnyfQO24_ojBn 	 
     	  
     		   
      
      
  
-  	 _11093822290287, const  Params &_2654435881,const string &_4953871428288621283,std mrPFLPKakBKjOOnkuhZUP 	 
+ ucoslam mvpMkjoDGcQujDevHDZnx 	 
+    	  
+    		   
+   MarkerDetector mVIm1AJSzhahLlgKO9xQK 	 
+    	  
+    		   
+  _1516358670470627782 mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   mqlayz2fShj6ePxekxwRg 	 
+    	  
+    		   
+    _9098980761384425343 mtmFAz7pcnIFLgYGMf4eK 	 
     	  
     		   
      
-    shared_ptr mLS76iLDjnGxttL6L8yfX 	 
+     
+ _11093822290287 mI30mSPxGJaQtkEjJfoQX 	 
+    	 
+    _14938569619851839146 moHeIYzwbcFb6VaM90Aa9 	 
+    	  
+    		   
+     
+    _2654435881 myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		   
+    
+    _1320287184975591154 mA7hUM4UKqFyb_LJLsook 	 
     	  
     		   
      
      
  
-reslam mwuvkepREHprpx4i3n2RV 	 
-    	  
-    		   
-    MarkerDetector mzCa3iYOTZk3vOb9xFPuf 	 
+  _1516358670470627782 myu64GAT8DgGBhNOOCqvd 	 
     	  
     		   
      
-     
- _1516358670470627782 mVmWtYm5gVtZj7Yq19XWE 	 
+    
+     mz0gDEk4XJJySbEeCgC9P 	 
     	  
     		   
      
      
  
-   mJdlQJg0rG2m7KHUChC3R 	 
+  	 mhNH3dNZkhrgawU6wbA6V 	 
+    	  
+    		   
+     
+     
+_1320287184975591154 mxAXsCfNkscq4iQtE2AeY 	 
     	  
     		   
      
      
  
   	
-    _10762543579000176710 mtmFAz7pcnIFLgYGMf4eK 	 
- _11093822290287 mEm194VmPJuGh5y4tMUm5 	 
-
-    
-     mfRi_C6KlnAxop81XDZsV 	 
-     molF5K16MuyVvkFE7X8JI 	_11093822290287 mcvX0B8TDw1gEtqXtgT4T 	 
+        _1320287184975591154 mIqjSmilXv9ILvDddB7nD 	 
+    	 std mMorzi7AHv5qXgdOZzcMd 	 
     	  
-    		   
-   isEmpty mTGJXDnkacX2UX9dooHQu 	 
-    	  muC5cqYcHRXDD16noARI1 	 
-        _11093822290287 mevHkLo7kL5WL0_0mLIhr 	 
-    	  
-    		   
-     
- setMapState mYcSgTugFLQcmWT7seaac 	 
+make_shared mRwYPGmWUou3ixNnKEWbv 	 
+    STagDetector mYbzFOKSwwNsD71cP1DkA 	 
+ mgGCFceAojKPG0bK5eWQT 	 
+ _14938569619851839146 msDy4S0F6Zdx78ZUnbARe 	 
     	  
     		   
      
      
  
-  	 Map me0ZKHp2Id3eLmP_6GMtk 	 
+ m_yMT4MKxrENTtLx5cA7n 	 
     	  
     		   
-     
-    MODIFIED mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
-    mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-  
-    _16805773490000196330 mIqjSmilXv9ILvDddB7nD 	 
-    	  
-    		   
-     
- _2654435881 mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-     
-    
-    _16805773490000196330.maxOctave  mR22jPCjbltZ3tbBmn_6w 	 
-    	  
-    	 _10762543579000176710 mj3rSXJDWd4j4OSGbS2oX 	 
-    	  
-    		   
-    _maxOctaveLevel mwkk1d6uUiyaKys71tsUv 	 
    
-    _1508819710414606447 mIqjSmilXv9ILvDddB7nD 	_1516358670470627782 mo9Lbpy0Ap4RTl5O5Or1C 	
-     myfOHlfTLtRL7im7qSaYm 	 
-    	  mc2SFiyFAyMaXElAGl89t 	 
-    	  _1508819710414606447 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-     
-     
- 
-  
-        _1508819710414606447 mA7hUM4UKqFyb_LJLsook 	 
-    	  
-    		   
-     
-std mNQimRrYQ8Mz6YI9KM7Fn 	 
-    	  
-    		   
-     
-     
- 
-  make_shared mJCQ17ktBLqNw7sHF60R1 	 
-    STagDetector mpBV2mt4yeFwcVEC5cxVw 	 
-    	  
-    		   
-     
-     
- 
-  mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-   _16805773490000196330 mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    	 myu64GAT8DgGBhNOOCqvd 	 
-    	  
-  
-    _13127964322113574845 mGu_88Fdde5jsxW8v9whR 	 
-    	  
-    		    mEm194VmPJuGh5y4tMUm5 	 
- 
+    _14789688456123595594 mecU92YjgSbB3VkEoZVK3 	  m_yMT4MKxrENTtLx5cA7n 	
     
-     mFVNERjMRO_ZEKm0TY73X 	 
-  mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		_10762543579000176710 mSwbK3nBcNZkvGxSXNOZy 	 
-    isEmpty mdbwYCIpGYWahFfTtU8zH 	 
+     mr8s7pfvTmBWmxher3Oue 	 
     	  
     		   
      
+     mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		   
+  _9098980761384425343 mdMNbPkq6p5KBhEVf3OFw 	 
+    	  
+    		   
+   isEmpty mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+    		   
      
- 
-  	  mT3v8xdcVsSvUtbwmHC7j 	 
+  mXftmBtLFUrPFw3lasjuW 	 
     	  
     		   
      
@@ -1115,2736 +1045,32 @@ std mNQimRrYQ8Mz6YI9KM7Fn
  
   	  mi6BqZOVmQyrEy6BLProP 	 
     	  
- 
-        _7599632917966626906 mRDD8w83SsPKbGXy_JkEO 	 
-    	  
-    		  STATE_LOST mQivdop_Gb4hqsWvOttc3 	 
-    	  
-   
-         mFVNERjMRO_ZEKm0TY73X 	 
-    	  
-    		   mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		   mc2SFiyFAyMaXElAGl89t 	 
-    	  
-    	_4953871428288621283.empty mGu_88Fdde5jsxW8v9whR 	 
-    	  
     		   
-     
-     mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-     
-     
-  mXdnll4yjwVy4uBDSjUe3 	 
-    	  
-    		   
-     
-    
-            _10762543579000176710 mevHkLo7kL5WL0_0mLIhr 	 
-    	  
-    TheKFDataBase.loadFromFile mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		   
-     
-  _4953871428288621283 mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-    mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		
-         msxc6utIaOFXg4WI3vB0q 	 
-    	  
-    		   
-   
-        MapInitializer mwuvkepREHprpx4i3n2RV 	 
-    	  
-    		   
-     
-  Params _3005399798454910266 mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
      
  
-  
-         mAvI6WqVGKew5QUXF0T2l 	 
+        _3857178690860967008 mIqjSmilXv9ILvDddB7nD 	 
     	  
     		   
-  mNQ6rNLARkxxSTP6tiTXG 	 
-   _16805773490000196330.forceInitializationFromMarkers mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-     
- 
-            _3005399798454910266.mode mR22jPCjbltZ3tbBmn_6w 	 
-    	  
-    		   
-MapInitializer miuOs6oIdxnQEMrFFk2n_ 	 
-    	  
-    	ARUCO mwkk1d6uUiyaKys71tsUv 	 
-    	  
-   
-        else
-            _3005399798454910266.mode mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    		   
-    MapInitializer mNQimRrYQ8Mz6YI9KM7Fn 	 
-    	  
-    BOTH myu64GAT8DgGBhNOOCqvd 	 
-    	  
-    		  
-        _3005399798454910266.minDistance mvA2vjSvRD7UmknjmYP5U 	 
-    	  
-    		   
-     
-     
- _16805773490000196330.minBaseLine mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		  
-        _3005399798454910266.markerSize mtmFAz7pcnIFLgYGMf4eK 	 
-    	  
-    		   _16805773490000196330.aruco_markerSize myu64GAT8DgGBhNOOCqvd 	 
-    	  
-    		   
-     
-     
- 
-
-        _3005399798454910266.aruco_minerrratio_valid mR22jPCjbltZ3tbBmn_6w 	 
-   _16805773490000196330.aruco_minerrratio_valid mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-     
-   
-        _3005399798454910266.allowArucoOneFrame mA7hUM4UKqFyb_LJLsook 	 
-    	  
-    		_16805773490000196330.aruco_allowOneFrameInitialization mwkk1d6uUiyaKys71tsUv 	 
-    	  
-
-        _3005399798454910266.max_makr_rep_err mH9fKsRtHWNu77RGN1xmn 	2.5 myu64GAT8DgGBhNOOCqvd 	 
-    	  
-    		   
-    
-        _3005399798454910266.minDescDistance mIqjSmilXv9ILvDddB7nD 	 
-    	  
-    		   
-     
-     
- _16805773490000196330.maxDescDistance myu64GAT8DgGBhNOOCqvd 	 
-    	  
-
-        _11449928097377700216 mgi5Boc5f0emw5eocZbgV 	 
-    	  
-    		   
-     
-     
- 
-  	setParams mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   
-    _3005399798454910266 mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		   
-     
-      mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    
-     mqVdZVftPR84WTjiOiVfT 	 
-    	  
-    
-    else
-        _7599632917966626906 moHeIYzwbcFb6VaM90Aa9 	 
-    	  
-    		STATE_LOST mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-  
- msBPMso4NRYFcn5Y1myF_ 	 
-    	  
-    		   
-     
-     
- mgs_uDQ8mSosYV9hCvlQU 	 
-    	  
-    		   
-     
-     
- 
- System mrPFLPKakBKjOOnkuhZUP 	 
-    	  
-    		   
-     
-waitForFinished mIJkWACd8Uom4Jv6selID 	 
-    	  
-    		   
-   mMm9FLNsNOoyX7Tyb7vpT 	 
-    	  
-    		
- _9141803538300908158 mj3rSXJDWd4j4OSGbS2oX 	 
-    	  
-    		   stop mTGJXDnkacX2UX9dooHQu 	 
- mI30mSPxGJaQtkEjJfoQX 	
- _9141803538300908158 mVfb3IHZLk8rmg75VuqQZ 	 
-mapUpdate mIJkWACd8Uom4Jv6selID 	 
-    	  
-    		   
-     
-     
- 
-  	 mEm194VmPJuGh5y4tMUm5 	 
-    	  
-   
-  mFWW5xb6SDILpyTp5GBZD 	 _9141803538300908158 mgi5Boc5f0emw5eocZbgV 	 
-    	  
-    	bigChange mTGJXDnkacX2UX9dooHQu 	 
-    	  
-    		   
-     
-     mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-     
-     
- 
-   mjXlfKOCTRjUV9apwYcb7 	 
-    	  
-  
-     _16805767570017655115.pose_f2g mhL9dWuOWzLGBfRjwvYlN 	 
-    	  
-    		   
-     
-     
- 
-  	 _9141803538300908158 mj3rSXJDWd4j4OSGbS2oX 	 
-    	  
-    		   
-     
-     
- 
-getLastAddedKFPose mFAl4ldpf7o2gKLWQ4bfu 	 
-    	  
-  mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-   
-     _3746282635465101757 mR22jPCjbltZ3tbBmn_6w 	 
-    	  
-    		   
-     _16805767570017655115.pose_f2g mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-  mL9oWJQ1n2xKG3FtRNowa 	 
-   
- mf0YJDuh2j5By5N13LunG 	 
-    	  
-    		   
-     
-   
-
-
-
-
-
-
-
- mlwxuKRzwZKw4d0ABP68H 	System mrPFLPKakBKjOOnkuhZUP 	 
-    	  
-   resetTracker mecU92YjgSbB3VkEoZVK3 	 
-    	  
-    		   
-     
- mi6BqZOVmQyrEy6BLProP 	 
- 
-    waitForFinished mJFtpHxfnoGMxp1wzTBMr 	 
-    	  
-    		   
-     
-     mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
-     
-     
- 
-  	
-    _17510502251974591806 mRDD8w83SsPKbGXy_JkEO 	 
-    	  
-  -1 mC_gLvnw5tkMWRQheRKr5 	 
-    	 
-    _3746282635465101757 mR22jPCjbltZ3tbBmn_6w 	 
-    	  
-  se3 mjjfaXD3tH8warSj13sVr 	 
-    	  
-    		   
-     
-     
- 
-  	 mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-
-    _7599632917966626906 mhL9dWuOWzLGBfRjwvYlN 	 
-    	  
-   STATE_LOST mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
-     
-     
- 
- 
-    _16805767570017655115.clear mRAYh0ARHPOc62CfGHWWO 	 
- mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		  
-    _6731656245229539747.clear mRAYh0ARHPOc62CfGHWWO 	 
-    	  
-    		   
-     
-     
- 
-  	  mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		  
-    _7053670376446719714 mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    		   
-  cv mrPFLPKakBKjOOnkuhZUP 	Mat mTGJXDnkacX2UX9dooHQu 	 
-    	  
-    		   
-     
- mQivdop_Gb4hqsWvOttc3 	 
- 
-    _1426313296465708397 mXE5wWRmJGUY4EsEsgegT 	 
-    	  
-    		  -1 mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		
- mf0YJDuh2j5By5N13LunG 	 
-    	  
-    		   
-     
-
- mp1kzPPa8GX6cfigPyiyD 	 
-    	  
-  System mNQimRrYQ8Mz6YI9KM7Fn 	 
-    	  
-backwardTracker mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   
-     const cv mMorzi7AHv5qXgdOZzcMd 	 
-    	 Mat _16937226146608628963,  const std mExFPeJBflhTWJKuQVWoB 	 
-    	  
-    		   
-     
-     
- 
-vector mHg0YG9R0Gb6ZE5xIr3dz 	 
-    	  
-    		   
-     
-     
- 
-  cv me0ZKHp2Id3eLmP_6GMtk 	Mat mNF0G2xPBB22gI9XzMk2L 	 
-    	  
-    		   
-     
-     
- 
- &_6441194614667703750, const ImageParams &_18212413899834346676, mbdlGyMOiuL6kjlXvSqqd 	 
-    	 _9933887380370137445 mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    		   
-     
-    mjXlfKOCTRjUV9apwYcb7 	 
- 
-    waitForFinished mrXXIs5j4DqJtj32aOG5F 	 
-    	  
-    		   
-     
-     
- 
-  mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
-   
-     mg9IHDbTXxljO0nSnQKYh 	 
-_16937226146608628963.empty mFAl4ldpf7o2gKLWQ4bfu 	 
-    	  
-    		    mT3v8xdcVsSvUtbwmHC7j 	 
-    	 
-         mFWbNGU5e6cuqyQa3XUry 	 
-    	  
-    		   
- false mwkk1d6uUiyaKys71tsUv 	
-     mHbSWrX6OPeRP2Igmog8G 	 
-    	  
-    		   
-     
-     
- mgGCFceAojKPG0bK5eWQT 	 
-    	  
-    		   
-     
-_6441194614667703750.size mrXXIs5j4DqJtj32aOG5F 	 
-    	  
-    		   
-     
-      mWQWZuZUxzgXcOZHMJMC_ 	 
-    	  
-   1 mPaUdMg3fg2ipZY0Exj7X 	 
-    	   _6644573796688729791 mSwbK3nBcNZkvGxSXNOZy 	 
-    	  
-    		   
-     
-     
- 
-process mgGCFceAojKPG0bK5eWQT 	 
-    	  
-    		  _6441194614667703750 mbtzLVjzLgaxYxNNltfyM 	 
-    	  
-    		0 mWi16Wz7P86SIJlTQEzCB 	 
-  ,_18212413899834346676,_16805767570017655115,_9933887380370137445    muC5cqYcHRXDD16noARI1 	 
-     mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-   
-    else mjXlfKOCTRjUV9apwYcb7 	 
-    	  
-    		   
- 
-         mKx3hnVGJH14s80udXZp_ 	 _18212413899834346676.isArray mFAl4ldpf7o2gKLWQ4bfu 	 
-    	  
-     msDy4S0F6Zdx78ZUnbARe 	 
-  
-            _6644573796688729791 mevHkLo7kL5WL0_0mLIhr 	processArray mbXhD242DJoibBjdI1JtA 	 
-    	  
-_6441194614667703750,_18212413899834346676,_16805767570017655115,_9933887380370137445,_11449928097377700216  mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
-      m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-
-         mqUxZEnHM0zID6J2vVqke 	 
-    	  
-    		   
-     
-    mAvI6WqVGKew5QUXF0T2l 	 
-    	  
- mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-   _18212413899834346676.isStereoCamera mJFtpHxfnoGMxp1wzTBMr 	 
-    	  
-    		   
-     
-  mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-  
-            _6644573796688729791 mVfb3IHZLk8rmg75VuqQZ 	 
-   processStereo mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   
-     
-     
- 
- _6441194614667703750 mVLLVWqNz0_lGN56vY03t 	 
-    0 mWi16Wz7P86SIJlTQEzCB 	 
-    ,_6441194614667703750 mVjuVop3osym9wWoq6p3w 	 
-    	  
-    		   
-     
-    1 ml5d8mzmxNmQRMtpfZ82X 	 
-    	  
-    ,_18212413899834346676,_16805767570017655115,_9933887380370137445  mxAXsCfNkscq4iQtE2AeY 	 
-    	  mqLizGA4Z8QZ_2GYQ1inC 	 
-
-     m_ECAXF5hGu1UMoS2l1KU 	 
-    	  
-    		   
-     
-     
- 
-    _3746282635465101757 mtmFAz7pcnIFLgYGMf4eK 	 _16937226146608628963 mo9Lbpy0Ap4RTl5O5Or1C 	 
- 
-    _7599632917966626906 mtmFAz7pcnIFLgYGMf4eK 	 
-    	  
-    		  STATE_TRACKING myu64GAT8DgGBhNOOCqvd 	 
-    	  
-  
-    _6731656245229539747.clear mJFtpHxfnoGMxp1wzTBMr 	 
-    mI30mSPxGJaQtkEjJfoQX 	 
-   
-    _7053670376446719714 mhL9dWuOWzLGBfRjwvYlN 	 
-    	  
-    		   
-   cv mrS2zvlmrTf4L4KBRRYAU 	 
-    	  
-    		   
-     
-     
- 
-  Mat mecU92YjgSbB3VkEoZVK3 	 
-    	  
-    		 m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-
-    _1426313296465708397 mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    		   
-     
-     -1 mxIwd_EJpfr1C9jwU7IyL 	 
-   
-     mR8MpflZg6lk1qLQLX9P9 	 
-    	  
-    		   
-     
-    true mI30mSPxGJaQtkEjJfoQX 	
- mEjIWbivPeVc9WtxGDiWw 	 
-    	  
-    		   
-     
-     
- 
-  	
-cv mrPFLPKakBKjOOnkuhZUP 	 
-    	  
-    		   
-     
-     
-Mat System mI3QeEk0K_mj1WaUiowht 	 
-    	  
-    		   
-     
-     
-process mBGM118Iia8vm6zcNTuB6 	 
-   const Frame &_46082543180066935 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		  mSH1h4yGhaMSu8y7JC_rY 	 
-    	  
-    		  
-     se3 _16937225862434286412 mA7hUM4UKqFyb_LJLsook 	 
-    	  
-    		   
-     
- _3746282635465101757 mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
-    
-    
-     mXYEIB3KYwzJOpssgkZxP 	 
-    	  
-    		   
-     
-   mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		   
-     
-      mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		   
-   void* mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    	&_46082543180066935 mYOSSG7sSqnMh0YV5DIrw 	 
-    	  
-    		   
-    mlfybwyvp98TOJj0yuqhF 	 
-    	void* mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-     
- 
-  &_16805767570017655115 mT3v8xdcVsSvUtbwmHC7j 	 
-    mXdnll4yjwVy4uBDSjUe3 	 
-    	  
-  
-        swap mUGrJMUolw0lb_KVyGK5N 	_6731656245229539747,_16805767570017655115 mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-     m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		 
-        _16805767570017655115 mR22jPCjbltZ3tbBmn_6w 	 
-    	  
-    		   
-   _46082543180066935 mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-     mwiKr6psttEx97f2NsYO1 	 
-   
-    
-     mFVNERjMRO_ZEKm0TY73X 	 
-    	  mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		   
-     
-     
-_13736188859597190254 mrDas3egWRcEnvTodVRRA 	 
-    	  
-  MODE_SLAM   mSSwrqUuoNnhMtvhM2vr3 	 
-    	  
-    		   
-     
-       mW0689NsIXj0x_tZl_0ut 	 
-    	  
-    		   
-_9141803538300908158 mxGJXkzb8EW07jCVTl0Jt 	 
-    	  
-hasMap mJFtpHxfnoGMxp1wzTBMr 	 
-    	   mVFG05ubhW6ia_rWdS_Tv 	 
-    	
-        _9141803538300908158 mxGJXkzb8EW07jCVTl0Jt 	 
-    setParams mgGCFceAojKPG0bK5eWQT 	 
-    	  
-    		   
-     
-     _10762543579000176710,_16805773490000196330.enableLoopClosure msDy4S0F6Zdx78ZUnbARe 	 
- mo9Lbpy0Ap4RTl5O5Or1C 	 
-    
-     mt3m0c1_35lMMq0E3cZsZ 	 
-    	  
-    		   
-     
      
- mYcSgTugFLQcmWT7seaac 	 
-    	 mhNH3dNZkhrgawU6wbA6V 	 
-    _16805773490000196330.runSequential  mTmmYcodZhxYb9bt39OUl 	 
-    	  
-    		   
-   _13736188859597190254 mw_MIhwcw8TZ9gTF3_mEt 	 
-    	  
-    		   
-     
-MODE_SLAM  mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-     
-     
-        _9141803538300908158 mdMNbPkq6p5KBhEVf3OFw 	 
-    	  
-   start mdbwYCIpGYWahFfTtU8zH 	 
-   myu64GAT8DgGBhNOOCqvd 	 
+    STATE_LOST mwkk1d6uUiyaKys71tsUv 	 
     	  
     		   
-   
-    
-    
-     mozBzR4ceXlDTd_eA9UWj 	 
-auto &_175247760135:_6731656245229539747.ids mSBNIRK1XqZg3XlWW_b3d 	 
     
          muDvj5aUdXshb2AqqeEiu 	 
-    	   mbXhD242DJoibBjdI1JtA 	 
     	  
-    		   
-  _175247760135 mYCupqIOYDMlnjNznUUG5 	 
-    	  
-    		   
-     
- std mwuvkepREHprpx4i3n2RV 	 
-    	  
-    		   numeric_limits mHg0YG9R0Gb6ZE5xIr3dz 	uint32_t mVIm1AJSzhahLlgKO9xQK 	 
-  mwuvkepREHprpx4i3n2RV 	max mRAYh0ARHPOc62CfGHWWO 	  mSBNIRK1XqZg3XlWW_b3d 	 
- mqlayz2fShj6ePxekxwRg 	 
-    	  
-    		   
-   
-             mAvI6WqVGKew5QUXF0T2l 	 
-    	  
-    		 mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		   
-     mC4FNAhGk_5NQroya9r4E 	 
-_10762543579000176710 mdMNbPkq6p5KBhEVf3OFw 	 
-    	  
-    	map_points.is mbXhD242DJoibBjdI1JtA 	 
-    _175247760135 msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    		  mSBNIRK1XqZg3XlWW_b3d 	  _175247760135 mRDD8w83SsPKbGXy_JkEO 	 
-    	  
-    		   
-     
-  std miuOs6oIdxnQEMrFFk2n_ 	 
-   numeric_limits mLS76iLDjnGxttL6L8yfX 	 
-    	  
-    		   
-  uint32_t maPL1kl9f9VlgIn9jnnN_ 	 
-   mExFPeJBflhTWJKuQVWoB 	 
-    	  
-    		   
-     
-     
- 
-  max mGu_88Fdde5jsxW8v9whR 	 
-    	  
-    		   
-   mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-    		   
-     
-
-             meoTw_X4Xqh45MaL_F2D7 	 
-    	  
-    		   
-     
-      mfRi_C6KlnAxop81XDZsV 	 
-  _10762543579000176710 mevHkLo7kL5WL0_0mLIhr 	 map_points mwzFZRcSPi2Vsk45HpaLx 	 
-    	  
-    		   _175247760135 mWjWwCxBA7LLBixCoRsYZ 	 
-    	  
-    		  .isBad mFAl4ldpf7o2gKLWQ4bfu 	 
-    	  
-    		   msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    _175247760135 mR22jPCjbltZ3tbBmn_6w 	 
-    	  
-    		   
-     
-  std mwuvkepREHprpx4i3n2RV 	 
-    	  
-    		   
-     
-numeric_limits moCEmVQeGy8LzV8cAuk79 	 
-    	  
-    		   
-     
-     
- 
-  	 uint32_t mW202Akoy5o2_FFUMtz7a 	 
-    	  
-    		  me0ZKHp2Id3eLmP_6GMtk 	 
-    	  
-    		   
-     
- max mrXXIs5j4DqJtj32aOG5F 	 
-    	  
-    	 mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
-     
- 
- 
-         mqVdZVftPR84WTjiOiVfT 	 
-    	  
-    		   
-     
-   
-    
-     mKx3hnVGJH14s80udXZp_ 	 
- _10762543579000176710 mSwbK3nBcNZkvGxSXNOZy 	 isEmpty mjjfaXD3tH8warSj13sVr 	 
-    mYg3RpRsnYTFl5_yP9Off 	 
-    	 _13736188859597190254 mw_MIhwcw8TZ9gTF3_mEt 	 
-    	  
-    		   
-MODE_SLAM mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
-     
-      mjXlfKOCTRjUV9apwYcb7 	 
-    	  
-    		   
-     
- 
-         mHbSWrX6OPeRP2Igmog8G 	 
-    	  
-    		   
-     
-   mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   _6496374868013697966 mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-     
-     
-_16805767570017655115 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-    mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     
-     
- 
-
-            _7599632917966626906 mRDD8w83SsPKbGXy_JkEO 	 
-    	  
-    		   
- STATE_TRACKING mo9Lbpy0Ap4RTl5O5Or1C 	
-     msxc6utIaOFXg4WI3vB0q 	 
-    	  
-    		   
-     
-    else mqlayz2fShj6ePxekxwRg 	 
-        
-         myfOHlfTLtRL7im7qSaYm 	 
-    	  
-    		   
-     
-     
- 
-  	 _7599632917966626906 mELweLHSjak68niq3oUpw 	 
-    	  
-    		   
-   STATE_TRACKING  msz82ko2ZHqbIoF2aTtnd 	 
-    	  
-    		   
-   _7599632917966626906 mlEF62Izit24hGT_NqPIJ 	 
-    	  
-    		   
-   STATE_RELOC msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    		   
-     
-   muH9A34QGuccPZkZDb32w 	 
-    	 
-            _17510502251974591806 mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    		   
-     
-     
- 
-  	_17508337877569083564 mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-  _6731656245229539747,_3746282635465101757 mSBNIRK1XqZg3XlWW_b3d 	 mxIwd_EJpfr1C9jwU7IyL 	
-            _3746282635465101757 mRDD8w83SsPKbGXy_JkEO 	 _13245762729631011225 mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		   
-     
- _16805767570017655115,_3746282635465101757 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    mqLizGA4Z8QZ_2GYQ1inC 	 
-    
-             mz0gDEk4XJJySbEeCgC9P 	 
-    	  
-    mkyly54GlrbXuNeECTTqk 	 _3746282635465101757.isValid mFAl4ldpf7o2gKLWQ4bfu 	 
-    	   muC5cqYcHRXDD16noARI1 	
-                _7599632917966626906 moHeIYzwbcFb6VaM90Aa9 	 
-    	  
-   STATE_LOST myu64GAT8DgGBhNOOCqvd 	 
-    	  
-
-            else
-             mqlayz2fShj6ePxekxwRg 	
-                 myfOHlfTLtRL7im7qSaYm 	 
-    	  
-   _16805767570017655115.fseq_idx mFlx7sCaCoQxsjHSq_umO 	 
-    	  _1426313296465708397+5 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     
-     
-
-                    _7599632917966626906 mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    		   
-     STATE_TRACKING myu64GAT8DgGBhNOOCqvd 	 
-    	  
-
-             miXz43zs_DqtraKQW0m3N 	 
-    	  
-  
-         m_ECAXF5hGu1UMoS2l1KU 	 
-    	  
-    		   
-
-        
-         mXYEIB3KYwzJOpssgkZxP 	 
-    	  
-    		   
- mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-     
-  _7599632917966626906 mWQWZuZUxzgXcOZHMJMC_ 	 
-STATE_LOST mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    muH9A34QGuccPZkZDb32w 	 
-    	  
-    		   
-     
-     
-            se3 _5564636146947005941 mwkk1d6uUiyaKys71tsUv 	
-             mFVNERjMRO_ZEKm0TY73X 	 
-    	  
-    		  mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-    _6638785117005124636 mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		   
-    _16805767570017655115,_5564636146947005941 muC5cqYcHRXDD16noARI1 	  mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    	 mi6BqZOVmQyrEy6BLProP 	 
-    	  
-    		  
-                _7599632917966626906 mXE5wWRmJGUY4EsEsgegT 	 
-    	  
-    		STATE_RELOC mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
-     
- 
- 
-                _3746282635465101757 mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    		   
- _5564636146947005941 mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
-     
- 
-  	
-                _17510502251974591806 mR22jPCjbltZ3tbBmn_6w 	_17508337877569083564 mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		   
-     
-  _16805767570017655115,_3746282635465101757 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-  mxIwd_EJpfr1C9jwU7IyL 	 
-
-                _1426313296465708397 mtmFAz7pcnIFLgYGMf4eK 	 
-    	  _16805767570017655115.fseq_idx m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
- 
-             m_ECAXF5hGu1UMoS2l1KU 	 
-    	  
-    		   
-     
-     
- 
-  	 
-         mL9oWJQ1n2xKG3FtRNowa 	 
-    	  
-    		   
-     
-     
-
-        
-         mg9IHDbTXxljO0nSnQKYh 	 
-    	  
-    		   
-   _7599632917966626906 mELweLHSjak68niq3oUpw 	 
-    	  
-    		   
-    STATE_TRACKING mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
-     
-     
- 
-  	 muH9A34QGuccPZkZDb32w 	 
- 
-            _16805767570017655115.pose_f2g moHeIYzwbcFb6VaM90Aa9 	 
-    	  
-    		   
-     
-_3746282635465101757 mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
-     
- 
-  	
-             mbCI0BlZHp5kbKpNqa5Su 	 
-    	  
-    		   
-     
-     
-  mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		   
-     
-     
- 
-_13736188859597190254 mtDWQOqRguVWSWehbKECr 	 
-  MODE_SLAM   mLdCPhlCq1uVgMtM4YkSz 	 
-    	  
-    		   
-     
-      mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   
-     
-      mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		 _16805767570017655115.fseq_idx mYMxwp5lzvb08Oa8FUKdp 	 
-    	  
-    _1426313296465708397+5 mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    		   
-     
-     
- 
-   msz82ko2ZHqbIoF2aTtnd 	 
-   mgGCFceAojKPG0bK5eWQT 	 
-    	  
-    		   
-     
-     
-_1426313296465708397 mosqH7AZUNZeyz6yX3nN1 	 
-    	  
- -1 mSBNIRK1XqZg3XlWW_b3d 	 
-   mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    msDy4S0F6Zdx78ZUnbARe 	 
-               _9141803538300908158 mtNKEvBwMHNsmdH7BtZbM 	 
-    	  
-    		 newFrame mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   _16805767570017655115,_17510502251974591806 mVFG05ubhW6ia_rWdS_Tv 	 
-    mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
- 
-         mqVdZVftPR84WTjiOiVfT 	 
-    	  
-    		   
-     
-     
- 
- 
-     m_ECAXF5hGu1UMoS2l1KU 	 
-    
-     mz0gDEk4XJJySbEeCgC9P 	 
-    	  
-    		    _7599632917966626906 mlEF62Izit24hGT_NqPIJ 	 
-    	  
-    		 STATE_LOST  mFllaSnZNjV3YvL2YmAFh 	 
-  _13736188859597190254 mVrsJpNNblNXrk9CJ_J45 	 
-    	  
-    		   
-     
-     MODE_SLAM  mTmmYcodZhxYb9bt39OUl 	 
-    _10762543579000176710 mgi5Boc5f0emw5eocZbgV 	 
-    	  
-    		   
-     
-     
- 
- keyframes.size mTGJXDnkacX2UX9dooHQu 	 
-    	  
-    		   
-  m_W9SY1N4eCI9HVCtY7k_ 	 
-    	  
-    		  5  mLdCPhlCq1uVgMtM4YkSz 	  _10762543579000176710 mVfb3IHZLk8rmg75VuqQZ 	 keyframes.size mJFtpHxfnoGMxp1wzTBMr 	 
-     mYOSSG7sSqnMh0YV5DIrw 	 
-    	  
-    		  0 msDy4S0F6Zdx78ZUnbARe 	 mMm9FLNsNOoyX7Tyb7vpT 	 
-    	  
-    		   
-     
- 
-        _9141803538300908158 mj3rSXJDWd4j4OSGbS2oX 	 
-    	  
-    		   
-     
-     
- 
-  reset mJFtpHxfnoGMxp1wzTBMr 	 
-    	  
-    		   
-     
- mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
-     
-        _10762543579000176710 mxGJXkzb8EW07jCVTl0Jt 	 
-    	  
-    		   
-     
-     
- 
-  clear mTGJXDnkacX2UX9dooHQu 	 
-    	  m_yMT4MKxrENTtLx5cA7n 	 
- 
-        _11449928097377700216 mVfb3IHZLk8rmg75VuqQZ 	 
-    	  
-    		   
-     
-     
- 
-  	reset mIJkWACd8Uom4Jv6selID 	 
-    	  
-  m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
-  
-        _9141803538300908158 mgi5Boc5f0emw5eocZbgV 	 
-    	  
-    		  setParams mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		   
- _10762543579000176710,_16805773490000196330.enableLoopClosure muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-  mEm194VmPJuGh5y4tMUm5 	 
-     mL9oWJQ1n2xKG3FtRNowa 	 
-    	  
-    		   
-     
-    
-      mXYEIB3KYwzJOpssgkZxP 	 
-    	  
-    		   
-     
-      mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		   
-     
-     
- 
- _7599632917966626906 mVrsJpNNblNXrk9CJ_J45 	 
-    	  
-    		   
-STATE_TRACKING  mdUyI4aAbhQ4X6fne1qVo 	 
-    	  
-    		   
-    _7599632917966626906 mtDWQOqRguVWSWehbKECr 	 
-    	  
- STATE_RELOC mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-     
-     
- mXdnll4yjwVy4uBDSjUe3 	 
-    	  
-    		   
-     
-        _7053670376446719714 mR22jPCjbltZ3tbBmn_6w 	 
-    	  
-    		   
-     
-     
- 
-  	 cv mrS2zvlmrTf4L4KBRRYAU 	 
-    	  
-    		 Mat mI3QeEk0K_mj1WaUiowht 	 
-    	  
-    		   
-     
-   eye mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		   
-     4,4,CV_32F msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
-   
-         mAvI6WqVGKew5QUXF0T2l 	 
-    	   mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		   
-     
- _16937225862434286412.isValid mIJkWACd8Uom4Jv6selID 	 
-    	  
-    		   
-     
-     
- 
-  	 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		    mMm9FLNsNOoyX7Tyb7vpT 	 
-    	  
-    		   
-     
-     
- 
-            _7053670376446719714  mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    		 _3746282635465101757.convert mGu_88Fdde5jsxW8v9whR 	 
-    	  *_16937225862434286412.convert mGu_88Fdde5jsxW8v9whR 	 
-  .inv mjjfaXD3tH8warSj13sVr 	 
-    	  
- mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-    		   
-    
-          mL9oWJQ1n2xKG3FtRNowa 	 
-    	  
-    		   
-
-     mMGejH_coNc3kGxAdXVex 	 
- 
-    else mbqHQotWhg0sv6ViuZXc3 	 
-    	  
-    		   
-
-        _7053670376446719714 mXE5wWRmJGUY4EsEsgegT 	 
-    	  
-    		   
-     
-     
-cv mNQimRrYQ8Mz6YI9KM7Fn 	 
-    	  
-    		   
- Mat mrXXIs5j4DqJtj32aOG5F 	 
-    	  
-   mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
- 
-     miXz43zs_DqtraKQW0m3N 	 
-    	  
-  
-    _16805767570017655115.pose_f2g mvA2vjSvRD7UmknjmYP5U 	 
-   _3746282635465101757 mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
- 
-#ifndef _UCOSLAM_123asd
-     myfOHlfTLtRL7im7qSaYm 	  mDe1564r6NJrCTudA8x0w 	 
-    	  
-    		   
-     
-    _16812765159998713427 mNF0G2xPBB22gI9XzMk2L 	 
-    	  
-    		   
-     
-      mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   
-     
-     10*4*12*34*6 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-    /2 mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    		   
-     
-     
- 
-  	
-        _3746282635465101757 mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    		 cv mrPFLPKakBKjOOnkuhZUP 	Mat mecU92YjgSbB3VkEoZVK3 	 
-    	  
-    		   
-     
-    myu64GAT8DgGBhNOOCqvd 	 
-    	  
-    		   
-  
-#endif
-     mWYYMqZtRPklZ6ldYQlW8 	  mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		   
-  _7599632917966626906 mWQWZuZUxzgXcOZHMJMC_ 	 
-    	  
-   STATE_LOST  mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     
-   return cv mrS2zvlmrTf4L4KBRRYAU 	 
-    	  
-    		   
-     
-     Mat mTGJXDnkacX2UX9dooHQu 	 
-    	  
-    		   
-     mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
-     
-
-    else
-         mY5hSAdXT4P60CSAZFBBa 	 
-    	  
-    		  _3746282635465101757 mxIwd_EJpfr1C9jwU7IyL 	 
-    	
- mEjIWbivPeVc9WtxGDiWw 	 
-    	  
-  
-cv mwuvkepREHprpx4i3n2RV 	 
-   Mat System mNQimRrYQ8Mz6YI9KM7Fn 	 
-    	  
-    		   
-     
-     process mYcSgTugFLQcmWT7seaac 	 vector mRwYPGmWUou3ixNnKEWbv 	 
-    	  
-    		   
- cv mMorzi7AHv5qXgdOZzcMd 	 
-    	  
-    		   
-     
-     
- Mat mYbzFOKSwwNsD71cP1DkA 	 
-    	  
-    		  &_3005401535270843804,  const ImageParams &_18212413899834346676 , mQYacSpatR0AsiZrXS4cE 	_9933887380370137445 mVmWtYm5gVtZj7Yq19XWE 	 
-   
- mSH1h4yGhaMSu8y7JC_rY 	 
-    	 
-    _6644573796688729791 mevHkLo7kL5WL0_0mLIhr 	initFeatParams mgGCFceAojKPG0bK5eWQT 	 
-    	  
-  _18212413899834346676 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-     
-     
- 
-  	 m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
-     
-   
-    swap mOAy4qGUJpdHQSVbVPq9E 	_6731656245229539747,_16805767570017655115 mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    		   
-     
-     
-  mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
-   
-    
-    std mI3QeEk0K_mj1WaUiowht 	 
- thread _1403653089436386197 mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-   
-     mFVNERjMRO_ZEKm0TY73X 	 
-    	  
-    mgGCFceAojKPG0bK5eWQT 	_13736188859597190254 mw_MIhwcw8TZ9gTF3_mEt 	 
-    	  
- MODE_SLAM mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     
-     
- 
-  _1403653089436386197 mXE5wWRmJGUY4EsEsgegT 	 
-    	  
-    		  std mNQimRrYQ8Mz6YI9KM7Fn 	 
-    	  
-    		  thread mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		   
-  mRjEKX4QN9MTvSEtCTNd7 	 
-    	  
-    		   
-     
-     
- 
- & mAH84ftHkJMUldxM9fJHE 	 
-    	  
- mrXXIs5j4DqJtj32aOG5F 	 
-    	  
-    		   
-     
-    mi4REkBAebpTZrzlvFEpD 	 
-    	  
-    		   
-     
-  
-         mFWW5xb6SDILpyTp5GBZD 	 
-    	  
-    		   
-    _9141803538300908158 mdMNbPkq6p5KBhEVf3OFw 	 
-    	  
-   mapUpdate mrXXIs5j4DqJtj32aOG5F 	 
-    	  
-    		   
-     
-   mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-   mjXlfKOCTRjUV9apwYcb7 	 
-  
-             mg9IHDbTXxljO0nSnQKYh 	_9141803538300908158 mgi5Boc5f0emw5eocZbgV 	 
-    	  
- bigChange mjjfaXD3tH8warSj13sVr 	 
-    	  mVFG05ubhW6ia_rWdS_Tv 	 
-    	  mJdlQJg0rG2m7KHUChC3R 	 
-    
-                _16805767570017655115.pose_f2g mR22jPCjbltZ3tbBmn_6w 	 _9141803538300908158 mgi5Boc5f0emw5eocZbgV 	 
-    	  
-    		   
-     
-     
- 
-  getLastAddedKFPose mdbwYCIpGYWahFfTtU8zH 	 
-   mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-    		   
-
-                _3746282635465101757 mRDD8w83SsPKbGXy_JkEO 	 
-    	  
- _9141803538300908158 mdMNbPkq6p5KBhEVf3OFw 	 
-    	  
-    		  getLastAddedKFPose mJFtpHxfnoGMxp1wzTBMr 	 mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		 
-             msxc6utIaOFXg4WI3vB0q 	 
-    	  
-    		   
-     
-         mqVdZVftPR84WTjiOiVfT 	 
-    	
-         mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		    msBPMso4NRYFcn5Y1myF_ 	 
-    	  
-    		   
-     
-    mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
-    switch  mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		   
-     
-     _6291654841120756956 mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		   
-    mSH1h4yGhaMSu8y7JC_rY 	 
-    	
-    case MONOCULAR:
-        _6644573796688729791 mxGJXkzb8EW07jCVTl0Jt 	 
-    process mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   
-     
-     
- 
-  	 _3005401535270843804 mZ9T0z5VdOHGC7rra8Fzk 	 
-    	  
-    		   
-     
-     0 mAH84ftHkJMUldxM9fJHE 	 
-    	  
- ,_18212413899834346676,_16805767570017655115,_9933887380370137445    mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
- mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-        break mQivdop_Gb4hqsWvOttc3 	 
-
-    case STEREO:
-        _6644573796688729791 mVfb3IHZLk8rmg75VuqQZ 	 
-    	  
- processStereo mlfybwyvp98TOJj0yuqhF 	 
-    	  
- _3005401535270843804 mbtzLVjzLgaxYxNNltfyM 	 
-    	  
-   0 mAH84ftHkJMUldxM9fJHE 	 
-    	  
-    		   
-     
-     
- ,_3005401535270843804 mZloAr3_PPw7622AVrUCe 	 
-    	  
-    		   
-     1 mAH84ftHkJMUldxM9fJHE 	 
-    	  
-    		,_18212413899834346676,_16805767570017655115,_9933887380370137445  mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    		   
-     
-    mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-    		   
- 
-        break mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		  
-    case RGBD:
-        _6644573796688729791 mxGJXkzb8EW07jCVTl0Jt 	 
-    	  
-    		   
-     
-     
- 
-  process_rgbd mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-   _3005401535270843804 mbtzLVjzLgaxYxNNltfyM 	 
-    	  
-    		 0 mWi16Wz7P86SIJlTQEzCB 	 
-    	  
-    ,_3005401535270843804 mbtzLVjzLgaxYxNNltfyM 	 
-    	  
-    		   
-     1 mvFhi6DaS7eScbgWe07wY 	 
-    	  
-    		   
-     
-    ,_18212413899834346676,_16805767570017655115,_9933887380370137445  mT3v8xdcVsSvUtbwmHC7j 	  mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
-    
-        break mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-    		
-    case ARRAY:
-        _6644573796688729791 mSwbK3nBcNZkvGxSXNOZy 	 
-    	  processArray mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-_3005401535270843804,_18212413899834346676, _16805767570017655115, _9933887380370137445, _11449928097377700216  mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    		    mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-
-        break mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-     
-     
-     mMGejH_coNc3kGxAdXVex 	 
-    	  
-    	
-     mGc5v1UWfDU7ttNcZryQG 	 
-    	 _16805773490000196330.autoAdjustKpSensitivity muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-     
- 
- mjXlfKOCTRjUV9apwYcb7 	 
-    	  
-        
-        
-        
-         mIBLQ6_qDoS3S2lLQGZ3e 	 
-    	  
-    		_1699599737904718822 mvA2vjSvRD7UmknjmYP5U 	 
-    	  
-   _16805773490000196330.maxFeatures-_16805767570017655115.und_kpts.size mjjfaXD3tH8warSj13sVr 	 
-    	 myu64GAT8DgGBhNOOCqvd 	 
-    	  
-    		  
-         mfRi_C6KlnAxop81XDZsV 	  _1699599737904718822  mYbzFOKSwwNsD71cP1DkA 	 
-   0 mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
-     
-     
- 
-  	  mjXlfKOCTRjUV9apwYcb7 	 
-   
-             mqI5yMr4h6CHkceANuA43 	 
-    	  
-    		   
-     
-   _46082575832048655 mvA2vjSvRD7UmknjmYP5U 	 
-    	  
-    	1.0f-  mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		   
-     
-  float mgGCFceAojKPG0bK5eWQT 	_1699599737904718822 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-     
- 
-  	 /float mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		   
-     
-     
- 
-_16805767570017655115.und_kpts.size mJFtpHxfnoGMxp1wzTBMr 	 
-    	  
-  msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    		   
-     
-    mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-     
-     
- 
-  	  mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-             mVekuqiofcOlLv1kcHh3u 	 
-    	  
-    		   
- _6148074839757474704 mA7hUM4UKqFyb_LJLsook 	 
-    	  
-    		   
-     _6644573796688729791 mSwbK3nBcNZkvGxSXNOZy 	 
-    	  
-    		   
-     
-     getSensitivity mrXXIs5j4DqJtj32aOG5F 	 
-    	  
- +_46082575832048655 mEm194VmPJuGh5y4tMUm5 	 
-    	  
-   
-            _6148074839757474704 mXE5wWRmJGUY4EsEsgegT 	 
-    	std me0ZKHp2Id3eLmP_6GMtk 	 
-    	max mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		   
-     
-     
- 
-  	 _6148074839757474704,1.0f msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    		   
-     
-     
-  mqLizGA4Z8QZ_2GYQ1inC 	 
-    	
-            _6644573796688729791 mgi5Boc5f0emw5eocZbgV 	 
-    	  
-    		  setSensitivity mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   
-     
-  _6148074839757474704 mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		   
-     mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
- 
-         mEjIWbivPeVc9WtxGDiWw 	 
-    	  
-    		   
-    
-        else mqlayz2fShj6ePxekxwRg 	 
-    	  
-    		 
-            
-            _6644573796688729791 mxGJXkzb8EW07jCVTl0Jt 	 
-    	  
-    setSensitivity mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-    		_6644573796688729791 mgi5Boc5f0emw5eocZbgV 	 
-getSensitivity mTGJXDnkacX2UX9dooHQu 	 
-    	  
-    *0.95 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-  mwkk1d6uUiyaKys71tsUv 	 
-    	  
-  
-         mqVdZVftPR84WTjiOiVfT 	 
-    	  
-    		   
-     
-     
- 
-
-     mwiKr6psttEx97f2NsYO1 	 
- 
-    
-     mXYEIB3KYwzJOpssgkZxP 	 
-    	  
-    		   
-     mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		   
-     
-     
-_13736188859597190254 mw_MIhwcw8TZ9gTF3_mEt 	 
-    	  
-    		   
-     
-     
- MODE_SLAM mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		_1403653089436386197.join mjjfaXD3tH8warSj13sVr 	 
-    	  
-    		   
-     
-     
- 
- mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-  
-    cv mvpMkjoDGcQujDevHDZnx 	 
-    	  
-    		   
-   Mat _3005399805025936106 moHeIYzwbcFb6VaM90Aa9 	 
-    	  
-    		   
-     
-    process mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-  _16805767570017655115 mT3v8xdcVsSvUtbwmHC7j 	 
-    	   myu64GAT8DgGBhNOOCqvd 	 
-    	  
-    		 
-    
-     mrg1QVINMqbRYZWngNWmj 	 
-    	  
-    		   
-    _6154865401824487276 mH9fKsRtHWNu77RGN1xmn 	 
-    	 sqrt mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-    		float mbXhD242DJoibBjdI1JtA 	 _16805767570017655115.imageParams.CamSize.area mJFtpHxfnoGMxp1wzTBMr 	 
-    	  
-    		   
-     
- mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		 /float mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		   
-     
-     _3005401535270843804 mbtzLVjzLgaxYxNNltfyM 	 
-    	  
-    		   
-     
-     
- 
- 0 mGPgWaVxS3WdTr7rWsMw4 	 
-    	  
-    		   
-.size mrXXIs5j4DqJtj32aOG5F 	 
-    	  
-    		   
-     
-     
- 
-  	 .area mdbwYCIpGYWahFfTtU8zH 	 
-    	  
-    		   
-     
-     
-  mXftmBtLFUrPFw3lasjuW 	 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    	 mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    	
-    _1400008259408517257 mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-     
-     
- 
- _3005401535270843804 mRjEKX4QN9MTvSEtCTNd7 	 
-    	  
-    		   
-     0 mGPgWaVxS3WdTr7rWsMw4 	 
-    	  
-   ,1./_6154865401824487276 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		  m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
-     
-     
- 
-  	
-     mkcVgqnqADeTh3Pu1ogGF 	 
-    	  
-    		   
-     
-     _5829441678613027716 mIqjSmilXv9ILvDddB7nD 	 
-    	   mVjuVop3osym9wWoq6p3w 	 
-    	  
-    		   
-     
-     
- 
- mtEI4bSjtkyV5O0qz_vBz 	 
-    	  
-    		  mbXhD242DJoibBjdI1JtA 	 
-const uint32_t&_11093821926013 msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    		   
-     
-  mMm9FLNsNOoyX7Tyb7vpT 	 
-    	  
-     std mvpMkjoDGcQujDevHDZnx 	 
-    	  
-    		   stringstream _706246330191125 mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
-    _706246330191125 mghpafeSRXwbO0z_DbM3C 	_11093821926013 mC_gLvnw5tkMWRQheRKr5 	 
-     mV4_AbWY8ymaWGsYOk0LC 	_706246330191125.str mFAl4ldpf7o2gKLWQ4bfu 	 
-    	  
-   m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
-     
-   msBPMso4NRYFcn5Y1myF_ 	  myu64GAT8DgGBhNOOCqvd 	 
-    	  
-    	
-    _16805777039407129681 mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-     
-     
- 
- _3005401535270843804 mbtzLVjzLgaxYxNNltfyM 	 
-   0 mtEI4bSjtkyV5O0qz_vBz 	 
-    	  
-    		   
-     
-,"\x4d\x61\x70\x20\x50\x6f\x69\x6e\x74\x73\x3a"+_5829441678613027716 mgGCFceAojKPG0bK5eWQT 	 
-  _10762543579000176710 mVfb3IHZLk8rmg75VuqQZ 	 
-    	 map_points.size mTGJXDnkacX2UX9dooHQu 	 
-    	  
-    mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    		  ,cv mMorzi7AHv5qXgdOZzcMd 	 
-    	  
-    		   
- Point mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   
-     
-20,_3005401535270843804 mZloAr3_PPw7622AVrUCe 	 
-    	  
-  0 mAH84ftHkJMUldxM9fJHE 	 
- .rows-20 muC5cqYcHRXDD16noARI1 	 
-    	  
-    	 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-   mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-    
-    _16805777039407129681 mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		   
-     
-   _3005401535270843804 mZloAr3_PPw7622AVrUCe 	 
-   0 mWi16Wz7P86SIJlTQEzCB 	 
-    	  
-    		   
- ,"\x4d\x61\x70\x20\x4d\x61\x72\x6b\x65\x72\x73\x3a"+_5829441678613027716 mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		   
-     
-     
- 
-  _10762543579000176710 mevHkLo7kL5WL0_0mLIhr 	 
-    	  
-    		   
-     
-     
- map_markers.size mIJkWACd8Uom4Jv6selID 	 
-    	  
- mJk4eXgp_IeFV2YvLaQC7 	 
-   ,cv miuOs6oIdxnQEMrFFk2n_ 	 
-    	  
-    		   
-  Point mNQ6rNLARkxxSTP6tiTXG 	 
- 20,_3005401535270843804 mRjEKX4QN9MTvSEtCTNd7 	 
-    	  
-    		   
-     
-   0 mQbYLzhvVQm8J2LNkC6S6 	 
-    	  .rows-40 mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    		   
-     
-      mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-     
- 
-  	  mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-     
- 
-    _16805777039407129681 mlfybwyvp98TOJj0yuqhF 	 
-    	  
-   _3005401535270843804 msGAdK1RZcxCitYemdpxc 	 
-    	  
-    		   
-     
-     
- 
-0 mvFhi6DaS7eScbgWe07wY 	 
-    	  
-    		   
- ,"\x4b\x65\x79\x46\x72\x61\x6d\x65\x73\x3a"+_5829441678613027716 mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		   
-     
- _10762543579000176710 mcvX0B8TDw1gEtqXtgT4T 	 
-    	  
-    		   
-     
-     
- 
-  	keyframes.size mecU92YjgSbB3VkEoZVK3 	 
-    	  mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    		   
-     
-    ,cv miuOs6oIdxnQEMrFFk2n_ 	 
-    	  
-    		   
-     
-     
- 
-  Point mgGCFceAojKPG0bK5eWQT 	 
-    	20,_3005401535270843804 mVLLVWqNz0_lGN56vY03t 	 
-    	  
-    		   
-     
-     
- 
-  0 mAH84ftHkJMUldxM9fJHE 	 
-    	  
- .rows-60 muC5cqYcHRXDD16noARI1 	  mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-   m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
-     
- 
-     mjg3Ot05P13DpFXIgvY3M 	 
-    	  
-    		   
-     
-     
- 
-  _16937201858692939798 mR22jPCjbltZ3tbBmn_6w 	 
-    	  
-    		   
- 0 mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-
-     mvbe619pMTxqR0ISntFSZ 	 
-    	  
- auto _175247760135:_16805767570017655115.ids mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-  mFWW5xb6SDILpyTp5GBZD 	 
-    	  
-    		   
-   _175247760135 mS3P8ZWKrLHg9h_5dW5He 	 std mrS2zvlmrTf4L4KBRRYAU 	 
-  numeric_limits mRwYPGmWUou3ixNnKEWbv 	 
-    	  
-    		   
-     
-     
- 
-  uint32_t mNF0G2xPBB22gI9XzMk2L 	 
-    	  
-   mwuvkepREHprpx4i3n2RV 	 
-    	  
-    		   
-     
-   max mecU92YjgSbB3VkEoZVK3 	 
-    	  
-   msDy4S0F6Zdx78ZUnbARe 	  _16937201858692939798 mgux57p4wBZIWFfq6waj5 	 mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-  
-    _16805777039407129681 mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   
-     
-     
- 
-_3005401535270843804 mRjEKX4QN9MTvSEtCTNd7 	 
-    	  
-    		0 mfF196cGKZ_LkBPN8ZWlr 	 ,"\x4d\x61\x74\x63\x68\x65\x73\x3a"+  _5829441678613027716 mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		 _16937201858692939798 mVmWtYm5gVtZj7Yq19XWE 	 ,cv mrPFLPKakBKjOOnkuhZUP 	 
-    	  
-    		   
-     
-   Point mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		 20,_3005401535270843804 mstJEG25u0Qv4VQocWgKl 	 
-    	  
-   0 mWi16Wz7P86SIJlTQEzCB 	 
-    	  
-    	.rows-80 mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
- mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-    mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-    		   
-     
-     
- 
-
-     mz0gDEk4XJJySbEeCgC9P 	 
- fabs mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		 _6154865401824487276-1 mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
-     
-    meN5YYBBVg5DStfnyA8Dd 	 
-    	  
-    		   
-    1e-3 mT3v8xdcVsSvUtbwmHC7j 	 
-        _16805777039407129681 mYcSgTugFLQcmWT7seaac 	_3005401535270843804 mZ9T0z5VdOHGC7rra8Fzk 	 
-    0 ml5d8mzmxNmQRMtpfZ82X 	 
-    	  
-  ,"\x49\x6d\x67\x2e\x53\x69\x7a\x65\x3a"+_5829441678613027716 mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    _16805767570017655115.imageParams.CamSize.width mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-+"\x78"+_5829441678613027716 mSdpFB1uEgpzM3bVmlHgT 	 _16805767570017655115.imageParams.CamSize.height mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
- ,cv mNQimRrYQ8Mz6YI9KM7Fn 	 
-    	  
-    		   
-     
-     
- 
-  Point mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   20,_3005401535270843804 mZ9T0z5VdOHGC7rra8Fzk 	 
-    	 0 mvFhi6DaS7eScbgWe07wY 	 
-    	 .rows-100 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
- mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-   mEm194VmPJuGh5y4tMUm5 	 
- 
-     mFWbNGU5e6cuqyQa3XUry 	 
-    	  
-    		   
-     
-     
- _3005399805025936106 mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
-    
- mqVdZVftPR84WTjiOiVfT 	 
-    	  
-    		  
- mDWwKMm0Bw8nxvI3ZwZnM 	 
-  System mI3QeEk0K_mj1WaUiowht 	 _16805777039407129681 mgGCFceAojKPG0bK5eWQT 	 
-    	  
-    		 cv mExFPeJBflhTWJKuQVWoB 	 
-    	  
-   Mat &_175247760140,string _706246331661728,cv mExFPeJBflhTWJKuQVWoB 	 
-    	  
-    		Point _2654435881  mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     
-     
- 
- mjXlfKOCTRjUV9apwYcb7 	 
-    	  
-    		
-     mxTwhHDgHBwIAa0Dytqva 	 
-    	  
-    		   
-     
-    _706246308256699 mR22jPCjbltZ3tbBmn_6w 	 
-    	  
-  float mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		   
-     
-     _175247760140.cols muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-     
- 
-  	/float mbXhD242DJoibBjdI1JtA 	 
-    1280 mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
-     
-      mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		 
-    cv me0ZKHp2Id3eLmP_6GMtk 	 
-    	  
-    		putText mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		   
-     
-     
- 
-_175247760140,_706246331661728,_2654435881,cv mExFPeJBflhTWJKuQVWoB 	 
-    	  
-    		   
-  FONT_HERSHEY_SIMPLEX, 0.5*_706246308256699,cv mrS2zvlmrTf4L4KBRRYAU 	 
-    	  
-    		   
-Scalar mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   
-     
-     
-0,0,0 mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-     
- 
-  	 ,3*_706246308256699 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-     
-     
- 
- mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-    cv mrS2zvlmrTf4L4KBRRYAU 	 
-    	  
-    		   
-     
-     
- 
- putText mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    	_175247760140,_706246331661728,_2654435881,cv miuOs6oIdxnQEMrFFk2n_ 	 
-    	  
-    		   
-    FONT_HERSHEY_SIMPLEX, 0.5*_706246308256699,cv me0ZKHp2Id3eLmP_6GMtk 	 
- Scalar mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-    125,255,255 mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-    ,1*_706246308256699 mJk4eXgp_IeFV2YvLaQC7 	 
- mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
- 
- msBPMso4NRYFcn5Y1myF_ 	 
-    	  
-    		   
-     
-     
-string System miuOs6oIdxnQEMrFFk2n_ 	 
-    	  
-  getSignatureStr mRAYh0ARHPOc62CfGHWWO 	 
-    	  
-    	const mMm9FLNsNOoyX7Tyb7vpT 	
-     mHUTuX3q6rB5eWWYYPWQD 	 
-    	  
-    	_9727665765668901870 mbXhD242DJoibBjdI1JtA 	 
-    	  
- _4661124703751533956 mGu_88Fdde5jsxW8v9whR 	 
-    	  
-    		   
-     
-     mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		   
-     
-     
-  mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
-     
- 
-  	 
- m_ECAXF5hGu1UMoS2l1KU 	 
-    	  
-    	
-uint64_t System miuOs6oIdxnQEMrFFk2n_ 	 
-    	  
-    		   
-     
-     
- 
-  	 _4661124703751533956 mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		   
-     
-   bool _46082575779493229 mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		   
-  const mi6BqZOVmQyrEy6BLProP 	 
-    	  
-    Hash _11093822380353 mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-     
-     
- 
-    _11093822380353 mvcDBJfIynZthI5bz_HTe 	 
-    	  _10762543579000176710 mgi5Boc5f0emw5eocZbgV 	 
-    	  getSignature mUGrJMUolw0lb_KVyGK5N 	 _46082575779493229 msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    		   
-    mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    	
-     mfRi_C6KlnAxop81XDZsV 	 
-   _46082575779493229 mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-   cout mAckb35A91fK2dY3gHfaK 	 
-    	  
-    		   "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x31\x2e\x20\x73\x69\x67\x3d" muLh_AegzBLvbYcxrsotS 	 
-    	  
-    		   
-     
-     
- 
-_11093822380353 mt3d6r2BuFfOvfXdOmaLX 	 
-    	  
-    		   
- endl mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
-  
-    _11093822380353 mvcDBJfIynZthI5bz_HTe 	 
-    _16805773490000196330.getSignature mecU92YjgSbB3VkEoZVK3 	 
-    	  
-    		   
-     
-   mEm194VmPJuGh5y4tMUm5 	 
-
-     mg9IHDbTXxljO0nSnQKYh 	 
-    	  
-    		   
-     
-_46082575779493229 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		 cout mIqwZsWoU0IEPB7TMb7wT 	 
-    	  
-    		   
-     
-    "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x32\x2e\x20\x73\x69\x67\x3d" mLdvrbXgkmVAVnc3aEbWU 	 
-    	  
-    		_11093822380353 mZCDcAPDXTOUnUkMgttvA 	 
-    	  
-    		   
-   endl mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-
-     mWIOGoR1XyrR6fw03i9px 	 
-    	  
-    		   
-     
-     
- 
-  int _2654435874 mA7hUM4UKqFyb_LJLsook 	0 mwkk1d6uUiyaKys71tsUv 	 
-    	  
-   _2654435874 mk9nSfh6XGyonOYMC8C3M 	 
-    	  
-  6 m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
-_2654435874 mUvBFztQfvp6FxGFsyoMW 	 
-    	  
-    		   
-      muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-     
- _11093822380353 moI4EWKnn9rwdcRf81yt6 	 
-    	 _3746282635465101757 mstJEG25u0Qv4VQocWgKl 	 
-    	  
-  _2654435874 mtEI4bSjtkyV5O0qz_vBz 	 
-     mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
-     
-
-     mGc5v1UWfDU7ttNcZryQG 	 
-    	  
-    		   
-     
-     
- 
-  	 _46082575779493229 mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-     
- 
-cout mZCDcAPDXTOUnUkMgttvA 	 
-    "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x33\x2e\x20\x73\x69\x67\x3d" mISlN399eTfrWHnidEKGu 	 
-    	  
-    		   
-     
-     
- 
- _11093822380353 mLdvrbXgkmVAVnc3aEbWU 	 
-    	  
-    		   
-     
-     
- endl m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
-   
-    _11093822380353.add mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		   
-     _17510502251974591806 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-     
- mEm194VmPJuGh5y4tMUm5 	 
-    	
-     mcs2IPsFq8XN5a3t5KBLK 	 
-    	  
-    		   _46082575779493229 mVmWtYm5gVtZj7Yq19XWE 	cout mghpafeSRXwbO0z_DbM3C 	 
-    	  
-  "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x34\x2e\x20\x73\x69\x67\x3d" mmAvkrWz9or7FSKyep8Gr 	 
-    	  
-    _11093822380353 mISlN399eTfrWHnidEKGu 	 
-    	  
-    		   
-     
-     
- 
-  	endl mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-   
-    _11093822380353 mWaLwU5zB1H0AtUbS8Rz2 	 
-    	  
-    		   
-     
-  _16805767570017655115.getSignature mIJkWACd8Uom4Jv6selID 	 
-    	  
-    		 mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-  
-     mcs2IPsFq8XN5a3t5KBLK 	 
-    	  
-    		   
-     
-     
-_46082575779493229 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-    cout mLdvrbXgkmVAVnc3aEbWU 	 
-    	  
-    		   
-     
-     "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x35\x2e\x20\x73\x69\x67\x3d" mIqwZsWoU0IEPB7TMb7wT 	 
-    	  
-    		   
-     
-     _11093822380353 mIqwZsWoU0IEPB7TMb7wT 	 
-    	  
-    		   
-     
-     
- endl mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
-     
- 
-  	
-    _11093822380353 mc6a7gZ5y0kWaTfPKjZL0 	 
-   _1227001083608564617 mxIwd_EJpfr1C9jwU7IyL 	 
-   
-     mdEGS_9gShKEEsK9RPbfj 	 
- _46082575779493229 mVFG05ubhW6ia_rWdS_Tv 	 
- cout mghpafeSRXwbO0z_DbM3C 	 
-    	  
-    		"\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x37\x2e\x20\x73\x69\x67\x3d" mISlN399eTfrWHnidEKGu 	 
-    	  
-    		   
-     
-     
- 
-_11093822380353 mIqwZsWoU0IEPB7TMb7wT 	 
-    endl mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-     
-
-    _11093822380353 mc6a7gZ5y0kWaTfPKjZL0 	_7599632917966626906 mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		 
-     mcs2IPsFq8XN5a3t5KBLK 	 
-    	  
-_46082575779493229 mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   cout mZCDcAPDXTOUnUkMgttvA 	 
-  "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x38\x2e\x20\x73\x69\x67\x3d" mYJ8ThnKYhVFrfXpP62DT 	 _11093822380353 mAckb35A91fK2dY3gHfaK 	 
-    	  
-    		   
-endl mQivdop_Gb4hqsWvOttc3 	 
-    	  
- 
-    _11093822380353 mraP1zuclX52fRr5CelTs 	 
-    	  
-    		   
-     
-   _13736188859597190254 mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-    		   
-     
-  
-     mhRH54odsmIWcLq1D3rKZ 	 
-    	  
-    		   
-     
-     _46082575779493229 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-     
- 
- cout mIqwZsWoU0IEPB7TMb7wT 	 
-    	  
-  "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x39\x2e\x20\x73\x69\x67\x3d" mLdvrbXgkmVAVnc3aEbWU 	 
-    	_11093822380353 muLh_AegzBLvbYcxrsotS 	 
-    	  
-    		   
-     
-     
- 
-  	 endl mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-    		   
-     
-     
- 
-  	
-    _11093822380353 mPvI5zVkkxdTYTCdGOJ2J 	 
-    	  
-  _6731656245229539747.getSignature mRAYh0ARHPOc62CfGHWWO 	 
-    	  
-    		    m_yMT4MKxrENTtLx5cA7n 	 
-
-     mfRi_C6KlnAxop81XDZsV 	 
-    	  
-    		   
-     _46082575779493229 mT3v8xdcVsSvUtbwmHC7j 	 
-    	cout mmAvkrWz9or7FSKyep8Gr 	 
-    	  
-    		 "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x31\x30\x2e\x73\x69\x67\x3d" muLh_AegzBLvbYcxrsotS 	 
-    	  
-    		   
-    _11093822380353 muLh_AegzBLvbYcxrsotS 	 
-    	  
-endl m_yMT4MKxrENTtLx5cA7n 	 
-    	
-    _11093822380353 mvcDBJfIynZthI5bz_HTe 	 
-    	  
-    		   
-     
- _9141803538300908158 mSwbK3nBcNZkvGxSXNOZy 	 
-    	  
-    		   getSignature mrXXIs5j4DqJtj32aOG5F 	 
-    	  
-  mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-     
-     
- 
-  	
-     mdEGS_9gShKEEsK9RPbfj 	 _46082575779493229 msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    	cout mt3d6r2BuFfOvfXdOmaLX 	 
-    	  
-    		   
-"\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x31\x31\x2e\x73\x69\x67\x3d" muLh_AegzBLvbYcxrsotS 	 
-    	  
-    		   
-  _11093822380353 mghpafeSRXwbO0z_DbM3C 	endl mo9Lbpy0Ap4RTl5O5Or1C 	 
-    
-    _11093822380353 mvcDBJfIynZthI5bz_HTe 	 
-_7053670376446719714 myu64GAT8DgGBhNOOCqvd 	 
-    	  
-    		   
-     
-     
- 
-    _11093822380353 mraP1zuclX52fRr5CelTs 	 
-    	  
-    	_1426313296465708397 mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-     mg9IHDbTXxljO0nSnQKYh 	 
-    	  
-    		   
-  _46082575779493229 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    	cout mghpafeSRXwbO0z_DbM3C 	 
-    	  
-    		   
-     
-     
- 
-  	 "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x31\x32\x2e\x73\x69\x67\x3d" mISlN399eTfrWHnidEKGu 	 
-_11093822380353 mLdvrbXgkmVAVnc3aEbWU 	 
-    	  
-  endl mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
-     
-     mHUTuX3q6rB5eWWYYPWQD 	 
-    	  
-    		   
-     
-     
- 
-  _11093822380353 mI30mSPxGJaQtkEjJfoQX 	 
-
- msBPMso4NRYFcn5Y1myF_ 	
-
-
-
-cv me0ZKHp2Id3eLmP_6GMtk 	 
-    	 Mat System mwuvkepREHprpx4i3n2RV 	 
-    	 _17589686230412731881 mgGCFceAojKPG0bK5eWQT 	 
-    	  
-    		   
-     
-     
- const Frame &_46082543180066935  msDy4S0F6Zdx78ZUnbARe 	 
-    	  
- mbqHQotWhg0sv6ViuZXc3 	 
-    	  
-    		   
-    
-    std miuOs6oIdxnQEMrFFk2n_ 	 
-    	  
-    		   
-     
-     
- 
-vector mRwYPGmWUou3ixNnKEWbv 	 
-   uint32_t mKJK3THIuAwgeFpuGLN8L 	 
-    	  
-    		    _4240939334638385660 mqLizGA4Z8QZ_2GYQ1inC 	 
-   
-    
-    vector mHg0YG9R0Gb6ZE5xIr3dz 	 
-    	 pair mnpObQ1mWnyfQO24_ojBn 	 
-cv mNQimRrYQ8Mz6YI9KM7Fn 	 
-    	  
-    		   
-     
-     
- 
-  	Mat,double mW202Akoy5o2_FFUMtz7a 	 
-    	  
-    		   
-      mVIm1AJSzhahLlgKO9xQK 	 
-    	  
-    		   
-  _5923954032168212568 mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-     
-     
-    vector mnpObQ1mWnyfQO24_ojBn 	 cv mwuvkepREHprpx4i3n2RV 	 
-    	 Point3f mNF0G2xPBB22gI9XzMk2L 	 
-    	  
-  _7045032207766252521 mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    
-    vector mnpObQ1mWnyfQO24_ojBn 	 
-    	  
-    		   
-     
-cv mvpMkjoDGcQujDevHDZnx 	 
-    	  
-  Point2f meN5YYBBVg5DStfnyA8Dd 	 
-    	  
-    		   
-     
-     _7045032207766252456 m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		  
-     mN_UNAeshLaooczmV1nkW 	 
-    	  
-   auto _2654435878:_46082543180066935.markers mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     
-     
- 
-  muH9A34QGuccPZkZDb32w 	 
+    	 mlfybwyvp98TOJj0yuqhF 	 mW0689NsIXj0x_tZl_0ut 	 
+    	 _4953871428288621283.empty mdbwYCIpGYWahFfTtU8zH 	 
+      mXftmBtLFUrPFw3lasjuW 	 muH9A34QGuccPZkZDb32w 	 
     	  
     		   
      
      
  
   
-         mHbSWrX6OPeRP2Igmog8G 	 
-  mUGrJMUolw0lb_KVyGK5N 	 
+            _9098980761384425343 mxGJXkzb8EW07jCVTl0Jt 	 
+    	  TheKFDataBase.loadFromFile mgGCFceAojKPG0bK5eWQT 	 
     	  
-    		   
-     
-  _10762543579000176710 mcvX0B8TDw1gEtqXtgT4T 	 
-    	  
-    		 map_markers.find mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		   
-   _2654435878.id mXftmBtLFUrPFw3lasjuW 	  mS3P8ZWKrLHg9h_5dW5He 	 
-    	  
-    		   
-     
-     _10762543579000176710 mevHkLo7kL5WL0_0mLIhr 	 
-    	 map_markers.end mdbwYCIpGYWahFfTtU8zH 	 
-    	  
-    		 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
- mi4REkBAebpTZrzlvFEpD 	 
-    	  
-    		   
-            reslam mwuvkepREHprpx4i3n2RV 	 
-    	  
-    		   
-     
-     
- Marker &_6807036686937475945 mvA2vjSvRD7UmknjmYP5U 	 
-    	  
-    		   
-     
-    _10762543579000176710 mdMNbPkq6p5KBhEVf3OFw 	 
-    	  
-    		  map_markers mRjEKX4QN9MTvSEtCTNd7 	 
-    	  
-    		   
-   _2654435878.id mGPgWaVxS3WdTr7rWsMw4 	 
-    	  
-    		   
-     
-     
-  m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
-     
-     
- 
-
-            cv mrPFLPKakBKjOOnkuhZUP 	 
-    	  
-    		   
-    Mat _9983235290341257781 mXE5wWRmJGUY4EsEsgegT 	 
-    	_6807036686937475945.pose_g2m mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-     
-            
-             mEhFK99MtLRsCBaPNqnDs 	 
-    	  
-    		 _11093822296219 mvA2vjSvRD7UmknjmYP5U 	_6807036686937475945.get3DPoints mjjfaXD3tH8warSj13sVr 	 
-    	  
-    		   
-     
-   m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    	
-            _7045032207766252521.insert mSdpFB1uEgpzM3bVmlHgT 	_7045032207766252521.end mTGJXDnkacX2UX9dooHQu 	 
-    	  
-    		   
-     
-    ,_11093822296219.begin mdbwYCIpGYWahFfTtU8zH 	 
-    	  
-    ,_11093822296219.end mIJkWACd8Uom4Jv6selID 	 
-    	 mVmWtYm5gVtZj7Yq19XWE 	 
-  mEm194VmPJuGh5y4tMUm5 	 
-   
-            
-            _7045032207766252456.insert mBGM118Iia8vm6zcNTuB6 	 
-    	_7045032207766252456.end mRAYh0ARHPOc62CfGHWWO 	 
-    	  
- ,_2654435878.und_corners.begin mJFtpHxfnoGMxp1wzTBMr 	 
-    	  
-    		   
-     
-  ,_2654435878.und_corners.end mJFtpHxfnoGMxp1wzTBMr 	 
-    	  
-    		   
-     
-      mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-  mEm194VmPJuGh5y4tMUm5 	 
-    	  
-
-             mkcVgqnqADeTh3Pu1ogGF 	 
-    	  
-    		_1515389571633683069 mIqjSmilXv9ILvDddB7nD 	 
-    	  
-    		   
-     
-     
- 
-  	 IPPE mrS2zvlmrTf4L4KBRRYAU 	 
-    	  
-    		   
-     
-     
- 
-  	solvePnP mUGrJMUolw0lb_KVyGK5N 	 
-    _16805773490000196330.aruco_markerSize,_2654435878.und_corners,_46082543180066935.imageParams.CameraMatrix,_46082543180066935.imageParams.Distorsion mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     
-     
- 
- mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    
-             mmeJW_Q9h6ZBPzSBQVjMK 	 
-    	  
-    		auto _16937226146608628973:_1515389571633683069 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		  
-                _5923954032168212568.push_back mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    make_pair mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-  _16937226146608628973 * _9983235290341257781.inv mTGJXDnkacX2UX9dooHQu 	,-1 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-     mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-     
-    
-         mwiKr6psttEx97f2NsYO1 	 
-    
-     msBPMso4NRYFcn5Y1myF_ 	
-     mXYEIB3KYwzJOpssgkZxP 	 
-    	  
-    		   
-      mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		  _7045032207766252521.size mFAl4ldpf7o2gKLWQ4bfu 	 
- mrDas3egWRcEnvTodVRRA 	 
-    	  
-    		0 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     
- return cv mrS2zvlmrTf4L4KBRRYAU 	 
-    	  
-    		   
-     
-     
-Mat mdbwYCIpGYWahFfTtU8zH 	 
+    	_4953871428288621283 mT3v8xdcVsSvUtbwmHC7j 	 
     	  
     		   
      
@@ -3852,150 +1078,226 @@ Mat mdbwYCIpGYWahFfTtU8zH
  
    mI30mSPxGJaQtkEjJfoQX 	 
     	  
+   
+         mqVdZVftPR84WTjiOiVfT 	 
+    	  
     		   
      
      
  
+ 
+        MapInitializer mrPFLPKakBKjOOnkuhZUP 	 
+    Params _3005399798454910266 mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+     
 
+         muDvj5aUdXshb2AqqeEiu 	 
+    	  
+   mSdpFB1uEgpzM3bVmlHgT 	 
+  _14938569619851839146.forceInitializationFromMarkers mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+            _3005399798454910266.mode mA7hUM4UKqFyb_LJLsook 	 
+    	  
+    		   
+     
+     
+ 
+  	 MapInitializer mvpMkjoDGcQujDevHDZnx 	 
+ ARUCO mo9Lbpy0Ap4RTl5O5Or1C 	 
     
-     mozBzR4ceXlDTd_eA9UWj 	 
+        else
+            _3005399798454910266.mode mRDD8w83SsPKbGXy_JkEO 	 
     	  
-    		   
-    auto &_46082575779853237:_5923954032168212568 mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		 mi6BqZOVmQyrEy6BLProP 	 
-    	  
-    		   
-     
-
-        vector mRwYPGmWUou3ixNnKEWbv 	 
-   cv mMorzi7AHv5qXgdOZzcMd 	 
+    		MapInitializer mNQimRrYQ8Mz6YI9KM7Fn 	 
     	  
     		   
      
      
  
-  	Point2f meN5YYBBVg5DStfnyA8Dd 	 
-    _1535067723848375914 mC_gLvnw5tkMWRQheRKr5 	 
+  	 BOTH mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+ 
+        _3005399798454910266.minDistance mRDD8w83SsPKbGXy_JkEO 	 
+    	  
+    		   _14938569619851839146.minBaseLine mQivdop_Gb4hqsWvOttc3 	 
+    	  
+   
+        _3005399798454910266.markerSize mRDD8w83SsPKbGXy_JkEO 	 
+    	  
+    		  _14938569619851839146.aruco_markerSize mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+     
+  
+        _3005399798454910266.aruco_minerrratio_valid moHeIYzwbcFb6VaM90Aa9 	 
+    	  
+    		   
+     
+     
+  _14938569619851839146.aruco_minerrratio_valid mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		  
+        _3005399798454910266.allowArucoOneFrame mH9fKsRtHWNu77RGN1xmn 	 
+    	  
+    	_14938569619851839146.aruco_allowOneFrameInitialization mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+     
+    
+        _3005399798454910266.max_makr_rep_err mR22jPCjbltZ3tbBmn_6w 	 
+    	  
+    2.5 mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   
+   
+        _3005399798454910266.minDescDistance mIqjSmilXv9ILvDddB7nD 	 
+    	  
+    		   
+     
+  _14938569619851839146.maxDescDistance mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		
+        _2044193291895307872 mVfb3IHZLk8rmg75VuqQZ 	 
+    	  
+    		   
+   setParams mBGM118Iia8vm6zcNTuB6 	 
+    	  
+    		   
+     
+     
+ 
+  _3005399798454910266 msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		   
+     
+   mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+ 
+     mEjIWbivPeVc9WtxGDiWw 	 
+    	  
+    		   
+     
+     
+ 
+    else
+        _3857178690860967008 mRDD8w83SsPKbGXy_JkEO 	 
+  STATE_LOST m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    	
+ mL9oWJQ1n2xKG3FtRNowa 	 
+    	  
+    		   
+
+ mol5p_9C0R9o_YMjX6nxS 	 
+    	  
+   System mI3QeEk0K_mj1WaUiowht 	 
+    	  
+    		   
+    waitForFinished mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+     mMm9FLNsNOoyX7Tyb7vpT 	 
+    	  
+    		  
+ _2869602498954317713 mtNKEvBwMHNsmdH7BtZbM 	 
+    	  
+    		  stop mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+    		   
+     
+     
+ mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+ _2869602498954317713 mevHkLo7kL5WL0_0mLIhr 	 
+  mapUpdate mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+    		   
+     
+     
+ 
+ mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+     
+   
+  myfOHlfTLtRL7im7qSaYm 	 
+    	  
+    		_2869602498954317713 mxGJXkzb8EW07jCVTl0Jt 	bigChange mdbwYCIpGYWahFfTtU8zH 	 
+    	  
+ msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		   
+     mi6BqZOVmQyrEy6BLProP 	 
+    	  
+    		   
+     
+     
+ 
+     _14938569046430841631.pose_f2g mIqjSmilXv9ILvDddB7nD 	 
+    	  
+    		   
+     
+     _2869602498954317713 mgi5Boc5f0emw5eocZbgV 	 
+    	  
+    		   
+     
+     
+ 
+  	getLastAddedKFPose mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+ m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+    
+     _17976495724303689842 mH9fKsRtHWNu77RGN1xmn 	 
+    	  
+    _14938569046430841631.pose_f2g mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    
+  mMGejH_coNc3kGxAdXVex 	 
+    	  
+    		
+ mMGejH_coNc3kGxAdXVex 	 
     	  
     		   
   
-        se3 _16937226146609453200 mIqjSmilXv9ILvDddB7nD 	 
-    	  
-    		   
-     
-     
- 
-  	 _46082575779853237.first mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
- 
-        project mUGrJMUolw0lb_KVyGK5N 	_7045032207766252521,_46082543180066935.imageParams.CameraMatrix,_16937226146609453200.convert mIJkWACd8Uom4Jv6selID 	 
-    	  
-    		   
-  ,_1535067723848375914 mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		   
-     
-     
- 
-  mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-   
 
-        _46082575779853237.second mRDD8w83SsPKbGXy_JkEO 	 
-    	  
-    		   
-     
-     0 mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-     
-     
- 
 
-         mTy5S_mcphfNLzuJQ30Xe 	 
-    size_t _2654435874 mtmFAz7pcnIFLgYGMf4eK 	 
+
+
+
+
+
+ mol5p_9C0R9o_YMjX6nxS 	 
+    	  
+    		   
+     
+     System me0ZKHp2Id3eLmP_6GMtk 	 
+    	  
+    		   
+  resetTracker mrXXIs5j4DqJtj32aOG5F 	 
     	  
     		   
      
      
  
-  	 0 mEm194VmPJuGh5y4tMUm5 	 
-    	  _2654435874 mnpObQ1mWnyfQO24_ojBn 	 
-    	  
- _1535067723848375914.size mrXXIs5j4DqJtj32aOG5F 	 mwkk1d6uUiyaKys71tsUv 	_2654435874 mY6fIyAOJfhz5nUdrWiVY 	 
-    	  
-  mSBNIRK1XqZg3XlWW_b3d 	 
-   
-            _46082575779853237.second mPvI5zVkkxdTYTCdGOJ2J 	 
-    	  
-    		   
-    mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		   
-  _1535067723848375914 mZloAr3_PPw7622AVrUCe 	 
+  muH9A34QGuccPZkZDb32w 	 
     	  
     		   
      
-     _2654435874 ml5d8mzmxNmQRMtpfZ82X 	 
+
+    waitForFinished mRAYh0ARHPOc62CfGHWWO 	 
     	  
-.x- _7045032207766252456 mMo20fFU0rdQJ7l5qqDaX 	 
+    		 mqLizGA4Z8QZ_2GYQ1inC 	 
+
+    _10576739190144361304 mA7hUM4UKqFyb_LJLsook 	 
     	  
-  _2654435874 mWjWwCxBA7LLBixCoRsYZ 	 
-    	  
-    		   
-     
-     
- 
-  	.x muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-     
- 
-*  mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   
-     
-_1535067723848375914 mstJEG25u0Qv4VQocWgKl 	 
-    	  
-    		   _2654435874 ml5d8mzmxNmQRMtpfZ82X 	 
-  .x- _7045032207766252456 mZloAr3_PPw7622AVrUCe 	_2654435874 mfF196cGKZ_LkBPN8ZWlr 	 
-    	  
-   .x mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-     
- 
-+  mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		 _1535067723848375914 mMo20fFU0rdQJ7l5qqDaX 	 _2654435874 mGPgWaVxS3WdTr7rWsMw4 	 
-    	  
-  .y- _7045032207766252456 mZ9T0z5VdOHGC7rra8Fzk 	 
-  _2654435874 mWi16Wz7P86SIJlTQEzCB 	 
-    	  .y mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    *  mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-    		   
-     
-    _1535067723848375914 mVLLVWqNz0_lGN56vY03t 	 
-   _2654435874 mWi16Wz7P86SIJlTQEzCB 	 
-    	  
-    		   
-     .y- _7045032207766252456 mstJEG25u0Qv4VQocWgKl 	 
-    	  
-    		   
-  _2654435874 mtEI4bSjtkyV5O0qz_vBz 	 
-    	  
-    		   
-     
-     
- 
-  	.y mPaUdMg3fg2ipZY0Exj7X 	 
+    		   -1 mI30mSPxGJaQtkEjJfoQX 	
+    _17976495724303689842 mRDD8w83SsPKbGXy_JkEO 	 
+se3 mIJkWACd8Uom4Jv6selID 	 
     	  
     		   
      
@@ -4003,2760 +1305,295 @@ _1535067723848375914 mstJEG25u0Qv4VQocWgKl
  
   	 mEm194VmPJuGh5y4tMUm5 	 
     	  
+   
+    _3857178690860967008 mvA2vjSvRD7UmknjmYP5U 	 STATE_LOST mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
     		   
+     
+    
+    _14938569046430841631.clear mTGJXDnkacX2UX9dooHQu 	 
+    	  
+    	 mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+     
+     
+ 
   
-     msBPMso4NRYFcn5Y1myF_ 	 
+    _4913157516830781457.clear mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+   mQivdop_Gb4hqsWvOttc3 	 
+    	  
+ 
+    _14463320619150402643 mtmFAz7pcnIFLgYGMf4eK 	 
+    	  
+   cv mExFPeJBflhTWJKuQVWoB 	 
+    	  
+    		   
+     
+     
+ 
+  	 Mat mdbwYCIpGYWahFfTtU8zH 	 
+    	  
+    		   
+     
+     
+ 
+ myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		   
+     
+    _10558050725520398793 mhL9dWuOWzLGBfRjwvYlN 	 
+    	  -1 myu64GAT8DgGBhNOOCqvd 	 
+   
+ mf0YJDuh2j5By5N13LunG 	 
+    	  
+    		   
+     
+   
+cv mrPFLPKakBKjOOnkuhZUP 	Mat System miuOs6oIdxnQEMrFFk2n_ 	 
+    	  
+    		   
+     
+process mYcSgTugFLQcmWT7seaac 	 
+ const Frame &_46082543180066935 mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+     mbqHQotWhg0sv6ViuZXc3 	 
+    	  
+    		   
+     
+    
+     se3 _16937225862434286412 mH9fKsRtHWNu77RGN1xmn 	 
+    	  
+    		   
+     
+     
+ 
+  	_17976495724303689842 mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+  
+    
+     mr8s7pfvTmBWmxher3Oue 	 
+    	  mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+     
+     
+ 
+  mUGrJMUolw0lb_KVyGK5N 	 
+void* msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+  &_46082543180066935 mOeb4QCF4tk5CXqIGmTlK 	 
+    	  
+    		   
+     
+     
+ 
+  	 mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		  void* mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+&_14938569046430841631 mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    mMm9FLNsNOoyX7Tyb7vpT 	 
+    	  
+    		   
+     
+     
+ 
+  	 
+        swap mYcSgTugFLQcmWT7seaac 	 
+    	  
+    		   
+     
+_4913157516830781457,_14938569046430841631 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   mo9Lbpy0Ap4RTl5O5Or1C 	
+        _14938569046430841631 mH9fKsRtHWNu77RGN1xmn 	 
+    	  
+    		   
+  _46082543180066935 mQivdop_Gb4hqsWvOttc3 	 
+ 
+     miXz43zs_DqtraKQW0m3N 	 
     	  
     		  
     
-    std mExFPeJBflhTWJKuQVWoB 	 
-    	  sort mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		   
-     _5923954032168212568.begin mrXXIs5j4DqJtj32aOG5F 	 
-    	  
-    		   
-   ,_5923954032168212568.end mecU92YjgSbB3VkEoZVK3 	 
-    	  
-    	, mRjEKX4QN9MTvSEtCTNd7 	 
-    	  
-    		    mQbYLzhvVQm8J2LNkC6S6 	 
-    	  
-    		   
-     mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		   
-     const pair mLS76iLDjnGxttL6L8yfX 	 
-    	  
-    		   
-   cv mvpMkjoDGcQujDevHDZnx 	 
- Mat,double maPL1kl9f9VlgIn9jnnN_ 	 
-    	  
-    		   
-    &_2654435866,const pair mbVOLbjVZO0YI60Vuguaq 	 
-    	  
-    		   
-cv mwuvkepREHprpx4i3n2RV 	 
- Mat,double mNF0G2xPBB22gI9XzMk2L 	 
-    	  
-    		   
-     
-    &_2654435867 msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    		   mjXlfKOCTRjUV9apwYcb7 	 
-    	return _2654435866.second miGVtxwiqbDQsG6KBslZU 	 
-    	  
-    		   
-     
-     
- 
- _2654435867.second mQivdop_Gb4hqsWvOttc3 	 
-    	  
-  mwiKr6psttEx97f2NsYO1 	 
-    	  mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-     
-     
- 
-  mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		  
-    
-    
-     mUnahx7x8KWu62epS7OxV 	 
-    	  
-    		   
-     
-     
- _5923954032168212568 mMo20fFU0rdQJ7l5qqDaX 	 
- 0 ml5d8mzmxNmQRMtpfZ82X 	 
-.first mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
-     
- 
- 
- msBPMso4NRYFcn5Y1myF_ 	 
-    	  
-    		   
-     
- 
- mp1kzPPa8GX6cfigPyiyD 	 
-    	  
-    		   
-     
-     
- 
-System mvpMkjoDGcQujDevHDZnx 	 
-   _6496374868013697966 mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-     
-  Frame &_175247759917  mT3v8xdcVsSvUtbwmHC7j 	 
-  mi6BqZOVmQyrEy6BLProP 	 
-    	  
-    		   
-
- mtnnWCdgrIMkg48Nfdksz 	 
-    _11093822302335 mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		 
      mbCI0BlZHp5kbKpNqa5Su 	 
     	  
+    		 mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
     		   
      
-    mlfybwyvp98TOJj0yuqhF 	 
-    _175247759917.imageParams.isStereoCamera mIJkWACd8Uom4Jv6selID 	 
+     
+ 
+_17450466964482625197 mVrsJpNNblNXrk9CJ_J45 	 
     	  
-    		     myX_vRc3UBQw14UHIrg7D 	 _175247759917.imageParams.isArray mecU92YjgSbB3VkEoZVK3 	 
-     mVFG05ubhW6ia_rWdS_Tv 	 
+  MODE_SLAM   mKWQLdAVzYxp5QuNZ1ytt 	 
+    	   mhNH3dNZkhrgawU6wbA6V 	_2869602498954317713 mdMNbPkq6p5KBhEVf3OFw 	 
     	  
-   mbqHQotWhg0sv6ViuZXc3 	 
+hasMap mrXXIs5j4DqJtj32aOG5F 	 
     	  
     		   
+     
+ mXftmBtLFUrPFw3lasjuW 	 
+    	 
+        _2869602498954317713 mtNKEvBwMHNsmdH7BtZbM 	 
+    	  
+    		   
+     
+   setParams mSdpFB1uEgpzM3bVmlHgT 	 
+ _9098980761384425343,_14938569619851839146.enableLoopClosure muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+      m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+     
+     
+ 
+
+     mr8s7pfvTmBWmxher3Oue 	 
+    	  
+    		   
+     
+     
+ 
+   mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		    mQIaw42evZrZGmIhV_U05 	 
+    	 _14938569619851839146.runSequential  mtq_QCXPpv2kX7L8PRz8d 	 
+    	  
+    		   
+     
+     
+ 
+  _17450466964482625197 mosqH7AZUNZeyz6yX3nN1 	 
+    	  
+    		   
+   MODE_SLAM  mSBNIRK1XqZg3XlWW_b3d 	 
+
+        _2869602498954317713 mj3rSXJDWd4j4OSGbS2oX 	start mTGJXDnkacX2UX9dooHQu 	 
+    	  
+    		   
+  m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+     
      
 
-          _11093822302335 mR22jPCjbltZ3tbBmn_6w 	 
-    	  
-    		   
-     
-     
- 
- _9621206695630440219 mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		 _175247759917 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-     
-     mC_gLvnw5tkMWRQheRKr5 	 
-   
-     mqVdZVftPR84WTjiOiVfT 	 
-    else mbqHQotWhg0sv6ViuZXc3 	 
-
-        _11093822302335 mR22jPCjbltZ3tbBmn_6w 	 
-    	  
-    		   
-     
-     
- 
-  	 _650146437747778655 mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-  _175247759917 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-     
-     
- 
-  	 mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
- 
-     msBPMso4NRYFcn5Y1myF_ 	 
-    	  
-    		   
-     mfRi_C6KlnAxop81XDZsV 	 
-  mteJvtUMKI6kC6j6RtZKr 	 
-    	  
-    _11093822302335 mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
-  return _11093822302335 mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
-    _3746282635465101757 mhL9dWuOWzLGBfRjwvYlN 	 
-    	  
-    		   
-     
-     
- 
-  _10762543579000176710 msDVYCHuU_j2g_TdgX4Ta 	 
-keyframes.back mecU92YjgSbB3VkEoZVK3 	 
-    	 .pose_f2g mqLizGA4Z8QZ_2GYQ1inC 	 
-
-    _17510502251974591806 mtmFAz7pcnIFLgYGMf4eK 	 
-    	  
-  _10762543579000176710 msDVYCHuU_j2g_TdgX4Ta 	 
-    	  
-    		   
-keyframes.back mIJkWACd8Uom4Jv6selID 	 
-    	  
-    		   
-     
-    .idx mqLizGA4Z8QZ_2GYQ1inC 	 
- 
-    _1227001083608564617 mRDD8w83SsPKbGXy_JkEO 	 
-    	  
-    		   
-     
-true myu64GAT8DgGBhNOOCqvd 	 
-    	  
-  
-   mR8MpflZg6lk1qLQLX9P9 	 
-    	true m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
-  
- msBPMso4NRYFcn5Y1myF_ 	 
-  
- mFqi0ZIcB_YhZ2B8QBIQg 	 
-    	  
-    		   
-System mrS2zvlmrTf4L4KBRRYAU 	 
-    	  
- _650146437747778655 mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    	Frame &_175247759917  mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-     mJdlQJg0rG2m7KHUChC3R 	
-     mXYEIB3KYwzJOpssgkZxP 	 
-    	  
-    		   
-     
-     
- 
-  	  mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   
-     mQIaw42evZrZGmIhV_U05 	 
-  _11449928097377700216 mxGJXkzb8EW07jCVTl0Jt 	 
-    	  
-    		   
-     
-     
- process mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		  _175247759917,_10762543579000176710 mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
-     
- mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-       mY5hSAdXT4P60CSAZFBBa 	 
-    	  false mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
-  
-      
     
-         mAvI6WqVGKew5QUXF0T2l 	 
+    
+     maE84VqXoUUX_dnxUsfES 	 
     	  
     		   
      
+     auto &_175247760135:_4913157516830781457.ids mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+   
+         mXYEIB3KYwzJOpssgkZxP 	 
+    	  
+    		   
+     
+     
+ 
+ mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		_175247760135 mmk2RogyswbtTiHnbCghT 	 
+    	  
+    		  std miuOs6oIdxnQEMrFFk2n_ 	 
+    numeric_limits mHg0YG9R0Gb6ZE5xIr3dz 	 uint32_t mYbzFOKSwwNsD71cP1DkA 	 
+    	  
+    		   
+  me0ZKHp2Id3eLmP_6GMtk 	 
+    	  
+    		   
+     
+max mjjfaXD3tH8warSj13sVr 	 
+    	   mxAXsCfNkscq4iQtE2AeY 	 
+   mi6BqZOVmQyrEy6BLProP 	 
+    	  
+   
+             mAvI6WqVGKew5QUXF0T2l 	 
+    	  
      mOAy4qGUJpdHQSVbVPq9E 	 
     	  
-  _10762543579000176710 mdMNbPkq6p5KBhEVf3OFw 	 
+ mC4FNAhGk_5NQroya9r4E 	 
     	  
-   keyframes.size mGu_88Fdde5jsxW8v9whR 	 
+    		   
+  _9098980761384425343 mcvX0B8TDw1gEtqXtgT4T 	 
     	  
-    		   mVIm1AJSzhahLlgKO9xQK 	 
+map_points.is mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+     
+ _175247760135 muC5cqYcHRXDD16noARI1 	 
+    	  
+ mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+     
+    _175247760135 mtmFAz7pcnIFLgYGMf4eK 	 
+    	 std mwuvkepREHprpx4i3n2RV 	numeric_limits mk9nSfh6XGyonOYMC8C3M 	 
+   uint32_t mVIm1AJSzhahLlgKO9xQK 	 
+    	  
+    mNQimRrYQ8Mz6YI9KM7Fn 	 
+    	  
+    		   
+     max mRAYh0ARHPOc62CfGHWWO 	 
+   mEm194VmPJuGh5y4tMUm5 	 
     	  
     		   
      
      
  
- 1  m_oqkmDs8rXEbW2q16xvJ 	 
+ 
+             mfkkS3ig7woFqdOg7udAR 	 
+     mfRi_C6KlnAxop81XDZsV 	 
     	  
- _10762543579000176710 mdMNbPkq6p5KBhEVf3OFw 	 
+     _9098980761384425343 mtNKEvBwMHNsmdH7BtZbM 	 map_points msGAdK1RZcxCitYemdpxc 	 
     	  
-map_points.size mdbwYCIpGYWahFfTtU8zH 	 
+  _175247760135 mWi16Wz7P86SIJlTQEzCB 	 
+    	  
+    		  .isBad mdbwYCIpGYWahFfTtU8zH 	 
+     mPaUdMg3fg2ipZY0Exj7X 	 
+ _175247760135 mXE5wWRmJGUY4EsEsgegT 	 
+    	  
+    		std mMorzi7AHv5qXgdOZzcMd 	 
+numeric_limits mbVOLbjVZO0YI60Vuguaq 	 
+   uint32_t mVIm1AJSzhahLlgKO9xQK 	 
+    mMorzi7AHv5qXgdOZzcMd 	 
     	  
     		   
      
      
- mpBV2mt4yeFwcVEC5cxVw 	 
-   0 mPaUdMg3fg2ipZY0Exj7X 	 
+ max mecU92YjgSbB3VkEoZVK3 	 
     	  
     		   
-    mqlayz2fShj6ePxekxwRg 	 
-    	  
-   
-        _175247759917.ids  mR22jPCjbltZ3tbBmn_6w 	 
-    	  
-    _10762543579000176710 mtNKEvBwMHNsmdH7BtZbM 	 
+     
+     mwkk1d6uUiyaKys71tsUv 	 
     	  
     		   
-  keyframes.back mrXXIs5j4DqJtj32aOG5F 	 
-    	  
-    		   
-   .ids mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
+     
+     
+ 
   
-     mf0YJDuh2j5By5N13LunG 	 
-    globalOptimization mJFtpHxfnoGMxp1wzTBMr 	 
-    	   mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		  
-    
-     mHbSWrX6OPeRP2Igmog8G 	 
-   mbXhD242DJoibBjdI1JtA 	 
-    	  
-_10762543579000176710 mSwbK3nBcNZkvGxSXNOZy 	 
-    	  
-    		  map_markers.size mecU92YjgSbB3VkEoZVK3 	 
-  mosqH7AZUNZeyz6yX3nN1 	 
-0 mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-     
- 
-  mjXlfKOCTRjUV9apwYcb7 	 
-    	  
-    		   
-     
-   
-         mbCI0BlZHp5kbKpNqa5Su 	 
- mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		   
-   _10762543579000176710 mgi5Boc5f0emw5eocZbgV 	 
-    	  
-  map_points.size mTGJXDnkacX2UX9dooHQu 	 
-    	  
-    		   mJCQ17ktBLqNw7sHF60R1 	 
-    	  
-    		   
-     
-     
- 
-  	50 mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-      mSH1h4yGhaMSu8y7JC_rY 	 
-    	 
-            _10762543579000176710 mgi5Boc5f0emw5eocZbgV 	 
-    	  
-    		   
-  clear mrXXIs5j4DqJtj32aOG5F 	 
-    	  
-    		   
-     
-     
- 
-  	  myu64GAT8DgGBhNOOCqvd 	 
-    	  
-    		   
-     
-     
-             my5S_tF4_lSpButBKNitX 	 
-    	false mo9Lbpy0Ap4RTl5O5Or1C 	 
          mEjIWbivPeVc9WtxGDiWw 	 
     	  
     		   
-  
-         mxTwhHDgHBwIAa0Dytqva 	 
-    	  _7847018097084079275 mA7hUM4UKqFyb_LJLsook 	 
-   1./_10762543579000176710 mcvX0B8TDw1gEtqXtgT4T 	 
-    	  
-    		   
-    getFrameMedianDepth mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-    		   
-     
-   _10762543579000176710 mSwbK3nBcNZkvGxSXNOZy 	 
-    	  
-   keyframes.front mRAYh0ARHPOc62CfGHWWO 	 
-    	  
-    		   
-     
-     .idx msDy4S0F6Zdx78ZUnbARe 	 
-     myu64GAT8DgGBhNOOCqvd 	 
-  
-        cv mrS2zvlmrTf4L4KBRRYAU 	 
-  Mat _706246338944062 mhL9dWuOWzLGBfRjwvYlN 	 
-    	  
-    		   
-     
-    _10762543579000176710 mxGJXkzb8EW07jCVTl0Jt 	 
-    	  
-keyframes.back mGu_88Fdde5jsxW8v9whR 	 
-    	  
-    		   
-  .pose_f2g.inv mecU92YjgSbB3VkEoZVK3 	 
-    	  
-    		   
-     
-  mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-    
-        
-        
-        _706246338944062.col mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		   
-     
-     
- 
- 3 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-     
-     
- 
-  	.rowRange mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-    		   
-     
-     
- 
-  	 0,3 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    	  moHeIYzwbcFb6VaM90Aa9 	 
-    	  
-    		   
-     
-     
- 
- _706246338944062.col mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   
-     3 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     .rowRange mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		0,3 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     
-     
-*_7847018097084079275 m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
-     
-     
-
-        _10762543579000176710 mcvX0B8TDw1gEtqXtgT4T 	 
-    	  
-    	keyframes.back mTGJXDnkacX2UX9dooHQu 	 
-    	  
-    		 .pose_f2g mtmFAz7pcnIFLgYGMf4eK 	 
-    	  
-  _706246338944062.inv mecU92YjgSbB3VkEoZVK3 	 
-    	  
-    		   
-     
-     
- mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    
-         
-          mTy5S_mcphfNLzuJQ30Xe 	 
-    	  
-    		   
-     
-     
-auto &_175247759380:_10762543579000176710 mcvX0B8TDw1gEtqXtgT4T 	 
-    	  
-    		   
-     
-     
- 
-  	map_points mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    mi4REkBAebpTZrzlvFEpD 	
-            _175247759380.scalePoint mTiWUgQKOeYLvNdGsR_oS 	 
-    _7847018097084079275 mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		   
-     
- myu64GAT8DgGBhNOOCqvd 	
-         mMGejH_coNc3kGxAdXVex 	 
-    	  
-    
-     msxc6utIaOFXg4WI3vB0q 	 
-    	  
-    _3746282635465101757 mH9fKsRtHWNu77RGN1xmn 	 
-    	_10762543579000176710 mSwbK3nBcNZkvGxSXNOZy 	 
-    	  
-    		   
- keyframes.back mecU92YjgSbB3VkEoZVK3 	.pose_f2g mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
-     
-     
- 
-
-       mUnahx7x8KWu62epS7OxV 	 
- true mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-   
- m_ECAXF5hGu1UMoS2l1KU 	 
-    	  
-    		   
-     
-     
- 
-  	
- mK81mHSyZucxh8c_K9rnU 	 
-    	  
-    		   
-    System mwuvkepREHprpx4i3n2RV 	 
-    	  _9621206695630440219 mgGCFceAojKPG0bK5eWQT 	 
-    	  
-    		   
-     
-     
- 
-  	 Frame &_46082543180066935 mXftmBtLFUrPFw3lasjuW 	 
-    	  
-  mi6BqZOVmQyrEy6BLProP 	
-     mg9IHDbTXxljO0nSnQKYh 	 
-    	  
-    		   
-    _16805773490000196330.KPNonMaximaSuppresion mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    
-        _46082543180066935.nonMaximaSuppresion mrXXIs5j4DqJtj32aOG5F 	 
-    	  
-  mo9Lbpy0Ap4RTl5O5Or1C 	 
-
-     mr0Gwya5kzUd694oxNDs4 	 
-    	  
-  _8065948040949117953 mhL9dWuOWzLGBfRjwvYlN 	 
-    	  
-    	0 m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		
-     mFS3Bzv40ET2Bg_bjcFGO 	 
-    	  
-    		   
-     
-     
- 
-  	size_t _2654435874 mXE5wWRmJGUY4EsEsgegT 	 
-    	  
-    		   
-     
-    0 mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
-     
-     _2654435874 mbVOLbjVZO0YI60Vuguaq 	_46082543180066935.und_kpts.size mecU92YjgSbB3VkEoZVK3 	 
- mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   _2654435874 mdN8xdqycKdYT96rU4KUK 	 
-    	  
-    		   
-    muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-    mi6BqZOVmQyrEy6BLProP 	 
-    	  
-    		   
-
-        
-         mxkHJa5wooqhzaSxK7_fd 	 
-    	  
-    		   
-      mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		   
-     
- _46082543180066935.getDepth mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		   
-     
-     
- 
-  	 _2654435874 msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    		   
-   mW202Akoy5o2_FFUMtz7a 	 
-    	 0  mKWQLdAVzYxp5QuNZ1ytt 	 
-    	   _46082543180066935.imageParams.isClosePoint mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    	_46082543180066935.getDepth mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		   
-     
-     
- 
-_2654435874 mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    		   
-     
-     
- 
-  	  mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    		   
-     
-     
- 
-  	   mtq_QCXPpv2kX7L8PRz8d 	 
-    	  
-     mQIaw42evZrZGmIhV_U05 	 
-    	  
-    		   
-     
-     _46082543180066935.flags mstJEG25u0Qv4VQocWgKl 	 
-    	  
-    		   
-     
-     
- 
-  	_2654435874 mtEI4bSjtkyV5O0qz_vBz 	 
-    	  
-    		   
-     
-  .is mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-    		   
- Frame mrPFLPKakBKjOOnkuhZUP 	 
-    	  
-    		   
-     
-     
- 
-FLAG_NONMAXIMA mT3v8xdcVsSvUtbwmHC7j 	 
-   muC5cqYcHRXDD16noARI1 	 
-  
-            _8065948040949117953 mtIfgwpprqjFMhHY9FVrL 	 
-   myu64GAT8DgGBhNOOCqvd 	 
-    	  
-    		   
-     
-  
-     mf0YJDuh2j5By5N13LunG 	
-     mWYYMqZtRPklZ6ldYQlW8 	 
-    	  
- mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-     
-     
- 
-  	 _8065948040949117953 mJCQ17ktBLqNw7sHF60R1 	 
-  100 mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		   
-     
-     
- 
-  mFWbNGU5e6cuqyQa3XUry 	 
-    	  
- false mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-    
-    _46082543180066935.pose_f2g.setUnity mIJkWACd8Uom4Jv6selID 	 
-    	  
-    		   
- m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-  
-    Frame & _16997199184281837438 mIqjSmilXv9ILvDddB7nD 	 
-    	  
-   _10762543579000176710 mSwbK3nBcNZkvGxSXNOZy 	 
-    	  
-    		   
-     
-     
-addKeyFrame mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		   
-   _46082543180066935 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-     
-     
- 
-  	 mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-     
-      
-    
-     mIyrnAZ9pLZEaiK6Yst1L 	 
-    	  
-    		   
-size_t _2654435874 mtmFAz7pcnIFLgYGMf4eK 	 
-    	  
-    	0 mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-   _2654435874 mkHL8KJw4VjwmGdgQrteX 	 
-    	  
-    		   
- _46082543180066935.und_kpts.size mdbwYCIpGYWahFfTtU8zH 	 
-    	  
-    		   
-     
-     mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-     
-     
-_2654435874 mMbWC8gQeXmnMqYEj20Wf 	 
- mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    mi4REkBAebpTZrzlvFEpD 	 
- 
-        
-        cv mExFPeJBflhTWJKuQVWoB 	 
-    Point3f _2654435881  mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
-     
-     
-         mt3m0c1_35lMMq0E3cZsZ 	 
-  mbXhD242DJoibBjdI1JtA 	 
-    	  
-    	 _46082543180066935.getDepth mOAy4qGUJpdHQSVbVPq9E 	 
-    	_2654435874 msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    		   
-     
-     mYbzFOKSwwNsD71cP1DkA 	 
- 0  mTmmYcodZhxYb9bt39OUl 	 
-    	  
-    _46082543180066935.imageParams.isClosePoint mBGM118Iia8vm6zcNTuB6 	 
-    	  
-  _46082543180066935.getDepth mgGCFceAojKPG0bK5eWQT 	 
-    	  
-    		   
-     _2654435874 mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		  mVmWtYm5gVtZj7Yq19XWE 	  mFllaSnZNjV3YvL2YmAFh 	 
-    	  
-   mB0fx5ZWEe2g8Ci7LIhmM 	 
-    	  
-    		   
-     
-     
- 
-  _46082543180066935.flags mRjEKX4QN9MTvSEtCTNd7 	 
-    	  
-    		   
-     
-   _2654435874 mAH84ftHkJMUldxM9fJHE 	 
-    	  
-    		   
-     
- .is mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		   
-Frame mNQimRrYQ8Mz6YI9KM7Fn 	 
-  FLAG_NONMAXIMA muC5cqYcHRXDD16noARI1 	 
-    	  mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   mqlayz2fShj6ePxekxwRg 	 
-    	  
-    		
-            
-            _2654435881 mhL9dWuOWzLGBfRjwvYlN 	 
-    	  _46082543180066935.get3dStereoPoint mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    _2654435874 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     
-     
- 
-   myu64GAT8DgGBhNOOCqvd 	 
-    	  
-  
-             mTWpr3m9V3RdtOrrhhpUi 	 
-    	  
-    		   
-  &_175247759380 mIqjSmilXv9ILvDddB7nD 	 
-    	  _10762543579000176710 mj3rSXJDWd4j4OSGbS2oX 	 
-    	  
-    		   
-    addNewPoint mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    _16997199184281837438.fseq_idx mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-      mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
-     
- 
-  
-            _175247759380.kfSinceAddition mvA2vjSvRD7UmknjmYP5U 	 
-    	  
-    		  1 mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-     
-     
- 
- 
-            _175247759380.setCoordinates mgGCFceAojKPG0bK5eWQT 	 
-    	  
-    		   
-_2654435881 mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-     
- 
-   mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		
-            _175247759380.setStereo mUGrJMUolw0lb_KVyGK5N 	 
-  true mSBNIRK1XqZg3XlWW_b3d 	 
-     mC_gLvnw5tkMWRQheRKr5 	 
-  
-            _10762543579000176710 mevHkLo7kL5WL0_0mLIhr 	 
-    	  
-    		   
-     
-   addMapPointObservation mlfybwyvp98TOJj0yuqhF 	 
-    	  
-_175247759380.id,_16997199184281837438.idx,_2654435874 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     
-  m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
-     
-     
- 
- 
-            _46082543180066935.ids mVLLVWqNz0_lGN56vY03t 	 
-    	  
-    		   
-     
- _2654435874 mvFhi6DaS7eScbgWe07wY 	 
-    	  
-    		   
-     
-     
- 
-  	  mvA2vjSvRD7UmknjmYP5U 	 
-   _175247759380.id mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-     
-    
-         mMGejH_coNc3kGxAdXVex 	 
-    	  
- 
-     m_ECAXF5hGu1UMoS2l1KU 	 
-    	  
    
     
-     mvbe619pMTxqR0ISntFSZ 	 
+     mGc5v1UWfDU7ttNcZryQG 	 
     	  
-    		   
-     
-     
- 
-auto &_2654435878:_46082543180066935.markers  mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
- mi4REkBAebpTZrzlvFEpD 	 
-  
-        _2654435878.frames.insert mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   
-     
-     
- 
-_16997199184281837438.idx mT3v8xdcVsSvUtbwmHC7j 	 
-    	   myu64GAT8DgGBhNOOCqvd 	 
-    	  
-    		 
-        _10762543579000176710 msDVYCHuU_j2g_TdgX4Ta 	 
-    	  
-    		   
-     
-     
-  addMarker mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-  _2654435878  msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    		   
-   mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
-     
-     
- 
-        
-     mqVdZVftPR84WTjiOiVfT 	 
-    	  
-    		   
-  
-     mR8MpflZg6lk1qLQLX9P9 	 
-    	  
-true mQivdop_Gb4hqsWvOttc3 	
- mwiKr6psttEx97f2NsYO1 	 
-    
-string System mrS2zvlmrTf4L4KBRRYAU 	 
-  _9727665765668901870 mOAy4qGUJpdHQSVbVPq9E 	uint64_t _11093822380353 muC5cqYcHRXDD16noARI1 	 
-    	  
-   const mbqHQotWhg0sv6ViuZXc3 	 
-  
-    string _706246330193866 mxIwd_EJpfr1C9jwU7IyL 	 
-    
-    string _46082576163156525 mRDD8w83SsPKbGXy_JkEO 	"\x71\x77\x65\x72\x74\x79\x75\x69\x6f\x70\x61\x73\x64\x66\x67\x68\x6a\x6b\x6c\x7a\x78\x63\x76\x62\x6e\x6d\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x51\x57\x45\x52\x54\x59\x55\x49\x4f\x50\x41\x53\x44\x46\x47\x48\x4a\x4b\x4c\x5a\x58\x43\x56\x42\x4e\x4d" mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-   
-    uchar * _2654435884 mhL9dWuOWzLGBfRjwvYlN 	 
-    	 mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   
-    uchar * mXftmBtLFUrPFw3lasjuW 	 
-    	  
- &_11093822380353 mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-     
-     
- 
-  	
-     mhaG6yS3EwOInKAwIBoQN 	_2654435879 mR22jPCjbltZ3tbBmn_6w 	 
-    	sizeof mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		   
-     
-   _11093822380353 mxAXsCfNkscq4iQtE2AeY 	 
-    	 /sizeof mgGCFceAojKPG0bK5eWQT 	 
-    	  
-  uchar  mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    		   
-     
-     
- 
- mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
-     
-  
-     mIyrnAZ9pLZEaiK6Yst1L 	 
-    	  
-   int _2654435874 mvA2vjSvRD7UmknjmYP5U 	 
-    	  
-  0 myu64GAT8DgGBhNOOCqvd 	 
-    	  
-    		   
-     
-     
- 
-  	 _2654435874 mnpObQ1mWnyfQO24_ojBn 	 
-    	  
-    		 _2654435879 mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
-    _2654435874 mTgR0xuTc2WA_FI5hAh2Q 	 
-    	  
-    		   
-     
-     
- 
-  	  mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    		   
-     
-     
-  mi6BqZOVmQyrEy6BLProP 	 
-    	
-        _706246330193866.push_back mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-   _46082576163156525 mZloAr3_PPw7622AVrUCe 	 
-    	  
-    		   
-     
-     _2654435884 mRjEKX4QN9MTvSEtCTNd7 	 
-    	  _2654435874 ml5d8mzmxNmQRMtpfZ82X 	 
-    	  
-    		%_46082576163156525.size mGu_88Fdde5jsxW8v9whR 	 
-     mWi16Wz7P86SIJlTQEzCB 	 
-    	  
-    		   
-     
-     
-  mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-  mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
-     
-     
- 
-
-     mEjIWbivPeVc9WtxGDiWw 	
-     mLp5eeYn1TGnQEcop68VN 	 
-    	  
-    		   
-     
-    _706246330193866 mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		
- m_ECAXF5hGu1UMoS2l1KU 	 
-    	  
-    		   
-     
-     
- 
-  
- mTlKcfas8V6h_FPimPoyY 	 
-    	  
- System mNQimRrYQ8Mz6YI9KM7Fn 	 
-    	  
-    		   
-   _17508337877569083564 mOAy4qGUJpdHQSVbVPq9E 	const Frame &_10614055813325501077,  const se3 &_10706799483371532009 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-   mXdnll4yjwVy4uBDSjUe3 	 
-    	  
-
-    
-    int64_t _644211886852851457 moHeIYzwbcFb6VaM90Aa9 	 
-    	  
-    		   
-     
-     
- 
-  	 -1  mo9Lbpy0Ap4RTl5O5Or1C 	 
-  
-     mFVNERjMRO_ZEKm0TY73X 	 
-    	  
-    		   
-  mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-    _16805773490000196330.detectKeyPoints mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-     
-     
- 
-  	 
-       _644211886852851457 mvA2vjSvRD7UmknjmYP5U 	 
-   _10762543579000176710 mj3rSXJDWd4j4OSGbS2oX 	 
-    	  
-    		   getReferenceKeyFrame mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   
-     
-   _10614055813325501077,1 mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    		   mI30mSPxGJaQtkEjJfoQX 	
-     mXYEIB3KYwzJOpssgkZxP 	 
-   mBGM118Iia8vm6zcNTuB6 	 
-_644211886852851457 mcozC0jwDOrxnYpsfODix 	 
-    	 -1 mT3v8xdcVsSvUtbwmHC7j 	 
-    mIaPM1ms991SDrw4x6KTt 	 
-    	  
-    		   
-     
-     
- 
-_644211886852851457 myu64GAT8DgGBhNOOCqvd 	 
-    	
-    
-     mr8s7pfvTmBWmxher3Oue 	 
-    	  
-    		   
-     
-     
-  mgGCFceAojKPG0bK5eWQT 	 
-    	  
-    		   
-     _10762543579000176710 mtNKEvBwMHNsmdH7BtZbM 	 
-    	  
-   map_markers.size mecU92YjgSbB3VkEoZVK3 	  mrDas3egWRcEnvTodVRRA 	 
-    	  
-    		   
-     
-     
- 
- 0 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-     
-     
- 
-  muH9A34QGuccPZkZDb32w 	 
-   
-         mUnahx7x8KWu62epS7OxV 	 
-    	  
-    		_17510502251974591806 m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
- 
-     mf0YJDuh2j5By5N13LunG 	 
-    	
-    
-    vector mLS76iLDjnGxttL6L8yfX 	 
-    	  
-    		   
-     
-  uint32_t maPL1kl9f9VlgIn9jnnN_ 	 
-    	 _4240713669852012646 mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		 
-     mWIOGoR1XyrR6fw03i9px 	 
-    	  
-    		  auto _2654435878:_10614055813325501077.markers mVFG05ubhW6ia_rWdS_Tv 	 
- mi6BqZOVmQyrEy6BLProP 	 
-    	  
-    
-         mBUCZuaNioFkzVtaa2sRQ 	 
-    	  
-    		   
-   _3005399795337363304 mvA2vjSvRD7UmknjmYP5U 	 
-    	  
-    		   
-     
-     _10762543579000176710 mdMNbPkq6p5KBhEVf3OFw 	 
-    	  
-    		   
-     
-     
- 
-  map_markers.find mbXhD242DJoibBjdI1JtA 	_2654435878.id mT3v8xdcVsSvUtbwmHC7j 	 
-  mxIwd_EJpfr1C9jwU7IyL 	 
-    
-         muDvj5aUdXshb2AqqeEiu 	 
-    	  
-    		   
-     
-     
- mTiWUgQKOeYLvNdGsR_oS 	 
- _3005399795337363304 mYCupqIOYDMlnjNznUUG5 	 
-    	  
-    		   
-     _10762543579000176710 mj3rSXJDWd4j4OSGbS2oX 	 
-    	  
-    		   
-     map_markers.end mRAYh0ARHPOc62CfGHWWO 	 mxAXsCfNkscq4iQtE2AeY 	 
-    	 mMm9FLNsNOoyX7Tyb7vpT 	 
-    	  
-    		   
-     
-     
- 
-             mHbSWrX6OPeRP2Igmog8G 	 mbXhD242DJoibBjdI1JtA 	 
-    	  _3005399795337363304 msDVYCHuU_j2g_TdgX4Ta 	 
-    	  
-    		 second.pose_g2m.isValid mTGJXDnkacX2UX9dooHQu 	 
-    	  
-    		   
-     
-     
-  mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		 _4240713669852012646.push_back mbXhD242DJoibBjdI1JtA 	 
-  _2654435878.id mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-     
- 
-  	  mwkk1d6uUiyaKys71tsUv 	 
-    	  
-
-         mwiKr6psttEx97f2NsYO1 	 
-    	  
-    		   
-     
-  
-     mEjIWbivPeVc9WtxGDiWw 	 
-    	  
-    		   
-    pair mbVOLbjVZO0YI60Vuguaq 	 
-    	  uint32_t,float mVIm1AJSzhahLlgKO9xQK 	 
-    	  
-    		   
-     _18337238202410394478 mgGCFceAojKPG0bK5eWQT 	 
-    	  std miuOs6oIdxnQEMrFFk2n_ 	numeric_limits mkHL8KJw4VjwmGdgQrteX 	 
-    	 uint32_t mYbzFOKSwwNsD71cP1DkA 	 
-    	  
-    me0ZKHp2Id3eLmP_6GMtk 	 
-    	  
-    		   
- max mdbwYCIpGYWahFfTtU8zH 	 
-  ,std mrPFLPKakBKjOOnkuhZUP 	 
-numeric_limits moCEmVQeGy8LzV8cAuk79 	 
-    	  
-    		   
-     
-     
- 
-float mVIm1AJSzhahLlgKO9xQK 	 
-    	  
-    		   
-     mvpMkjoDGcQujDevHDZnx 	 
-    	  
-    		   max mJFtpHxfnoGMxp1wzTBMr 	 
-    	  
-    		   
-    muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-     
- 
-   mEm194VmPJuGh5y4tMUm5 	 
-     mWIOGoR1XyrR6fw03i9px 	 
-    	  
-  auto _3005399795337363304:_4240713669852012646 mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    
-         mWIOGoR1XyrR6fw03i9px 	 
-    	  
-   const  mcRuULuI_AYJWzFSu1kB4 	 
-    	  
-    		   
- &_46082543180066935:_10762543579000176710 mSwbK3nBcNZkvGxSXNOZy 	 
-    	  
-  map_markers mVLLVWqNz0_lGN56vY03t 	 
-    	  _3005399795337363304 mtEI4bSjtkyV5O0qz_vBz 	.frames mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-   muH9A34QGuccPZkZDb32w 	 
-    	  
-    		   
-             mcRuULuI_AYJWzFSu1kB4 	 
-    	  
-    		   
-     
-     
- _2654435869 mtmFAz7pcnIFLgYGMf4eK 	 
-      _10706799483371532009 .t_dist mUGrJMUolw0lb_KVyGK5N 	 
-    	  
- _10762543579000176710 msDVYCHuU_j2g_TdgX4Ta 	 
-    	  
-    		   
-     
-     
- keyframes mstJEG25u0Qv4VQocWgKl 	 
-    	  
-    		   
-     _46082543180066935 mWjWwCxBA7LLBixCoRsYZ 	 
-    	  .pose_f2g  mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
-     
-     
-       mqLizGA4Z8QZ_2GYQ1inC 	 
- 
-             mAvI6WqVGKew5QUXF0T2l 	 
-    	  
-    		   
-     
-  mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   _18337238202410394478.second mpBV2mt4yeFwcVEC5cxVw 	 
-    	  
-    		   
-     
-     _2654435869 mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    		   
-   _18337238202410394478 mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    mbqHQotWhg0sv6ViuZXc3 	 
-    	  
-    		   
-     
-  _46082543180066935,_2654435869 mL9oWJQ1n2xKG3FtRNowa 	 
-    	  
-    		   
-     
-    mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
-     
- 
-  	
-         msxc6utIaOFXg4WI3vB0q 	 
-    	  
-
-     mUnahx7x8KWu62epS7OxV 	 
-    	  
-    		   
-     
- _18337238202410394478.first mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-
- mqVdZVftPR84WTjiOiVfT 	
-std miuOs6oIdxnQEMrFFk2n_ 	 
-    	  
-    		   
- vector mJCQ17ktBLqNw7sHF60R1 	 
-    	  
-    		   
-System mExFPeJBflhTWJKuQVWoB 	 
-    	  
-    		   
-     
- _5992633625340765749 meN5YYBBVg5DStfnyA8Dd 	 
-    	  
-    		   
-   System mNQimRrYQ8Mz6YI9KM7Fn 	 
-    	  
-    		 _1728481360185120288 mgGCFceAojKPG0bK5eWQT 	 Frame &_16940374161494853219,se3 &_13011065492167565582 ,const std mrS2zvlmrTf4L4KBRRYAU 	 set mnpObQ1mWnyfQO24_ojBn 	 
-    	 uint32_t maPL1kl9f9VlgIn9jnnN_ 	 
-  &_16997249117545452056  mJk4eXgp_IeFV2YvLaQC7 	 
-    	   mi4REkBAebpTZrzlvFEpD 	 
-    	  
-    		  
-     mt3m0c1_35lMMq0E3cZsZ 	 
-    	   mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-     
-     
- 
-  	_16940374161494853219.ids.size mFAl4ldpf7o2gKLWQ4bfu 	 
-    	  
-    		   
-     
-     
- 
-   mosqH7AZUNZeyz6yX3nN1 	 
-    	  
-    		 0 mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		   
-     
-     
- return  mXdnll4yjwVy4uBDSjUe3 	 
-    	   mf0YJDuh2j5By5N13LunG 	 
-    	  
-    mxIwd_EJpfr1C9jwU7IyL 	 
-   
-     mAvI6WqVGKew5QUXF0T2l 	 
-     mNQ6rNLARkxxSTP6tiTXG 	_10762543579000176710 mVfb3IHZLk8rmg75VuqQZ 	 
-    	  TheKFDataBase.isEmpty mRAYh0ARHPOc62CfGHWWO 	 
-    	  
-    		   
-     
- muC5cqYcHRXDD16noARI1 	 
-    return   mJdlQJg0rG2m7KHUChC3R 	 
-    	  
-    		  mL9oWJQ1n2xKG3FtRNowa 	 
-    	  
-  mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
-     
-    vector mLS76iLDjnGxttL6L8yfX 	 
-    	  
-    uint32_t mJJosB3DZCYh837sWRpN7 	 
-    	  
-   _5288382201172378343 mH9fKsRtHWNu77RGN1xmn 	_10762543579000176710 mxGJXkzb8EW07jCVTl0Jt 	 
-    	  
-    		   
-  relocalizationCandidates mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		   
-     
-     _16940374161494853219,_16997249117545452056 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-  mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-     muDvj5aUdXshb2AqqeEiu 	 
-    	  
-    		   
-     
- mTiWUgQKOeYLvNdGsR_oS 	_5288382201172378343.size mJFtpHxfnoGMxp1wzTBMr 	 
-    	  
-    		   
-  mw_MIhwcw8TZ9gTF3_mEt 	 
-    	  
-    		   
-     
-0 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  return   mSH1h4yGhaMSu8y7JC_rY 	 
-    	 mMGejH_coNc3kGxAdXVex 	 
-    	  
-    		    mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-  
-    vector mbVOLbjVZO0YI60Vuguaq 	 
-   System mvpMkjoDGcQujDevHDZnx 	 
-    	  
-   _5992633625340765749 mzCa3iYOTZk3vOb9xFPuf 	 
-    	  
-    		   
-    _1524129789187101628 mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
- _5288382201172378343.size mrXXIs5j4DqJtj32aOG5F 	 
-    	  
-    		   
-     
-     muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-   mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-  
-    FrameMatcher _16937386958649118140 mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-    		   
-     
-   
-    _16937386958649118140.setParams mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-     
-  _16940374161494853219,FrameMatcher mNQimRrYQ8Mz6YI9KM7Fn 	 
-    	  
-    		   
-     
-     
- 
-  MODE_ALL,_16805773490000196330.maxDescDistance*2 mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    myu64GAT8DgGBhNOOCqvd 	 
-    
-
-     maE84VqXoUUX_dnxUsfES 	 
-   int _175247762874 moHeIYzwbcFb6VaM90Aa9 	 
-    	  
-    		 0 mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   _175247762874 mnpObQ1mWnyfQO24_ojBn 	 
-    	  
-  _5288382201172378343.size mJFtpHxfnoGMxp1wzTBMr 	 
-    	  
- mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-   _175247762874 mY6fIyAOJfhz5nUdrWiVY 	 
-    	  
-    		  msDy4S0F6Zdx78ZUnbARe 	 
-    mi6BqZOVmQyrEy6BLProP 	 
- 
-         mEhFK99MtLRsCBaPNqnDs 	 
-    	  
-    		   
-     _175247760268 moHeIYzwbcFb6VaM90Aa9 	 
-    	  
-  _5288382201172378343 msGAdK1RZcxCitYemdpxc 	 
-    	  
-    		   
-     
-  _175247762874 mvFhi6DaS7eScbgWe07wY 	 
-    	  
-    		   
-     
-     
- 
-  mo9Lbpy0Ap4RTl5O5Or1C 	
-         mFTobXyS5Vx9ebVESwR0T 	 
-    	  
-    		   
-&_3005399814901981436 mRDD8w83SsPKbGXy_JkEO 	 
-    	  
-    		   
-_10762543579000176710 mdMNbPkq6p5KBhEVf3OFw 	 keyframes mVjuVop3osym9wWoq6p3w 	 
-    	  
-    		   
-     
-     
-_175247760268 mvFhi6DaS7eScbgWe07wY 	 
-    	 mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
-
-        _1524129789187101628 mMo20fFU0rdQJ7l5qqDaX 	_175247762874 mtEI4bSjtkyV5O0qz_vBz 	 
-    	  
-    		   
-     
-     
-._14923942641780752535 mvA2vjSvRD7UmknjmYP5U 	 
-    	  
-    		   
-   _16937386958649118140.match mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		  _3005399814901981436,FrameMatcher mrPFLPKakBKjOOnkuhZUP 	 
-    	  
- MODE_ASSIGNED mVmWtYm5gVtZj7Yq19XWE 	 
- mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-     
- 
-        
-         mFS3Bzv40ET2Bg_bjcFGO 	 
-   auto &_2654435878:_1524129789187101628 mstJEG25u0Qv4VQocWgKl 	 
-    	  
-    		   
-     
-     
-_175247762874 mWi16Wz7P86SIJlTQEzCB 	 
-    ._14923942641780752535 muC5cqYcHRXDD16noARI1 	 mbqHQotWhg0sv6ViuZXc3 	 
-    	  
-    		   
-     
-     
- 
- 
-            std mExFPeJBflhTWJKuQVWoB 	 
- swap mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		  _2654435878.queryIdx,_2654435878.trainIdx mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     mo9Lbpy0Ap4RTl5O5Or1C 	 
-
-            _2654435878.trainIdx mIqjSmilXv9ILvDddB7nD 	 
-    	  
-    		   
- _3005399814901981436.ids msGAdK1RZcxCitYemdpxc 	 
-    	  
-    		   
- _2654435878.trainIdx mQbYLzhvVQm8J2LNkC6S6 	 
-    	  
-    		   
-     
-     
- 
-   mxIwd_EJpfr1C9jwU7IyL 	 
- 
-         mwiKr6psttEx97f2NsYO1 	 
-    	  
-    		   
-        
-         mIyrnAZ9pLZEaiK6Yst1L 	 
-int _2654435874 mA7hUM4UKqFyb_LJLsook 	 
-    	  0 mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
-     
- 
-  _2654435874 miGVtxwiqbDQsG6KBslZU 	 
-    	  
-    		   
-_1524129789187101628 mRjEKX4QN9MTvSEtCTNd7 	 
-    	  
-    _175247762874 mvFhi6DaS7eScbgWe07wY 	 
-    	  
-    		   
-     
- ._14923942641780752535.size mrXXIs5j4DqJtj32aOG5F 	 
-    	  
-    		   
-     
-     
-  m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
-   _2654435874 mPjeLalHATLRlVYohP5cu 	 
-    	  
-    		   
-     
-     
-  mSBNIRK1XqZg3XlWW_b3d 	 
-    	 mjXlfKOCTRjUV9apwYcb7 	
-             mflySGFqxQX_KaIEHAKSo 	 
-    	  
-&_175247759380 mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    		   
-     
-_1524129789187101628 mwzFZRcSPi2Vsk45HpaLx 	 
-    	  
-    		   
-     
-     
- 
-  	_175247762874 mOwAFTnFZjoBWI2gNeAO_ 	 
-    	  
-    		   
-     
-     
- 
- ._14923942641780752535 msGAdK1RZcxCitYemdpxc 	 
-    	  
-    		   
-_2654435874 mWi16Wz7P86SIJlTQEzCB 	 
-   .trainIdx mxIwd_EJpfr1C9jwU7IyL 	 
-             mGc5v1UWfDU7ttNcZryQG 	 
-    	  
-    		   
-     
-     
- 
-  mkyly54GlrbXuNeECTTqk 	 
-    	 _10762543579000176710 mj3rSXJDWd4j4OSGbS2oX 	 
-map_points.is mUGrJMUolw0lb_KVyGK5N 	 
-    	_175247759380 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
- 
-                _1524129789187101628 mRjEKX4QN9MTvSEtCTNd7 	 
-    	  
-    		   
-    _175247762874 mOwAFTnFZjoBWI2gNeAO_ 	 
-    	  
-    		   
-     
- ._14923942641780752535 msGAdK1RZcxCitYemdpxc 	 
-_2654435874 mOwAFTnFZjoBWI2gNeAO_ 	 
-    	  
-    		   
-  .trainIdx mH9fKsRtHWNu77RGN1xmn 	 
-    	  -1 mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
- 
-             mz0gDEk4XJJySbEeCgC9P 	 
-    	  
-    		   
-     
-  _10762543579000176710 msDVYCHuU_j2g_TdgX4Ta 	 
-    	  
-    		   
-     
-     
- 
-map_points mMo20fFU0rdQJ7l5qqDaX 	 
-    	  _175247759380 mfF196cGKZ_LkBPN8ZWlr 	 
-    	  
-    		   
-     
-     
- 
-  .isBad mjjfaXD3tH8warSj13sVr 	   mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
- 
-                _1524129789187101628 msGAdK1RZcxCitYemdpxc 	 
-    	  
-    		   
-_175247762874 mOwAFTnFZjoBWI2gNeAO_ 	 
-    	  
-    		   
-     
-     
- 
-  	._14923942641780752535 msGAdK1RZcxCitYemdpxc 	 
-    	  
-    	_2654435874 mWjWwCxBA7LLBixCoRsYZ 	 
-    	  
-    .trainIdx mH9fKsRtHWNu77RGN1xmn 	 
-   -1 mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
-     
-     
- 
-  	
-         msBPMso4NRYFcn5Y1myF_ 	 
-    	  
-    		
-        remove_unused_matches mTiWUgQKOeYLvNdGsR_oS 	 _1524129789187101628 mVLLVWqNz0_lGN56vY03t 	 
-    	  
-    		   
-  _175247762874 mvFhi6DaS7eScbgWe07wY 	 
-    	  
-    		   
-     
-._14923942641780752535 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-   mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-    		   
-
-         mFVNERjMRO_ZEKm0TY73X 	 
-    	  
-     mbXhD242DJoibBjdI1JtA 	 
-    	  
-_1524129789187101628 mstJEG25u0Qv4VQocWgKl 	 
-    	  
-    		   
-     
-     
- 
-  _175247762874 mQbYLzhvVQm8J2LNkC6S6 	 
-    	  
-    		   
-     
- ._14923942641780752535.size mecU92YjgSbB3VkEoZVK3 	 mkHL8KJw4VjwmGdgQrteX 	 
-    	  
-    		   
-     25 mVmWtYm5gVtZj7Yq19XWE 	continue myu64GAT8DgGBhNOOCqvd 	 
-
-        _1524129789187101628 mVjuVop3osym9wWoq6p3w 	 
-    	  
-    		   
-   _175247762874 mAH84ftHkJMUldxM9fJHE 	 
-    	  
-    		   
-     
-     
- 
-  ._707186293853633825 moHeIYzwbcFb6VaM90Aa9 	 
-    	  
-    		   
-     _3005399814901981436.pose_f2g mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
-     
- 
-         
-        PnPSolver mNQimRrYQ8Mz6YI9KM7Fn 	 
-    	  
-    		solvePnPRansac mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		   
-     
-     
- _16940374161494853219,_10762543579000176710,_1524129789187101628 mRjEKX4QN9MTvSEtCTNd7 	 
-    	  
-    		   
- _175247762874 mGPgWaVxS3WdTr7rWsMw4 	 
-._14923942641780752535,_1524129789187101628 mVLLVWqNz0_lGN56vY03t 	 
-    _175247762874 mfF196cGKZ_LkBPN8ZWlr 	 ._707186293853633825 mxAXsCfNkscq4iQtE2AeY 	 
- mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-     
-     
-
-          mFVNERjMRO_ZEKm0TY73X 	 
-    	  
-    		   
-     
-     
- 
- mgGCFceAojKPG0bK5eWQT 	 
-   _1524129789187101628 mVLLVWqNz0_lGN56vY03t 	 
-    	  
-    		   
-    _175247762874 mOwAFTnFZjoBWI2gNeAO_ 	 
-    	  
-    		._14923942641780752535.size mecU92YjgSbB3VkEoZVK3 	 
-    	  
-    		   
-     
-   moCEmVQeGy8LzV8cAuk79 	 
- 15 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-   continue mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-   
-        
-        _1524129789187101628 mstJEG25u0Qv4VQocWgKl 	 
-    	_175247762874 mtEI4bSjtkyV5O0qz_vBz 	 
-    	  
-    		   
-     
-   ._14923942641780752535 mIqjSmilXv9ILvDddB7nD 	 
-     _10762543579000176710 mj3rSXJDWd4j4OSGbS2oX 	 
-    	  
-    		   
-     matchFrameToMapPoints  mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-   _10762543579000176710 mgi5Boc5f0emw5eocZbgV 	 
-    	  
-   TheKpGraph.getNeighborsVLevel2 mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		   
-     
-      _175247760268,true mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
-     
-     
- 
- , _16940374161494853219,  _1524129789187101628 mwzFZRcSPi2Vsk45HpaLx 	 
-    	  
-    		   
-     
-    _175247762874 mWjWwCxBA7LLBixCoRsYZ 	._707186293853633825 ,_16805773490000196330.maxDescDistance*2, 2.5,false mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-    mqLizGA4Z8QZ_2GYQ1inC 	 
-    	
-         mr8s7pfvTmBWmxher3Oue 	 
-  mgGCFceAojKPG0bK5eWQT 	 
-    	  
-    		   
- _1524129789187101628 mbtzLVjzLgaxYxNNltfyM 	 
-    	  
- _175247762874 mQbYLzhvVQm8J2LNkC6S6 	 
-    	  
-    ._14923942641780752535.size mecU92YjgSbB3VkEoZVK3 	 
-    	  
-    		    miGVtxwiqbDQsG6KBslZU 	 
-   30 mJk4eXgp_IeFV2YvLaQC7 	 
-   continue mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
-     
-        
-        PnPSolver mrS2zvlmrTf4L4KBRRYAU 	 
-    	  
-    		   
-     
-     
- 
-  	 solvePnp mBGM118Iia8vm6zcNTuB6 	 
-    	 _16940374161494853219,_10762543579000176710,_1524129789187101628 mVjuVop3osym9wWoq6p3w 	 
-    	  
-    		   
-     
-     
- 
-  	 _175247762874 mOwAFTnFZjoBWI2gNeAO_ 	._14923942641780752535,_1524129789187101628 mbtzLVjzLgaxYxNNltfyM 	 
-    	  
-  _175247762874 mfF196cGKZ_LkBPN8ZWlr 	._707186293853633825 mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    		   
-     mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-   
-          mbCI0BlZHp5kbKpNqa5Su 	 
-    	  
-    		   
-     
-     
- mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		   
- _1524129789187101628 msGAdK1RZcxCitYemdpxc 	 
-    	 _175247762874 mWjWwCxBA7LLBixCoRsYZ 	 
-    	  
-    		   
-._14923942641780752535.size mIJkWACd8Uom4Jv6selID 	 
-    	  
-    		 mbVOLbjVZO0YI60Vuguaq 	 
-    	  
-    		   
-     
- 30 mJk4eXgp_IeFV2YvLaQC7 	 continue mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
-     
-    
-        _1524129789187101628 mstJEG25u0Qv4VQocWgKl 	 _175247762874 mfF196cGKZ_LkBPN8ZWlr 	 
-    	  
-    		   
-    . _17199050434970069896 mhL9dWuOWzLGBfRjwvYlN 	 
-    	  
-    		   
-     _16940374161494853219.ids mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
-  
-         mvbe619pMTxqR0ISntFSZ 	 
-    	  
-    		   
-    auto _46082575882272165: _1524129789187101628 mVLLVWqNz0_lGN56vY03t 	 
-    	  
-    		   
-     
-     
- 
-  	 _175247762874 mfF196cGKZ_LkBPN8ZWlr 	 
-    	  
-    		   
-     
- ._14923942641780752535 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		 
-            _1524129789187101628 mstJEG25u0Qv4VQocWgKl 	 
-    	  
-    		   
-     
-     
-_175247762874 mtEI4bSjtkyV5O0qz_vBz 	 
-    	  
-    		   
-     
-     
- 
-  	._17199050434970069896 mMo20fFU0rdQJ7l5qqDaX 	 
-   _46082575882272165.queryIdx ml5d8mzmxNmQRMtpfZ82X 	 
- mtmFAz7pcnIFLgYGMf4eK 	 
-    	  
-_46082575882272165.trainIdx mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-     
-     
-
-     msBPMso4NRYFcn5Y1myF_ 	 
-    	  
-    	
-    
-    std mrS2zvlmrTf4L4KBRRYAU 	 
-    	remove_if mTiWUgQKOeYLvNdGsR_oS 	 
-    _1524129789187101628.begin mjjfaXD3tH8warSj13sVr 	 
-    	  
- ,_1524129789187101628.end mIJkWACd8Uom4Jv6selID 	 
-    	  
-    		   
-     
-     
-, mwzFZRcSPi2Vsk45HpaLx 	 
-     mQbYLzhvVQm8J2LNkC6S6 	 
-    	  
-    		   
-     
-  mgGCFceAojKPG0bK5eWQT 	 
-    	const _5992633625340765749 &_2654435866 mVFG05ubhW6ia_rWdS_Tv 	 
-    	 mSH1h4yGhaMSu8y7JC_rY 	 
-    	  
-    		   
-    return _2654435866._14923942641780752535.size mIJkWACd8Uom4Jv6selID 	 
-    	  
-   m_W9SY1N4eCI9HVCtY7k_ 	 
-    	  
-    		   
-  30 mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
-     
- 
-   mMGejH_coNc3kGxAdXVex 	 
-    	  
-    		   
-  mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    		   
-     
-     
- 
-  mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    	
-    std me0ZKHp2Id3eLmP_6GMtk 	 
-    sort mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		   _1524129789187101628.begin mIJkWACd8Uom4Jv6selID 	 
-    	  
-    		   
-     ,_1524129789187101628.end mrXXIs5j4DqJtj32aOG5F 	, mMo20fFU0rdQJ7l5qqDaX 	 
-    	  
-    		   
-     
-    ml5d8mzmxNmQRMtpfZ82X 	 
-    	  
-    		   
- mbXhD242DJoibBjdI1JtA 	 
-    	  
-   const _5992633625340765749 &_2654435866,const _5992633625340765749 &_2654435867 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-     
-      mbqHQotWhg0sv6ViuZXc3 	 
-    	  
-    		   
-     
-     
- return _2654435866._14923942641780752535.size mFAl4ldpf7o2gKLWQ4bfu 	 
-    	  
-    		   
-      mYbzFOKSwwNsD71cP1DkA 	 
-    _2654435867._14923942641780752535.size mjjfaXD3tH8warSj13sVr 	 
-    	  
-     mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
- mf0YJDuh2j5By5N13LunG 	 
-    	  
- mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    	 mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-     
-     
-
-    mFWbNGU5e6cuqyQa3XUry 	 
-    	  
-    		   
-     
-     
- 
-_1524129789187101628 mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-
- mqVdZVftPR84WTjiOiVfT 	 
-    	  
-    		   
-     
-   
- mFqi0ZIcB_YhZ2B8QBIQg 	 
-    System mMorzi7AHv5qXgdOZzcMd 	 
-    	 _14784383942756869665 mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-   Frame &_16940374161494853219,se3 &_13011065492167565582 , const std mvpMkjoDGcQujDevHDZnx 	 
-    	  
-set mbVOLbjVZO0YI60Vuguaq 	 
-    	  
-    		  uint32_t mVIm1AJSzhahLlgKO9xQK 	 
-    	  
-    		   
-     
-     
- 
-  &_16997249117545452056  muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-     
- 
-  	 mbqHQotWhg0sv6ViuZXc3 	 
-    	  
-     mBUCZuaNioFkzVtaa2sRQ 	 
- _1524129789187101628 mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    		   
-     _1728481360185120288 mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		   
-     
- _16940374161494853219,_13011065492167565582,_16997249117545452056 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-     
-    mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-
-     mr8s7pfvTmBWmxher3Oue 	 
-    	  
-    		   
-     
-     
-  mgGCFceAojKPG0bK5eWQT 	 
-    	  
-    		 _1524129789187101628.size mdbwYCIpGYWahFfTtU8zH 	 
-    	  
-    		   
-    mosqH7AZUNZeyz6yX3nN1 	 
-0 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		    mV4_AbWY8ymaWGsYOk0LC 	 
-    	  
-    		   
-     
-    false mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
-     
-     
-
-     mAvI6WqVGKew5QUXF0T2l 	 
-    	  
-    		   
-      mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   
-     
-     _1524129789187101628 mZloAr3_PPw7622AVrUCe 	 
-    	  
-    		   
-     0 mWi16Wz7P86SIJlTQEzCB 	._14923942641780752535.size mRAYh0ARHPOc62CfGHWWO 	 
-    	  
- maPL1kl9f9VlgIn9jnnN_ 	 
-    	  
-    		30 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     mi6BqZOVmQyrEy6BLProP 	 
-    	  
-    		   
-     
-    
-        _13011065492167565582 moHeIYzwbcFb6VaM90Aa9 	 
-    	  
-    		   
-  _1524129789187101628 mZ9T0z5VdOHGC7rra8Fzk 	 
-    	  
-    		   
-     
-     
- 
-0 ml5d8mzmxNmQRMtpfZ82X 	 
-    	  
-    		   
-     
-    ._707186293853633825 mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		 
-        _16940374161494853219.ids mXE5wWRmJGUY4EsEsgegT 	 
-    _1524129789187101628 mbtzLVjzLgaxYxNNltfyM 	0 mGPgWaVxS3WdTr7rWsMw4 	 
-  ._17199050434970069896 myu64GAT8DgGBhNOOCqvd 	 
-    
-         mIaPM1ms991SDrw4x6KTt 	 
-    	  
-    		   
- true mxIwd_EJpfr1C9jwU7IyL 	 
-    	
-     mEjIWbivPeVc9WtxGDiWw 	
-     mEYy4vDSh1urfYj6Y0xAX 	 
-     mIaPM1ms991SDrw4x6KTt 	 
-    	  
-    		   
-     
-     
- 
- false mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-    		   
-     
-     
- 
- mMGejH_coNc3kGxAdXVex 	 
-    	  
-    		   
-     
-     
- 
-  	
- mp1kzPPa8GX6cfigPyiyD 	 
-    	  
-   System mI3QeEk0K_mj1WaUiowht 	 
-    	  
-  _8439838123052468212 mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
- Frame &_2654435871,se3 &_13011065492167565582  mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-     
-     
- 
-  	 mMm9FLNsNOoyX7Tyb7vpT 	 
-    	  
-    		   
- 
-      mFVNERjMRO_ZEKm0TY73X 	 
-    mUGrJMUolw0lb_KVyGK5N 	 
-    	  _2654435871.markers.size mjjfaXD3tH8warSj13sVr 	 
-    	  
-    		   
-     
-     
- mIHFqVJpFXgMDdHn2uhc3 	 0 mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
-     
-   return false mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    	
-    
-    vector mHg0YG9R0Gb6ZE5xIr3dz 	 
-    	  
-    		   
-     
-     
- uint32_t mYbzFOKSwwNsD71cP1DkA 	 
-    	  
-    		   
-    _7895328205142007059 mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
-    
-     mFS3Bzv40ET2Bg_bjcFGO 	 
-    	  
-    		   
-     
-        mEhFK99MtLRsCBaPNqnDs 	 
-    	 &_2654435878:_2654435871.markers mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-     
-     
- 
-   muH9A34QGuccPZkZDb32w 	 
-    	  
-    		
-         mflySGFqxQX_KaIEHAKSo 	 
-    	  
-    		   
-     
-     
-_8332348524113911167 mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    _10762543579000176710 mdMNbPkq6p5KBhEVf3OFw 	 
-    	  
- map_markers.find mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   
-  _2654435878.id mPaUdMg3fg2ipZY0Exj7X 	 
-    	 mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
-     
-     
- 
-         mcs2IPsFq8XN5a3t5KBLK 	 
-    	  
-    		   
-     
-     
-_8332348524113911167 mcozC0jwDOrxnYpsfODix 	 
-    	  
-    _10762543579000176710 mdMNbPkq6p5KBhEVf3OFw 	 
-    	  
-    		   
-     
-     
- 
-  	map_markers.end mIJkWACd8Uom4Jv6selID 	 
-    	  
-    		   
-     
-     
- 
-  mT3v8xdcVsSvUtbwmHC7j 	 
- 
-             mHbSWrX6OPeRP2Igmog8G 	 
-    	  
-    		   
-     
-  mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-    		   
-     
-     _8332348524113911167 mj3rSXJDWd4j4OSGbS2oX 	 
-    	  
-    		   second.pose_g2m.isValid mecU92YjgSbB3VkEoZVK3 	 
-    	  
-    		   
-     
-     
- 
-  	  mPaUdMg3fg2ipZY0Exj7X 	 
-    	 
-                _7895328205142007059.push_back mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		  _2654435878.id mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    		   
-     
- mI30mSPxGJaQtkEjJfoQX 	 
-  
-     miXz43zs_DqtraKQW0m3N 	 
-    	  
-    		   
-
-     mt3m0c1_35lMMq0E3cZsZ 	 
-    	   mUGrJMUolw0lb_KVyGK5N 	 
-    	  _7895328205142007059.size mjjfaXD3tH8warSj13sVr 	 
-    	  mIHFqVJpFXgMDdHn2uhc3 	 
-    	  
-    		  0 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     
-     
- 
-  return false mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-     
-
-  _13011065492167565582 mvA2vjSvRD7UmknjmYP5U 	 
-  _10762543579000176710 mtNKEvBwMHNsmdH7BtZbM 	 
-    	  getBestPoseFromValidMarkers mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		   _2654435871,_7895328205142007059,_16805773490000196330.aruco_minerrratio_valid mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
-     
-  
-   my5S_tF4_lSpButBKNitX 	 
-    	  
-    		   
-   _13011065492167565582.isValid mTGJXDnkacX2UX9dooHQu 	 
-    	  
-    		   
-  mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-     
-     
- 
- 
- m_ECAXF5hGu1UMoS2l1KU 	 
-    	  
-    		   
-     
-
-  mfQABlcyhvI43vfjabcjx 	 
-    	  
-    		   
-  System mExFPeJBflhTWJKuQVWoB 	 
-    	  
-    		   
-   _6638785117005124636 mgGCFceAojKPG0bK5eWQT 	 
-    	  
-    		   
- Frame &_2654435871, se3 &_13011065492167565582 mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    		   
-    mSH1h4yGhaMSu8y7JC_rY 	 
-    	  
-    		   
- 
-    _13011065492167565582 mIqjSmilXv9ILvDddB7nD 	 
-    	  
-    		   
-     
-     
- 
-  	 se3 mecU92YjgSbB3VkEoZVK3 	 
-    	 mxIwd_EJpfr1C9jwU7IyL 	 
-    	 
-     mdEGS_9gShKEEsK9RPbfj 	 
-    	  
-    		   _16805773490000196330.reLocalizationWithMarkers mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
- mqlayz2fShj6ePxekxwRg 	 
-         muDvj5aUdXshb2AqqeEiu 	 mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		   
-     
-     
- 
-  	  _8439838123052468212 mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   
-     
- _2654435871,_13011065492167565582 msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    		    mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
-     
-     
- 
-  mR8MpflZg6lk1qLQLX9P9 	 true mC_gLvnw5tkMWRQheRKr5 	 
-     miXz43zs_DqtraKQW0m3N 	 
-    	  
-    		   
-     
- 
-     mcs2IPsFq8XN5a3t5KBLK 	 
-    	  
-    		   
-      _16805773490000196330.reLocalizationWithKeyPoints mVmWtYm5gVtZj7Yq19XWE 	 
-    	   muH9A34QGuccPZkZDb32w 	 
-    	  
- 
-         mAvI6WqVGKew5QUXF0T2l 	 
-    	  
-    		    mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    	_14784383942756869665 mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		   
-  _2654435871,_13011065492167565582 mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    		   
-     
-     
-  muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-     
- 
-  	   mFWbNGU5e6cuqyQa3XUry 	 
-  true mqLizGA4Z8QZ_2GYQ1inC 	 
-    	 
-     mMGejH_coNc3kGxAdXVex 	 
-    	  
-    		   
-     
-     
- 
-  	 
-     mY5hSAdXT4P60CSAZFBBa 	 
-    	  
-    		   
-     
- mvz1OP7svCPSKfxJ2Wbqs 	 
-    mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-  
- mqVdZVftPR84WTjiOiVfT 	 
-    	  
-    		   
-     
- 
-
-
-std mvpMkjoDGcQujDevHDZnx 	 vector mkHL8KJw4VjwmGdgQrteX 	 
-    	 cv mMorzi7AHv5qXgdOZzcMd 	 
-    	  
-    		   
-     
-     
- 
-  DMatch mKJK3THIuAwgeFpuGLN8L 	 
-    	  
-   System mMorzi7AHv5qXgdOZzcMd 	 
-    	  
-    		   
- _15038921953448872563 mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-     
-     
-Frame & _16940374161810747371, Frame &_5918541169384278026,  mTWpMMn_ueGNGrVaZzL0Q 	 
-    	  
-    		 _1686565542397313973,  mrg1QVINMqbRYZWngNWmj 	 
-  _4500031049790251086 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-   
- mJdlQJg0rG2m7KHUChC3R 	 
-    	  
-
-    
-    std mvpMkjoDGcQujDevHDZnx 	 
-    	  
-    vector mkHL8KJw4VjwmGdgQrteX 	 
-    	  
-    		 cv mrS2zvlmrTf4L4KBRRYAU 	 
-    	  
-    DMatch meN5YYBBVg5DStfnyA8Dd 	 
-    	  
-    		   
-     
-     
- _6807036698572949990 mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-    		   
- 
-     mTy5S_mcphfNLzuJQ30Xe 	 
-    	  
-size_t _2654435874 mXE5wWRmJGUY4EsEsgegT 	0 mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
-     
-   _2654435874 mJCQ17ktBLqNw7sHF60R1 	 
-    	  
-    		   
-     
- _5918541169384278026.ids.size mrXXIs5j4DqJtj32aOG5F 	 
-   myu64GAT8DgGBhNOOCqvd 	 
-    	  
-    _2654435874 mPjeLalHATLRlVYohP5cu 	 
-    	  
-    		    mXftmBtLFUrPFw3lasjuW 	 
-    	   mJdlQJg0rG2m7KHUChC3R 	 
-    	  
-    		   
-     
-     
- 
-  	 
-         mumKmtKc8SEEXbYxYxnDh 	 
-    	  
-    		   
-     _11093822294347 mhL9dWuOWzLGBfRjwvYlN 	 
-    	  
-    		   
-     
-     
- 
- _5918541169384278026.ids mVLLVWqNz0_lGN56vY03t 	 
-    	  
-    		   
-     
- _2654435874 mGPgWaVxS3WdTr7rWsMw4 	 
-    	   mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
-     
- 
-  	
-         muDvj5aUdXshb2AqqeEiu 	 
-    	  
-    		   
-     
-    mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		   
- _11093822294347 my0vyIAimw3jadFZG1pnz 	 std me0ZKHp2Id3eLmP_6GMtk 	 
-  numeric_limits mk9nSfh6XGyonOYMC8C3M 	 
-    	  
-    		   
- uint32_t mzCa3iYOTZk3vOb9xFPuf 	 
-    	  
-    		   
-     
-     
- 
-   mrS2zvlmrTf4L4KBRRYAU 	 
-    	  
-    		   
-     
-     
- 
-max mecU92YjgSbB3VkEoZVK3 	 
-   mSBNIRK1XqZg3XlWW_b3d 	 
-  mi4REkBAebpTZrzlvFEpD 	 
+_9098980761384425343 msDVYCHuU_j2g_TdgX4Ta 	isEmpty mFAl4ldpf7o2gKLWQ4bfu 	 
     	  
-    	
-             myfOHlfTLtRL7im7qSaYm 	 
-    	  
-    		   
-     
-    _10762543579000176710 mgi5Boc5f0emw5eocZbgV 	 
-    	  
-    		   
-     
-     
- 
-  	map_points.is mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		   
-     
-     
-_11093822294347 mT3v8xdcVsSvUtbwmHC7j 	 
- mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		 mbqHQotWhg0sv6ViuZXc3 	 
-   
-                MapPoint &_3005399799907669332 mR22jPCjbltZ3tbBmn_6w 	 
- _10762543579000176710 mSwbK3nBcNZkvGxSXNOZy 	 
-    	  
-    		   map_points mstJEG25u0Qv4VQocWgKl 	 
-    	  
-    		   
-     
-     
- 
-  _11093822294347 mtEI4bSjtkyV5O0qz_vBz 	 
-    	  mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-     
-     
- 
-                 mWYYMqZtRPklZ6ldYQlW8 	 
-    	  
-    		   
-     
-      mbXhD242DJoibBjdI1JtA 	 
-    _3005399799907669332.isBad mRAYh0ARHPOc62CfGHWWO 	 
-    	  
-    		   
-    mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     
-      continue mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-     
-                 mcRuULuI_AYJWzFSu1kB4 	 
-    	  
-    	_11093822300120 mvA2vjSvRD7UmknjmYP5U 	 
-  _16940374161810747371.project mNQ6rNLARkxxSTP6tiTXG 	 
-    	  _3005399799907669332.getCoordinates mRAYh0ARHPOc62CfGHWWO 	 
-    	  
-    		   
-     
-  ,true,true mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-     
- mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-    		   
-     
-     
- 
- 
-                 mFVNERjMRO_ZEKm0TY73X 	 
- mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		   
-     
-      isnan mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		   
-     
-     _11093822300120.x mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-     
- 
-  mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-     
-     
- continue mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-     
-     
- 
- 
-                
-
-
-
-
-                 mpgczyJuWNGXMBOxeP5oe 	 
-    	  
-    		   
-    _3005399801676750422 mhL9dWuOWzLGBfRjwvYlN 	 
-    	  
     		   
-_5918541169384278026.und_kpts mVLLVWqNz0_lGN56vY03t 	 
-    	  
-    		   
-     
-     
- 
- _2654435874 ml5d8mzmxNmQRMtpfZ82X 	 
-    	  
-    		   
-.octave mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    	
-                 mxTwhHDgHBwIAa0Dytqva 	 
-    	  
-    _11093822303615  mH9fKsRtHWNu77RGN1xmn 	 
-    	  _4500031049790251086 * std miuOs6oIdxnQEMrFFk2n_ 	 
-    	pow mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		   
-   _16805773490000196330.scaleFactor, _10762543579000176710 msDVYCHuU_j2g_TdgX4Ta 	 
-    	  
-    	_maxOctaveLevel-_3005399801676750422 msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    		   
-      mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
- 
-                
-                std mrPFLPKakBKjOOnkuhZUP 	 
- vector mbVOLbjVZO0YI60Vuguaq 	uint32_t meN5YYBBVg5DStfnyA8Dd 	 
-  _10924592426265627429 mhL9dWuOWzLGBfRjwvYlN 	 _16940374161810747371.getKeyPointsInRegion mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-     
-     _11093822300120,_11093822303615,_3005399801676750422,_3005399801676750422 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-   mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		
-                 mTWpMMn_ueGNGrVaZzL0Q 	 
-    	  
-    		   
-     
-     
-_16940367568811467085 mRDD8w83SsPKbGXy_JkEO 	 
-    	  
-    		   
-    _1686565542397313973+0.01,_16992066385107317811 mRDD8w83SsPKbGXy_JkEO 	 
-    	  
-    		   std mNQimRrYQ8Mz6YI9KM7Fn 	 
-    	  
-    		   
-     
- numeric_limits moCEmVQeGy8LzV8cAuk79 	 
-    	  
-    	float mzCa3iYOTZk3vOb9xFPuf 	 
-    	  
-    		   
-     
-      mwuvkepREHprpx4i3n2RV 	 
-    	  
-    		max mecU92YjgSbB3VkEoZVK3 	 
-    	  
-    		   
-      mqLizGA4Z8QZ_2GYQ1inC 	 
-  
-                 mcKERBksFL6yXYOLd7kWz 	 
-   _6806984971934960832 mXE5wWRmJGUY4EsEsgegT 	 
-    	  
-    		   
-    std mvpMkjoDGcQujDevHDZnx 	 
-    	  
-    		   
-     
-     
-numeric_limits mnpObQ1mWnyfQO24_ojBn 	 
-    	  
-    uint32_t mJJosB3DZCYh837sWRpN7 	 
-    	  
-    		   
-      mvpMkjoDGcQujDevHDZnx 	 
-    	max mFAl4ldpf7o2gKLWQ4bfu 	 
-    	  
-  mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
- 
-                
-                 mIyrnAZ9pLZEaiK6Yst1L 	auto _175247760278:_10924592426265627429 msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    		   
-     
-     
- 
-  	 mbqHQotWhg0sv6ViuZXc3 	 
-    	  
-  
-                     mt3m0c1_35lMMq0E3cZsZ 	 
-    	  
-   mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   
-  _16940374161810747371.und_kpts mZloAr3_PPw7622AVrUCe 	 _175247760278 mOwAFTnFZjoBWI2gNeAO_ 	 
-    	  
-    		   
-     .octave  mosqH7AZUNZeyz6yX3nN1 	 
-    	  
-    		   
      
-     _5918541169384278026.und_kpts mstJEG25u0Qv4VQocWgKl 	 
+       mFllaSnZNjV3YvL2YmAFh 	 
+    _17450466964482625197 mVrsJpNNblNXrk9CJ_J45 	 
     	  
     		   
      
-     
- 
-  _2654435874 mAH84ftHkJMUldxM9fJHE 	 
-    	  
-    		 .octave  mT3v8xdcVsSvUtbwmHC7j 	 
+    MODE_SLAM mSBNIRK1XqZg3XlWW_b3d 	 
     	  
     		   
      
@@ -6766,1593 +1603,2451 @@ numeric_limits mnpObQ1mWnyfQO24_ojBn
     	  
     		   
      
- 
-                         mKQv8aH2lM5yjPYl5F768 	 
+     
+
+         mAvI6WqVGKew5QUXF0T2l 	 
     	  
     		   
      
- _16940392174182767813 mtmFAz7pcnIFLgYGMf4eK 	 
-    	   MapPoint mrS2zvlmrTf4L4KBRRYAU 	 
+     
+ mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   _2016327979059285019 mBGM118Iia8vm6zcNTuB6 	 
     	  
     		   
- getDescDistance mBGM118Iia8vm6zcNTuB6 	 
+     
+ _14938569046430841631 mJk4eXgp_IeFV2YvLaQC7 	 
     	  
-    		_5918541169384278026.desc,_2654435874, _16940374161810747371.desc,_175247760278 mxAXsCfNkscq4iQtE2AeY 	 
-  mI30mSPxGJaQtkEjJfoQX 	 
+    		 mVmWtYm5gVtZj7Yq19XWE 	 
+   
+            _3857178690860967008 mhL9dWuOWzLGBfRjwvYlN 	 
     	  
+    		   
+    STATE_TRACKING mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		   
+     
   
-                         mHbSWrX6OPeRP2Igmog8G 	 
+     msBPMso4NRYFcn5Y1myF_ 	 
     	  
     		   
-     
-    mbXhD242DJoibBjdI1JtA 	 _16940392174182767813 miGVtxwiqbDQsG6KBslZU 	_16940367568811467085 mJk4eXgp_IeFV2YvLaQC7 	 
-   mMm9FLNsNOoyX7Tyb7vpT 	 
+   
+    else muH9A34QGuccPZkZDb32w 	 
     	  
     	
-                            _16940367568811467085 mR22jPCjbltZ3tbBmn_6w 	 _16940392174182767813 mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-     
-  
-                            _6806984971934960832 mA7hUM4UKqFyb_LJLsook 	 
-    	  
-    		   
-     
-   _175247760278 mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
-    
-                         mEjIWbivPeVc9WtxGDiWw 	
-                         mEYy4vDSh1urfYj6Y0xAX 	 
-    	  
-    		   
-     
-     mXYEIB3KYwzJOpssgkZxP 	 
-    	  
-    		 mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		   
-     
-    _16940392174182767813 mbVOLbjVZO0YI60Vuguaq 	 
-_16992066385107317811 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		 mi6BqZOVmQyrEy6BLProP 	 
+        
+         mg9IHDbTXxljO0nSnQKYh 	 
     	  
     		   
      
      
  
-                            _16992066385107317811 mtmFAz7pcnIFLgYGMf4eK 	 
-    _16940392174182767813 mxIwd_EJpfr1C9jwU7IyL 	 
+   _3857178690860967008 mWQWZuZUxzgXcOZHMJMC_ 	 
+   STATE_TRACKING mPaUdMg3fg2ipZY0Exj7X 	 
     	  
     		   
      
-     
- 
-  
-                         msxc6utIaOFXg4WI3vB0q 	 
- 
-                     mL9oWJQ1n2xKG3FtRNowa 	 
-    	  
-    		   
-     
-   
-                 msxc6utIaOFXg4WI3vB0q 	 
-                
-                 mr8s7pfvTmBWmxher3Oue 	 
-    	  mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		   
-     
-     
- 
-_6806984971934960832 mS3P8ZWKrLHg9h_5dW5He 	 
-    	  
-  std mExFPeJBflhTWJKuQVWoB 	 
-    	  
-    		  numeric_limits mJCQ17ktBLqNw7sHF60R1 	 
-   uint32_t mYbzFOKSwwNsD71cP1DkA 	 
-    	  
- mwuvkepREHprpx4i3n2RV 	 
-    	  
-    		   
-     
-    max mFAl4ldpf7o2gKLWQ4bfu 	 
-    	  
-    		   
-     
-     
- 
-   mtq_QCXPpv2kX7L8PRz8d 	 
-   _16940367568811467085 mk9nSfh6XGyonOYMC8C3M 	 
-   0.7*_16992066385107317811 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     
-    mXdnll4yjwVy4uBDSjUe3 	 
-                    cv mwuvkepREHprpx4i3n2RV 	 
-    	  
-    		   
-     DMatch _175247759376 mqLizGA4Z8QZ_2GYQ1inC 	 
-                    _175247759376.queryIdx  mRDD8w83SsPKbGXy_JkEO 	 
-    	  
-    		   
-     
-     
- 
-  	  _6806984971934960832 mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-     
-      
-                    _175247759376.trainIdx  mIqjSmilXv9ILvDddB7nD 	 
-    	  
-    		   
-     
-   _3005399799907669332.id mqLizGA4Z8QZ_2GYQ1inC 	 
-    	         
-                    _175247759376.distance  mXE5wWRmJGUY4EsEsgegT 	 
-    	 _16940367568811467085 mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
-     
-                    _6807036698572949990.push_back mlfybwyvp98TOJj0yuqhF 	 _175247759376  mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-   mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-     
- 
-                 mEjIWbivPeVc9WtxGDiWw 	 
-    	  
-    		   
-     
- 
-             mf0YJDuh2j5By5N13LunG 	 
-    	  
-    		
-         m_ECAXF5hGu1UMoS2l1KU 	 
-    	  
-    		   
-     
-
-     mL9oWJQ1n2xKG3FtRNowa 	 
-    	 
-    filter_ambiguous_query mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-     
-     
-_6807036698572949990 mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-  mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-     
-     
- 
- 
-     mIaPM1ms991SDrw4x6KTt 	 
-    	  
-    		 _6807036698572949990 mqLizGA4Z8QZ_2GYQ1inC 	 
- msxc6utIaOFXg4WI3vB0q 	 
-    	  
-
-
-se3 System miuOs6oIdxnQEMrFFk2n_ 	 
-    	  
-    		   
-     
-     _13245762729631011225 mgGCFceAojKPG0bK5eWQT 	 
-    	  Frame &_16940374161810747371,se3 _14387478432460351890 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
       mi6BqZOVmQyrEy6BLProP 	 
     	  
     		   
-
-        
-    std mrS2zvlmrTf4L4KBRRYAU 	 
-  vector mRwYPGmWUou3ixNnKEWbv 	 
-    	  
-    		   
-   cv mMorzi7AHv5qXgdOZzcMd 	 
-    	  
-    		   
-     
-  DMatch mNF0G2xPBB22gI9XzMk2L 	 
-    	  
-    		   
-     
-     _637068542992099399 mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    
-    se3 _5769551021164122736 mXE5wWRmJGUY4EsEsgegT 	 
-    	  
-    		   
-     
-     
- _14387478432460351890 mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-    
-    
-      mFVNERjMRO_ZEKm0TY73X 	 
-    	  
-    		   
-     
-     
- mTiWUgQKOeYLvNdGsR_oS 	 
-    	  _10762543579000176710 mcvX0B8TDw1gEtqXtgT4T 	 
-    map_points.size mGu_88Fdde5jsxW8v9whR 	 
-    	  
-   mKJK3THIuAwgeFpuGLN8L 	 0 mPaUdMg3fg2ipZY0Exj7X 	  mMm9FLNsNOoyX7Tyb7vpT 	 
-    	  
-    		   
-     
-
-          mbCI0BlZHp5kbKpNqa5Su 	 
-    	  
-    	 mlfybwyvp98TOJj0yuqhF 	 
-    mC4FNAhGk_5NQroya9r4E 	 
- _7053670376446719714.empty mecU92YjgSbB3VkEoZVK3 	 
-    	  
-    		   
-   mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-    
-             _5769551021164122736 mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    	_7053670376446719714*_5769551021164122736.convert mrXXIs5j4DqJtj32aOG5F 	 
-    	  
-    		   m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
-     
    
-        _16940374161810747371.pose_f2g mhL9dWuOWzLGBfRjwvYlN 	 
+            _10576739190144361304 mA7hUM4UKqFyb_LJLsook 	 
+    	  
+    _1513765969352381626 mBGM118Iia8vm6zcNTuB6 	 
+    	  
+  _4913157516830781457,_17976495724303689842 mPaUdMg3fg2ipZY0Exj7X 	 
+    	 myu64GAT8DgGBhNOOCqvd 	
+            _17976495724303689842 mIqjSmilXv9ILvDddB7nD 	 
+    	  _11166622111371682966 mUGrJMUolw0lb_KVyGK5N 	 
     	  
     		   
-     
-     
-_5769551021164122736 mo9Lbpy0Ap4RTl5O5Or1C 	 
-    
-        
-        _637068542992099399 mA7hUM4UKqFyb_LJLsook 	 
+   _14938569046430841631,_17976495724303689842 muC5cqYcHRXDD16noARI1 	 
     	  
-    _15038921953448872563 mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-_16940374161810747371,_6731656245229539747,_16805773490000196330.maxDescDistance*1.5,_16805773490000196330.projDistThr msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    		  m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
-     
+    		  mC_gLvnw5tkMWRQheRKr5 	 
    
-         mN4RvsK7_XXMC2cNCwITM 	_9870110657242862171 mA7hUM4UKqFyb_LJLsook 	 
+             mz0gDEk4XJJySbEeCgC9P 	 
+    	   mC4FNAhGk_5NQroya9r4E 	 
+    	  
+  _17976495724303689842.isValid mJFtpHxfnoGMxp1wzTBMr 	 
+    	   msDy4S0F6Zdx78ZUnbARe 	 
     	  
     		   
-   0 mI30mSPxGJaQtkEjJfoQX 	 
+     
+     
+                _3857178690860967008 mH9fKsRtHWNu77RGN1xmn 	 
+    	  
+STATE_LOST mQivdop_Gb4hqsWvOttc3 	 
     	
-         mFVNERjMRO_ZEKm0TY73X 	 
-    	  
-    		   
-     
-     mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		   _637068542992099399.size mecU92YjgSbB3VkEoZVK3 	 
-   mJJosB3DZCYh837sWRpN7 	 
-    	  
-    		 30   mSBNIRK1XqZg3XlWW_b3d 	 mXdnll4yjwVy4uBDSjUe3 	 
-    	  
- 
-             myydjxqnidOfg3YXIPfCh 	 
-    	  
-    		   
-    _14671559813105454070 mH9fKsRtHWNu77RGN1xmn 	 
-    	 _5769551021164122736 m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		 
-            _9870110657242862171 mtmFAz7pcnIFLgYGMf4eK 	 PnPSolver mMorzi7AHv5qXgdOZzcMd 	 
+         mMGejH_coNc3kGxAdXVex 	 
     	  
     		   
      
      
- 
-  	 solvePnp mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-     _16940374161810747371,_10762543579000176710,_637068542992099399,_14671559813105454070,_17510502251974591806 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-    myu64GAT8DgGBhNOOCqvd 	 
-    
-             muDvj5aUdXshb2AqqeEiu 	 
-    	  
-    		   
-     
-     
- mgGCFceAojKPG0bK5eWQT 	_9870110657242862171 mpBV2mt4yeFwcVEC5cxVw 	 
-    	  
-   30 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-      _5769551021164122736 mXE5wWRmJGUY4EsEsgegT 	 
-    	  
-    		   
-     
-     _14671559813105454070 mC_gLvnw5tkMWRQheRKr5 	 
-   
-         mL9oWJQ1n2xKG3FtRNowa 	 
-    	  
-    		   
- 
-        else mi4REkBAebpTZrzlvFEpD 	 
-    	  
-    		   
-     
-   
-            
-            
-            FrameMatcher _16997326787393468537 mbXhD242DJoibBjdI1JtA 	 
-    	  
-FrameMatcher mExFPeJBflhTWJKuQVWoB 	 
-    	  
-    		   
-     
-     
- 
-TYPE_FLANN mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		   
-     
-      mC_gLvnw5tkMWRQheRKr5 	 
-  
-            _16997326787393468537.setParams mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		   _10762543579000176710 mj3rSXJDWd4j4OSGbS2oX 	 
-    	 keyframes mstJEG25u0Qv4VQocWgKl 	 
-    	  
-    		   
-     
-   _17510502251974591806 mtEI4bSjtkyV5O0qz_vBz 	 
-    	  
-    		   
-  ,FrameMatcher mrPFLPKakBKjOOnkuhZUP 	 
-    	  
-    		   
-     
-    MODE_ASSIGNED,_16805773490000196330.maxDescDistance*2,0.6,true,3 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-  mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
 
-            _637068542992099399 mA7hUM4UKqFyb_LJLsook 	 
+        
+         mt3m0c1_35lMMq0E3cZsZ 	 
     	  
     		   
-  _16997326787393468537.match mTiWUgQKOeYLvNdGsR_oS 	 
-    	  _16940374161810747371,FrameMatcher me0ZKHp2Id3eLmP_6GMtk 	 
-    	 MODE_ALL mxAXsCfNkscq4iQtE2AeY 	 
+ mgGCFceAojKPG0bK5eWQT 	 
     	  
     		   
      
-    mQivdop_Gb4hqsWvOttc3 	 
+     _3857178690860967008 mosqH7AZUNZeyz6yX3nN1 	 
+    STATE_LOST msDy4S0F6Zdx78ZUnbARe 	 
+ muH9A34QGuccPZkZDb32w 	 
+    
+            se3 _5564636146947005941 mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+     
+     
+
+             mHbSWrX6OPeRP2Igmog8G 	 
+    	  
+    		   
+   mYcSgTugFLQcmWT7seaac 	 
+    	 _16487919888509808279 mgGCFceAojKPG0bK5eWQT 	 
+    _14938569046430841631,_5564636146947005941 mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+     
+ mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+     
+      mXdnll4yjwVy4uBDSjUe3 	 
+  
+                _3857178690860967008 mvA2vjSvRD7UmknjmYP5U 	 
+    	  
+   STATE_TRACKING myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		   
+   
+                _17976495724303689842 mA7hUM4UKqFyb_LJLsook 	 
+_5564636146947005941 mI30mSPxGJaQtkEjJfoQX 	 
+    
+                _10576739190144361304 mR22jPCjbltZ3tbBmn_6w 	 
+    	  
+    		   _1513765969352381626 mUGrJMUolw0lb_KVyGK5N 	 _14938569046430841631,_17976495724303689842 msDy4S0F6Zdx78ZUnbARe 	 
+    	   myu64GAT8DgGBhNOOCqvd 	
+                _10558050725520398793 mRDD8w83SsPKbGXy_JkEO 	 
+    	  
+    		   
+     
+ _14938569046430841631.fseq_idx mI30mSPxGJaQtkEjJfoQX 	 
+
+             miXz43zs_DqtraKQW0m3N 	 
+    	  
+    		   
+  
+         miXz43zs_DqtraKQW0m3N 	 
+    	  
+    		   
+   
+        
+         mg9IHDbTXxljO0nSnQKYh 	 
+  _3857178690860967008 mw_MIhwcw8TZ9gTF3_mEt 	STATE_TRACKING mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		 mJdlQJg0rG2m7KHUChC3R 	 
+    	  
+    		   
+  
+            _14938569046430841631.pose_f2g mXE5wWRmJGUY4EsEsgegT 	 
+   _17976495724303689842 mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   
+     
+     
+ 
+  
+             mWYYMqZtRPklZ6ldYQlW8 	 
+    	  
+    	 mbXhD242DJoibBjdI1JtA 	 
+    	  
+    		   
+     
+     _17450466964482625197 mosqH7AZUNZeyz6yX3nN1 	 
+    	  
+    		   
+    MODE_SLAM   mxpEdWbhRRjZ1JMh3yxwy 	   mYcSgTugFLQcmWT7seaac 	 
+    mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   _14938569046430841631.fseq_idx maWf7apYek19lMvO8A9jX 	 
+_10558050725520398793+5 mJk4eXgp_IeFV2YvLaQC7 	 
+    mdUyI4aAbhQ4X6fne1qVo 	 
+    	  
+    		   mSdpFB1uEgpzM3bVmlHgT 	 
+    	  
+    	_10558050725520398793 mtDWQOqRguVWSWehbKECr 	 
+    -1 msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		   
+     mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+     
+   mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+     
+
+               _2869602498954317713 mevHkLo7kL5WL0_0mLIhr 	 
+    	  
+    		   
+     
+newFrame mUGrJMUolw0lb_KVyGK5N 	 _14938569046430841631,_10576739190144361304 mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+     
+  myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    
+         mMGejH_coNc3kGxAdXVex 	 
     	  
     		  
-             mz0gDEk4XJJySbEeCgC9P 	 
+     mf0YJDuh2j5By5N13LunG 	 
     	  
     		   
-     
-     _637068542992099399.size mdbwYCIpGYWahFfTtU8zH 	 
-    	  
-    		   
-    mVIm1AJSzhahLlgKO9xQK 	 
-    	  
-    		   
-     
-     
-30 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-     
- 
-  mSH1h4yGhaMSu8y7JC_rY 	 
-    	  
-    		   
-     
-   
-                
-                 maE84VqXoUUX_dnxUsfES 	 
-    	  
-    		   auto &_2654435878:_637068542992099399 muC5cqYcHRXDD16noARI1 	 
-    	
-                    _2654435878.trainIdx mR22jPCjbltZ3tbBmn_6w 	 
-    	  
-    		   
-     
-     
- 
-  	  _10762543579000176710 mxGJXkzb8EW07jCVTl0Jt 	 
-    	  
-    		 keyframes mVjuVop3osym9wWoq6p3w 	 
- _17510502251974591806 mWi16Wz7P86SIJlTQEzCB 	 
-    	  
-    		   
-.ids mwzFZRcSPi2Vsk45HpaLx 	 
-    	  
-    		_2654435878.trainIdx mfF196cGKZ_LkBPN8ZWlr 	 
-    	  
-    		   
-     
-     mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-     
-     
- 
-  	
-                 mFTobXyS5Vx9ebVESwR0T 	 
-    	  
- _14671559813105454070 mvA2vjSvRD7UmknjmYP5U 	 
-    	  
-    		   
-     
-     
-_5769551021164122736 mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-   
-                _9870110657242862171 moHeIYzwbcFb6VaM90Aa9 	 
-    	  
-    PnPSolver mMorzi7AHv5qXgdOZzcMd 	 
-    	  
-    		   
-     
-     solvePnp mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   
- _16940374161810747371,_10762543579000176710,_637068542992099399,_14671559813105454070,_17510502251974591806 mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    		   
-     
-    m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
-                 mXYEIB3KYwzJOpssgkZxP 	 
-    	  
-    		   
-    mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-     
-    _9870110657242862171 mpBV2mt4yeFwcVEC5cxVw 	30 mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
-     
-     
- 
-  	  _5769551021164122736 mhL9dWuOWzLGBfRjwvYlN 	 
-    	  
-    		   
-  _14671559813105454070 mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-   
-             mMGejH_coNc3kGxAdXVex 	 
-    	  
-    		   
-     
-  
-             mfkkS3ig7woFqdOg7udAR 	 
-    	  
-    		   
-     
-     
- 
-  _9870110657242862171 mA7hUM4UKqFyb_LJLsook 	 
-    	  
-   0 mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
     
-         mf0YJDuh2j5By5N13LunG 	 
+     mfRi_C6KlnAxop81XDZsV 	 
+    	  
+    		  _3857178690860967008 mw_MIhwcw8TZ9gTF3_mEt 	 
     	  
     		   
-     
-    
-         mTWpMMn_ueGNGrVaZzL0Q 	 
-    	  
-    		   
- _3763415994652820314 m_yMT4MKxrENTtLx5cA7n 	 
+STATE_LOST  m_oqkmDs8rXEbW2q16xvJ 	 
     	  
     		   
      
      
  
-  	
-         mHbSWrX6OPeRP2Igmog8G 	 
-    	  
-    		    mSdpFB1uEgpzM3bVmlHgT 	 
+  _17450466964482625197 mIHFqVJpFXgMDdHn2uhc3 	 MODE_SLAM  mYg3RpRsnYTFl5_yP9Off 	 
     	  
     		   
      
-   _9870110657242862171 mYbzFOKSwwNsD71cP1DkA 	 
+    _9098980761384425343 mdMNbPkq6p5KBhEVf3OFw 	 
     	  
-30 muC5cqYcHRXDD16noARI1 	 
+    		   
+     
+    keyframes.size mecU92YjgSbB3VkEoZVK3 	 
     	  
     		   
      
      
  
+  	  mmSlUFoMxZtVX9CkQCe7O 	 
+  5  mfLSKCXSc1DHeN38jALNR 	 
+  _9098980761384425343 mdMNbPkq6p5KBhEVf3OFw 	 
+    	  
+    		   
+     
+ keyframes.size mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+    		   
+     
+   mcozC0jwDOrxnYpsfODix 	 
+    	0 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+     
    mqlayz2fShj6ePxekxwRg 	 
     	  
     		   
      
-    
-            _3763415994652820314 mtmFAz7pcnIFLgYGMf4eK 	 
-4 mwkk1d6uUiyaKys71tsUv 	
-             mmeJW_Q9h6ZBPzSBQVjMK 	 
+   
+        _2869602498954317713 mdMNbPkq6p5KBhEVf3OFw 	 
     	  
-    		   
- auto _2654435878:  _637068542992099399  mPaUdMg3fg2ipZY0Exj7X 	  mqlayz2fShj6ePxekxwRg 	 
-    	  
- 
-                _10762543579000176710 mxGJXkzb8EW07jCVTl0Jt 	 
-  map_points mstJEG25u0Qv4VQocWgKl 	 
+    		  reset mGu_88Fdde5jsxW8v9whR 	 
     	  
     		   
      
      
  
-  	 _2654435878.trainIdx mGPgWaVxS3WdTr7rWsMw4 	 
-    	  
-   .lastFIdxSeen moHeIYzwbcFb6VaM90Aa9 	 
-    	  
-  _16940374161810747371.fseq_idx mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		  
-                _10762543579000176710 mgi5Boc5f0emw5eocZbgV 	 
-    	  
-    	map_points mMo20fFU0rdQJ7l5qqDaX 	 
-    	  
-    		 _2654435878.trainIdx mtEI4bSjtkyV5O0qz_vBz 	 
+ myu64GAT8DgGBhNOOCqvd 	 
     	  
     		   
      
-     .setVisible mrXXIs5j4DqJtj32aOG5F 	 
+     
+
+        _9098980761384425343 mSwbK3nBcNZkvGxSXNOZy 	clear mGu_88Fdde5jsxW8v9whR 	 
     	  
     		   
-     mo9Lbpy0Ap4RTl5O5Or1C 	 
+  mxIwd_EJpfr1C9jwU7IyL 	 
     	  
     		   
+     
+        _2044193291895307872 mj3rSXJDWd4j4OSGbS2oX 	 
+    	  
+    		   
+     
+     
+ 
+  	reset mecU92YjgSbB3VkEoZVK3 	  mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   
+  
+        _2869602498954317713 msDVYCHuU_j2g_TdgX4Ta 	 
+    	  
+    		   
+   setParams mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+    		   
+     
+  _9098980761384425343,_14938569619851839146.enableLoopClosure msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		   
+    mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	 
+     mEjIWbivPeVc9WtxGDiWw 	
     
+      mFVNERjMRO_ZEKm0TY73X 	 
+    	  
+   mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+   _3857178690860967008 mosqH7AZUNZeyz6yX3nN1 	 
+    	  
+    		   
+     
+     
+ 
+  	STATE_TRACKING  mJk4eXgp_IeFV2YvLaQC7 	 muH9A34QGuccPZkZDb32w 	 
+    	  
+    		   
+     
+ 
+        _14463320619150402643 mXE5wWRmJGUY4EsEsgegT 	cv mvpMkjoDGcQujDevHDZnx 	 Mat mMorzi7AHv5qXgdOZzcMd 	 
+    eye mOAy4qGUJpdHQSVbVPq9E 	 
+    	  4,4,CV_32F mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+   myu64GAT8DgGBhNOOCqvd 	 
+         mXYEIB3KYwzJOpssgkZxP 	 
+    	  
+    mBGM118Iia8vm6zcNTuB6 	 
+    	  
+   _16937225862434286412.isValid mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+ muC5cqYcHRXDD16noARI1 	 mXdnll4yjwVy4uBDSjUe3 	 
+    	  
+            _14463320619150402643  mXE5wWRmJGUY4EsEsgegT 	 
+    	  
+   _17976495724303689842.convert mGu_88Fdde5jsxW8v9whR 	 
+    	  
+    		   
+     
+     
+*_16937225862434286412.convert mFAl4ldpf7o2gKLWQ4bfu 	 
+    	  
+    		   
+     .inv mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+ mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+
+          mMGejH_coNc3kGxAdXVex 	 
+    	  
+    		   
+
+     mf0YJDuh2j5By5N13LunG 	 
+
+    else mi4REkBAebpTZrzlvFEpD 	 
+    	  
+   
+        _14463320619150402643 mA7hUM4UKqFyb_LJLsook 	cv mrPFLPKakBKjOOnkuhZUP 	 
+    	  
+    		   
+     
+     Mat mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+    		   
+     
+   mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		 
+     miXz43zs_DqtraKQW0m3N 	 
+    _14938569046430841631.pose_f2g mA7hUM4UKqFyb_LJLsook 	 
+    	  
+    	_17976495724303689842 mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+   
+#ifndef _UCOSLAM_123asd
+     mz0gDEk4XJJySbEeCgC9P 	 
+    	  
+    		   
+      mPjeLalHATLRlVYohP5cu 	 
+    	  
+    		  _13033649816026327368 mYbzFOKSwwNsD71cP1DkA 	 
+    	  
+    		   
+     
+     
+ 
+  	  mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+ 10*4*12*34*6 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		/2 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+     
+     
+ 
+ 
+        _17976495724303689842 mR22jPCjbltZ3tbBmn_6w 	cv mrS2zvlmrTf4L4KBRRYAU 	 
+    	  
+    		   
+     
+  Mat mecU92YjgSbB3VkEoZVK3 	 
+    	  
+    		   
+  mxIwd_EJpfr1C9jwU7IyL 	 
+
+#endif
+     mr8s7pfvTmBWmxher3Oue 	 
+    	   mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+    _3857178690860967008 mlEF62Izit24hGT_NqPIJ 	 
+    	  
+    		   
+     
+     
+STATE_LOST  mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+  return cv mMorzi7AHv5qXgdOZzcMd 	 
+    	  
+    		   
+     
+     
+ 
+  	 Mat mecU92YjgSbB3VkEoZVK3 	 
+    	  
+    		   
+  mEm194VmPJuGh5y4tMUm5 	 
+    	  
+    		   
+     
+     
+ 
+  	
+    else
+         mUnahx7x8KWu62epS7OxV 	 
+ _17976495724303689842 mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		   
+     
+
+ msBPMso4NRYFcn5Y1myF_ 	 
+    	  
+    		   
+     
+     
+ 
+  	
+cv mExFPeJBflhTWJKuQVWoB 	 
+ Mat System mMorzi7AHv5qXgdOZzcMd 	 
+    	  
+    		   
+     
+    process mTiWUgQKOeYLvNdGsR_oS 	 
+  cv miuOs6oIdxnQEMrFFk2n_ 	 
+  Mat &_6441194614667703750, const ImageParams &_18212413899834346676, mY8NZr9zd5VcrqfZxKQJH 	 
+    	  
+    		   
+     
+     
+ _9933887380370137445, const cv mI3QeEk0K_mj1WaUiowht 	 
+    	  
+ Mat & _46082575014988268, const cv mI3QeEk0K_mj1WaUiowht 	 
+    	  
+    Mat &_1705635550657133790 mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		   
+     
+     
+ 
+   muH9A34QGuccPZkZDb32w 	 
+    	  
+   
+    swap mYcSgTugFLQcmWT7seaac 	 
+    	  
+    		   
+     
+     
+ 
+_4913157516830781457,_14938569046430841631 msDy4S0F6Zdx78ZUnbARe 	  mEm194VmPJuGh5y4tMUm5 	 
+    	  
+    		   
+     
+   
+    
+    std mrPFLPKakBKjOOnkuhZUP 	 
+    	  
+    		thread _1403653089436386197 mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+     
+     
+
+     mr8s7pfvTmBWmxher3Oue 	 
+    	  
+    		  mYcSgTugFLQcmWT7seaac 	 _17450466964482625197 mWQWZuZUxzgXcOZHMJMC_ 	 
+    	  
+    		   
+ MODE_SLAM mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+     
+     
+ 
+  _1403653089436386197 mXE5wWRmJGUY4EsEsgegT 	 
+   std miuOs6oIdxnQEMrFFk2n_ 	 
+    	  
+    		   thread mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		    mstJEG25u0Qv4VQocWgKl 	 
+ & mvFhi6DaS7eScbgWe07wY 	 
+     mFAl4ldpf7o2gKLWQ4bfu 	 
+    mi6BqZOVmQyrEy6BLProP 	 
+    	  
+    		   
+ 
+         mfRi_C6KlnAxop81XDZsV 	  _2869602498954317713 mj3rSXJDWd4j4OSGbS2oX 	 
+    	  
+    		  mapUpdate mdbwYCIpGYWahFfTtU8zH 	 
+    	  
+    		   msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		  mXdnll4yjwVy4uBDSjUe3 	 
+    	  
+    		   
+     
+     
+             mfRi_C6KlnAxop81XDZsV 	 
+    	  
+    		   
+     
+     
+ 
+ _2869602498954317713 mevHkLo7kL5WL0_0mLIhr 	bigChange mGu_88Fdde5jsxW8v9whR 	  msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		   
+     
+  mbqHQotWhg0sv6ViuZXc3 	 
+    	  
+    		   
+     
+
+                _14938569046430841631.pose_f2g mIqjSmilXv9ILvDddB7nD 	 
+    	  _2869602498954317713 mdMNbPkq6p5KBhEVf3OFw 	 
+    	  
+    		   
+     
+     getLastAddedKFPose mdbwYCIpGYWahFfTtU8zH 	 
+    	  
+    		   
+     
+     
+ 
+   mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+     
+     
+ 
+  
+                _17976495724303689842 mRDD8w83SsPKbGXy_JkEO 	 
+    	  
+    		   
+     
+     
+ 
+  	_2869602498954317713 mtNKEvBwMHNsmdH7BtZbM 	 
+    	  
+ getLastAddedKFPose mecU92YjgSbB3VkEoZVK3 	 
+  m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+  
              m_ECAXF5hGu1UMoS2l1KU 	 
     	  
-    		   
-     
-  
-         m_ECAXF5hGu1UMoS2l1KU 	 
-    	  
-    		   
-     
-     
-
-        else mXdnll4yjwVy4uBDSjUe3 	 
-    	
-            _637068542992099399.clear mjjfaXD3tH8warSj13sVr 	 
-    	  
-    		   
-     
-    mwkk1d6uUiyaKys71tsUv 	 
-    	  
     		  
-            _3763415994652820314 mA7hUM4UKqFyb_LJLsook 	 
+         miXz43zs_DqtraKQW0m3N 	 
     	  
     		   
-    _16805773490000196330.projDistThr myu64GAT8DgGBhNOOCqvd 	 
+ 
+         myu64GAT8DgGBhNOOCqvd 	 
     	  
     		   
-         m_ECAXF5hGu1UMoS2l1KU 	 
+      msBPMso4NRYFcn5Y1myF_ 	 
+    	  
+    		   
+  mT3v8xdcVsSvUtbwmHC7j 	  mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		   
+     
+     
+    
+     muDvj5aUdXshb2AqqeEiu 	 
+    	  
+    		   
+    mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+     
+   _46082575014988268.empty mdbwYCIpGYWahFfTtU8zH 	 
+    	  
+    		   
+  mKWQLdAVzYxp5QuNZ1ytt 	 
+    	  
+    		   
+     
+     
+ _1705635550657133790.empty mecU92YjgSbB3VkEoZVK3 	 
+    	  
+  mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		   
+      _3944249282595574931 mxGJXkzb8EW07jCVTl0Jt 	 
     	  
     		   
      
      
  
-  
-         mK81mHSyZucxh8c_K9rnU 	 
+ process mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+   _6441194614667703750,_18212413899834346676,_14938569046430841631,_9933887380370137445    mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		  mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		   
+     
+     mkQFhH7KKo8wEpsoToABe 	 
     	  
     		   
      
      
  
-  _10517421797211956538 mH9fKsRtHWNu77RGN1xmn 	false mxIwd_EJpfr1C9jwU7IyL 	 
+  	  mFWW5xb6SDILpyTp5GBZD 	 
     	  
+    		   
+     
+   _1705635550657133790.empty mFAl4ldpf7o2gKLWQ4bfu 	 
+    	   mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		    _3944249282595574931 mtNKEvBwMHNsmdH7BtZbM 	 
+    	  
+    		   
+     
+     
+ 
+  	process_rgbd mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+    		   
+     
+     
+ _6441194614667703750,_46082575014988268,_18212413899834346676,_14938569046430841631,_9933887380370137445  mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		   
+     
+ mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+     mqUxZEnHM0zID6J2vVqke 	 
+  _3944249282595574931 mSwbK3nBcNZkvGxSXNOZy 	 
+    	  
+processStereo mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		   
+    _6441194614667703750,_1705635550657133790,_18212413899834346676,_14938569046430841631,_9933887380370137445  mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		 myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		   
 
-         mz0gDEk4XJJySbEeCgC9P 	 
+     mcs2IPsFq8XN5a3t5KBLK 	 
+  _14938569619851839146.autoAdjustKpSensitivity mSBNIRK1XqZg3XlWW_b3d 	 
     	  
     		   
-     
-     
- 
-  	 _7599632917966626906 mDHmz3NSVqdDEn8FHaIo5 	 
+ mjXlfKOCTRjUV9apwYcb7 	 
     	  
-    		   
-  STATE_TRACKING muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-   
-            _10517421797211956538 mA7hUM4UKqFyb_LJLsook 	 
-    	  
-    		   
-     
-     
- 
-  	true mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
   
         
-         mBUCZuaNioFkzVtaa2sRQ 	 
+        
+        
+         muoE4XIKfPRSXmzic7wiv 	 
+    	  
+    		   
+ _1699599737904718822 mA7hUM4UKqFyb_LJLsook 	 
     	  
     		   
      
-    _3521005873836563963  mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    		   
-      _10762543579000176710 msDVYCHuU_j2g_TdgX4Ta 	 matchFrameToMapPoints  mSdpFB1uEgpzM3bVmlHgT 	 
-  _10762543579000176710 mxGJXkzb8EW07jCVTl0Jt 	 
-    	  
-    		   
-   TheKpGraph.getNeighborsVLevel2 mUGrJMUolw0lb_KVyGK5N 	 
-    	   _17510502251974591806,true mVmWtYm5gVtZj7Yq19XWE 	 
+  _14938569619851839146.maxFeatures-_14938569046430841631.und_kpts.size mecU92YjgSbB3VkEoZVK3 	 
     	  
     		   
      
      
- , _16940374161810747371,  _5769551021164122736 ,_16805773490000196330.maxDescDistance*2, _3763415994652820314,_10517421797211956538 mPaUdMg3fg2ipZY0Exj7X 	 
+ m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+  
+         mFWW5xb6SDILpyTp5GBZD 	 
+     _1699599737904718822  mYbzFOKSwwNsD71cP1DkA 	 
+    	  
+    		   
+     
+    0 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+     
+  mXdnll4yjwVy4uBDSjUe3 	
+             mrg1QVINMqbRYZWngNWmj 	 
+    	  
+    		   
+    _46082575832048655 mvA2vjSvRD7UmknjmYP5U 	 1.0f-  mlfybwyvp98TOJj0yuqhF 	float mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		 _1699599737904718822 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+     
+     /float mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+    		   
+  _14938569046430841631.und_kpts.size mdbwYCIpGYWahFfTtU8zH 	 
+    	  
+    		   
+     
+     
+ 
+  	 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+     
+     muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+     
+    mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+    
+             mRIlZ0NriRkVMhRpycZqI 	 
+    	  
+    		   
+     
+     _6148074839757474704 mA7hUM4UKqFyb_LJLsook 	 
+    	  
+    		   
+  _3944249282595574931 mVfb3IHZLk8rmg75VuqQZ 	 
+    	  
+    		   
+     
+   getSensitivity mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+   +_46082575832048655 mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+     
+     
+
+            _6148074839757474704 mXE5wWRmJGUY4EsEsgegT 	std me0ZKHp2Id3eLmP_6GMtk 	 
+    	  
+    		  max mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+  _6148074839757474704,1.0f mJk4eXgp_IeFV2YvLaQC7 	 
+    	 myu64GAT8DgGBhNOOCqvd 	 
+   
+            _3944249282595574931 mdMNbPkq6p5KBhEVf3OFw 	 
+    	  
+    		   
+     
+     setSensitivity mBGM118Iia8vm6zcNTuB6 	 
+    _6148074839757474704 mXftmBtLFUrPFw3lasjuW 	 
     	  
     		   
      
      
   mqLizGA4Z8QZ_2GYQ1inC 	 
-        
-        _637068542992099399.insert mOAy4qGUJpdHQSVbVPq9E 	 
+         mf0YJDuh2j5By5N13LunG 	 
     	  
-   _637068542992099399.end mTGJXDnkacX2UX9dooHQu 	 
-    ,_3521005873836563963.begin mjjfaXD3tH8warSj13sVr 	 
+    		 
+        else mi6BqZOVmQyrEy6BLProP 	 
+    	  
+    		   
+ 
+            
+            _3944249282595574931 mevHkLo7kL5WL0_0mLIhr 	setSensitivity mbXhD242DJoibBjdI1JtA 	 
+    	  
+    		   
+     
+   _3944249282595574931 mxGJXkzb8EW07jCVTl0Jt 	 
     	  
     		   
      
      
  
-  ,_3521005873836563963.end mRAYh0ARHPOc62CfGHWWO 	 
+  	getSensitivity mFAl4ldpf7o2gKLWQ4bfu 	 
+    	 *0.95 mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+   mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+     
+     
+ 
+         mqVdZVftPR84WTjiOiVfT 	
+     mEjIWbivPeVc9WtxGDiWw 	 
+    	  
+    		   
+   
+    
+     mAvI6WqVGKew5QUXF0T2l 	 
+  mSdpFB1uEgpzM3bVmlHgT 	 
+    	  
+    		  _17450466964482625197 mrDas3egWRcEnvTodVRRA 	 
+    	  
+   MODE_SLAM mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+     
+   _1403653089436386197.join mdbwYCIpGYWahFfTtU8zH 	 
+    	  
+    		   
+    mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+  
+    cv mvpMkjoDGcQujDevHDZnx 	 
+    	  
+    		   
+     
+     
+ 
+ Mat _3005399805025936106 mtmFAz7pcnIFLgYGMf4eK 	 
+    	  
+    		   
+     
+  process mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+ _14938569046430841631 mxAXsCfNkscq4iQtE2AeY 	 mwkk1d6uUiyaKys71tsUv 	 
+    	  
+
+    
+     mrjcvI9ucBIaCRtqGyrWD 	 
+    	  
+    		   
+     
+     
+ 
+ _6154865401824487276 mH9fKsRtHWNu77RGN1xmn 	 
+    	  sqrt mTiWUgQKOeYLvNdGsR_oS 	float mlfybwyvp98TOJj0yuqhF 	 
+    	 _14938569046430841631.imageParams.CamSize.area mecU92YjgSbB3VkEoZVK3 	 
+    	  
+    		   mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+   /float mYcSgTugFLQcmWT7seaac 	 
+    	  
+ _6441194614667703750.size mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+    		   
+   .area mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+    		   
+     
+   mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		   
+   mT3v8xdcVsSvUtbwmHC7j 	 
+   mxIwd_EJpfr1C9jwU7IyL 	 
+    
+    _14031550457846423181 mYcSgTugFLQcmWT7seaac 	 
+    	  
+    		   
+     
+     
+ 
+  _6441194614667703750,1./_6154865401824487276 mVmWtYm5gVtZj7Yq19XWE 	 
+   myu64GAT8DgGBhNOOCqvd 	
+     mcRuULuI_AYJWzFSu1kB4 	_5829441678613027716 mIqjSmilXv9ILvDddB7nD 	 
+    	  
+    		   
+   mVjuVop3osym9wWoq6p3w 	 
+    	  
+    		    ml5d8mzmxNmQRMtpfZ82X 	 
+    	  
+    		    mBGM118Iia8vm6zcNTuB6 	 
+    	  
+    		   
+     
+   const uint32_t&_11093821926013 mVFG05ubhW6ia_rWdS_Tv 	 
+    	 mJdlQJg0rG2m7KHUChC3R 	 
+    	  
+    		   std mvpMkjoDGcQujDevHDZnx 	 
+    	  
+ stringstream _706246330191125 mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+     
+     _706246330191125 mghpafeSRXwbO0z_DbM3C 	 
+    	  
+    		 _11093821926013 mQivdop_Gb4hqsWvOttc3 	 
+    	 mSXTPhnnQgIi6ocmukNcV 	 
+    	  
+    		   
+_706246330191125.str mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+    		   mQivdop_Gb4hqsWvOttc3 	 
+     msxc6utIaOFXg4WI3vB0q 	 
+    	  
+    		   
+      mEm194VmPJuGh5y4tMUm5 	 
+    	  
+    		   
+
+    _14938529070154896274 mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		   
+     
+   _6441194614667703750,"\x4d\x61\x70\x20\x50\x6f\x69\x6e\x74\x73\x3a"+_5829441678613027716 mlfybwyvp98TOJj0yuqhF 	 
+    	  
+ _9098980761384425343 mgi5Boc5f0emw5eocZbgV 	 
+    	  
+    		   
+     
+     map_points.size mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+    		   
+     
+     
+ 
+  	  mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		   ,cv mrS2zvlmrTf4L4KBRRYAU 	 
+    	  
+ Point mBGM118Iia8vm6zcNTuB6 	 
+    	  
+    		   
+     
+     
+ 20,_6441194614667703750.rows-20 mVFG05ubhW6ia_rWdS_Tv 	 
+ mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+  mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		
+    _14938529070154896274 mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+   _6441194614667703750,"\x4d\x61\x70\x20\x4d\x61\x72\x6b\x65\x72\x73\x3a"+_5829441678613027716 mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    _9098980761384425343 mVfb3IHZLk8rmg75VuqQZ 	 
+    	  
+    		   
+ map_markers.size mJFtpHxfnoGMxp1wzTBMr 	 
+    	  
+    mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		  ,cv mI3QeEk0K_mj1WaUiowht 	 
+    	  
+    		   
+     Point mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+     
+    20,_6441194614667703750.rows-40 mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+     
+     
+ 
+   mT3v8xdcVsSvUtbwmHC7j 	  mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		 
+    _14938529070154896274 mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		   
+_6441194614667703750,"\x4b\x65\x79\x46\x72\x61\x6d\x65\x73\x3a"+_5829441678613027716 mYcSgTugFLQcmWT7seaac 	 
+    	  
+    		   
+     
+     _9098980761384425343 mVfb3IHZLk8rmg75VuqQZ 	 
+    	  
+    		keyframes.size mJFtpHxfnoGMxp1wzTBMr 	 
+    	  
+    		   
+      mPaUdMg3fg2ipZY0Exj7X 	 
+    	  ,cv mrS2zvlmrTf4L4KBRRYAU 	 
+    	  
+    		   
+     
+    Point mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    	20,_6441194614667703750.rows-60 mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		    mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+ m_yMT4MKxrENTtLx5cA7n 	 
+    	
+     mN4RvsK7_XXMC2cNCwITM 	 
+    	  
+    		   
+     
+     
+ 
+_16937201858692939798 mvA2vjSvRD7UmknjmYP5U 	 
+    	  0 mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		
+     mcAnVuQmAnGunjGyL6dhh 	 
+    	auto _175247760135:_14938569046430841631.ids mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+     
+     mFWW5xb6SDILpyTp5GBZD 	 
+    	  
+  _175247760135 mglbnc94mbkalEyCkkDhv 	 
+   std mNQimRrYQ8Mz6YI9KM7Fn 	 
+    	  
+    		   
+     
+     
+ 
+  	 numeric_limits mLS76iLDjnGxttL6L8yfX 	 
+    	  
+    		   
+     
+   uint32_t mNF0G2xPBB22gI9XzMk2L 	 
+    	  
+    		   
+     
+     
+ 
+  	  mNQimRrYQ8Mz6YI9KM7Fn 	 
+   max mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+    		   mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+  _16937201858692939798 mPjeLalHATLRlVYohP5cu 	 mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		   
+     
+     
+ 
+  	 
+    _14938529070154896274 mgGCFceAojKPG0bK5eWQT 	 
+    	  _6441194614667703750,"\x4d\x61\x74\x63\x68\x65\x73\x3a"+  _5829441678613027716 mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+ _16937201858692939798 mxAXsCfNkscq4iQtE2AeY 	,cv mvpMkjoDGcQujDevHDZnx 	 
+    	  
+    		   
+     
+  Point mSdpFB1uEgpzM3bVmlHgT 	 
+    	  
+ 20,_6441194614667703750.rows-80 mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   
+     
+     
+ 
+ mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    	 mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		   
+     
+     
+     myfOHlfTLtRL7im7qSaYm 	 
+    	  
+    		   
+      fabs mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+    		   
+     
+     
+ _6154865401824487276-1 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    meN5YYBBVg5DStfnyA8Dd 	 
+    	  
+    		   
+     
+     
+ 
+  	 1e-3 mxAXsCfNkscq4iQtE2AeY 	 
+    	
+        _14938529070154896274 mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+ _6441194614667703750,"\x49\x6d\x67\x2e\x53\x69\x7a\x65\x3a"+_5829441678613027716 mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+    _14938569046430841631.imageParams.CamSize.width mXftmBtLFUrPFw3lasjuW 	 
+    	+"\x78"+_5829441678613027716 mbXhD242DJoibBjdI1JtA 	 
+    	  
+    		 _14938569046430841631.imageParams.CamSize.height mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		  ,cv miuOs6oIdxnQEMrFFk2n_ 	 
+    	Point mYcSgTugFLQcmWT7seaac 	 
+    	  
+    20,_6441194614667703750.rows-100 mXftmBtLFUrPFw3lasjuW 	 
     	  
     		   
      mT3v8xdcVsSvUtbwmHC7j 	 
     	  
     		   
      
-    mEm194VmPJuGh5y4tMUm5 	 
-
-        filter_ambiguous_query mUGrJMUolw0lb_KVyGK5N 	 
+  mQivdop_Gb4hqsWvOttc3 	 
     	  
-    _637068542992099399 mJk4eXgp_IeFV2YvLaQC7 	 mC_gLvnw5tkMWRQheRKr5 	 
+    
+     mFWbNGU5e6cuqyQa3XUry 	 
+_3005399805025936106 m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+ 
+ mEjIWbivPeVc9WtxGDiWw 	 
     	  
     		
-     m_ECAXF5hGu1UMoS2l1KU 	 
-    	  
-    		   
-     
-      mLF5wNIO93YQsDKnsE8CQ 	 
+cv mI3QeEk0K_mj1WaUiowht 	 
     	  
     		   
      
      
  
-_8650310500205049352 mtmFAz7pcnIFLgYGMf4eK 	 
-    	  
-   PnPSolver mrS2zvlmrTf4L4KBRRYAU 	 
-    	  
-  solvePnp mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		   
-     
-      _16940374161810747371,_10762543579000176710,_637068542992099399,_5769551021164122736,_17510502251974591806 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		  mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-  
-    
-    
-     muh7SNXP3UdOZu6GOuG0_ 	 
+Mat System me0ZKHp2Id3eLmP_6GMtk 	 
+ process mgGCFceAojKPG0bK5eWQT 	 
     	  
     		   
      
      
- 
-  	 _6535949166237672095 mA7hUM4UKqFyb_LJLsook 	 
-    	  
-false myu64GAT8DgGBhNOOCqvd 	 
+ vector mJCQ17ktBLqNw7sHF60R1 	 
     	  
     		   
-    
-     mAvI6WqVGKew5QUXF0T2l 	 
+     
+     
+cv mrPFLPKakBKjOOnkuhZUP 	 
     	  
-    		  mgGCFceAojKPG0bK5eWQT 	 _16940374161810747371.markers.size mTGJXDnkacX2UX9dooHQu 	 
+    		   
+    Mat mYbzFOKSwwNsD71cP1DkA 	 
     	  
-    mW202Akoy5o2_FFUMtz7a 	 
- 0 muC5cqYcHRXDD16noARI1 	 
+    		 &_3005401535270843804,  ImageParams &_4702029808027735906 , mgT33OczCogeSJ9uFzScS 	 
+    	  
+  _9933887380370137445 mPaUdMg3fg2ipZY0Exj7X 	 
     	  
     		   
      
      
  
-   mi4REkBAebpTZrzlvFEpD 	 
-    	
-         mL8NdxI0A84_PQiCzjY0y 	 
- _9870110666330890270 mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    		   
-     
-     
- 
-  	0 mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
- 
-        
-         mTy5S_mcphfNLzuJQ30Xe 	 
-    	  
-    		   
-   size_t  _2654435874 mRDD8w83SsPKbGXy_JkEO 	 
-    	0 mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		_2654435874 mHg0YG9R0Gb6ZE5xIr3dz 	  _16940374161810747371.markers.size mRAYh0ARHPOc62CfGHWWO 	 
-    	  
-   mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-  _2654435874 mDe1564r6NJrCTudA8x0w 	 mJk4eXgp_IeFV2YvLaQC7 	 
- mSH1h4yGhaMSu8y7JC_rY 	 
-    	  
-    		   
-     
-     
 
-            
-             mcRuULuI_AYJWzFSu1kB4 	 
+ mi6BqZOVmQyrEy6BLProP 	 
     	  
-    		   
-     
- _11093822290813 mtmFAz7pcnIFLgYGMf4eK 	 
- _10762543579000176710 mSwbK3nBcNZkvGxSXNOZy 	 
-    	  
-map_markers.find mTiWUgQKOeYLvNdGsR_oS 	 
-    _16940374161810747371.markers msGAdK1RZcxCitYemdpxc 	 
-    	  
-    		   
-     
-   _2654435874 mQbYLzhvVQm8J2LNkC6S6 	 
-    	  
-    		   
-     
-   .id mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     myu64GAT8DgGBhNOOCqvd 	 
-    	  
-             mfRi_C6KlnAxop81XDZsV 	 
-    	  
-    		   
-     
- _11093822290813 mtDWQOqRguVWSWehbKECr 	 
-    	  
-    		   
-     _10762543579000176710 mcvX0B8TDw1gEtqXtgT4T 	 
-    	  
-    		   
-     
-     
  
-  map_markers.end mdbwYCIpGYWahFfTtU8zH 	 
-    	  
-    		   
-     
-     
- 
-  	 msDy4S0F6Zdx78ZUnbARe 	continue mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
-     
-     
- 
- 
-             mWYYMqZtRPklZ6ldYQlW8 	 
-    	  
- mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		    mteJvtUMKI6kC6j6RtZKr 	 
-    	  
-    		   
-    _11093822290813 mxGJXkzb8EW07jCVTl0Jt 	 
-    	  
-    		   
-     
-second.pose_g2m.isValid mTGJXDnkacX2UX9dooHQu 	 
-    	  mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		  continue mQivdop_Gb4hqsWvOttc3 	 
-    	  
-  
-            _9870110666330890270 mUvBFztQfvp6FxGFsyoMW 	 
-    	  
-     mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-  
-            
-             muDvj5aUdXshb2AqqeEiu 	 
-    	  
-    		   
-     
- mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-    	_16940374161810747371.markers mVjuVop3osym9wWoq6p3w 	 
-    	  
-    		   
-     
-     _2654435874 mWi16Wz7P86SIJlTQEzCB 	.poses.err_ratio  moCEmVQeGy8LzV8cAuk79 	 
- _16805773490000196330.aruco_minerrratio_valid muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-  continue mxIwd_EJpfr1C9jwU7IyL 	 
- 
-            _6535949166237672095 mtmFAz7pcnIFLgYGMf4eK 	true mo9Lbpy0Ap4RTl5O5Or1C 	 
-   
-            break mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-     
-         mEjIWbivPeVc9WtxGDiWw 	 
-    	  
-    		   
-  
-         mxkHJa5wooqhzaSxK7_fd 	 
-    	  
-    		   
-     
-     
- 
- mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    _9870110666330890270 mKJK3THIuAwgeFpuGLN8L 	 
-    	  
-    		 1 mJk4eXgp_IeFV2YvLaQC7 	 
-    	   _6535949166237672095 mvA2vjSvRD7UmknjmYP5U 	 
-true mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-  
-         mfkkS3ig7woFqdOg7udAR 	 
-    	  
-    _6535949166237672095 mIqjSmilXv9ILvDddB7nD 	 
-    	  
-    		   
-     
-   false mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-    		   
-     
-     
- 
-     miXz43zs_DqtraKQW0m3N 	
-     mbCI0BlZHp5kbKpNqa5Su 	 
- mBGM118Iia8vm6zcNTuB6 	 
-    	  
-   _8650310500205049352 mk9nSfh6XGyonOYMC8C3M 	 
-    	  
-    		   
-     
-     
- 
-  30  mxpEdWbhRRjZ1JMh3yxwy 	 
-   mCzaOxAWpFlV3gHYCg4ev 	 
-    	  
-_6535949166237672095 mPaUdMg3fg2ipZY0Exj7X 	 
- mbqHQotWhg0sv6ViuZXc3 	 
-    	  
-    		   
-     
- 
-      mHUTuX3q6rB5eWWYYPWQD 	 
-    	  
-    		   
-     
-     
- 
-  	 se3 mdbwYCIpGYWahFfTtU8zH 	 
-    	 mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-   
-     mqVdZVftPR84WTjiOiVfT 	 
-    
-    
-     mmeJW_Q9h6ZBPzSBQVjMK 	 
-    	  
-    		   
-     
-     
- 
-size_t _2654435874 mRDD8w83SsPKbGXy_JkEO 	 
-    	  
-    		   
-   0 mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-     
-     _2654435874 mLS76iLDjnGxttL6L8yfX 	 
-    	  
-    		   
- _637068542992099399.size mjjfaXD3tH8warSj13sVr 	 
-    	  
-    		  mxIwd_EJpfr1C9jwU7IyL 	 
-   _2654435874 mgux57p4wBZIWFfq6waj5 	 
-    	  
-    		   
-   mPaUdMg3fg2ipZY0Exj7X 	 mi4REkBAebpTZrzlvFEpD 	 
-    	  
-    		   
-     
-     
- 
-            _10762543579000176710 msDVYCHuU_j2g_TdgX4Ta 	 map_points mMo20fFU0rdQJ7l5qqDaX 	 
-    	  
-_637068542992099399 mRjEKX4QN9MTvSEtCTNd7 	 
-    	  
-    		   
-     
-  _2654435874 mWjWwCxBA7LLBixCoRsYZ 	 
-    	  
-    		.trainIdx mQbYLzhvVQm8J2LNkC6S6 	 
-    	  
-    		   
-     
-   .setSeen mIJkWACd8Uom4Jv6selID 	 
-    	  
-    		   
-     
-  mEm194VmPJuGh5y4tMUm5 	 
- 
-            _16940374161810747371.ids mbtzLVjzLgaxYxNNltfyM 	 
-    	  
-    		   
-     _637068542992099399 mRjEKX4QN9MTvSEtCTNd7 	 
-    	  
-    	_2654435874 mGPgWaVxS3WdTr7rWsMw4 	 
-    	  
-    		   
-    .queryIdx mAH84ftHkJMUldxM9fJHE 	 
-    	  
-    		   
-     
-     
-  mvA2vjSvRD7UmknjmYP5U 	 
-    	  
-    		   
-   _637068542992099399 mbtzLVjzLgaxYxNNltfyM 	 
- _2654435874 mOwAFTnFZjoBWI2gNeAO_ 	 
-    	  
-    		  .trainIdx mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
-     
-   
-             mt3m0c1_35lMMq0E3cZsZ 	 mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		   
-     
-  _637068542992099399 mwzFZRcSPi2Vsk45HpaLx 	 
-    	  
-    		   
-   _2654435874 mOwAFTnFZjoBWI2gNeAO_ 	 
-    	  
-    		   
-     
- .imgIdx mWQWZuZUxzgXcOZHMJMC_ 	-1 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-     
-     
- 
- 
-                _16940374161810747371.flags mMo20fFU0rdQJ7l5qqDaX 	 
-    	  
-    		   
-     
-  _637068542992099399 msGAdK1RZcxCitYemdpxc 	 
- _2654435874 mfF196cGKZ_LkBPN8ZWlr 	 
-    	  
-    		   
-     
- .queryIdx mAH84ftHkJMUldxM9fJHE 	.set mNQ6rNLARkxxSTP6tiTXG 	 
-Frame mExFPeJBflhTWJKuQVWoB 	 FLAG_OUTLIER,true mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-      m_yMT4MKxrENTtLx5cA7n 	 
-    	
-     msxc6utIaOFXg4WI3vB0q 	 
-    	  
-    		   
- 
-     mSXTPhnnQgIi6ocmukNcV 	 
-_5769551021164122736 m_yMT4MKxrENTtLx5cA7n 	 
-    	 
- mwiKr6psttEx97f2NsYO1 	 
-    	  
- mDWwKMm0Bw8nxvI3ZwZnM 	 
-    System me0ZKHp2Id3eLmP_6GMtk 	 
-    	  
-    		   
-     
-    _1400008259408517257 mYcSgTugFLQcmWT7seaac 	 
-    	  
-    cv mI3QeEk0K_mj1WaUiowht 	 
-    	  
-  Mat &_46082544231248938, mU7LO3jg27wf5nw3n8LF7 	 
-    	  
-    _9971115036363993554 mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    		   const mqlayz2fShj6ePxekxwRg 	 
-    	  
-    		   
-     mhaG6yS3EwOInKAwIBoQN 	 
-    	  
-    		   
-     
-     
- 
-  _706246330297760 mtmFAz7pcnIFLgYGMf4eK 	 
-    	  
-    		  float mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-     
- _46082544231248938.cols mVmWtYm5gVtZj7Yq19XWE 	/640.f myu64GAT8DgGBhNOOCqvd 	 
-    	  
-    		   
-    
-    cv mI3QeEk0K_mj1WaUiowht 	 
-    	  
-    		   
-     Point2f _46082575822903876 mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-    		   
-   _706246330297760,_706246330297760 mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    	 mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-    		   
-   
-     mp1kzPPa8GX6cfigPyiyD 	 
-    	  
-    		 _16987668682974831349 mH9fKsRtHWNu77RGN1xmn 	 
-    	  
-    		   
-     
-     
- 
- false mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    
-      mbCI0BlZHp5kbKpNqa5Su 	 
-    	  
-    		   
-     
-     
- 
- mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		   
-     
- _7599632917966626906 mIHFqVJpFXgMDdHn2uhc3 	STATE_TRACKING mVFG05ubhW6ia_rWdS_Tv 	 
-    	   mbqHQotWhg0sv6ViuZXc3 	 
-    	  
-    		   
-     
-     
-
-         mTy5S_mcphfNLzuJQ30Xe 	 
-    	  
-    		   
-    size_t _2654435874 moHeIYzwbcFb6VaM90Aa9 	 
-    	  
-    0 myu64GAT8DgGBhNOOCqvd 	 
-    	  
-    	_2654435874 mbVOLbjVZO0YI60Vuguaq 	 
-    	  
-    		   
-_16805767570017655115.ids.size mecU92YjgSbB3VkEoZVK3 	 
+    swap mSdpFB1uEgpzM3bVmlHgT 	 
+    	  _4913157516830781457,_14938569046430841631 mJk4eXgp_IeFV2YvLaQC7 	 
     	  
     		   
     mQivdop_Gb4hqsWvOttc3 	 
     	  
-    		   
-     
-     
- 
-  	_2654435874 mTgR0xuTc2WA_FI5hAh2Q 	 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-     
   
-             mr8s7pfvTmBWmxher3Oue 	 
-    	  
-     mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		   
-     _16805767570017655115.ids mZ9T0z5VdOHGC7rra8Fzk 	_2654435874 mWi16Wz7P86SIJlTQEzCB 	 
-    	  
-    		   
-     
-     
- 
-  	  mYCupqIOYDMlnjNznUUG5 	 
-    	  
-    		   
-   std mNQimRrYQ8Mz6YI9KM7Fn 	 
-    	  
-    		   
-     
-numeric_limits mnpObQ1mWnyfQO24_ojBn 	 
-    	  
-    		   uint32_t meN5YYBBVg5DStfnyA8Dd 	 
-    	   miuOs6oIdxnQEMrFFk2n_ 	 
-    	  
-    		max mRAYh0ARHPOc62CfGHWWO 	 
-    	  
-    		   
-     
-     
- 
- mSBNIRK1XqZg3XlWW_b3d 	 mMm9FLNsNOoyX7Tyb7vpT 	 
-    	  
-    		   
-     
-     
-                 mt3m0c1_35lMMq0E3cZsZ 	 
-    	  
-    		   
-     
- mTiWUgQKOeYLvNdGsR_oS 	 
-    molF5K16MuyVvkFE7X8JI 	_10762543579000176710 msDVYCHuU_j2g_TdgX4Ta 	 
-    	  
-    		   
-     
-   map_points.is mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		   
-     
-     
- 
-  	  _16805767570017655115.ids msGAdK1RZcxCitYemdpxc 	 
-    	  
-    		   
-     
-     
- 
-_2654435874 mOwAFTnFZjoBWI2gNeAO_ 	 
-    	  
-    muC5cqYcHRXDD16noARI1 	 
-    	   mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
-     
-     
- 
-   continue mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-
-                cv me0ZKHp2Id3eLmP_6GMtk 	 Scalar _46082574599890393 mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   
- 0,255,0 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		  mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
-                 mHbSWrX6OPeRP2Igmog8G 	 mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		  mhNH3dNZkhrgawU6wbA6V 	 
-    	  
-   _10762543579000176710 msDVYCHuU_j2g_TdgX4Ta 	 
-    	  
-    		   
-     
-    map_points mwzFZRcSPi2Vsk45HpaLx 	 
-    	  
-    		   
-     
-_16805767570017655115.ids mVjuVop3osym9wWoq6p3w 	 
-    	  
-_2654435874 mWjWwCxBA7LLBixCoRsYZ 	 
-    	  
-    		   
-     
-    mWi16Wz7P86SIJlTQEzCB 	.isStable mGu_88Fdde5jsxW8v9whR 	 
-    	  
-    		 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-     
-     
- 
-    mi4REkBAebpTZrzlvFEpD 	_46082574599890393 moHeIYzwbcFb6VaM90Aa9 	 
-    	cv mvpMkjoDGcQujDevHDZnx 	 
-    	  
-    		Scalar mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		   
-     
-     
- 
-  0,0,255 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-     
- 
-  	 mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
-     
-     
- 
- m_ECAXF5hGu1UMoS2l1KU 	 
-    	  
-    		   
-     
-
-                cv mrPFLPKakBKjOOnkuhZUP 	 
-    	  
-    		   
-     
-     
- 
-  	 rectangle mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		   
-     
-     
- 
- _46082544231248938,_9971115036363993554* mgGCFceAojKPG0bK5eWQT 	_16805767570017655115.kpts mVjuVop3osym9wWoq6p3w 	 
-    	  
-    		   
-     
-     
- _2654435874 mOwAFTnFZjoBWI2gNeAO_ 	 
-    	  
-    		   
-     
-    -_46082575822903876 mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    		   
-   ,_9971115036363993554* mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-    		   
-     
-     _16805767570017655115.kpts mMo20fFU0rdQJ7l5qqDaX 	 
-    	 _2654435874 mOwAFTnFZjoBWI2gNeAO_ 	 
-    	  
-    +_46082575822903876 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-     ,_46082574599890393,_706246330297760 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-     
-     
- 
-  mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		   
-     
-     
- 
-  	
-             mEjIWbivPeVc9WtxGDiWw 	 
-    	  
-             mcce2fXWVHACmBftaJ9Re 	 
-    	  
-    		   
-     
-     
-  mdEGS_9gShKEEsK9RPbfj 	 
-    	  
-    		    _16987668682974831349 mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
-     
-  mXdnll4yjwVy4uBDSjUe3 	 
-    	  
-    		   
-     
-     
- 
-                cv miuOs6oIdxnQEMrFFk2n_ 	 
-    	  
-    		   
-     
-Scalar _46082574599890393 mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   
-     
-     
- 
-  	 255,0,0 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    	 mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	 
-                cv miuOs6oIdxnQEMrFFk2n_ 	 
- rectangle mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-    		   
-     
-     
- 
- _46082544231248938,_9971115036363993554* mSdpFB1uEgpzM3bVmlHgT 	 
- _16805767570017655115.kpts mMo20fFU0rdQJ7l5qqDaX 	 
-    	  
-    		 _2654435874 mWjWwCxBA7LLBixCoRsYZ 	 
--_46082575822903876 muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-  ,_9971115036363993554* mgGCFceAojKPG0bK5eWQT 	 
-    	 _16805767570017655115.kpts msGAdK1RZcxCitYemdpxc 	 
-    	  
-    		  _2654435874 mGPgWaVxS3WdTr7rWsMw4 	 
-    	  
-    		 +_46082575822903876 mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-    ,_46082574599890393,_706246330297760 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
- mwkk1d6uUiyaKys71tsUv 	 
-    	  
-
-             mL9oWJQ1n2xKG3FtRNowa 	 
-    	  
-    		   
-     
     
-     msxc6utIaOFXg4WI3vB0q 	 
-    	  
-    		   
-
-     myrvDyRCtal5mdHB28ZIe 	 
-    	  
-    		   
-     mFWW5xb6SDILpyTp5GBZD 	 
-    	  
-    _10762543579000176710 mgi5Boc5f0emw5eocZbgV 	 
-    	  
-    	isEmpty mTGJXDnkacX2UX9dooHQu 	 
-    	  
-    		   
-   mSBNIRK1XqZg3XlWW_b3d 	 
+    std mrPFLPKakBKjOOnkuhZUP 	 
     	  
     		   
      
-   mi6BqZOVmQyrEy6BLProP 	 
+    thread _1403653089436386197 myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		 
+     mXYEIB3KYwzJOpssgkZxP 	 
+    	  
+    		   
+     mYcSgTugFLQcmWT7seaac 	_17450466964482625197 mVrsJpNNblNXrk9CJ_J45 	 
+    	  
+    		   
+     
+     
+ MODE_SLAM mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		  _1403653089436386197 mR22jPCjbltZ3tbBmn_6w 	 
+    	  
+    		   
+std mNQimRrYQ8Mz6YI9KM7Fn 	 
+    	  
+    		   
+     
+     
+ 
+  	 thread mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    	 mZloAr3_PPw7622AVrUCe 	 
+    	  
+    		   
+     
+     & mtEI4bSjtkyV5O0qz_vBz 	  mJFtpHxfnoGMxp1wzTBMr 	 
+    	  
+    		   
+     
+ mbqHQotWhg0sv6ViuZXc3 	 
+    	  
+    		
+         mg9IHDbTXxljO0nSnQKYh 	 
+    	  
+    		   
+     
+     
+ 
+  _2869602498954317713 mj3rSXJDWd4j4OSGbS2oX 	 
+    	  
+    	mapUpdate mFAl4ldpf7o2gKLWQ4bfu 	 
+    	 mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		  mMm9FLNsNOoyX7Tyb7vpT 	 
+    	  
+    		   
+     
+     
+ 
+ 
+             mhRH54odsmIWcLq1D3rKZ 	 
+    	  
+   _2869602498954317713 mcvX0B8TDw1gEtqXtgT4T 	 
+    	  
+    		   
+     
+     
+ 
+  	bigChange mIJkWACd8Uom4Jv6selID 	 
+    	  
+    		   
+      mVFG05ubhW6ia_rWdS_Tv 	 mMm9FLNsNOoyX7Tyb7vpT 	 
+    	  
+    		   
+     
+     
+                _14938569046430841631.pose_f2g mH9fKsRtHWNu77RGN1xmn 	 _2869602498954317713 mVfb3IHZLk8rmg75VuqQZ 	 
+    	  
+    		   getLastAddedKFPose mFAl4ldpf7o2gKLWQ4bfu 	 
+    	  
+   mwkk1d6uUiyaKys71tsUv 	 
+                _17976495724303689842 mR22jPCjbltZ3tbBmn_6w 	 
+    	  
+    _2869602498954317713 mcvX0B8TDw1gEtqXtgT4T 	 
+getLastAddedKFPose mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+    		   
+     
+  m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		 
+             miXz43zs_DqtraKQW0m3N 	 
+    	  
+    		   
+     
+     
+ 
+
+         m_ECAXF5hGu1UMoS2l1KU 	 
+    	  
+         m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+     
+   mqVdZVftPR84WTjiOiVfT 	 
+    	  
+    		   
+     mxAXsCfNkscq4iQtE2AeY 	 
+     myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    	
+    _3944249282595574931 mgi5Boc5f0emw5eocZbgV 	 
+    	  
+   processArray mNQ6rNLARkxxSTP6tiTXG 	 
+    	 _3005401535270843804,_4702029808027735906, _14938569046430841631, _9933887380370137445, _2044193291895307872  mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   
+  mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		  
+     mGc5v1UWfDU7ttNcZryQG 	 
+    	  
+    	 _14938569619851839146.autoAdjustKpSensitivity muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+     
+   mMm9FLNsNOoyX7Tyb7vpT 	 
+    	  
+    		   
+     
+     
+ 
+ 
+        
+        
+        
+         mhaG6yS3EwOInKAwIBoQN 	 
+  _1699599737904718822 mXE5wWRmJGUY4EsEsgegT 	 
+    	  
+    		   
+     
+ _14938569619851839146.maxFeatures-_14938569046430841631.und_kpts.size mecU92YjgSbB3VkEoZVK3 	 
+    	  
+    		   
+     
+ mwkk1d6uUiyaKys71tsUv 	 
+ 
+         mg9IHDbTXxljO0nSnQKYh 	 
+     _1699599737904718822  mzCa3iYOTZk3vOb9xFPuf 	 
+    	  
+0 mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+   muH9A34QGuccPZkZDb32w 	 
+    	  
+    		   
+    
+             mTWpMMn_ueGNGrVaZzL0Q 	 
+    	  
+    		   
+  _46082575832048655 mtmFAz7pcnIFLgYGMf4eK 	 
+    	  
+    		   
+ 1.0f-  mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+     
+   float mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		   
+     
+     
+ 
+  _1699599737904718822 mJk4eXgp_IeFV2YvLaQC7 	 
+   /float mNQ6rNLARkxxSTP6tiTXG 	 
+ _14938569046430841631.und_kpts.size mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+    		   
+     
+     
+  mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+     
+      mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+     
+     
+ 
+  	  mQivdop_Gb4hqsWvOttc3 	 
+    	  
+             mVekuqiofcOlLv1kcHh3u 	 
+   _6148074839757474704 mXE5wWRmJGUY4EsEsgegT 	 
+    	 _3944249282595574931 mtNKEvBwMHNsmdH7BtZbM 	 
+    	  
+    		   
+     
+ getSensitivity mIJkWACd8Uom4Jv6selID 	 
+    	  
+    		   
+     
+   +_46082575832048655 m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+     
+     
+ 
+  
+            _6148074839757474704 mhL9dWuOWzLGBfRjwvYlN 	 
+    	  
+    		   
+     
+  std miuOs6oIdxnQEMrFFk2n_ 	 
+    	  
+    		   
+     
+     
+ 
+  	max mbXhD242DJoibBjdI1JtA 	 _6148074839757474704,1.0f mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		   
+     
+     mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+   
+            _3944249282595574931 mVfb3IHZLk8rmg75VuqQZ 	 
+    	  
+    		   
+     
+ setSensitivity mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+  _6148074839757474704 mxAXsCfNkscq4iQtE2AeY 	 
+    	 mwkk1d6uUiyaKys71tsUv 	 
+    	  
+ 
+         mL9oWJQ1n2xKG3FtRNowa 	 
+    	  
+    		   
+     
+     
+ 
+
+        else mXdnll4yjwVy4uBDSjUe3 	 
+    	  
+    		   
+     
+     
+ 
+  
+            
+            _3944249282595574931 msDVYCHuU_j2g_TdgX4Ta 	 
+    	  
+    		   
+     
+     
+ 
+  setSensitivity mYcSgTugFLQcmWT7seaac 	 
+    	  
+ _3944249282595574931 mevHkLo7kL5WL0_0mLIhr 	 
+    	  
+    		   
+ getSensitivity mecU92YjgSbB3VkEoZVK3 	 
+    	  
+    		   
+     
+ *0.95 mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   
+ mEm194VmPJuGh5y4tMUm5 	 
     	  
     		   
    
-         mvbe619pMTxqR0ISntFSZ 	 
+         miXz43zs_DqtraKQW0m3N 	 
     	  
-  mcRuULuI_AYJWzFSu1kB4 	 
-    	  
-    		   
-     
-     _2654435881: _16805767570017655115.kpts muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-     
- 
- 
-            cv mwuvkepREHprpx4i3n2RV 	 
-    	  
-    		   
-     
-  rectangle mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		   
-    _46082544231248938,_9971115036363993554* mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		   
-     
-     
- 
- _2654435881-_46082575822903876 mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
- ,_9971115036363993554* mbXhD242DJoibBjdI1JtA 	 
-    	  _2654435881+_46082575822903876 muC5cqYcHRXDD16noARI1 	 
-    	  
- ,cv mwuvkepREHprpx4i3n2RV 	 
-    	  
-   Scalar mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		   
-   255,0,0 mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    		   
-     
-     ,_706246330297760 muC5cqYcHRXDD16noARI1 	 
-  myu64GAT8DgGBhNOOCqvd 	 
-    	  
-     mMGejH_coNc3kGxAdXVex 	 
-    	  
-    		   
-     
-     
- 
-  	
+  
+     msxc6utIaOFXg4WI3vB0q 	
     
+     mt3m0c1_35lMMq0E3cZsZ 	 
+   mUGrJMUolw0lb_KVyGK5N 	 _17450466964482625197 mtDWQOqRguVWSWehbKECr 	 MODE_SLAM mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+_1403653089436386197.join mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+    		   
+     
+    m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+   
+    cv mMorzi7AHv5qXgdOZzcMd 	 
+    	  
+    		   
+     
+     
+ 
+  Mat _3005399805025936106 mA7hUM4UKqFyb_LJLsook 	 process mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+     
+   _14938569046430841631 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+   mwkk1d6uUiyaKys71tsUv 	 
+    	  
+
+    
+     mrg1QVINMqbRYZWngNWmj 	 
+    	  
+    		   
+   _6154865401824487276 mXE5wWRmJGUY4EsEsgegT 	 
+    	  
+    		  sqrt mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+   float mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		   
+     
+     
+ 
+_14938569046430841631.imageParams.CamSize.area mecU92YjgSbB3VkEoZVK3 	 
+    	  
+    		   
+     
+     
+ 
+ mT3v8xdcVsSvUtbwmHC7j 	 /float mNQ6rNLARkxxSTP6tiTXG 	 
+_3005401535270843804 mwzFZRcSPi2Vsk45HpaLx 	 0 mfF196cGKZ_LkBPN8ZWlr 	 
+    	  
+    		   
+     
+   .size mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+    		 .area mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+    		  mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    	 mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		 mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+    
+    _14031550457846423181 mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+     
+_3005401535270843804 mVjuVop3osym9wWoq6p3w 	 
+    	  
+    		   
+0 mQbYLzhvVQm8J2LNkC6S6 	 
+    	  
+ ,1./_6154865401824487276 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+     
+     
+ 
+   mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+  
+     mEhFK99MtLRsCBaPNqnDs 	 
+    	  
+    _5829441678613027716 mH9fKsRtHWNu77RGN1xmn 	 
+    	  
+    		   mwzFZRcSPi2Vsk45HpaLx 	 
+    	  
+    		   
+     
+     ml5d8mzmxNmQRMtpfZ82X 	 
+    	  
+    		   
+     
+     
+  mYcSgTugFLQcmWT7seaac 	 
+    	 const uint32_t&_11093821926013 mXftmBtLFUrPFw3lasjuW 	 
+     mjXlfKOCTRjUV9apwYcb7 	 
+  std miuOs6oIdxnQEMrFFk2n_ 	 
+    	  
+    		   stringstream _706246330191125 mqLizGA4Z8QZ_2GYQ1inC 	 
+ _706246330191125 mAckb35A91fK2dY3gHfaK 	 
+    	  
+  _11093821926013 mQivdop_Gb4hqsWvOttc3 	  mFWbNGU5e6cuqyQa3XUry 	_706246330191125.str mrXXIs5j4DqJtj32aOG5F 	  mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    mEjIWbivPeVc9WtxGDiWw 	 
+    	  mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		
+    _14938529070154896274 mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+     
+     _3005401535270843804 mbtzLVjzLgaxYxNNltfyM 	 
+    	  
+    		   
+  0 mWi16Wz7P86SIJlTQEzCB 	 
+    	  
+    		 ,"\x4d\x61\x70\x20\x50\x6f\x69\x6e\x74\x73\x3a"+_5829441678613027716 mbXhD242DJoibBjdI1JtA 	 
+    _9098980761384425343 mdMNbPkq6p5KBhEVf3OFw 	 
+    	  
+    		map_points.size mGu_88Fdde5jsxW8v9whR 	 
+    	  
+    		   
+     
+     
+ 
+ mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+     
+    ,cv me0ZKHp2Id3eLmP_6GMtk 	 
+    	  
+    		 Point mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+  20,_3005401535270843804 mVLLVWqNz0_lGN56vY03t 	 
+    	  
+    		   
+0 mWi16Wz7P86SIJlTQEzCB 	 
+    	  
+    		.rows-20 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+     
+     
+ 
+  	 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+     
+      mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   
+     
+     
+ 
+  	 
+    _14938529070154896274 mgGCFceAojKPG0bK5eWQT 	 
+ _3005401535270843804 mMo20fFU0rdQJ7l5qqDaX 	 
+    	  
+ 0 mQbYLzhvVQm8J2LNkC6S6 	 
+    	  
+    	,"\x4d\x61\x70\x20\x4d\x61\x72\x6b\x65\x72\x73\x3a"+_5829441678613027716 mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+     
+    _9098980761384425343 mdMNbPkq6p5KBhEVf3OFw 	 
+    	  
+    		   
+     
+     
+map_markers.size mjjfaXD3tH8warSj13sVr 	 
+    	  
+    		   
+     
+     
+ 
+ mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		   ,cv mvpMkjoDGcQujDevHDZnx 	 
+    	  
+    		   
+     
+     
+ 
+Point mNQ6rNLARkxxSTP6tiTXG 	 
+20,_3005401535270843804 mVLLVWqNz0_lGN56vY03t 	 
+    	  
+    		   
+     
+     0 mGPgWaVxS3WdTr7rWsMw4 	 
+    	  
+    		   
+    .rows-40 mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		   
+     
+     
+ 
+  muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+     myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    	
+    _14938529070154896274 mSdpFB1uEgpzM3bVmlHgT 	 
+    	  
+    		   
+     
+     
+ 
+  	 _3005401535270843804 mZ9T0z5VdOHGC7rra8Fzk 	 
+    	  0 ml5d8mzmxNmQRMtpfZ82X 	 
+    	  
+    		   
+  ,"\x4b\x65\x79\x46\x72\x61\x6d\x65\x73\x3a"+_5829441678613027716 mYcSgTugFLQcmWT7seaac 	 
+    	  
+    	_9098980761384425343 mdMNbPkq6p5KBhEVf3OFw 	 
+    	  
+    	keyframes.size mecU92YjgSbB3VkEoZVK3 	 
+    	  
+   mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+     
+    ,cv mwuvkepREHprpx4i3n2RV 	Point mbXhD242DJoibBjdI1JtA 	 
+    	  
+    		   
+     
+     
+ 
+  	 20,_3005401535270843804 mMo20fFU0rdQJ7l5qqDaX 	 
+    	  
+    		   
+     
+     
+ 0 mAH84ftHkJMUldxM9fJHE 	 
+    	  
+    		   
+     
+   .rows-60 mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   
+     
+     
+  muC5cqYcHRXDD16noARI1 	 
+    	  
+  mwkk1d6uUiyaKys71tsUv 	 
+    	  
+     mIBLQ6_qDoS3S2lLQGZ3e 	 
+    	  _16937201858692939798 mR22jPCjbltZ3tbBmn_6w 	 
+    	  
+    		   
+   0 myu64GAT8DgGBhNOOCqvd 	 
+     mmeJW_Q9h6ZBPzSBQVjMK 	 
+    	  
+    	auto _175247760135:_14938569046430841631.ids muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+     
+    mfRi_C6KlnAxop81XDZsV 	 
+   _175247760135 mglbnc94mbkalEyCkkDhv 	 
+    	  
+    		   
+     
+  std me0ZKHp2Id3eLmP_6GMtk 	 
+    	  
+    		   
+ numeric_limits mbVOLbjVZO0YI60Vuguaq 	 
+    	  
+    		   
+     
+uint32_t mYbzFOKSwwNsD71cP1DkA 	 
+ me0ZKHp2Id3eLmP_6GMtk 	 
+    	  
+   max mTGJXDnkacX2UX9dooHQu 	 
+    	  
+    		    mVmWtYm5gVtZj7Yq19XWE 	 
+     _16937201858692939798 mDe1564r6NJrCTudA8x0w 	 
+    	  
+    		   
+     
+     
+ 
+ mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+     
+    
+    _14938529070154896274 mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+    		   
+     
+     
+ 
+  _3005401535270843804 mstJEG25u0Qv4VQocWgKl 	 
+    	  
+  0 mtEI4bSjtkyV5O0qz_vBz 	 
+    	  
+    		   
+     
+     
+ ,"\x4d\x61\x74\x63\x68\x65\x73\x3a"+  _5829441678613027716 mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+     _16937201858692939798 mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		   
+   ,cv mExFPeJBflhTWJKuQVWoB 	 
+    	  
+    		Point mSdpFB1uEgpzM3bVmlHgT 	 
+    	 20,_3005401535270843804 mstJEG25u0Qv4VQocWgKl 	 
+    	  
+  0 mtEI4bSjtkyV5O0qz_vBz 	 
+    .rows-80 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		  mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+ mwkk1d6uUiyaKys71tsUv 	
+     myfOHlfTLtRL7im7qSaYm 	 
+    	  
+    fabs mbXhD242DJoibBjdI1JtA 	 
+    	  
+    		   
+     
+     
+ 
+  	 _6154865401824487276-1 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+ meN5YYBBVg5DStfnyA8Dd 	 
+    1e-3 mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		   
+     
+     
+
+        _14938529070154896274 mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+     _3005401535270843804 mVLLVWqNz0_lGN56vY03t 	0 mGPgWaVxS3WdTr7rWsMw4 	 
+    	  
+    ,"\x49\x6d\x67\x2e\x53\x69\x7a\x65\x3a"+_5829441678613027716 mSdpFB1uEgpzM3bVmlHgT 	 
+    	_14938569046430841631.imageParams.CamSize.width mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+     
+     
+ +"\x78"+_5829441678613027716 mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   _14938569046430841631.imageParams.CamSize.height mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+     
+     
+ 
+,cv mrPFLPKakBKjOOnkuhZUP 	 
+    	  
+    		   
+     
+     
+ 
+ Point mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+  20,_3005401535270843804 mVLLVWqNz0_lGN56vY03t 	 
+    	  
+    		   
+   0 mWjWwCxBA7LLBixCoRsYZ 	 
+    	  
+    		   
+     
+     
+ 
+  	.rows-100 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+    muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+     
+     
+ mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		
+     mUnahx7x8KWu62epS7OxV 	 
+    	  
+    		   
+     
+  _3005399805025936106 mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+  
+ mMGejH_coNc3kGxAdXVex 	 
+    	  
+    		   
+     
+     
+
+ mLE5EGHIdfaJi3FG2wNSs 	 
+    	  
+    		   
+     
+      System mvpMkjoDGcQujDevHDZnx 	 
+    	  
+    		   
+     
+     _14938529070154896274 mbXhD242DJoibBjdI1JtA 	 
+   cv mvpMkjoDGcQujDevHDZnx 	 
+    	  
+    		   
+     
+     
+ Mat &_175247760140,string _706246331661728,cv mvpMkjoDGcQujDevHDZnx 	 
+    	  
+    		   
+    Point _2654435881  mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+     
+     
+ 
+  	 mJdlQJg0rG2m7KHUChC3R 	 
+   
+     mVekuqiofcOlLv1kcHh3u 	 
+ _706246308256699 mtmFAz7pcnIFLgYGMf4eK 	 
+    	  
+    		   
+     
+float mNQ6rNLARkxxSTP6tiTXG 	 
+    _175247760140.cols mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		/float mOAy4qGUJpdHQSVbVPq9E 	 
+ 1280 mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		   
+     
+     
+ 
+ m_yMT4MKxrENTtLx5cA7n 	
+    cv mrS2zvlmrTf4L4KBRRYAU 	 
+    	  
+    		 putText mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   _175247760140,_706246331661728,_2654435881,cv mrPFLPKakBKjOOnkuhZUP 	 
+    	  
+FONT_HERSHEY_SIMPLEX, 0.5*_706246308256699,cv mrS2zvlmrTf4L4KBRRYAU 	 
+  Scalar mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+ 0,0,0 muC5cqYcHRXDD16noARI1 	 ,3*_706246308256699 mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   
+ mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+     
+   
+    cv mvpMkjoDGcQujDevHDZnx 	 
+    	  
+    		   
+     
+  putText mbXhD242DJoibBjdI1JtA 	 
+    	  
+    		   
+     
+     
+ 
+ _175247760140,_706246331661728,_2654435881,cv mwuvkepREHprpx4i3n2RV 	 
+    	  
+    		   
+     
+     FONT_HERSHEY_SIMPLEX, 0.5*_706246308256699,cv mvpMkjoDGcQujDevHDZnx 	 
+    	  
+  Scalar mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		   
+     
+     
+ 
+  	125,255,255 mSBNIRK1XqZg3XlWW_b3d 	 
+    	,1*_706246308256699 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+     
+     
+ 
+  	  myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		   
+ m_ECAXF5hGu1UMoS2l1KU 	 
+    	  
+  
+string System mMorzi7AHv5qXgdOZzcMd 	 
+    	  
+    		   
+     getSignatureStr mecU92YjgSbB3VkEoZVK3 	 
+const mMm9FLNsNOoyX7Tyb7vpT 	 
+    	  
+    		 
+     mHUTuX3q6rB5eWWYYPWQD 	 
+    	  
+    		   
+    _2102381941757963317 mbXhD242DJoibBjdI1JtA 	 
+    	_13507858972549420551 mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+ mT3v8xdcVsSvUtbwmHC7j 	 
+    	 mEm194VmPJuGh5y4tMUm5 	 
+    	  
+ 
+ msBPMso4NRYFcn5Y1myF_ 	 
+    	  
+    		   
+     
+ 
+uint64_t System mrPFLPKakBKjOOnkuhZUP 	 
+    	  
+    		   _13507858972549420551 mOAy4qGUJpdHQSVbVPq9E 	 bool _46082575779493229 mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   
+     
+     
+ 
+  	const mi4REkBAebpTZrzlvFEpD 	 
+    	  
+    		   
+
+    Hash _11093822380353 mEm194VmPJuGh5y4tMUm5 	 
+    	  
+    		   
+  
+    _11093822380353 mNPH65O81GD4PdziT5g9G 	_9098980761384425343 mevHkLo7kL5WL0_0mLIhr 	 
+    	  
+    	getSignature mBGM118Iia8vm6zcNTuB6 	 
+_46082575779493229 mPaUdMg3fg2ipZY0Exj7X 	 
+     myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		   
+     
+     
+ 
+     mz0gDEk4XJJySbEeCgC9P 	 
+    	  
+    	_46082575779493229 mPaUdMg3fg2ipZY0Exj7X 	 
+cout mIqwZsWoU0IEPB7TMb7wT 	 
+    	  "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x31\x2e\x20\x73\x69\x67\x3d" mLdvrbXgkmVAVnc3aEbWU 	 
+    	  
+    		   
+  _11093822380353 mghpafeSRXwbO0z_DbM3C 	 
+    	  
+    		   
+     
+     
+ 
+  	 endl mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+  
+    _11093822380353 mNPH65O81GD4PdziT5g9G 	 
+    	  
+    		   
+     _14938569619851839146.getSignature mjjfaXD3tH8warSj13sVr 	 
+    	  
+    	 mEm194VmPJuGh5y4tMUm5 	 
+    	  
+    		   
+     
+     
+ 
+  
+     mg9IHDbTXxljO0nSnQKYh 	 
+_46082575779493229 msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+cout mZCDcAPDXTOUnUkMgttvA 	"\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x32\x2e\x20\x73\x69\x67\x3d" mt3d6r2BuFfOvfXdOmaLX 	 
+    	 _11093822380353 mmAvkrWz9or7FSKyep8Gr 	 
+    	 endl mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+     
+     
+ 
      mmeJW_Q9h6ZBPzSBQVjMK 	 
     	  
     		   
-  auto _5221496220235804833:_16805767570017655115.markers mT3v8xdcVsSvUtbwmHC7j 	 
+    int _2654435874 mhL9dWuOWzLGBfRjwvYlN 	 
     	  
-    	 mMm9FLNsNOoyX7Tyb7vpT 	 
+    		   
+ 0 mC_gLvnw5tkMWRQheRKr5 	 
+    	 _2654435874 mRwYPGmWUou3ixNnKEWbv 	 
     	  
+    		   
+    6 mEm194VmPJuGh5y4tMUm5 	 
+_2654435874 mdN8xdqycKdYT96rU4KUK 	 
+    	  
+    		   
+     
+     
+ 
+ mXftmBtLFUrPFw3lasjuW 	 
+   _11093822380353 mWaLwU5zB1H0AtUbS8Rz2 	 
+    	  
+    		   _17976495724303689842 mwzFZRcSPi2Vsk45HpaLx 	 
+    	  
+    		   
+     
+     
+ 
+  	_2654435874 ml5d8mzmxNmQRMtpfZ82X 	 
+    mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+     
+     
+     mhRH54odsmIWcLq1D3rKZ 	 
+    	 _46082575779493229 mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+  cout mYJ8ThnKYhVFrfXpP62DT 	 
+    	  
+ "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x33\x2e\x20\x73\x69\x67\x3d" muLh_AegzBLvbYcxrsotS 	 _11093822380353 mISlN399eTfrWHnidEKGu 	 
+    	  
+    endl mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+     
     
-         
-        cv me0ZKHp2Id3eLmP_6GMtk 	 
+    _11093822380353.add mbXhD242DJoibBjdI1JtA 	 
+    	  
+    		  _10576739190144361304 mT3v8xdcVsSvUtbwmHC7j 	 
     	  
     		   
      
-     
-Scalar _46082574599890393 mRDD8w83SsPKbGXy_JkEO 	 
+ mC_gLvnw5tkMWRQheRKr5 	 
     	  
-    		   
-     
-   cv mExFPeJBflhTWJKuQVWoB 	 
-    	  Scalar mgGCFceAojKPG0bK5eWQT 	 
-    	  
-    		   
-   0,244,0 mXftmBtLFUrPFw3lasjuW 	 
-  myu64GAT8DgGBhNOOCqvd 	 
-    	  
-
-         mKx3hnVGJH14s80udXZp_ 	 
-    	  
-    _10762543579000176710 mj3rSXJDWd4j4OSGbS2oX 	 
-    	  
-   map_markers.count mUGrJMUolw0lb_KVyGK5N 	 
+   
+     mz0gDEk4XJJySbEeCgC9P 	 
     	  
     		   
      
      
  
-_5221496220235804833.id mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-   mpjTyiESCVWYRDiT2x2RD 	 
-    	  
-    0 mJk4eXgp_IeFV2YvLaQC7 	 
-  mXdnll4yjwVy4uBDSjUe3 	 
-
-             mz0gDEk4XJJySbEeCgC9P 	 
+ _46082575779493229 muC5cqYcHRXDD16noARI1 	 
     	  
     		   
-    _10762543579000176710 mgi5Boc5f0emw5eocZbgV 	 
-    map_markers.at mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   
-  _5221496220235804833.id mT3v8xdcVsSvUtbwmHC7j 	 
+     
+     cout mISlN399eTfrWHnidEKGu 	 
     	  
     		   
      
      
  
- .pose_g2m.isValid mFAl4ldpf7o2gKLWQ4bfu 	 
-   mSBNIRK1XqZg3XlWW_b3d 	 
+  "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x34\x2e\x20\x73\x69\x67\x3d" mYJ8ThnKYhVFrfXpP62DT 	 
+ _11093822380353 mZCDcAPDXTOUnUkMgttvA 	 
+    	  
+    		endl m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		 
+    _11093822380353 mPvI5zVkkxdTYTCdGOJ2J 	 _14938569046430841631.getSignature mRAYh0ARHPOc62CfGHWWO 	 
+    	  m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+
+     mhRH54odsmIWcLq1D3rKZ 	 
+    	  
+    		   
+     
+  _46082575779493229 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		  cout mIqwZsWoU0IEPB7TMb7wT 	 
+    	  
+    		   
+   "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x35\x2e\x20\x73\x69\x67\x3d" mt3d6r2BuFfOvfXdOmaLX 	 
+    	  
+    		   _11093822380353 mmAvkrWz9or7FSKyep8Gr 	 
+    	  
+    		   
+     
+     
+ endl myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		   
+     
+     
+ 
+    _11093822380353 mtpa6CvplEq1shGwk4jxI 	 
+    	  
+    		   
+   _13028158409047949416 mEm194VmPJuGh5y4tMUm5 	 
+    	  
+    		   
+     
+    
+     mGc5v1UWfDU7ttNcZryQG 	 
+    	  
+    		   
+     
+     
+ 
+_46082575779493229 mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		 cout mISlN399eTfrWHnidEKGu 	 
+    	  
+    		   
+    "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x37\x2e\x20\x73\x69\x67\x3d" mYJ8ThnKYhVFrfXpP62DT 	 
+    	_11093822380353 mAckb35A91fK2dY3gHfaK 	 
+    	  
+    		   
+     endl mo9Lbpy0Ap4RTl5O5Or1C 	 
     	  
     		   
      
   
-                _46082574599890393 mR22jPCjbltZ3tbBmn_6w 	 
+    _11093822380353 moI4EWKnn9rwdcRf81yt6 	_3857178690860967008 m_yMT4MKxrENTtLx5cA7n 	 
     	  
-    		   
-     cv miuOs6oIdxnQEMrFFk2n_ 	Scalar mlfybwyvp98TOJj0yuqhF 	 
-    	255,0,0 mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    		   
-  myu64GAT8DgGBhNOOCqvd 	 
+    	
+     mfRi_C6KlnAxop81XDZsV 	 
     	  
     		   
      
+    _46082575779493229 mT3v8xdcVsSvUtbwmHC7j 	cout mZCDcAPDXTOUnUkMgttvA 	 
+    	  
+    "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x38\x2e\x20\x73\x69\x67\x3d" mt3d6r2BuFfOvfXdOmaLX 	 
+    	_11093822380353 mZCDcAPDXTOUnUkMgttvA 	 
+ endl mEm194VmPJuGh5y4tMUm5 	 
    
-            else
-                _46082574599890393 moHeIYzwbcFb6VaM90Aa9 	 
+    _11093822380353 mt01qaUz2R0SKmPFSq0jx 	 
+    	  
+ _17450466964482625197 mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   
+     
+  
+     mg9IHDbTXxljO0nSnQKYh 	 
+    	  
+    		   
+     
+     _46082575779493229 msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		cout mLdvrbXgkmVAVnc3aEbWU 	 
+    	  
+ "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x39\x2e\x20\x73\x69\x67\x3d" mZCDcAPDXTOUnUkMgttvA 	 
+    	_11093822380353 muLh_AegzBLvbYcxrsotS 	 
+    	  
+endl mwkk1d6uUiyaKys71tsUv 	 
     	  
     		   
      
      
  
-  	 cv mNQimRrYQ8Mz6YI9KM7Fn 	Scalar mlfybwyvp98TOJj0yuqhF 	 
-    	  
-0,0,255 muC5cqYcHRXDD16noARI1 	 
+  	
+    _11093822380353 mt01qaUz2R0SKmPFSq0jx 	 
+    _4913157516830781457.getSignature mGu_88Fdde5jsxW8v9whR 	 
     	  
     		   
      
-    mC_gLvnw5tkMWRQheRKr5 	 
+     
  
-         miXz43zs_DqtraKQW0m3N 	 
+ mqLizGA4Z8QZ_2GYQ1inC 	 
     	  
     		   
+     
+     
+ 
+  	 
+     mcs2IPsFq8XN5a3t5KBLK 	 
+    	  
+    _46082575779493229 mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		   
+    cout mLdvrbXgkmVAVnc3aEbWU 	 
+    	  
+    		"\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x31\x30\x2e\x73\x69\x67\x3d" mghpafeSRXwbO0z_DbM3C 	 
+    	  
+    		  _11093822380353 mAckb35A91fK2dY3gHfaK 	endl mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+   
+    _11093822380353 mt01qaUz2R0SKmPFSq0jx 	 
+    	  
+  _2869602498954317713 mSwbK3nBcNZkvGxSXNOZy 	 
+    	  
+    		   
+     
+    getSignature mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+  mC_gLvnw5tkMWRQheRKr5 	 
     
-        
-         mIyrnAZ9pLZEaiK6Yst1L 	 
-    	  
-    		   
-  auto &_2654435881:_5221496220235804833.corners mVFG05ubhW6ia_rWdS_Tv 	 _2654435881 mi05fm9uStmGibkKInn9I 	 
+     myfOHlfTLtRL7im7qSaYm 	_46082575779493229 mVmWtYm5gVtZj7Yq19XWE 	 
     	  
     		   
      
-    _9971115036363993554 mwkk1d6uUiyaKys71tsUv 	 
+     
+cout mISlN399eTfrWHnidEKGu 	 
+    	  
+    		   
+     "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x31\x31\x2e\x73\x69\x67\x3d" mghpafeSRXwbO0z_DbM3C 	 
+_11093822380353 mZCDcAPDXTOUnUkMgttvA 	 
+    	  
+    		   
+     
+     
  
-         mcAnVuQmAnGunjGyL6dhh 	 
+  endl mxIwd_EJpfr1C9jwU7IyL 	 
     	  
-    		auto &_2654435881:_5221496220235804833.und_corners mVFG05ubhW6ia_rWdS_Tv 	 
- _2654435881 mccsFNEYvw261klEKqukf 	 
+    		
+    _11093822380353 mraP1zuclX52fRr5CelTs 	 
     	  
     		   
      
-    _9971115036363993554 mQivdop_Gb4hqsWvOttc3 	 
+ _14463320619150402643 myu64GAT8DgGBhNOOCqvd 	 
     	  
     		  
-        
-        _5221496220235804833.draw mYcSgTugFLQcmWT7seaac 	 
+    _11093822380353 m_l2K0T8_C6RujcQWcodT 	 
     	  
     		   
-_46082544231248938,_46082574599890393 mXftmBtLFUrPFw3lasjuW 	 
-     mqLizGA4Z8QZ_2GYQ1inC 	 
-  
-     mqVdZVftPR84WTjiOiVfT 	 
-   
- mL9oWJQ1n2xKG3FtRNowa 	 
-    	  
-    		   
+     
      
  
- mKLTKWdkdn_ESJc3B3MOJ 	 
+_10558050725520398793 mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+    
+     mFWW5xb6SDILpyTp5GBZD 	 
+    	  
+    		_46082575779493229 mXftmBtLFUrPFw3lasjuW 	 
+   cout mAckb35A91fK2dY3gHfaK 	 
     	  
     		   
      
-    System mvpMkjoDGcQujDevHDZnx 	 
+"\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x31\x32\x2e\x73\x69\x67\x3d" mAckb35A91fK2dY3gHfaK 	 
     	  
     		   
-    globalOptimization mIJkWACd8Uom4Jv6selID 	 
+     
+     
+ 
+  	_11093822380353 mZCDcAPDXTOUnUkMgttvA 	 
+   endl mC_gLvnw5tkMWRQheRKr5 	 
     	  
     		   
- mMm9FLNsNOoyX7Tyb7vpT 	
-     mEhFK99MtLRsCBaPNqnDs 	 
-    	_11093822300040 mA7hUM4UKqFyb_LJLsook 	 
+  
+     mFWbNGU5e6cuqyQa3XUry 	 
     	  
     		   
-GlobalOptimizer me0ZKHp2Id3eLmP_6GMtk 	 
+     
+     
+ 
+  	 _11093822380353 mqLizGA4Z8QZ_2GYQ1inC 	 
     	  
-    		   create mSdpFB1uEgpzM3bVmlHgT 	 _16805773490000196330.global_optimizer mVmWtYm5gVtZj7Yq19XWE 	 
+    		   
+ 
+ mwiKr6psttEx97f2NsYO1 	 
+    	  
+    		   
+  
+
+
+
+cv mMorzi7AHv5qXgdOZzcMd 	 
+    	  
+    		   
+     
+     
+ 
+ Mat System mwuvkepREHprpx4i3n2RV 	_4145838251597814913 mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		   
+     
+     const Frame &_46082543180066935  mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+    muH9A34QGuccPZkZDb32w 	 
+    	  
+    		   
+     
+     
+ 
+
+    std mvpMkjoDGcQujDevHDZnx 	 
+    vector mHg0YG9R0Gb6ZE5xIr3dz 	 
+    	  
+ uint32_t mYbzFOKSwwNsD71cP1DkA 	 _4240939334638385660 mI30mSPxGJaQtkEjJfoQX 	 
+   
+    
+    vector miGVtxwiqbDQsG6KBslZU 	pair mRwYPGmWUou3ixNnKEWbv 	 
+    	  
+    		   
+  cv mNQimRrYQ8Mz6YI9KM7Fn 	 
+    	  
+ Mat,double mzCa3iYOTZk3vOb9xFPuf 	 
+    	  
+    		   
+     
+     
+ 
+  	   mYbzFOKSwwNsD71cP1DkA 	 
+    	   _5923954032168212568 m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+     
+     
+ 
+
+    vector mJCQ17ktBLqNw7sHF60R1 	 
+    	  
+    		   
+     
+     
+ 
+  	cv mExFPeJBflhTWJKuQVWoB 	 
+    	  
+    		   
+     
+     
+ 
+Point3f meN5YYBBVg5DStfnyA8Dd 	 
+    	  
+     _7045032207766252521 mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+  
+    vector mbVOLbjVZO0YI60Vuguaq 	 
+    	  
+    		   
+     
+    cv mNQimRrYQ8Mz6YI9KM7Fn 	 
+    	  
+    		   
+     
+Point2f mYbzFOKSwwNsD71cP1DkA 	 
+    	  
+    		  _7045032207766252456 mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+
+     mcAnVuQmAnGunjGyL6dhh 	 
+    	  
+    		   
+     
+     
+ 
+  	auto _2654435878:_46082543180066935.markers mXftmBtLFUrPFw3lasjuW 	 
+   mjXlfKOCTRjUV9apwYcb7 	 
+    	  
+   
+         muDvj5aUdXshb2AqqeEiu 	 
+    	  
+   mOAy4qGUJpdHQSVbVPq9E 	_9098980761384425343 mcvX0B8TDw1gEtqXtgT4T 	 
+    	  
+    		   
+     
+     
+ 
+  	map_markers.find mlfybwyvp98TOJj0yuqhF 	 _2654435878.id mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+   mmk2RogyswbtTiHnbCghT 	 
+    	  
+    		   
+     _9098980761384425343 mxGJXkzb8EW07jCVTl0Jt 	 
+    	  
+    		   
+     
+     map_markers.end mIJkWACd8Uom4Jv6selID 	 
+    	   mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		    mi6BqZOVmQyrEy6BLProP 	 
+  
+            ucoslam mrS2zvlmrTf4L4KBRRYAU 	 
+   Marker &_6807036686937475945 mvA2vjSvRD7UmknjmYP5U 	 
+    	  
+    		   
+   _9098980761384425343 mVfb3IHZLk8rmg75VuqQZ 	 
+    	  
+    		   
+  map_markers mVLLVWqNz0_lGN56vY03t 	 
+    	  
+    		  _2654435878.id mfF196cGKZ_LkBPN8ZWlr 	 
+    	  
+    		   
+   m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    	
+            cv mExFPeJBflhTWJKuQVWoB 	 
+    	  Mat _9983235290341257781 mRDD8w83SsPKbGXy_JkEO 	 
+ _6807036686937475945.pose_g2m myu64GAT8DgGBhNOOCqvd 	 
+ 
+            
+             myydjxqnidOfg3YXIPfCh 	 
+    	 _11093822296219 moHeIYzwbcFb6VaM90Aa9 	 
+    	  
+    		   
+     
+     
+ 
+ _6807036686937475945.get3DPoints mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+    		   mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+     
+            _7045032207766252521.insert mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		   
+   _7045032207766252521.end mGu_88Fdde5jsxW8v9whR 	 
+    	  
+    		   
+     ,_11093822296219.begin mrXXIs5j4DqJtj32aOG5F 	 
+    	,_11093822296219.end mFAl4ldpf7o2gKLWQ4bfu 	 
+    	  
+    		   
+     mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		    m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+     
+   
+            
+            _7045032207766252456.insert mSdpFB1uEgpzM3bVmlHgT 	 
+    	  
+    		  _7045032207766252456.end mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+    		   
+   ,_2654435878.und_corners.begin mJFtpHxfnoGMxp1wzTBMr 	 
+    	  
+    		   
+,_2654435878.und_corners.end mdbwYCIpGYWahFfTtU8zH 	 
+    	  
+    		   
+     
+     
+ 
+  mVFG05ubhW6ia_rWdS_Tv 	 
     	  
  mo9Lbpy0Ap4RTl5O5Or1C 	 
     	  
@@ -8360,17 +4055,875 @@ GlobalOptimizer me0ZKHp2Id3eLmP_6GMtk
      
      
  
-    GlobalOptimizer mI3QeEk0K_mj1WaUiowht 	 
-    	  ParamSet _3005399798454910266 mlfybwyvp98TOJj0yuqhF 	 
-    	  
-     debug mExFPeJBflhTWJKuQVWoB 	 Debug mrPFLPKakBKjOOnkuhZUP 	 
-    	  getLevel mFAl4ldpf7o2gKLWQ4bfu 	 
+             mBUCZuaNioFkzVtaa2sRQ 	 
+_1515389571633683069 mA7hUM4UKqFyb_LJLsook 	 
     	  
     		   
-      mYMxwp5lzvb08Oa8FUKdp 	 
+     
+     
+ 
+IPPE mrPFLPKakBKjOOnkuhZUP 	 
+ solvePnP mBGM118Iia8vm6zcNTuB6 	 
     	  
     		   
-   11  mVFG05ubhW6ia_rWdS_Tv 	 
+     
+ _14938569619851839146.aruco_markerSize,_2654435878.und_corners,_46082543180066935.imageParams.CameraMatrix,_46082543180066935.imageParams.Distorsion mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+     
+     
+ 
+  mxIwd_EJpfr1C9jwU7IyL 	 
+   
+             maE84VqXoUUX_dnxUsfES 	 
+auto _16937226146608628973:_1515389571633683069 msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		   
+     
+ 
+                _5923954032168212568.push_back mYcSgTugFLQcmWT7seaac 	 
+    	  
+    		   
+     
+      make_pair mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		   _16937226146608628973 * _9983235290341257781.inv mTGJXDnkacX2UX9dooHQu 	 
+    	  
+    		   
+,-1 mVFG05ubhW6ia_rWdS_Tv 	 
+     mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		  m_yMT4MKxrENTtLx5cA7n 	 
+    
+         msBPMso4NRYFcn5Y1myF_ 	
+     mqVdZVftPR84WTjiOiVfT 	 
+    	  
+  
+     mXYEIB3KYwzJOpssgkZxP 	 
+     mOAy4qGUJpdHQSVbVPq9E 	 _7045032207766252521.size mJFtpHxfnoGMxp1wzTBMr 	 
+    	  
+    		   
+     
+ mlEF62Izit24hGT_NqPIJ 	 
+    	  
+    		   
+     
+     
+ 
+ 0 mxAXsCfNkscq4iQtE2AeY 	 
+   return cv mvpMkjoDGcQujDevHDZnx 	 
+    	  
+    		 Mat mjjfaXD3tH8warSj13sVr 	 
+    	  
+    		   
+     
+     mI30mSPxGJaQtkEjJfoQX 	 
+
+    
+     mcAnVuQmAnGunjGyL6dhh 	 
+    	  
+    		   
+     
+     
+ 
+  	auto &_46082575779853237:_5923954032168212568 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+   mMm9FLNsNOoyX7Tyb7vpT 	 
+    	  
+    		   
+     
+     
+ 
+  	 
+        vector mRwYPGmWUou3ixNnKEWbv 	 
+ cv mrPFLPKakBKjOOnkuhZUP 	 
+    	  
+    		   
+ Point2f meN5YYBBVg5DStfnyA8Dd 	 
+    	  
+    		    _1535067723848375914 mEm194VmPJuGh5y4tMUm5 	 
+    	  
+    		   
+  
+        se3 _16937226146609453200 mhL9dWuOWzLGBfRjwvYlN 	 
+    	  
+    _46082575779853237.first mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+     
+        project mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+     
+     
+ 
+ _7045032207766252521,_46082543180066935.imageParams.CameraMatrix,_16937226146609453200.convert mecU92YjgSbB3VkEoZVK3 	 
+    	 ,_1535067723848375914 mSBNIRK1XqZg3XlWW_b3d 	 
+ mqLizGA4Z8QZ_2GYQ1inC 	 
+
+
+        _46082575779853237.second mtmFAz7pcnIFLgYGMf4eK 	 
+    	  
+    		   
+     
+    0 mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   
+
+         mN_UNAeshLaooczmV1nkW 	 
+    	  
+  size_t _2654435874 mXE5wWRmJGUY4EsEsgegT 	 
+    	  
+    		   
+  0 mwkk1d6uUiyaKys71tsUv 	 
+  _2654435874 miGVtxwiqbDQsG6KBslZU 	 
+    	_1535067723848375914.size mTGJXDnkacX2UX9dooHQu 	 
+  mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+_2654435874 mgux57p4wBZIWFfq6waj5 	 
+    	  
+    		   
+     
+ msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+  
+            _46082575779853237.second mvcDBJfIynZthI5bz_HTe 	 
+    	  
+   mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+     
+     
+ 
+  	 _1535067723848375914 mwzFZRcSPi2Vsk45HpaLx 	 
+    	  
+   _2654435874 mtEI4bSjtkyV5O0qz_vBz 	 
+    	  
+    		   
+    .x- _7045032207766252456 mwzFZRcSPi2Vsk45HpaLx 	 
+    	  
+_2654435874 mQbYLzhvVQm8J2LNkC6S6 	 
+    	  
+    		  .x mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    *  mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+     
+     
+ _1535067723848375914 mMo20fFU0rdQJ7l5qqDaX 	 
+    	  
+    		   
+   _2654435874 mfF196cGKZ_LkBPN8ZWlr 	 
+  .x- _7045032207766252456 mZloAr3_PPw7622AVrUCe 	 
+    	  
+ _2654435874 mvFhi6DaS7eScbgWe07wY 	 
+    	  
+    		   
+  .x mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    	+  mSdpFB1uEgpzM3bVmlHgT 	 
+    	  
+    		   
+     
+_1535067723848375914 mVjuVop3osym9wWoq6p3w 	 
+    	  
+   _2654435874 mQbYLzhvVQm8J2LNkC6S6 	 
+    	  
+    		   
+     
+    .y- _7045032207766252456 mbtzLVjzLgaxYxNNltfyM 	 
+    	  
+    		   
+     
+     
+ 
+ _2654435874 mOwAFTnFZjoBWI2gNeAO_ 	 
+    	  
+    		  .y mJk4eXgp_IeFV2YvLaQC7 	*  mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+     
+     _1535067723848375914 mZloAr3_PPw7622AVrUCe 	 
+   _2654435874 mAH84ftHkJMUldxM9fJHE 	 
+    	  
+    		   
+     
+     
+.y- _7045032207766252456 mwzFZRcSPi2Vsk45HpaLx 	 
+    	  
+    		   
+   _2654435874 mAH84ftHkJMUldxM9fJHE 	 
+    	  
+.y mxAXsCfNkscq4iQtE2AeY 	 
+    	   mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+  
+     mL9oWJQ1n2xKG3FtRNowa 	 
+    	  
+   
+    
+    std mExFPeJBflhTWJKuQVWoB 	 
+    	  sort mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+     
+     
+ 
+ _5923954032168212568.begin mTGJXDnkacX2UX9dooHQu 	 
+    	  
+    		   
+  ,_5923954032168212568.end mrXXIs5j4DqJtj32aOG5F 	 , mZ9T0z5VdOHGC7rra8Fzk 	 
+    	  
+    		   ml5d8mzmxNmQRMtpfZ82X 	 
+ mbXhD242DJoibBjdI1JtA 	 
+    	  
+const pair mRwYPGmWUou3ixNnKEWbv 	 
+    	  
+    		   
+  cv mI3QeEk0K_mj1WaUiowht 	 
+    	  
+    		  Mat,double mW202Akoy5o2_FFUMtz7a 	 
+    	  
+   &_2654435866,const pair mkHL8KJw4VjwmGdgQrteX 	 
+    	 cv miuOs6oIdxnQEMrFFk2n_ 	 
+  Mat,double mzCa3iYOTZk3vOb9xFPuf 	 
+    	  
+     &_2654435867 mVFG05ubhW6ia_rWdS_Tv 	 
+ mjXlfKOCTRjUV9apwYcb7 	 
+    	  
+    		   
+     
+   return _2654435866.second mJCQ17ktBLqNw7sHF60R1 	 
+    	  
+    		   
+     
+     
+ 
+  	_2654435867.second mEm194VmPJuGh5y4tMUm5 	 
+    	  
+    		   
+     
+     
+ 
+  	   miXz43zs_DqtraKQW0m3N 	 
+  mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		   mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+  
+    
+    
+     mLp5eeYn1TGnQEcop68VN 	 
+    	  
+    		   
+     
+     _5923954032168212568 mMo20fFU0rdQJ7l5qqDaX 	 0 mvFhi6DaS7eScbgWe07wY 	 
+    	.first mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   
+  
+ mf0YJDuh2j5By5N13LunG 	 
+    	  
+ mOE4ALZahxLkvGqMRmxIK 	 
+    	  
+    		   
+     
+     System miuOs6oIdxnQEMrFFk2n_ 	 
+    	  
+    		   
+    _2016327979059285019 mUGrJMUolw0lb_KVyGK5N 	 
+     Frame &_175247759917  mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+     mbqHQotWhg0sv6ViuZXc3 	 
+    	  
+    		   
+     
+   
+ mp1kzPPa8GX6cfigPyiyD 	 
+   _11093822302335 myu64GAT8DgGBhNOOCqvd 	 
+  
+     mFVNERjMRO_ZEKm0TY73X 	 
+    	  
+    		   
+   mYcSgTugFLQcmWT7seaac 	 
+    	  
+    		   
+    _175247759917.imageParams.isStereoCamera mecU92YjgSbB3VkEoZVK3 	 
+    	  
+    		   
+     
+   mAJj0tPIZvDaIRCwd81bO 	 
+    	  
+ _175247759917.imageParams.isArray mdbwYCIpGYWahFfTtU8zH 	 
+   mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+     
+     muH9A34QGuccPZkZDb32w 	 
+    	  
+    		   
+     
+     
+ 
+  	
+          _11093822302335 mRDD8w83SsPKbGXy_JkEO 	 
+    	  
+    		   
+     
+     
+_15186594243873234013 mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		   
+     _175247759917 mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    	 mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+     
+     
+ 
+ 
+     mEjIWbivPeVc9WtxGDiWw 	 
+    	  
+    		   
+     
+     
+ 
+  	 
+    else mqlayz2fShj6ePxekxwRg 	 
+    	  
+    		   
+     
+        _11093822302335 mXE5wWRmJGUY4EsEsgegT 	 
+    	  
+    		   
+     
+     
+_14954361871198802778 mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+     
+     
+ 
+_175247759917 mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		 mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		 
+     miXz43zs_DqtraKQW0m3N 	 
+    	  
+    		   
+     
+     
+
+     mGc5v1UWfDU7ttNcZryQG 	 
+    	  
+    	 mteJvtUMKI6kC6j6RtZKr 	 
+    	  
+    _11093822302335 mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+  return _11093822302335 mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+     
+     
+
+    _17976495724303689842 mtmFAz7pcnIFLgYGMf4eK 	 _9098980761384425343 mxGJXkzb8EW07jCVTl0Jt 	 
+    	  
+   keyframes.back mecU92YjgSbB3VkEoZVK3 	 
+    	  
+    		   
+     
+     
+ 
+  	.pose_f2g mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+     
+
+    _10576739190144361304 moHeIYzwbcFb6VaM90Aa9 	 
+    	  
+    _9098980761384425343 mevHkLo7kL5WL0_0mLIhr 	keyframes.back mJFtpHxfnoGMxp1wzTBMr 	 
+    .idx mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    _13028158409047949416 mXE5wWRmJGUY4EsEsgegT 	true mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		   
+ 
+   mV4_AbWY8ymaWGsYOk0LC 	 
+    	true mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   
+     
+     
+ 
+
+ mMGejH_coNc3kGxAdXVex 	 
+ 
+ mgrODPzGHQfjmAyPsBdfg 	 
+    	  
+    		   
+   System mMorzi7AHv5qXgdOZzcMd 	 
+    	  
+    		   
+     
+     
+ 
+  	_14954361871198802778 mUGrJMUolw0lb_KVyGK5N 	 
+    	  Frame &_175247759917  mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   
+     mi6BqZOVmQyrEy6BLProP 	 
+    	  
+ 
+     mbCI0BlZHp5kbKpNqa5Su 	 mlfybwyvp98TOJj0yuqhF 	 
+ mteJvtUMKI6kC6j6RtZKr 	 
+    	  
+    	_2044193291895307872 msDVYCHuU_j2g_TdgX4Ta 	 
+    	  
+    		   
+    process mlfybwyvp98TOJj0yuqhF 	 
+    	  
+  _175247759917,_9098980761384425343 mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+     mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+   mY5hSAdXT4P60CSAZFBBa 	 
+    	  
+    		   
+     
+     
+ 
+  	false m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		
+      
+    
+         mHbSWrX6OPeRP2Igmog8G 	 
+    	  
+    		   
+     
+     
+ 
+  	 mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+     
+      _9098980761384425343 mgi5Boc5f0emw5eocZbgV 	 
+    	  
+    		   
+keyframes.size mecU92YjgSbB3VkEoZVK3 	 
+ mVIm1AJSzhahLlgKO9xQK 	 
+    	  
+    		   
+     1  mTmmYcodZhxYb9bt39OUl 	 
+    	  
+    		   
+    _9098980761384425343 msDVYCHuU_j2g_TdgX4Ta 	map_points.size mecU92YjgSbB3VkEoZVK3 	 
+    	  
+    		   
+    mKJK3THIuAwgeFpuGLN8L 	 
+    	  0 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+     
+     mXdnll4yjwVy4uBDSjUe3 	 
+    	  
+    		   
+        _175247759917.ids  mR22jPCjbltZ3tbBmn_6w 	 
+    	  
+    		   
+   _9098980761384425343 mSwbK3nBcNZkvGxSXNOZy 	 
+    	  
+    		   
+     
+     
+ 
+keyframes.back mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+  .ids mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+     
+     
+ 
+  	 
+     msBPMso4NRYFcn5Y1myF_ 	 
+    	  
+    		   
+     
+     
+ 
+  	 
+    globalOptimization mrXXIs5j4DqJtj32aOG5F 	 
+   m_yMT4MKxrENTtLx5cA7n 	 
+  
+    
+     mbCI0BlZHp5kbKpNqa5Su 	 
+    	  
+    		   
+     
+  mSdpFB1uEgpzM3bVmlHgT 	 
+    	  
+    		   
+     
+     _9098980761384425343 mxGJXkzb8EW07jCVTl0Jt 	 
+    	  
+    		   
+     
+     
+ 
+map_markers.size mTGJXDnkacX2UX9dooHQu 	 
+    	  
+    		   
+     
+     
+ 
+  	  mWQWZuZUxzgXcOZHMJMC_ 	 
+    	  
+    	0 mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+  mqlayz2fShj6ePxekxwRg 	 
+    	  
+    		   
+     
+  
+         mFVNERjMRO_ZEKm0TY73X 	 
+    	  
+    		   
+     
+     
+ 
+  	 mSdpFB1uEgpzM3bVmlHgT 	 _9098980761384425343 mxGJXkzb8EW07jCVTl0Jt 	 
+  map_points.size mTGJXDnkacX2UX9dooHQu 	 
+    	  mnpObQ1mWnyfQO24_ojBn 	 
+    	  
+50 msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		   
+     
+    mi6BqZOVmQyrEy6BLProP 	 
+    	  
+ 
+            _9098980761384425343 mevHkLo7kL5WL0_0mLIhr 	 
+    	  
+    		   
+     
+     
+ 
+  	clear mTGJXDnkacX2UX9dooHQu 	 
+    	  
+    		   
+     
+     
+ 
+ mo9Lbpy0Ap4RTl5O5Or1C 	 
+  
+             mFWbNGU5e6cuqyQa3XUry 	 
+    	  
+    		   
+    false mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+
+         miXz43zs_DqtraKQW0m3N 	 
+    	  
+  
+         mrg1QVINMqbRYZWngNWmj 	 
+    	  
+    		   
+     
+     
+_7847018097084079275 mA7hUM4UKqFyb_LJLsook 	 
+    	  
+    		   
+     
+    1./_9098980761384425343 mj3rSXJDWd4j4OSGbS2oX 	 
+    	  
+    		   
+   getFrameMedianDepth mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+_9098980761384425343 mgi5Boc5f0emw5eocZbgV 	 
+    	  
+   keyframes.front mjjfaXD3tH8warSj13sVr 	 
+    	  
+    		   
+     
+     
+ 
+  	.idx mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		   
+     
+      mwkk1d6uUiyaKys71tsUv 	 
+
+        cv mI3QeEk0K_mj1WaUiowht 	 
+    	  
+    		   
+ Mat _706246338944062 mIqjSmilXv9ILvDddB7nD 	 
+    	  
+    		   
+   _9098980761384425343 mtNKEvBwMHNsmdH7BtZbM 	 
+    	  
+    	keyframes.back mjjfaXD3tH8warSj13sVr 	 
+    	  
+   .pose_f2g.inv mIJkWACd8Uom4Jv6selID 	 
+  mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+     
+     
+
+        
+        
+        _706246338944062.col mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+ 3 mSBNIRK1XqZg3XlWW_b3d 	 
+    .rowRange mSdpFB1uEgpzM3bVmlHgT 	 
+  0,3 mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+     
+       mA7hUM4UKqFyb_LJLsook 	 _706246338944062.col mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+    		   
+     
+    3 mVmWtYm5gVtZj7Yq19XWE 	 
+ .rowRange mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		 0,3 muC5cqYcHRXDD16noARI1 	 
+    	  
+   *_7847018097084079275 m_yMT4MKxrENTtLx5cA7n 	 
+    	 
+        _9098980761384425343 mxGJXkzb8EW07jCVTl0Jt 	 
+    	keyframes.back mjjfaXD3tH8warSj13sVr 	 
+    	  
+    		  .pose_f2g mA7hUM4UKqFyb_LJLsook 	 
+    	  
+  _706246338944062.inv mecU92YjgSbB3VkEoZVK3 	 
+    	  
+    	 mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+     
+         
+          mTy5S_mcphfNLzuJQ30Xe 	 
+    	  
+    		   
+auto &_175247759380:_9098980761384425343 mSwbK3nBcNZkvGxSXNOZy 	 
+    	  
+    		   
+     
+     
+ 
+  map_points muC5cqYcHRXDD16noARI1 	 
+    	  
+    		 mXdnll4yjwVy4uBDSjUe3 	 
+    	  
+    		   
+     
+ 
+            _175247759380.scalePoint mSdpFB1uEgpzM3bVmlHgT 	 
+ _7847018097084079275 mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+     
+    mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+     
+     
+ 
+  
+         mL9oWJQ1n2xKG3FtRNowa 	 
+    	  
+    
+     mEjIWbivPeVc9WtxGDiWw 	 
+    	  
+    _17976495724303689842 mA7hUM4UKqFyb_LJLsook 	 
+    	  
+    		   
+    _9098980761384425343 mdMNbPkq6p5KBhEVf3OFw 	 
+    	  
+    		   
+  keyframes.back mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+  .pose_f2g mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+     
+       mUnahx7x8KWu62epS7OxV 	 
+    	  
+    true mqLizGA4Z8QZ_2GYQ1inC 	 
+    	 
+ msBPMso4NRYFcn5Y1myF_ 	 
+    	  
+    		   
+     
+     
+ 
+  
+ mgrODPzGHQfjmAyPsBdfg 	 
+    	  
+    		  System mrPFLPKakBKjOOnkuhZUP 	 
+    	  
+    		   
+     
+     
+ 
+ _15186594243873234013 mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		   
+ Frame &_46082543180066935 mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+     
+     
+ 
+   mi6BqZOVmQyrEy6BLProP 	 
+    	  
+    		
+     mg9IHDbTXxljO0nSnQKYh 	 
+    _14938569619851839146.KPNonMaximaSuppresion msDy4S0F6Zdx78ZUnbARe 	 
+  
+        _46082543180066935.nonMaximaSuppresion mIJkWACd8Uom4Jv6selID 	 
+   myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		   
+     
+   
+     mpgczyJuWNGXMBOxeP5oe 	 
+    	  
+    		   
+     
+ _8065948040949117953 moHeIYzwbcFb6VaM90Aa9 	 
+    	  
+0 m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+     
+     
+ 
+ 
+     mmeJW_Q9h6ZBPzSBQVjMK 	 
+    	  
+    		   
+     
+     
+ 
+  	 size_t _2654435874 mIqjSmilXv9ILvDddB7nD 	 
+    	  
+    		   
+     
+     
+ 
+0 mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   
+_2654435874 mRwYPGmWUou3ixNnKEWbv 	 
+    	  
+   _46082543180066935.und_kpts.size mdbwYCIpGYWahFfTtU8zH 	 
+    	  
+    		   
+     
+  mC_gLvnw5tkMWRQheRKr5 	 
+  _2654435874 mDe1564r6NJrCTudA8x0w 	 
+    mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		   
+     
+     muH9A34QGuccPZkZDb32w 	 
+    	  
+ 
+        
+         mWYYMqZtRPklZ6ldYQlW8 	 
+    	   mOAy4qGUJpdHQSVbVPq9E 	_46082543180066935.getDepth mgGCFceAojKPG0bK5eWQT 	 
+    _2654435874 msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		   
+   mzCa3iYOTZk3vOb9xFPuf 	 
+    	  
+    		   
+   0  mtq_QCXPpv2kX7L8PRz8d 	 
+    	  
+    		   
+     
+     
+ 
+ _46082543180066935.imageParams.isClosePoint mBGM118Iia8vm6zcNTuB6 	 
+  _46082543180066935.getDepth mbXhD242DJoibBjdI1JtA 	 
+    	  
+   _2654435874 mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+  mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+     
+     
+   mSSwrqUuoNnhMtvhM2vr3 	 
+    	  
+    		    mteJvtUMKI6kC6j6RtZKr 	 
+  _46082543180066935.flags mstJEG25u0Qv4VQocWgKl 	_2654435874 mOwAFTnFZjoBWI2gNeAO_ 	 
+    .is mOAy4qGUJpdHQSVbVPq9E 	Frame mExFPeJBflhTWJKuQVWoB 	 
+    	  
+    		   
+     
+     
+ FLAG_NONMAXIMA mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+   mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+
+            _8065948040949117953 mPjeLalHATLRlVYohP5cu 	 
+    	  
+  mEm194VmPJuGh5y4tMUm5 	 
+    	  
+    		   
+    
+     mEjIWbivPeVc9WtxGDiWw 	 
+    	
+     mr8s7pfvTmBWmxher3Oue 	 mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		   
+     
+     
+ 
+ _8065948040949117953 mRwYPGmWUou3ixNnKEWbv 	 
+    	  
+    		   
+     
+   100 mxAXsCfNkscq4iQtE2AeY 	 
+    	   mFWbNGU5e6cuqyQa3XUry 	 
+    	  
+    		   
+     
+     
+ 
+  	false mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+  
+    _46082543180066935.pose_f2g.setUnity mRAYh0ARHPOc62CfGHWWO 	 
+    	 mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   
+     
+  
+    Frame & _16997199184281837438 mIqjSmilXv9ILvDddB7nD 	 
+    	_9098980761384425343 mxGJXkzb8EW07jCVTl0Jt 	 
+    	  
+   addKeyFrame mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		   
+     
+     
+ _46082543180066935 msDy4S0F6Zdx78ZUnbARe 	 
     	  
     		   
      
@@ -8378,210 +4931,820 @@ GlobalOptimizer me0ZKHp2Id3eLmP_6GMtk
  
   	  mEm194VmPJuGh5y4tMUm5 	 
     	  
+    		  
     
-    _3005399798454910266.fixFirstFrame mXE5wWRmJGUY4EsEsgegT 	 
+     maE84VqXoUUX_dnxUsfES 	 
     	  
-    		true myu64GAT8DgGBhNOOCqvd 	 
+  size_t _2654435874 mIqjSmilXv9ILvDddB7nD 	 
+    	  
+    		0 mC_gLvnw5tkMWRQheRKr5 	 
     	  
     		   
      
      
+ _2654435874 mLS76iLDjnGxttL6L8yfX 	 
+    	  
+   _46082543180066935.und_kpts.size mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+    		   
+     
+     
+ 
+  	  mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+     
+     _2654435874 mtIfgwpprqjFMhHY9FVrL 	 
+    	  
+    		   
+     mJk4eXgp_IeFV2YvLaQC7 	 
+     mJdlQJg0rG2m7KHUChC3R 	 
+    	  
+ 
+        
+        cv me0ZKHp2Id3eLmP_6GMtk 	 
+    	  Point3f _2654435881  mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+     
+     
+ 
 
-    _3005399798454910266.nIters moHeIYzwbcFb6VaM90Aa9 	 
-10 myu64GAT8DgGBhNOOCqvd 	 
+         mxkHJa5wooqhzaSxK7_fd 	 mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+     
+     
+ 
+  	  _46082543180066935.getDepth mlfybwyvp98TOJj0yuqhF 	 
+  _2654435874 mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+  mVIm1AJSzhahLlgKO9xQK 	0  mSSwrqUuoNnhMtvhM2vr3 	 
+    	  
+    		   
+     
+     _46082543180066935.imageParams.isClosePoint mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		   
+ _46082543180066935.getDepth mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+     
+     
+ 
+  	 _2654435874 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+    mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+    mfLSKCXSc1DHeN38jALNR 	 
+    	  
+    		  mW0689NsIXj0x_tZl_0ut 	 
+    	  
+    		   _46082543180066935.flags mwzFZRcSPi2Vsk45HpaLx 	 
+   _2654435874 mfF196cGKZ_LkBPN8ZWlr 	 
+    	  
+    		   
+     
+   .is mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+    		   
+    Frame mMorzi7AHv5qXgdOZzcMd 	 
+    	  
+    		   
+     
+     
+ 
+  FLAG_NONMAXIMA mVFG05ubhW6ia_rWdS_Tv 	 mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+ mXdnll4yjwVy4uBDSjUe3 	 
+    	  
+    		  
+            
+            _2654435881 mH9fKsRtHWNu77RGN1xmn 	 
+    	 _46082543180066935.get3dStereoPoint mlfybwyvp98TOJj0yuqhF 	 
+  _2654435874 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+     
+     
+ 
+ mEm194VmPJuGh5y4tMUm5 	 
+  
+             mFTobXyS5Vx9ebVESwR0T 	 
+&_175247759380 mRDD8w83SsPKbGXy_JkEO 	 
+    	  
+    		   
+     
+     
+ 
+  _9098980761384425343 mevHkLo7kL5WL0_0mLIhr 	 
+    	addNewPoint mbXhD242DJoibBjdI1JtA 	 _16997199184281837438.fseq_idx mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+     
+     
+  mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+   
+            _175247759380.kfSinceAddition mH9fKsRtHWNu77RGN1xmn 	 
+    	  
+    		   
+     
+     
+ 
+ 1 mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+    
+            _175247759380.setCoordinates mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		_2654435881 mPaUdMg3fg2ipZY0Exj7X 	 
+    m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+ 
+            _175247759380.setStereo mNQ6rNLARkxxSTP6tiTXG 	 
+    	true mT3v8xdcVsSvUtbwmHC7j 	 
+    	 myu64GAT8DgGBhNOOCqvd 	 
     	  
     		   
      
   
-    _3005399798454910266.markersOptWeight mA7hUM4UKqFyb_LJLsook 	 
+            _9098980761384425343 msDVYCHuU_j2g_TdgX4Ta 	 
     	  
-    		 getParams mIJkWACd8Uom4Jv6selID 	 
+    		 addMapPointObservation mOAy4qGUJpdHQSVbVPq9E 	 
+_175247759380.id,_16997199184281837438.idx,_2654435874 msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		   mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    
+            _46082543180066935.ids mwzFZRcSPi2Vsk45HpaLx 	 
     	  
     		   
      
      
  
- .markersOptWeight mI30mSPxGJaQtkEjJfoQX 	 
+  _2654435874 ml5d8mzmxNmQRMtpfZ82X 	 
+    	  
+    		   
+    mvA2vjSvRD7UmknjmYP5U 	 
+ _175247759380.id m_yMT4MKxrENTtLx5cA7n 	
+         mf0YJDuh2j5By5N13LunG 	 
+    	  
+    		   
+     
+   
+     msxc6utIaOFXg4WI3vB0q 	 
+    
+    
+     mWIOGoR1XyrR6fw03i9px 	const  mkcVgqnqADeTh3Pu1ogGF 	 
+    	  
+    		   
+     
+     
+&_2654435878:_46082543180066935.markers  mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+      mXdnll4yjwVy4uBDSjUe3 	 
+    	  
+    		   
+     
+        _9098980761384425343 mtNKEvBwMHNsmdH7BtZbM 	 
+    	 addMarker mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+    		   
+     
+     
+  _2654435878  mSBNIRK1XqZg3XlWW_b3d 	 
+ m_yMT4MKxrENTtLx5cA7n 	
+     m_ECAXF5hGu1UMoS2l1KU 	 
+    	  
+    		   
+     
+     
+ 
+     my5S_tF4_lSpButBKNitX 	 
+    	  
+    		 true mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		
+ mEjIWbivPeVc9WtxGDiWw 	 
+    	  
+    		   
+     
+     
+ 
+  	 
+string System miuOs6oIdxnQEMrFFk2n_ 	 
+    	  _2102381941757963317 mBGM118Iia8vm6zcNTuB6 	 
+    	  
+uint64_t _11093822380353 muC5cqYcHRXDD16noARI1 	 
+  const mi4REkBAebpTZrzlvFEpD 	 
     	  
     		   
      
   
-    _3005399798454910266.minMarkersForMaxWeight mRDD8w83SsPKbGXy_JkEO 	 
- getParams mFAl4ldpf7o2gKLWQ4bfu 	 
-    	  .minMarkersForMaxWeight mQivdop_Gb4hqsWvOttc3 	 
-    
-    _3005399798454910266.InPlaneMarkers mvA2vjSvRD7UmknjmYP5U 	getParams mJFtpHxfnoGMxp1wzTBMr 	 
+    string _706246330193866 mI30mSPxGJaQtkEjJfoQX 	 
     	  
     		   
-     
- .inPlaneMarkers mwkk1d6uUiyaKys71tsUv 	
-    _11093822300040 mgi5Boc5f0emw5eocZbgV 	 
-    	  
-    		  optimize mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		   
-     
-     
-_10762543579000176710,_3005399798454910266  mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   mxIwd_EJpfr1C9jwU7IyL 	 
-
-    _10762543579000176710 mVfb3IHZLk8rmg75VuqQZ 	 
-    	  
-    		   
-     
-     
-removeBadAssociations mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   
-     
-     
- 
-  	_11093822300040 mSwbK3nBcNZkvGxSXNOZy 	 
-    	  
-  getBadAssociations mJFtpHxfnoGMxp1wzTBMr 	 
-    	  
-  ,2 mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		   mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
-     
-
- m_ECAXF5hGu1UMoS2l1KU 	 
-    	
- mY8NZr9zd5VcrqfZxKQJH 	 
-    	  
-    		   
- System mrS2zvlmrTf4L4KBRRYAU 	 
-    	  
-    		   
-     getLastProcessedFrame mRAYh0ARHPOc62CfGHWWO 	 
-    	  
-    		   
-     
-     
- 
- const mi6BqZOVmQyrEy6BLProP 	 
-    	  
-    		   
-     
-return _16805767570017655115.fseq_idx mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-    		   
-     
- msxc6utIaOFXg4WI3vB0q 	 
-    
- mLE5EGHIdfaJi3FG2wNSs 	 
-  System miuOs6oIdxnQEMrFFk2n_ 	 
-    	  
-    		   
-     
-     
- 
-setMode mOAy4qGUJpdHQSVbVPq9E 	 
-    MODES _706246332824366 mXftmBtLFUrPFw3lasjuW 	 mqlayz2fShj6ePxekxwRg 	 
-    	  
-    		   
-     
- 
-    _13736188859597190254 mA7hUM4UKqFyb_LJLsook 	 
-    	  
-   _706246332824366 mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
-     
-     
- 
- mwiKr6psttEx97f2NsYO1 	 
-    
- mLE5EGHIdfaJi3FG2wNSs 	 
-    	  
-  System mvpMkjoDGcQujDevHDZnx 	 
-    	  
-    		setCamera mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		   
-     
-   CAMERA _11093822060392 mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-    mXdnll4yjwVy4uBDSjUe3 	 
-    	  
-    		   
-     
-     
- 
-    _6291654841120756956 mIqjSmilXv9ILvDddB7nD 	 
-    	  
-    		   
-_11093822060392 mQivdop_Gb4hqsWvOttc3 	 
-    
- mf0YJDuh2j5By5N13LunG 	 
-    	  
-    		   
-STATE System mvpMkjoDGcQujDevHDZnx 	 
-    	  
-   getState mecU92YjgSbB3VkEoZVK3 	 
-    	  
-   mqlayz2fShj6ePxekxwRg 	 
-    	 
-     mIaPM1ms991SDrw4x6KTt 	 
-    	  
-    		   
-     
-     
- 
-  	_7599632917966626906 mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
-     
- msBPMso4NRYFcn5Y1myF_ 	 
-    	  
-    		   
-     
-     
- 
- 
-  mgs_uDQ8mSosYV9hCvlQU 	 
-    	  
-    		System mrS2zvlmrTf4L4KBRRYAU 	 
-clear mjjfaXD3tH8warSj13sVr 	 mi6BqZOVmQyrEy6BLProP 	 
-     _9141803538300908158 mA7hUM4UKqFyb_LJLsook 	 
-std me0ZKHp2Id3eLmP_6GMtk 	 
-    	  
-    		   
-make_shared miGVtxwiqbDQsG6KBslZU 	 
-    	  
-   MapManager mYbzFOKSwwNsD71cP1DkA 	 
-    	  
-   mTGJXDnkacX2UX9dooHQu 	 
-    	  
-    myu64GAT8DgGBhNOOCqvd 	 
-    	  
-    		   
-    
-     _1227001083608564617 mR22jPCjbltZ3tbBmn_6w 	 
-    	  
-    		   
-     
-     
- false mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
- 
-     _7599632917966626906 moHeIYzwbcFb6VaM90Aa9 	 
-    	  
-    		   
-     
-     
- 
-  STATE_LOST mEm194VmPJuGh5y4tMUm5 	 
+    string _46082576163156525 mA7hUM4UKqFyb_LJLsook 	 
+  "\x71\x77\x65\x72\x74\x79\x75\x69\x6f\x70\x61\x73\x64\x66\x67\x68\x6a\x6b\x6c\x7a\x78\x63\x76\x62\x6e\x6d\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x51\x57\x45\x52\x54\x59\x55\x49\x4f\x50\x41\x53\x44\x46\x47\x48\x4a\x4b\x4c\x5a\x58\x43\x56\x42\x4e\x4d" mI30mSPxGJaQtkEjJfoQX 	 
     	  
     		   
    
-     _10762543579000176710.reset mecU92YjgSbB3VkEoZVK3 	 
+    uchar * _2654435884 moHeIYzwbcFb6VaM90Aa9 	 
+ mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		   
+ uchar * muC5cqYcHRXDD16noARI1 	&_11093822380353 mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+     mN4RvsK7_XXMC2cNCwITM 	 
+    	  
+    		   
+     
+     
+ 
+  _2654435879 mhL9dWuOWzLGBfRjwvYlN 	 
+    	  sizeof mSdpFB1uEgpzM3bVmlHgT 	 
+    	  
+   _11093822380353 mxAXsCfNkscq4iQtE2AeY 	 
+    	  /sizeof mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+    uchar  mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+     mQivdop_Gb4hqsWvOttc3 	 
+    	 
+     mFS3Bzv40ET2Bg_bjcFGO 	 
+    	  
+    		   
+     
+     
+ 
+int _2654435874 mR22jPCjbltZ3tbBmn_6w 	 
+    	  
+   0 mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+  _2654435874 mbVOLbjVZO0YI60Vuguaq 	 
+    	  
+    		   
+ _2654435879 mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+  _2654435874 mDe1564r6NJrCTudA8x0w 	  msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+   mbqHQotWhg0sv6ViuZXc3 	 
+    	  
+    
+        _706246330193866.push_back mBGM118Iia8vm6zcNTuB6 	 
+    	  _46082576163156525 mwzFZRcSPi2Vsk45HpaLx 	 
+    	  
+    		   
+     
+     
+ _2654435884 msGAdK1RZcxCitYemdpxc 	 
+    	  
+_2654435874 mvFhi6DaS7eScbgWe07wY 	 
+    	  
+    		   
+     
+     
+ %_46082576163156525.size mjjfaXD3tH8warSj13sVr 	 
+    	  
+    		    mvFhi6DaS7eScbgWe07wY 	 
+    	  
+    		   
+     
+     
+  muC5cqYcHRXDD16noARI1 	 mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+     msxc6utIaOFXg4WI3vB0q 	 
+    	  
+    		   
+     
+     mY5hSAdXT4P60CSAZFBBa 	 
+   _706246330193866 mqLizGA4Z8QZ_2GYQ1inC 	 
+ 
+ mqVdZVftPR84WTjiOiVfT 	 
+    	  
+    		   
+     
+ 
+ mdx9gS37IsjwWpaOb1ODY 	 
+    	  
+    		   
+     
+   System mrS2zvlmrTf4L4KBRRYAU 	 
+    	  
+    		   
+  _1513765969352381626 mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+     
+  const Frame &_10614055813325501077,  const se3 &_10706799483371532009 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   mSH1h4yGhaMSu8y7JC_rY 	 
+    	  
+    		   
+     
+     
+    
+    int64_t _644211886852851457 mH9fKsRtHWNu77RGN1xmn 	 
+    	  
+   -1  mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+     
+     
+ 
+  	
+     mFVNERjMRO_ZEKm0TY73X 	 
+    	  
+ mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+_14938569619851839146.detectKeyPoints mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		   
+     
+ 
+       _644211886852851457 mvA2vjSvRD7UmknjmYP5U 	 
+    	  
+    		 _9098980761384425343 mxGJXkzb8EW07jCVTl0Jt 	getReferenceKeyFrame mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+     
+ _10614055813325501077,1 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+  mwkk1d6uUiyaKys71tsUv 	 
+     mr8s7pfvTmBWmxher3Oue 	 mNQ6rNLARkxxSTP6tiTXG 	 
+ _644211886852851457 mmk2RogyswbtTiHnbCghT 	 
+    	  
+    		  -1 mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		   
+    mSXTPhnnQgIi6ocmukNcV 	 
+    	  _644211886852851457 mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		   
+
+    
+     mWYYMqZtRPklZ6ldYQlW8 	 
+    	  mYcSgTugFLQcmWT7seaac 	 
+    	  
+    		   
+     
+     
+  _9098980761384425343 mxGJXkzb8EW07jCVTl0Jt 	 
+    	  
+    		 map_markers.size mdbwYCIpGYWahFfTtU8zH 	 
+    	   mosqH7AZUNZeyz6yX3nN1 	 
+    	  
+    		   
+     
+     
+ 
+  0 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    mMm9FLNsNOoyX7Tyb7vpT 	 
+    	  
+    		   
+     
+     
+ 
+  	
+         mR8MpflZg6lk1qLQLX9P9 	 
+    	 _10576739190144361304 mxIwd_EJpfr1C9jwU7IyL 	 
+   
+     mqVdZVftPR84WTjiOiVfT 	 
+    
+    
+    vector mk9nSfh6XGyonOYMC8C3M 	 
+    	  uint32_t mJJosB3DZCYh837sWRpN7 	 
+    	  
+    		   
+     
+ _4240713669852012646 myu64GAT8DgGBhNOOCqvd 	 
+    	  
+ 
+     mFS3Bzv40ET2Bg_bjcFGO 	 
+    auto _2654435878:_10614055813325501077.markers mJk4eXgp_IeFV2YvLaQC7 	 mJdlQJg0rG2m7KHUChC3R 	 
+    	  
+    		 
+         mFTobXyS5Vx9ebVESwR0T 	 
+    	  
+    		   
+     
+     _3005399795337363304 mR22jPCjbltZ3tbBmn_6w 	 
+    	  
+    _9098980761384425343 mxGJXkzb8EW07jCVTl0Jt 	 
+    	  
+    		   
+  map_markers.find mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+     
+     _2654435878.id mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+  myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    
+         mAvI6WqVGKew5QUXF0T2l 	 mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		    _3005399795337363304 my0vyIAimw3jadFZG1pnz 	 
+    	  
+    		   
+     
+_9098980761384425343 msDVYCHuU_j2g_TdgX4Ta 	 
+    	  
+    		   
+ map_markers.end mIJkWACd8Uom4Jv6selID 	 
+    	  
+    		    mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+     
+ mSH1h4yGhaMSu8y7JC_rY 	 
+    	  
+             mxkHJa5wooqhzaSxK7_fd 	 mbXhD242DJoibBjdI1JtA 	 
+    	  
+    		   
+     
+  _3005399795337363304 mVfb3IHZLk8rmg75VuqQZ 	 
+    	  
+  second.pose_g2m.isValid mFAl4ldpf7o2gKLWQ4bfu 	 
+    	 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+     
+     _4240713669852012646.push_back mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+    		   
+ _2654435878.id mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+   
+         mEjIWbivPeVc9WtxGDiWw 	 
+   
+     mwiKr6psttEx97f2NsYO1 	 
+    	  
+  
+    pair mJCQ17ktBLqNw7sHF60R1 	 
+    	  
+    		 uint32_t,float mJJosB3DZCYh837sWRpN7 	 
+    _18337238202410394478 mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		 std me0ZKHp2Id3eLmP_6GMtk 	 
+    	  
+   numeric_limits mbVOLbjVZO0YI60Vuguaq 	 
+    	  
+    		   uint32_t mW202Akoy5o2_FFUMtz7a 	 
+  mwuvkepREHprpx4i3n2RV 	 
+    	  
+    		   
+     
+  max mGu_88Fdde5jsxW8v9whR 	 
+    	  
+    		   
+     
+   ,std mwuvkepREHprpx4i3n2RV 	 
+    numeric_limits miGVtxwiqbDQsG6KBslZU 	 
+    	  
+    		   
+   float mYbzFOKSwwNsD71cP1DkA 	 
+    	  
+   mNQimRrYQ8Mz6YI9KM7Fn 	 
+   max mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+    		   
+     
+     
+ 
+   mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+ mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+     
+     mmeJW_Q9h6ZBPzSBQVjMK 	 
+    	  
+    		   
+     
+     
+ 
+ auto _3005399795337363304:_4240713669852012646 msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		   
+     
+  
+         mcAnVuQmAnGunjGyL6dhh 	const  mflySGFqxQX_KaIEHAKSo 	 
+    	  
+  &_46082543180066935:_9098980761384425343 mj3rSXJDWd4j4OSGbS2oX 	 
+    	  
+    		   
+map_markers mstJEG25u0Qv4VQocWgKl 	 
+    	  
+    		   
+_3005399795337363304 mtEI4bSjtkyV5O0qz_vBz 	 
+    	  
+    		   
+     
+     
+.frames mT3v8xdcVsSvUtbwmHC7j 	  mbqHQotWhg0sv6ViuZXc3 	 
+    	
+             mTWpr3m9V3RdtOrrhhpUi 	 
+    	  
+    		   
+     
+_2654435869 mvA2vjSvRD7UmknjmYP5U 	 
+    	  
+    		   
+      _10706799483371532009 .t_dist mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   _9098980761384425343 mSwbK3nBcNZkvGxSXNOZy 	 
+    	  
+ keyframes mMo20fFU0rdQJ7l5qqDaX 	_46082543180066935 mtEI4bSjtkyV5O0qz_vBz 	 
+    	  
+    		   
+     
+     
+.pose_f2g  mVmWtYm5gVtZj7Yq19XWE 	 
+      mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+     
+ 
+             mHbSWrX6OPeRP2Igmog8G 	 
+    mgGCFceAojKPG0bK5eWQT 	 
+     _18337238202410394478.second mVIm1AJSzhahLlgKO9xQK 	 
+ _2654435869 mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+     
+     
+ 
+  _18337238202410394478 mhL9dWuOWzLGBfRjwvYlN 	 
+    	  
+    		   
+     mJdlQJg0rG2m7KHUChC3R 	 
+    	  
+    		   
+     
+     
+_46082543180066935,_2654435869 miXz43zs_DqtraKQW0m3N 	 mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		  
+         mMGejH_coNc3kGxAdXVex 	 
+
+     mV4_AbWY8ymaWGsYOk0LC 	 
+    	  
+    		   
+     
+     
+ 
+  _18337238202410394478.first myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		   
+ 
+ m_ECAXF5hGu1UMoS2l1KU 	 
+    	  
+    		   
+
+std mvpMkjoDGcQujDevHDZnx 	 
+ vector miGVtxwiqbDQsG6KBslZU 	 
+    	  
+    		   
+System me0ZKHp2Id3eLmP_6GMtk 	 
+    	  
+    		   _4118122444908280734 mVIm1AJSzhahLlgKO9xQK 	 
+    	  
+    		   
+     
+  System mI3QeEk0K_mj1WaUiowht 	 
+_3473802998844434099 mTiWUgQKOeYLvNdGsR_oS 	 
+    	 Frame &_16940374161494853219,se3 &_13011065492167565582 ,const std mNQimRrYQ8Mz6YI9KM7Fn 	 
+    	  
+    		   
+     
+     
+ set miGVtxwiqbDQsG6KBslZU 	 
+    	  uint32_t mzCa3iYOTZk3vOb9xFPuf 	 
+    	  
+     &_16997249117545452056  mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   
+     
+     
+  mjXlfKOCTRjUV9apwYcb7 	
+     mt3m0c1_35lMMq0E3cZsZ 	 
+    	  
+    		   
+     
+     
+ 
+   mSdpFB1uEgpzM3bVmlHgT 	 
+    	  
+    		   
+     
+     
+ 
+  	_16940374161494853219.ids.size mecU92YjgSbB3VkEoZVK3 	 
+    	  
+    		   
+    mIHFqVJpFXgMDdHn2uhc3 	 
+    	  
+0 mxAXsCfNkscq4iQtE2AeY 	 
+   return  mMm9FLNsNOoyX7Tyb7vpT 	 
+    	  
+    		   
+  msxc6utIaOFXg4WI3vB0q 	 
+    	  
+    		   
+     
+     
+ 
+  mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+     
+
+     mFVNERjMRO_ZEKm0TY73X 	  mUGrJMUolw0lb_KVyGK5N 	 
+    	_9098980761384425343 mj3rSXJDWd4j4OSGbS2oX 	 
+TheKFDataBase.isEmpty mecU92YjgSbB3VkEoZVK3 	 
+    	  
+    		   
+     
+     
+ 
+ muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+ return   mMm9FLNsNOoyX7Tyb7vpT 	 
+    	  msxc6utIaOFXg4WI3vB0q 	 
+    	  mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+     
+ 
+    vector mkHL8KJw4VjwmGdgQrteX 	 
+    	  
+    		   
+ uint32_t mpBV2mt4yeFwcVEC5cxVw 	 
+    	   _5288382201172378343 mRDD8w83SsPKbGXy_JkEO 	 
+    	  
+    		   
+     
+ _9098980761384425343 mVfb3IHZLk8rmg75VuqQZ 	 
+    	  
+    		   
+  relocalizationCandidates mUGrJMUolw0lb_KVyGK5N 	 
+_16940374161494853219,_16997249117545452056 mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+     mo9Lbpy0Ap4RTl5O5Or1C 	
+     mxkHJa5wooqhzaSxK7_fd 	 
+    	  
+    		   
+     
+     
+ 
+ mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    _5288382201172378343.size mjjfaXD3tH8warSj13sVr 	 
+    	  
+  mWQWZuZUxzgXcOZHMJMC_ 	 
+    	  
+    		   
+     
+     
+ 
+  0 mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+     
+     
+ 
+  	return   mMm9FLNsNOoyX7Tyb7vpT 	 
+    	  
+    		   
+ mMGejH_coNc3kGxAdXVex 	 
+    	   myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    	
+    vector mbVOLbjVZO0YI60Vuguaq 	 
+    	  
+    		   
+     
+System mI3QeEk0K_mj1WaUiowht 	 
+    	  
+    		   
+     
+     
+ 
+  	_4118122444908280734 mVIm1AJSzhahLlgKO9xQK 	  _1524129789187101628 mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+  _5288382201172378343.size mFAl4ldpf7o2gKLWQ4bfu 	 
+    mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		 mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+  
+    FrameMatcher _16937386958649118140 mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+
+    _16937386958649118140.setParams mBGM118Iia8vm6zcNTuB6 	_16940374161494853219,FrameMatcher mvpMkjoDGcQujDevHDZnx 	 
+    	  
+    MODE_ALL,_14938569619851839146.maxDescDistance*2 muC5cqYcHRXDD16noARI1 	 m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+
+#pragma omp parallel for
+     mIyrnAZ9pLZEaiK6Yst1L 	 
+    	  
+    		   
+     
+ int _175247762874 moHeIYzwbcFb6VaM90Aa9 	 
+    	  
+    		   
+     0 mEm194VmPJuGh5y4tMUm5 	 
+    	  
+    		   
+     
+     
+ _175247762874 moCEmVQeGy8LzV8cAuk79 	 
+    	  
+    		   
+   _5288382201172378343.size mGu_88Fdde5jsxW8v9whR 	 
+    	  
+    		   
+     
+     
+ 
+   mEm194VmPJuGh5y4tMUm5 	 
+    	  
+    		_175247762874 mtIfgwpprqjFMhHY9FVrL 	 
+    	  
+    		   
+      msDy4S0F6Zdx78ZUnbARe 	 
+ mXdnll4yjwVy4uBDSjUe3 	 
+    	  
+    		   
+     
+     
+ 
+  
+         myydjxqnidOfg3YXIPfCh 	 
+_175247760268 mvA2vjSvRD7UmknjmYP5U 	 _5288382201172378343 msGAdK1RZcxCitYemdpxc 	 
+_175247762874 mAH84ftHkJMUldxM9fJHE 	 
+    	  
+    		   
+     
+     
+  mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+ 
+         mFTobXyS5Vx9ebVESwR0T 	 
+    &_3005399814901981436 mXE5wWRmJGUY4EsEsgegT 	 
+    	  
+    		   
+     
+  _9098980761384425343 mSwbK3nBcNZkvGxSXNOZy 	 
+    	  
+    		   
+     
+     
+keyframes mVjuVop3osym9wWoq6p3w 	 
+    	  
+    		   
+     
+  _175247760268 mOwAFTnFZjoBWI2gNeAO_ 	 
+    	  
+    		   
+     
+     
+ 
+ mC_gLvnw5tkMWRQheRKr5 	 
+   
+        _1524129789187101628 mVLLVWqNz0_lGN56vY03t 	 
+    	  
+    		   
+     _175247762874 mfF196cGKZ_LkBPN8ZWlr 	 
+    	  
+    		   
+   ._6116114700730085677 mIqjSmilXv9ILvDddB7nD 	 
+    	  
+   _16937386958649118140.match mbXhD242DJoibBjdI1JtA 	 
+ _3005399814901981436,FrameMatcher mvpMkjoDGcQujDevHDZnx 	 
+    	  
+    		MODE_ASSIGNED mVmWtYm5gVtZj7Yq19XWE 	 
     	  
     		   
      mEm194VmPJuGh5y4tMUm5 	 
@@ -8591,1361 +5754,4369 @@ make_shared miGVtxwiqbDQsG6KBslZU
      
  
 
-     _11449928097377700216 mXE5wWRmJGUY4EsEsgegT 	 
+        
+         mmeJW_Q9h6ZBPzSBQVjMK 	 
+    	  
+    		   
+     
+   auto &_2654435878:_1524129789187101628 mMo20fFU0rdQJ7l5qqDaX 	_175247762874 mtEI4bSjtkyV5O0qz_vBz 	 
+    	  
+    		   
+     
+   ._6116114700730085677 mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+   muH9A34QGuccPZkZDb32w 	 
     	  
     		   
      
      
- std mrPFLPKakBKjOOnkuhZUP 	 
-    	make_shared mnpObQ1mWnyfQO24_ojBn 	 
+            std mvpMkjoDGcQujDevHDZnx 	 
+    	swap mYcSgTugFLQcmWT7seaac 	 
+    _2654435878.queryIdx,_2654435878.trainIdx mT3v8xdcVsSvUtbwmHC7j 	 
     	  
     		   
      
-    MapInitializer mpBV2mt4yeFwcVEC5cxVw 	 
+     mqLizGA4Z8QZ_2GYQ1inC 	 
+    	
+            _2654435878.trainIdx mRDD8w83SsPKbGXy_JkEO 	 
+   _3005399814901981436.ids mVjuVop3osym9wWoq6p3w 	 
     	  
-    		   
-     
-     
- 
-  mIJkWACd8Uom4Jv6selID 	 
-    	  
-    	 mwkk1d6uUiyaKys71tsUv 	 
-
-     _7053670376446719714 mvA2vjSvRD7UmknjmYP5U 	 
-    	  
-    		   
-     
-     
- 
- cv mMorzi7AHv5qXgdOZzcMd 	 
-    	  
-    		   Mat mJFtpHxfnoGMxp1wzTBMr 	 
-     mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		 
-     _1426313296465708397 mvA2vjSvRD7UmknjmYP5U 	 
-    	  
-    		   
--1 mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		 
-  msxc6utIaOFXg4WI3vB0q 	 
-    	  
-  
-  mol5p_9C0R9o_YMjX6nxS 	 
-    	  
-    		   
-     
-     
-System mvpMkjoDGcQujDevHDZnx 	 
-    	  
-    		   
-  saveToFile mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    	string _16997227483604144380 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     
-      mXdnll4yjwVy4uBDSjUe3 	 
-    	  
-    		   
-     
-     
- 
-     waitForFinished mdbwYCIpGYWahFfTtU8zH 	 
- mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    
-     
-     fstream _706246330143775 mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		   
-     
-    _16997227483604144380,ios_base mExFPeJBflhTWJKuQVWoB 	 
-    	  
-    		   
-     
-   binary|ios_base mI3QeEk0K_mj1WaUiowht 	 
-    	  
-    		   
-     
-     
- 
-  out  mXftmBtLFUrPFw3lasjuW 	 
-    	  
-  mxIwd_EJpfr1C9jwU7IyL 	 
-    	  
-    		   
-     
-     
- 
-  	
-      mfRi_C6KlnAxop81XDZsV 	 
-    	  
-    		   
-     
-     mCzaOxAWpFlV3gHYCg4ev 	 
-    	  
-    		   
-_706246330143775 mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		   
-     
-     
- 
-  throw std mMorzi7AHv5qXgdOZzcMd 	 runtime_error mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-string mYcSgTugFLQcmWT7seaac 	 
-    	 __PRETTY_FUNCTION__ mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-+"\x63\x6f\x75\x6c\x64\x20\x6e\x6f\x74\x20\x6f\x70\x65\x6e\x20\x66\x69\x6c\x65\x20\x66\x6f\x72\x20\x77\x72\x69\x74\x69\x6e\x67\x3a"+_16997227483604144380 mVmWtYm5gVtZj7Yq19XWE 	 
-   mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-  
-     
-     io_write mkHL8KJw4VjwmGdgQrteX 	uint64_t mpBV2mt4yeFwcVEC5cxVw 	 
-    	  
-    		   
-     
-     
-  mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-   182313,_706246330143775 mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    		   
- myu64GAT8DgGBhNOOCqvd 	 
-    	  
- 
-     _10762543579000176710 mcvX0B8TDw1gEtqXtgT4T 	 
-    	  
-    toStream mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		   
-     
-   _706246330143775 mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		   
-     
-     
- mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
-     
-     
- 
-  	 
-      
-     _16805773490000196330.toStream mBGM118Iia8vm6zcNTuB6 	 _706246330143775 mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		   
-     
-     
-  mqLizGA4Z8QZ_2GYQ1inC 	 
-    	  
-    		   
-     
-  
-     _706246330143775.write mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		  mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-     
-   char* mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   &_3746282635465101757,sizeof mgGCFceAojKPG0bK5eWQT 	 
-    	  
-    		  _3746282635465101757 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    	 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-     
-     
+    		   _2654435878.trainIdx mWi16Wz7P86SIJlTQEzCB 	 
   mC_gLvnw5tkMWRQheRKr5 	 
     	  
     		   
-     
-     
  
-
-     _706246330143775.write mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   
-     
-  mYcSgTugFLQcmWT7seaac 	 
-    char* mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    		   
-  &_17510502251974591806,sizeof mYcSgTugFLQcmWT7seaac 	 
-    	  
-_17510502251974591806 mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-     
- 
- mT3v8xdcVsSvUtbwmHC7j 	 
-    	  mQivdop_Gb4hqsWvOttc3 	 
-    	  
-    		   
-
-     _706246330143775.write mUGrJMUolw0lb_KVyGK5N 	 
-    mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    		char* mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-     
-     &_1227001083608564617,sizeof mUGrJMUolw0lb_KVyGK5N 	 
-_1227001083608564617 mT3v8xdcVsSvUtbwmHC7j 	 
-    	   mVmWtYm5gVtZj7Yq19XWE 	 mxIwd_EJpfr1C9jwU7IyL 	
-     _706246330143775.write mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   
-     
-     
- 
-   mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-char* muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-   &_7599632917966626906,sizeof mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-    		   
-     
-_7599632917966626906 mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-     
-     
- 
- mSBNIRK1XqZg3XlWW_b3d 	 
-    	  
-    		   
-      mEm194VmPJuGh5y4tMUm5 	 
-    	  
-    		   
-     
-     
- 
- 
-     _706246330143775.write mTiWUgQKOeYLvNdGsR_oS 	 mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   
-  char* mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
- &_13736188859597190254,sizeof mYcSgTugFLQcmWT7seaac 	_13736188859597190254 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     
-     
- 
- msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    		    mEm194VmPJuGh5y4tMUm5 	 
+         mqVdZVftPR84WTjiOiVfT 	 
     	  
     
-     _16805767570017655115.toStream mTiWUgQKOeYLvNdGsR_oS 	 
+        
+         mmeJW_Q9h6ZBPzSBQVjMK 	 
     	  
-    		   
-     
-_706246330143775 mxAXsCfNkscq4iQtE2AeY 	 mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
-     
-     _6731656245229539747.toStream mgGCFceAojKPG0bK5eWQT 	 
+ int _2654435874 mXE5wWRmJGUY4EsEsgegT 	 
     	  
     		   
      
      
  
-  _706246330143775 mxAXsCfNkscq4iQtE2AeY 	 
+  	 0 mI30mSPxGJaQtkEjJfoQX 	 
     	  
-    		   
-    mC_gLvnw5tkMWRQheRKr5 	 
-    	  
-    		   
-     
-    
-     _6644573796688729791 mVfb3IHZLk8rmg75VuqQZ 	 
-    	  
-    		   
-     
-    toStream mSdpFB1uEgpzM3bVmlHgT 	_706246330143775 mT3v8xdcVsSvUtbwmHC7j 	 
-    	  
-    		  mwkk1d6uUiyaKys71tsUv 	 
-    	  
-    		   
-     
-   
-     _9141803538300908158 msDVYCHuU_j2g_TdgX4Ta 	 
-    	  
-toStream mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    	_706246330143775 mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    		   
+  _2654435874 mnpObQ1mWnyfQO24_ojBn 	_1524129789187101628 mstJEG25u0Qv4VQocWgKl 	_175247762874 mAH84ftHkJMUldxM9fJHE 	 
+    	 ._6116114700730085677.size mdbwYCIpGYWahFfTtU8zH 	 
     mqLizGA4Z8QZ_2GYQ1inC 	 
     	  
+    		   
+   _2654435874 mMbWC8gQeXmnMqYEj20Wf 	 
+    	  
+    		   
+     
+      mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		   
+     
+     
+ 
+  	  mi4REkBAebpTZrzlvFEpD 	 
+    	  
+    		   
+    
+             mBUCZuaNioFkzVtaa2sRQ 	 
+    	  
+    		   
+     
+     
+&_175247759380 mR22jPCjbltZ3tbBmn_6w 	 
+    	 _1524129789187101628 mVLLVWqNz0_lGN56vY03t 	 
+    	  
+    		   
+ _175247762874 mWi16Wz7P86SIJlTQEzCB 	 
+    	  
+    		._6116114700730085677 mMo20fFU0rdQJ7l5qqDaX 	 
+    	  
+    		   
+_2654435874 mOwAFTnFZjoBWI2gNeAO_ 	.trainIdx mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   
+     
+ 
+             mdEGS_9gShKEEsK9RPbfj 	 
+    	  
+    		   
+     
+      mCzaOxAWpFlV3gHYCg4ev 	 
+    	  
+    		   
+    _9098980761384425343 mdMNbPkq6p5KBhEVf3OFw 	 
+    	  
+    		   
+    map_points.is mBGM118Iia8vm6zcNTuB6 	 
+    	  
+    		   
+     
+  _175247759380 mJk4eXgp_IeFV2YvLaQC7 	  mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+     
+                _1524129789187101628 mVLLVWqNz0_lGN56vY03t 	 
+    	  
+    		   
+     
+     
+ 
+  	 _175247762874 mOwAFTnFZjoBWI2gNeAO_ 	 
+    	  
+    		 ._6116114700730085677 mVjuVop3osym9wWoq6p3w 	 
+    	  
+    		   
+     
+     
+ 
+  	_2654435874 mfF196cGKZ_LkBPN8ZWlr 	 
+    	  
+    		   
+     
+ .trainIdx mIqjSmilXv9ILvDddB7nD 	 
+-1 mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+     
+     
 
-     _1508819710414606447 mgi5Boc5f0emw5eocZbgV 	 
-    	  
-    		   
-     
-     toStream mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		_706246330143775 mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-   m_yMT4MKxrENTtLx5cA7n 	
-     toStream__ mUGrJMUolw0lb_KVyGK5N 	 
-    	  
-    		   
-     
-    _7053670376446719714,_706246330143775 mPaUdMg3fg2ipZY0Exj7X 	 
-     mC_gLvnw5tkMWRQheRKr5 	 
+             mcs2IPsFq8XN5a3t5KBLK 	 
+   _9098980761384425343 mSwbK3nBcNZkvGxSXNOZy 	 
     	  
     		   
      
      
-     _706246330143775.write mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-    		   
-     
-   mTiWUgQKOeYLvNdGsR_oS 	 
-  char* mVmWtYm5gVtZj7Yq19XWE 	 
- &_1426313296465708397,sizeof mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   _1426313296465708397 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-     mPaUdMg3fg2ipZY0Exj7X 	 
+map_points mRjEKX4QN9MTvSEtCTNd7 	 
     	  
     		   
      
      
- 
- mQivdop_Gb4hqsWvOttc3 	 
+_175247759380 mWjWwCxBA7LLBixCoRsYZ 	 
     	  
- 
-     _706246330143775.write mBGM118Iia8vm6zcNTuB6 	 
+ .isBad mIJkWACd8Uom4Jv6selID 	 
     	  
-    		   
-     
-     
- 
-   mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		   
-     
-     
- 
-char* mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-&_16812765159998713427,sizeof mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		   
-     
-     
- 
-  _16812765159998713427 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   
-     
-     
- 
-   muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-     
- mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-    		
-     _706246330143775.flush mGu_88Fdde5jsxW8v9whR 	 
-    	  
-    		   
-     
-     mQivdop_Gb4hqsWvOttc3 	 
-
-  msxc6utIaOFXg4WI3vB0q 	 
+   mVmWtYm5gVtZj7Yq19XWE 	 
     	  
     	
-  mgs_uDQ8mSosYV9hCvlQU 	 
+                _1524129789187101628 mVLLVWqNz0_lGN56vY03t 	 
+    	  
+    		   
+  _175247762874 mWi16Wz7P86SIJlTQEzCB 	 
+    	  
+  ._6116114700730085677 mMo20fFU0rdQJ7l5qqDaX 	 
+    	  
+    		   
+ _2654435874 mAH84ftHkJMUldxM9fJHE 	 
+    	.trainIdx mH9fKsRtHWNu77RGN1xmn 	 
+    	-1 mwkk1d6uUiyaKys71tsUv 	 
     	  
     		   
      
      
  
-System me0ZKHp2Id3eLmP_6GMtk 	 
+ 
+         mEjIWbivPeVc9WtxGDiWw 	 
+    
+        remove_unused_matches mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+    _1524129789187101628 mwzFZRcSPi2Vsk45HpaLx 	 
+    _175247762874 mQbYLzhvVQm8J2LNkC6S6 	 
+    	  
+    		   
+     
+ ._6116114700730085677 mxAXsCfNkscq4iQtE2AeY 	 
+    	 mwkk1d6uUiyaKys71tsUv 	 
     	  
     		   
      
      
  
-  readFromFile mgGCFceAojKPG0bK5eWQT 	 
-    	  
-    		   
-    string _16997227483604144380 mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    		   
- mqlayz2fShj6ePxekxwRg 	 
-    	  
-    	
-     ifstream _706246330143775 mSdpFB1uEgpzM3bVmlHgT 	 
-    	  
-    		   
-     
-     
- _16997227483604144380,ios mMorzi7AHv5qXgdOZzcMd 	 
-    	  
-    		   
-binary mXftmBtLFUrPFw3lasjuW 	 
-   mEm194VmPJuGh5y4tMUm5 	 
-    	  
   
-      mGc5v1UWfDU7ttNcZryQG 	 
+         mAvI6WqVGKew5QUXF0T2l 	 
+    	  
+    	 mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+     _1524129789187101628 mRjEKX4QN9MTvSEtCTNd7 	 
+    _175247762874 mWjWwCxBA7LLBixCoRsYZ 	 
+    	  
+    ._6116114700730085677.size mIJkWACd8Uom4Jv6selID 	 
+    	  
+    		   
+      mnpObQ1mWnyfQO24_ojBn 	 
+    	  
+25 mT3v8xdcVsSvUtbwmHC7j 	continue mQivdop_Gb4hqsWvOttc3 	 
     	  
     		   
      
      
- mkyly54GlrbXuNeECTTqk 	 
+        _1524129789187101628 mstJEG25u0Qv4VQocWgKl 	 
     	  
-    		   
-     
-     
- 
-  _706246330143775 mVmWtYm5gVtZj7Yq19XWE 	 
+    		  _175247762874 ml5d8mzmxNmQRMtpfZ82X 	 
     	  
-    		   
-     
-throw std mNQimRrYQ8Mz6YI9KM7Fn 	 
+    	._3885067248075476027 mXE5wWRmJGUY4EsEsgegT 	 
     	  
-   runtime_error mNQ6rNLARkxxSTP6tiTXG 	 
-    	  
-    		   
-     
-    string mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		 __PRETTY_FUNCTION__ mVFG05ubhW6ia_rWdS_Tv 	 
-+"\x63\x6f\x75\x6c\x64\x20\x6e\x6f\x74\x20\x6f\x70\x65\x6e\x20\x66\x69\x6c\x65\x20\x66\x6f\x72\x20\x72\x65\x61\x64\x69\x6e\x67\x3a"+_16997227483604144380 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-    mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-      mWYYMqZtRPklZ6ldYQlW8 	  mTiWUgQKOeYLvNdGsR_oS 	 
-    	  
-    		   
-     io_read mbVOLbjVZO0YI60Vuguaq 	 
-    	  
-    		   
-     
-     uint64_t mW202Akoy5o2_FFUMtz7a 	 
-    	  
-   mOAy4qGUJpdHQSVbVPq9E 	 
-    	  
-    		   _706246330143775 mSBNIRK1XqZg3XlWW_b3d 	 
+   _3005399814901981436.pose_f2g mI30mSPxGJaQtkEjJfoQX 	 
     	  
     		   
      
      
  
-  	  mYCupqIOYDMlnjNznUUG5 	 
-    	  
-    		182313 mVmWtYm5gVtZj7Yq19XWE 	 
-    	  
-    		   
-     
-   throw std mrPFLPKakBKjOOnkuhZUP 	 
- runtime_error mbXhD242DJoibBjdI1JtA 	 
-    	  
-   string mlfybwyvp98TOJj0yuqhF 	 
-    	  
-    	__PRETTY_FUNCTION__ muC5cqYcHRXDD16noARI1 	 
-    	  
- +"\x69\x6e\x76\x61\x6c\x69\x64\x20\x66\x69\x6c\x65\x20\x74\x79\x70\x65\x3a"+_16997227483604144380 muC5cqYcHRXDD16noARI1 	 
-    	  
-    	 m_yMT4MKxrENTtLx5cA7n 	 
+         
+        PnPSolver mMorzi7AHv5qXgdOZzcMd 	 
     	  
     		   
-     
-     
-
-     _10762543579000176710 mvA2vjSvRD7UmknjmYP5U 	 
-    	  
-  std mrPFLPKakBKjOOnkuhZUP 	 
+solvePnPRansac mSdpFB1uEgpzM3bVmlHgT 	 
+    _16940374161494853219,_9098980761384425343,_1524129789187101628 mZ9T0z5VdOHGC7rra8Fzk 	 
     	  
     		   
      
      
  
-  	 make_shared mJCQ17ktBLqNw7sHF60R1 	 Map meN5YYBBVg5DStfnyA8Dd 	 
+_175247762874 mvFhi6DaS7eScbgWe07wY 	 
     	  
     		   
-   mTGJXDnkacX2UX9dooHQu 	 
+._6116114700730085677,_1524129789187101628 mMo20fFU0rdQJ7l5qqDaX 	 
+    	  
+_175247762874 mWjWwCxBA7LLBixCoRsYZ 	 
+    	  
+    		   
+     
+     
+._3885067248075476027 mPaUdMg3fg2ipZY0Exj7X 	 
     	  
     		   
      
     mQivdop_Gb4hqsWvOttc3 	 
     	  
     		   
- 
-     _10762543579000176710 mcvX0B8TDw1gEtqXtgT4T 	 
-    	  
-    		   
-     fromStream mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   
-   _706246330143775 msDy4S0F6Zdx78ZUnbARe 	 
-    	  
-    		  m_yMT4MKxrENTtLx5cA7n 	 
+     
+   
+          mFVNERjMRO_ZEKm0TY73X 	 
+     mbXhD242DJoibBjdI1JtA 	 
     	  
     		   
      
-     _16805773490000196330.fromStream mSdpFB1uEgpzM3bVmlHgT 	 
+     
+ 
+  	_1524129789187101628 mbtzLVjzLgaxYxNNltfyM 	 
+    	  _175247762874 mvFhi6DaS7eScbgWe07wY 	 
     	  
-_706246330143775 msDy4S0F6Zdx78ZUnbARe 	 
-    	 mC_gLvnw5tkMWRQheRKr5 	 
+  ._6116114700730085677.size mTGJXDnkacX2UX9dooHQu 	 
+    	  mbVOLbjVZO0YI60Vuguaq 	 
     	  
     		   
+     
+     
+ 
+ 15 mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+ continue mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		  
+        
+        _1524129789187101628 mZloAr3_PPw7622AVrUCe 	 
+_175247762874 mWi16Wz7P86SIJlTQEzCB 	 
+    	  
+    		   
+     
+     
+ ._6116114700730085677 mtmFAz7pcnIFLgYGMf4eK 	 
+    	  
+    		  _9098980761384425343 mgi5Boc5f0emw5eocZbgV 	 
+ matchFrameToMapPoints  mgGCFceAojKPG0bK5eWQT 	 
+    	  
+ _9098980761384425343 mxGJXkzb8EW07jCVTl0Jt 	 
+    	  
+    		   
+     
+   TheKpGraph.getNeighborsVLevel2 mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+     
+     _175247760268,true mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+     
+  , _16940374161494853219,  _1524129789187101628 mVjuVop3osym9wWoq6p3w 	 
+    	  
+    		  _175247762874 mAH84ftHkJMUldxM9fJHE 	 
+    	  
+    		   
+   ._3885067248075476027 ,_14938569619851839146.maxDescDistance*2, 2.5,true mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+      mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   
+     
+     
+
+         mAvI6WqVGKew5QUXF0T2l 	 
+    	  
+    		   
+      mSdpFB1uEgpzM3bVmlHgT 	 
+    	  
+    		   
+     
+     _1524129789187101628 mRjEKX4QN9MTvSEtCTNd7 	_175247762874 ml5d8mzmxNmQRMtpfZ82X 	 
+    	  
+    		   
+     
+    ._6116114700730085677.size mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+ mkHL8KJw4VjwmGdgQrteX 	 
+    	  
+    		   
+     30 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+     continue mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		
+        
+        PnPSolver mMorzi7AHv5qXgdOZzcMd 	 
+    	  
+    		   
+     
+    solvePnp mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+  _16940374161494853219,_9098980761384425343,_1524129789187101628 mbtzLVjzLgaxYxNNltfyM 	_175247762874 ml5d8mzmxNmQRMtpfZ82X 	 
+    	  
+    		 ._6116114700730085677,_1524129789187101628 mVjuVop3osym9wWoq6p3w 	 
+    _175247762874 mGPgWaVxS3WdTr7rWsMw4 	 
+  ._3885067248075476027 mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   
+     
+     
+ 
+ myu64GAT8DgGBhNOOCqvd 	 
+    
+          mHbSWrX6OPeRP2Igmog8G 	 
+    	  
+    		   
+  mbXhD242DJoibBjdI1JtA 	 
+    	  
+    		   
+     
+     
+ 
+ _1524129789187101628 mstJEG25u0Qv4VQocWgKl 	 
+    	  
+    		   
+     
+     
+ _175247762874 mQbYLzhvVQm8J2LNkC6S6 	 
+    ._6116114700730085677.size mGu_88Fdde5jsxW8v9whR 	 
+    	 mJCQ17ktBLqNw7sHF60R1 	 
+    	  
+    		   
+     
+     
+ 
+  	30 mSBNIRK1XqZg3XlWW_b3d 	 continue mwkk1d6uUiyaKys71tsUv 	 
+    	  
+   
+        _1524129789187101628 mZloAr3_PPw7622AVrUCe 	 
+    	  
+    		   
+     
+     
+ 
+  	_175247762874 mQbYLzhvVQm8J2LNkC6S6 	 
+    	  
+  . _16902946305713852348 mR22jPCjbltZ3tbBmn_6w 	 
+    	  
+    		   
+_16940374161494853219.ids myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		   
+ 
+         mTy5S_mcphfNLzuJQ30Xe 	 
+   auto _46082575882272165: _1524129789187101628 mwzFZRcSPi2Vsk45HpaLx 	 
+    	  
+    		   
+     
+   _175247762874 mWjWwCxBA7LLBixCoRsYZ 	 ._6116114700730085677 mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		   
+     
+     
+
+            _1524129789187101628 mwzFZRcSPi2Vsk45HpaLx 	 
+    	  
+    		   
+   _175247762874 mGPgWaVxS3WdTr7rWsMw4 	 
+    	  ._16902946305713852348 mRjEKX4QN9MTvSEtCTNd7 	 
+    	  
+    		   
+     
+     
+ _46082575882272165.queryIdx ml5d8mzmxNmQRMtpfZ82X 	 
+    	  
+    	 mH9fKsRtHWNu77RGN1xmn 	 
+    	  
+    		   
+    _46082575882272165.trainIdx mxIwd_EJpfr1C9jwU7IyL 	 
+    	 
+     miXz43zs_DqtraKQW0m3N 	 
+    	  
+    		   
+     
      
     
-      _706246330143775.read mTiWUgQKOeYLvNdGsR_oS 	 
-  mUGrJMUolw0lb_KVyGK5N 	 
+    std mNQimRrYQ8Mz6YI9KM7Fn 	 
     	  
-    		   
- char* mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    		   
-  &_3746282635465101757,sizeof mTiWUgQKOeYLvNdGsR_oS 	 
+ remove_if mlfybwyvp98TOJj0yuqhF 	 
     	  
     		   
      
-    _3746282635465101757 muC5cqYcHRXDD16noARI1 	 
-     msDy4S0F6Zdx78ZUnbARe 	 
-  mC_gLvnw5tkMWRQheRKr5 	 
+     
+_1524129789187101628.begin mjjfaXD3tH8warSj13sVr 	 
+    	  
+    		   
+     
+     
+ 
+  ,_1524129789187101628.end mjjfaXD3tH8warSj13sVr 	 
+    	  
+    		, mwzFZRcSPi2Vsk45HpaLx 	 
+  mfF196cGKZ_LkBPN8ZWlr 	 
+    	  
+    		   
+     
+     
+ 
+  	 mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		   
+     
+     
+ 
+ const _4118122444908280734 &_2654435866 mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+     mSH1h4yGhaMSu8y7JC_rY 	 
+    	  
+    return _2654435866._6116114700730085677.size mjjfaXD3tH8warSj13sVr 	 
+    	  
+    		   
+     
+     
+ mmSlUFoMxZtVX9CkQCe7O 	 
+    	30 m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+     
+  mf0YJDuh2j5By5N13LunG 	 
+    	  
+    		   
+   mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+     
+     
+  m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+     
+     
+ 
+  	
+    std mrPFLPKakBKjOOnkuhZUP 	 
+    	  
+    		 sort mlfybwyvp98TOJj0yuqhF 	 
+    	  _1524129789187101628.begin mdbwYCIpGYWahFfTtU8zH 	 
+    	  
+    		   ,_1524129789187101628.end mjjfaXD3tH8warSj13sVr 	 
+    	 , mMo20fFU0rdQJ7l5qqDaX 	 
+    	  
+    		   
+     
+ mGPgWaVxS3WdTr7rWsMw4 	 
+    	   mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		  const _4118122444908280734 &_2654435866,const _4118122444908280734 &_2654435867 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+ mJdlQJg0rG2m7KHUChC3R 	 
+    	  
+    		   
+     
+     
+ 
+  return _2654435866._6116114700730085677.size mJFtpHxfnoGMxp1wzTBMr 	 
+    	  
+    		   
+     
+     mzCa3iYOTZk3vOb9xFPuf 	 
+    	  _2654435867._6116114700730085677.size mdbwYCIpGYWahFfTtU8zH 	 
+    	  
+    		   
+     
+ mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   mEjIWbivPeVc9WtxGDiWw 	 
+   mVmWtYm5gVtZj7Yq19XWE 	 
+    	   mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+    mHUTuX3q6rB5eWWYYPWQD 	 
+ _1524129789187101628 mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+     
+  
+ mEjIWbivPeVc9WtxGDiWw 	 
+    	  
+    		   
+   
+ mK81mHSyZucxh8c_K9rnU 	 
+    	  
+    		   
+ System me0ZKHp2Id3eLmP_6GMtk 	 
+    	  
+    		   
+     
+     
+ 
+ _3570943890084999391 mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+    Frame &_16940374161494853219,se3 &_13011065492167565582 , const std mMorzi7AHv5qXgdOZzcMd 	 
+    	  
+    		   
+     
+set mkHL8KJw4VjwmGdgQrteX 	 
+    	  
+    		   
+ uint32_t mzCa3iYOTZk3vOb9xFPuf 	 
+    	  
+    		   
+  &_16997249117545452056  mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+   mXdnll4yjwVy4uBDSjUe3 	 
+    	  
+    		   
+   
+     mf5rJKHDmIhT9kr_E2lnd 	 
+    	_1524129789187101628 mH9fKsRtHWNu77RGN1xmn 	 
+    	  
+    		  _3473802998844434099 mNQ6rNLARkxxSTP6tiTXG 	 
+    	 _16940374161494853219,_13011065492167565582,_16997249117545452056 mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   
+     
+     
+ 
+  	  mQivdop_Gb4hqsWvOttc3 	 
+    	  
+
+     mt3m0c1_35lMMq0E3cZsZ 	  mYcSgTugFLQcmWT7seaac 	 
+    	  
+    		   
+     
+     
+ 
+  	 _1524129789187101628.size mRAYh0ARHPOc62CfGHWWO 	 mlEF62Izit24hGT_NqPIJ 	 
+    	  
+    		   0 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+     
+     
+ 
+  mIaPM1ms991SDrw4x6KTt 	 false mEm194VmPJuGh5y4tMUm5 	 
+    	  
+    		   
+     
+ 
+     mr8s7pfvTmBWmxher3Oue 	  mBGM118Iia8vm6zcNTuB6 	 
+    	  _1524129789187101628 mZloAr3_PPw7622AVrUCe 	 
+    	  
+    		   0 ml5d8mzmxNmQRMtpfZ82X 	 
+  ._6116114700730085677.size mecU92YjgSbB3VkEoZVK3 	 
+    	  
+    		   
+     
+  mzCa3iYOTZk3vOb9xFPuf 	 
+    	  
+    		   
+     
+     
+ 30 mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		   
+      muH9A34QGuccPZkZDb32w 	 
+    	  
+ 
+        _13011065492167565582 mH9fKsRtHWNu77RGN1xmn 	 
+    	  
+    		   
+  _1524129789187101628 msGAdK1RZcxCitYemdpxc 	 
+    	  
+    	0 mtEI4bSjtkyV5O0qz_vBz 	 
+    	  
+    		   
+     
+     
+ 
+  	 ._3885067248075476027 mqLizGA4Z8QZ_2GYQ1inC 	 
+    	 
+        _16940374161494853219.ids mIqjSmilXv9ILvDddB7nD 	 
+   _1524129789187101628 mRjEKX4QN9MTvSEtCTNd7 	 
+    	  
+    		   
+     
+0 mWjWwCxBA7LLBixCoRsYZ 	 
+    	  
+    		   
+     
+     
+ 
+  	 ._16902946305713852348 mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		   
+  
+         mV4_AbWY8ymaWGsYOk0LC 	 
+    	  
+    		   
+     
+ true m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		 
+     mMGejH_coNc3kGxAdXVex 	 
+  
+     mcce2fXWVHACmBftaJ9Re 	 
+    	  
+    		   
+     
+     
+ 
+   mSXTPhnnQgIi6ocmukNcV 	 false mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+ 
+ msxc6utIaOFXg4WI3vB0q 	 
+    	  
+    		   
+   
+ mOE4ALZahxLkvGqMRmxIK 	 
+    	  
+    		   
+     
+     
+System mrPFLPKakBKjOOnkuhZUP 	 
+    	  
+  _14569675007600066936 mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+ Frame &_2654435871,se3 &_13011065492167565582  mVFG05ubhW6ia_rWdS_Tv 	 
+    	  mJdlQJg0rG2m7KHUChC3R 	 
+    	  
+    
+      mt3m0c1_35lMMq0E3cZsZ 	 
+    	  
+     mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+_2654435871.markers.size mdbwYCIpGYWahFfTtU8zH 	 
+    	  
+    		   
+     
+     
+ mosqH7AZUNZeyz6yX3nN1 	 
+    	  
+    		 0 mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+ return false mEm194VmPJuGh5y4tMUm5 	 
+  
+    
+    vector mRwYPGmWUou3ixNnKEWbv 	 
+    	   uint32_t mW202Akoy5o2_FFUMtz7a 	 
+    	  
+    		    _7895328205142007059 mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+     
+     
+ 
+  	 
+     mFS3Bzv40ET2Bg_bjcFGO 	   mflySGFqxQX_KaIEHAKSo 	 
+    	  
+    		   
+     
+ &_2654435878:_2654435871.markers mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+     
+    mMm9FLNsNOoyX7Tyb7vpT 	 
+    	  
+    
+         mS0R9s7sfcYa3Nx39taZW 	 
+    	  
+    		   
+     _8332348524113911167 mA7hUM4UKqFyb_LJLsook 	 
+    	  
+    		   
+     
+     
+ 
+  	_9098980761384425343 mevHkLo7kL5WL0_0mLIhr 	 
+    	  map_markers.find mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+     
+     
+ 
+ _2654435878.id mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		   
+     
+  myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		   
+     
+   
+         mGc5v1UWfDU7ttNcZryQG 	 
+  _8332348524113911167 mYOSSG7sSqnMh0YV5DIrw 	 
+    	  
+    		   
+     
+     
+ 
+_9098980761384425343 mevHkLo7kL5WL0_0mLIhr 	 map_markers.end mIJkWACd8Uom4Jv6selID 	 
+   mSBNIRK1XqZg3XlWW_b3d 	 
+ 
+             mAvI6WqVGKew5QUXF0T2l 	 
+    	  
+    		   
+  mBGM118Iia8vm6zcNTuB6 	 
+    	  
+    		   
+     
+    _8332348524113911167 mtNKEvBwMHNsmdH7BtZbM 	 
+    	  
+    		   
+     
+     
+ 
+  second.pose_g2m.isValid mIJkWACd8Uom4Jv6selID 	 
+    	  
+    	  mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+ 
+                _7895328205142007059.push_back mSdpFB1uEgpzM3bVmlHgT 	 
+ _2654435878.id mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   
+     
+     
+ 
+  	 mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		
+     m_ECAXF5hGu1UMoS2l1KU 	 
+    	  
+    		   
+     
+     
+
+     mxkHJa5wooqhzaSxK7_fd 	 
+    mUGrJMUolw0lb_KVyGK5N 	 
+ _7895328205142007059.size mjjfaXD3tH8warSj13sVr 	 
+    	  
+    		    mtDWQOqRguVWSWehbKECr 	 
+    	 0 mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+     
+     
+ 
+  return false mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+     
+     
+ 
+  _13011065492167565582 mXE5wWRmJGUY4EsEsgegT 	 
+     _9098980761384425343 mdMNbPkq6p5KBhEVf3OFw 	 
+    	  
+    		   
+     
+     getBestPoseFromValidMarkers mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		   
+     
+     _2654435871,_7895328205142007059,_14938569619851839146.aruco_minerrratio_valid msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		   
+    mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		   
+     
+   my5S_tF4_lSpButBKNitX 	 
+    	  
+    	_13011065492167565582.isValid mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+    		   
+     
+   mQivdop_Gb4hqsWvOttc3 	 
     	  
     		   
      
 
-     _706246330143775.read mYcSgTugFLQcmWT7seaac 	 
-     mOAy4qGUJpdHQSVbVPq9E 	 
-char* msDy4S0F6Zdx78ZUnbARe 	 
+ msxc6utIaOFXg4WI3vB0q 	 
     	  
-    		 &_17510502251974591806,sizeof mlfybwyvp98TOJj0yuqhF 	 
-    _17510502251974591806 mVFG05ubhW6ia_rWdS_Tv 	 
+  mgrODPzGHQfjmAyPsBdfg 	 
+  System mvpMkjoDGcQujDevHDZnx 	 
     	  
     		   
+     
+     
+ 
+ _16487919888509808279 mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+     
+     
+ 
+ Frame &_2654435871, se3 &_13011065492167565582 mJk4eXgp_IeFV2YvLaQC7 	 
+ mSH1h4yGhaMSu8y7JC_rY 	 
+    	  
+    		   
+     
+     
+ 
+    _13011065492167565582 mRDD8w83SsPKbGXy_JkEO 	 
+    	  
+    		   
+     
+     se3 mdbwYCIpGYWahFfTtU8zH 	 
+    	  
+    		   
+     
+      mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		   
+     
+     
+ 
+ 
+     mz0gDEk4XJJySbEeCgC9P 	 
+    	  
+    		   
+     _14938569619851839146.reLocalizationWithMarkers mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   
+ mXdnll4yjwVy4uBDSjUe3 	 
+    	  
+    		   
+     
+     
+ 
+ 
+         mr8s7pfvTmBWmxher3Oue 	 
+    	  
+    	 mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    	 _14569675007600066936 mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+    		   
+     _2654435871,_13011065492167565582 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+     muC5cqYcHRXDD16noARI1 	 
+    	  my5S_tF4_lSpButBKNitX 	 
+    	  
+    		   
+true mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+   
+     mqVdZVftPR84WTjiOiVfT 	 
+    	 
+     myfOHlfTLtRL7im7qSaYm 	 
+    	  
+    		   
+  _14938569619851839146.reLocalizationWithKeyPoints mPaUdMg3fg2ipZY0Exj7X 	 
+  muH9A34QGuccPZkZDb32w 	 
+    	  
+    		   
+  
+         mt3m0c1_35lMMq0E3cZsZ 	 
+  mYcSgTugFLQcmWT7seaac 	 
+    	  
+    		_3570943890084999391 mbXhD242DJoibBjdI1JtA 	 
+    	  
+    		   
+     
+     
+_2654435871,_13011065492167565582 mSBNIRK1XqZg3XlWW_b3d 	 mSBNIRK1XqZg3XlWW_b3d 	   mLp5eeYn1TGnQEcop68VN 	 
+    	  
+    		   
+     
+     true m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+     
+     mf0YJDuh2j5By5N13LunG 	 
+    	  
+    		   
+     
+ 
+     mLp5eeYn1TGnQEcop68VN 	 
+    	  
+    		 mT9nS5aSA2ErLjcHqOPSA 	 
+    	  
+    		   
+     
+      m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    	
+ msxc6utIaOFXg4WI3vB0q 	 
+    	  
+    		   
+    
+
+
+std me0ZKHp2Id3eLmP_6GMtk 	 
+   vector moCEmVQeGy8LzV8cAuk79 	 
+    	  
+    		   
+    cv mI3QeEk0K_mj1WaUiowht 	 
+    	  
+ DMatch mYbzFOKSwwNsD71cP1DkA 	 
+    	  
+     System mvpMkjoDGcQujDevHDZnx 	 
+    	  
+    		   
+     
+     
+_11946837405316294395 mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+    		   
+     Frame & _16940374161810747371, Frame &_5918541169384278026,  mqI5yMr4h6CHkceANuA43 	 
+    	  
+    		   _1686565542397313973,  mKQv8aH2lM5yjPYl5F768 	 
+  _4500031049790251086 mJk4eXgp_IeFV2YvLaQC7 	 
+    	
+ mjXlfKOCTRjUV9apwYcb7 	 
+    	  
+    		   
+     
+ 
+    
+    std mI3QeEk0K_mj1WaUiowht 	vector miGVtxwiqbDQsG6KBslZU 	 
+    	  
+  cv mwuvkepREHprpx4i3n2RV 	 
+    	  
+    		   
+     
+     
+ 
+  	DMatch mVIm1AJSzhahLlgKO9xQK 	 
+    	  
+   _6807036698572949990 mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+     
+    
+     maE84VqXoUUX_dnxUsfES 	 
+    	  
+    		   
+     
+     
+ 
+  	 size_t _2654435874 mRDD8w83SsPKbGXy_JkEO 	 
+    	  
+    		   
+     
+     
+ 
+  0 mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+     
+ _2654435874 mkHL8KJw4VjwmGdgQrteX 	_5918541169384278026.ids.size mecU92YjgSbB3VkEoZVK3 	 
+    	  
+    		   
+ mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+ _2654435874 mPTzP5ovoJRtpRWISSe82 	 
+    	  
+    		   
+     
+  mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+      mXdnll4yjwVy4uBDSjUe3 	 
+    	  
+    		 
+         mcKERBksFL6yXYOLd7kWz 	 
+ _11093822294347 mhL9dWuOWzLGBfRjwvYlN 	 
+    	  
+  _5918541169384278026.ids mRjEKX4QN9MTvSEtCTNd7 	 
+    	  _2654435874 mAH84ftHkJMUldxM9fJHE 	 
+    	  
+    		 m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+     
+   
+         mFVNERjMRO_ZEKm0TY73X 	 
+   mBGM118Iia8vm6zcNTuB6 	 
+    	  
+    		   
+     
+   _11093822294347 my0vyIAimw3jadFZG1pnz 	 std mwuvkepREHprpx4i3n2RV 	 
+    	  
+    	numeric_limits mkHL8KJw4VjwmGdgQrteX 	 
+    	  
+    		   
+     
+    uint32_t mVIm1AJSzhahLlgKO9xQK 	 mrS2zvlmrTf4L4KBRRYAU 	max mecU92YjgSbB3VkEoZVK3 	 mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   
+     
+   mXdnll4yjwVy4uBDSjUe3 	 
+    	  
+    		   
+     
+    
+             mcs2IPsFq8XN5a3t5KBLK 	 
+    	  
+    		 _9098980761384425343 mSwbK3nBcNZkvGxSXNOZy 	 
+    	  
+    		map_points.is mTiWUgQKOeYLvNdGsR_oS 	 
+_11093822294347 mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		   
+     
+     mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   
+     
+     
+  mi4REkBAebpTZrzlvFEpD 	 
+    
+                MapPoint &_3005399799907669332 mRDD8w83SsPKbGXy_JkEO 	 _9098980761384425343 mVfb3IHZLk8rmg75VuqQZ 	 
+    	  
+    		   
+     
+     
+ 
+  map_points msGAdK1RZcxCitYemdpxc 	 
+    	  
+    		   
+     
+   _11093822294347 mOwAFTnFZjoBWI2gNeAO_ 	 
+  mC_gLvnw5tkMWRQheRKr5 	 
+    	 
+                 mAvI6WqVGKew5QUXF0T2l 	 
+    	  
+    		   
+     
+     
+ 
+  mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+    		   
+     
+    _3005399799907669332.isBad mrXXIs5j4DqJtj32aOG5F 	 
+   mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   continue m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+  
+                 mEhFK99MtLRsCBaPNqnDs 	 
+    	  
+    		   
+     
+   _11093822300120 moHeIYzwbcFb6VaM90Aa9 	 
+   _16940374161810747371.project mSdpFB1uEgpzM3bVmlHgT 	 
+    	  
+_3005399799907669332.getCoordinates mdbwYCIpGYWahFfTtU8zH 	 
+    	  
+    		   
+     
+     
+ 
+,true,true mVmWtYm5gVtZj7Yq19XWE 	  mxIwd_EJpfr1C9jwU7IyL 	 
+  
+                 muDvj5aUdXshb2AqqeEiu 	 
+    	  
+    		   
+      mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		   
+     
+      isnan mYcSgTugFLQcmWT7seaac 	 
+    	  
+    		   
+     
+ _11093822300120.x mXftmBtLFUrPFw3lasjuW 	  mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+     
+     
+ 
+  	 continue mqLizGA4Z8QZ_2GYQ1inC 	 
+    	 
+                
+                 mTWpMMn_ueGNGrVaZzL0Q 	 
+    	_175247759755 mhL9dWuOWzLGBfRjwvYlN 	 
+    	  
+    		   
+     
+ _16940374161810747371.scaleFactors mMo20fFU0rdQJ7l5qqDaX 	 _5918541169384278026.und_kpts mRjEKX4QN9MTvSEtCTNd7 	 
+    	  
+    		   
+     
+ _2654435874 mfF196cGKZ_LkBPN8ZWlr 	 
+    	  
+    		   
+     
+     .octave mQbYLzhvVQm8J2LNkC6S6 	 
+    	  
+    		   
+   mEm194VmPJuGh5y4tMUm5 	 
+    	  
+    		
+                 mIBLQ6_qDoS3S2lLQGZ3e 	 
+    	  
+    		   
+     
+_3005399801676750422 mR22jPCjbltZ3tbBmn_6w 	 
+    	  
+    		   
+     
+     
+_5918541169384278026.und_kpts mVLLVWqNz0_lGN56vY03t 	 
+    	  
+ _2654435874 mGPgWaVxS3WdTr7rWsMw4 	 
+    	 .octave mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+     
+     
+ 
+ 
+                std miuOs6oIdxnQEMrFFk2n_ 	 
+    	  
+    		 vector mk9nSfh6XGyonOYMC8C3M 	 
+    	  
+    uint32_t mNF0G2xPBB22gI9XzMk2L 	 
+    	  
+    		   
+     
+      _10924592426265627429 mtmFAz7pcnIFLgYGMf4eK 	 
+    	  _16940374161810747371.getKeyPointsInRegion mNQ6rNLARkxxSTP6tiTXG 	 
+    	  _11093822300120,_4500031049790251086*_175247759755,_3005399801676750422,_3005399801676750422 mXftmBtLFUrPFw3lasjuW 	  mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+
+                 mRIlZ0NriRkVMhRpycZqI 	 
+  _16940367568811467085 mIqjSmilXv9ILvDddB7nD 	 
+    	  
+    		   
+_1686565542397313973+0.01,_16992066385107317811 mRDD8w83SsPKbGXy_JkEO 	 
+    	  
+    		   
+     
+     
+std miuOs6oIdxnQEMrFFk2n_ 	 
+    	  
+    		   
+     
+    numeric_limits moCEmVQeGy8LzV8cAuk79 	 
+    	  
+    		   
+     
+     
+ float mYbzFOKSwwNsD71cP1DkA 	 
+    	  
+     mMorzi7AHv5qXgdOZzcMd 	 
+    	  
+    		   
+   max mTGJXDnkacX2UX9dooHQu 	 
+    	  
+    		   
+     
+   mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+  
+                 mQYacSpatR0AsiZrXS4cE 	 
+    _6806984971934960832 mXE5wWRmJGUY4EsEsgegT 	 
+    	  
+    		   
+  std mExFPeJBflhTWJKuQVWoB 	 
+    	  numeric_limits mRwYPGmWUou3ixNnKEWbv 	 
+    	  
+    	uint32_t mKJK3THIuAwgeFpuGLN8L 	  mwuvkepREHprpx4i3n2RV 	 
+    	  
+    		   
+     
+max mjjfaXD3tH8warSj13sVr 	  mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+    
+                
+                 mcAnVuQmAnGunjGyL6dhh 	 
+   auto _175247760278:_10924592426265627429 mJk4eXgp_IeFV2YvLaQC7 	 
+  mjXlfKOCTRjUV9apwYcb7 	 
+    	  
+    		  
+                     mAvI6WqVGKew5QUXF0T2l 	 
+    	  
+    	 mlfybwyvp98TOJj0yuqhF 	 
+      _16940374161810747371.und_kpts mVjuVop3osym9wWoq6p3w 	 
+    	  
+    		   
+     
+    _175247760278 mGPgWaVxS3WdTr7rWsMw4 	 
+    	  
+    		   
+.octave  mtDWQOqRguVWSWehbKECr 	 
+    	  
+    		   
+     
+    _5918541169384278026.und_kpts mVjuVop3osym9wWoq6p3w 	_2654435874 mAH84ftHkJMUldxM9fJHE 	 
+    	  
+    .octave  mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+     
+     
+ mMm9FLNsNOoyX7Tyb7vpT 	 
+    	  
+    		 
+                         mRIlZ0NriRkVMhRpycZqI 	 
+    	  
+    		   
+   _16940392174182767813 mhL9dWuOWzLGBfRjwvYlN 	 MapPoint mExFPeJBflhTWJKuQVWoB 	 
+    	getDescDistance mbXhD242DJoibBjdI1JtA 	 
+  _5918541169384278026.desc,_2654435874, _16940374161810747371.desc,_175247760278 mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+     
+     mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+                         mt3m0c1_35lMMq0E3cZsZ 	 
+    	  
+  mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		   
+     _16940392174182767813 moCEmVQeGy8LzV8cAuk79 	 
+    	  
+    		 _16940367568811467085 msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		  mSH1h4yGhaMSu8y7JC_rY 	 
+    	 
+                            _16940367568811467085 mIqjSmilXv9ILvDddB7nD 	 
+    	  
+    		   
+     
+     
+ 
+  	 _16940392174182767813 mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+   
+                            _6806984971934960832 mhL9dWuOWzLGBfRjwvYlN 	 
+    	  
+    _175247760278 mC_gLvnw5tkMWRQheRKr5 	 
+                         mL9oWJQ1n2xKG3FtRNowa 	 
+    
+                         mkQFhH7KKo8wEpsoToABe 	 
+    	  
+    		   
+     
+     
+ mXYEIB3KYwzJOpssgkZxP 	 
+    	  
+    		   
+      mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+   _16940392174182767813 mHg0YG9R0Gb6ZE5xIr3dz 	 
+   _16992066385107317811 mxAXsCfNkscq4iQtE2AeY 	 mqlayz2fShj6ePxekxwRg 	 
+    	  
+    		   
+     
+     
+                            _16992066385107317811 mR22jPCjbltZ3tbBmn_6w 	 
+    	  
+    		   
+ _16940392174182767813 mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+     
+   
+                         mEjIWbivPeVc9WtxGDiWw 	 
+    	  
+    		   
+     
+     
+ 
+
+                     m_ECAXF5hGu1UMoS2l1KU 	 
+    	  
+    		   
+     
+     
+                 miXz43zs_DqtraKQW0m3N 	 
+    	  
+
+                
+                 mr8s7pfvTmBWmxher3Oue 	 
+   mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+_6806984971934960832 mS3P8ZWKrLHg9h_5dW5He 	 
+    	  
+    		   
+  std miuOs6oIdxnQEMrFFk2n_ 	 
+    	  
+    		   
+     
+ numeric_limits mbVOLbjVZO0YI60Vuguaq 	 
+    	  uint32_t mzCa3iYOTZk3vOb9xFPuf 	 
+    	  
+    		   
+     
+    mvpMkjoDGcQujDevHDZnx 	 
+    	  
+    		  max mjjfaXD3tH8warSj13sVr 	 
+    	  
+    		   
+     
+      m_oqkmDs8rXEbW2q16xvJ 	 
+    	  _16940367568811467085 miGVtxwiqbDQsG6KBslZU 	 
+    	  
+    		   
+   0.7*_16992066385107317811 mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+     
+    mi4REkBAebpTZrzlvFEpD 	 
+    	 
+                    cv mI3QeEk0K_mj1WaUiowht 	 
+    	  
+    		  DMatch _175247759376 mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+     
+     
+                    _175247759376.queryIdx  mA7hUM4UKqFyb_LJLsook 	 
+    	  
+    		   
+    _6806984971934960832 m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+     
+     
+ 
+  
+                    _175247759376.trainIdx  mH9fKsRtHWNu77RGN1xmn 	 
+    	  
+    		   
+     
+     _3005399799907669332.id mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   
+     
+     
+        
+                    _175247759376.distance  mvA2vjSvRD7UmknjmYP5U 	 
+    	  
+    		    _16940367568811467085 m_yMT4MKxrENTtLx5cA7n 	 
+    	
+                    _6807036698572949990.push_back mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		   
+ _175247759376  mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		  mEm194VmPJuGh5y4tMUm5 	 
+    	  
+    		   
+     
+    
+                 miXz43zs_DqtraKQW0m3N 	 
+ 
+             mf0YJDuh2j5By5N13LunG 	 
+    	  
+    		
+         mL9oWJQ1n2xKG3FtRNowa 	 
+    	  
+    		   
+     
+     
+ 
+  	 
+     m_ECAXF5hGu1UMoS2l1KU 	 
+    	  
+    		   
+     
+     
+ 
+  	
+    filter_ambiguous_query mSdpFB1uEgpzM3bVmlHgT 	 
+    	  
+    		   
+     
+     
+_6807036698572949990 mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+  mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+   
+     mFWbNGU5e6cuqyQa3XUry 	 
+    	  
+    		   
+     
+     _6807036698572949990 mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+     
+   
+ miXz43zs_DqtraKQW0m3N 	 
+    	  
+    		   
+
+
+
+se3 System mrPFLPKakBKjOOnkuhZUP 	 
+    	  
+    _11166622111371682966 mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+   Frame &_16940374161810747371,se3 _14387478432460351890 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		     mjXlfKOCTRjUV9apwYcb7 	 
+    	  
+    		   
+     
+     
+ 
+  	 
+        
+    std mwuvkepREHprpx4i3n2RV 	 
+    	  
+    		   
+     
+    vector mk9nSfh6XGyonOYMC8C3M 	 
+    	  
+   cv mI3QeEk0K_mj1WaUiowht 	DMatch mVIm1AJSzhahLlgKO9xQK 	 
+    	  
+    		   
+   _637068542992099399 mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		   
+     
+  
+    se3 _5769551021164122736 mtmFAz7pcnIFLgYGMf4eK 	 
+    	  
+    		   
+     
+     
+ 
+  _14387478432460351890 mwkk1d6uUiyaKys71tsUv 	 
+    	  
+       
+    
+      mWYYMqZtRPklZ6ldYQlW8 	 
+    	  
+    		   
+     
+     mbXhD242DJoibBjdI1JtA 	 
+    	  
+    		   _9098980761384425343 mcvX0B8TDw1gEtqXtgT4T 	 
+    	  
+    		   
+ map_points.size mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+    		   
+     
+     mYbzFOKSwwNsD71cP1DkA 	 
+    	  
+    		   
+     
+  0 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+     
+     
+ 
+  	 mqlayz2fShj6ePxekxwRg 	 
+    	  
+    		   
+     
+     
+ 
+ 
+          mHbSWrX6OPeRP2Igmog8G 	 
+    	  
+    		   
+     
+     mBGM118Iia8vm6zcNTuB6 	 mteJvtUMKI6kC6j6RtZKr 	 
+    	  
+    		   
+ _14463320619150402643.empty mrXXIs5j4DqJtj32aOG5F 	 
+    	  
  mxAXsCfNkscq4iQtE2AeY 	 
+
+             _5769551021164122736 mXE5wWRmJGUY4EsEsgegT 	 
+    	  
+ _14463320619150402643*_5769551021164122736.convert mjjfaXD3tH8warSj13sVr 	  mQivdop_Gb4hqsWvOttc3 	 
+  
+        _16940374161810747371.pose_f2g mR22jPCjbltZ3tbBmn_6w 	 
+    	  
+   _5769551021164122736 mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+     
+     
+ 
+  	 
+        
+        _637068542992099399 mvA2vjSvRD7UmknjmYP5U 	 
+    	  
+    		   
+    _11946837405316294395 mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		  _16940374161810747371,_4913157516830781457,_14938569619851839146.maxDescDistance*1.5,_14938569619851839146.projDistThr mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+  mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    	
+         mN4RvsK7_XXMC2cNCwITM 	 
+    	  
+    		   
+     
+     _9870110657242862171 moHeIYzwbcFb6VaM90Aa9 	 
+    	  
+    		 0 mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		   
+    
+         mbCI0BlZHp5kbKpNqa5Su 	 
+    	  
+    		   
+     
+   mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+     
+   _637068542992099399.size mTGJXDnkacX2UX9dooHQu 	 
+    	  
+    		   
+     
+     
+ meN5YYBBVg5DStfnyA8Dd 	 
+    	  
+    		   
+    30   mVmWtYm5gVtZj7Yq19XWE 	 
+    	 mXdnll4yjwVy4uBDSjUe3 	 
+    	  
+    		  
+             mkcVgqnqADeTh3Pu1ogGF 	 
+    	  
+    		   _14671559813105454070 mIqjSmilXv9ILvDddB7nD 	 
+    	  
+    		   
+     
+     
+ 
+  _5769551021164122736 mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+     
+     
+ 
+  
+            _9870110657242862171 mIqjSmilXv9ILvDddB7nD 	 
+    	  
+    		   
+  PnPSolver mI3QeEk0K_mj1WaUiowht 	solvePnp mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		   
+     
+     
+ 
+  	  _16940374161810747371,_9098980761384425343,_637068542992099399,_14671559813105454070,_10576739190144361304 mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+ m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+   
+             mt3m0c1_35lMMq0E3cZsZ 	 
+    	  
+    		   
+     
+     
+ 
+  	 mYcSgTugFLQcmWT7seaac 	 
+    	  
+    		   
+     
+    _9870110657242862171 mVIm1AJSzhahLlgKO9xQK 	 30 mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		   
+   _5769551021164122736 mH9fKsRtHWNu77RGN1xmn 	 
+    	  
+    		   
+   _14671559813105454070 mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+     
+     
+
+         mMGejH_coNc3kGxAdXVex 	 
+    	  
+    		   
+     
+     
+ 
+        else mjXlfKOCTRjUV9apwYcb7 	 
+ 
+            
+            FrameMatcher _16997326787393468537 mYcSgTugFLQcmWT7seaac 	 FrameMatcher mwuvkepREHprpx4i3n2RV 	 
+    	  TYPE_FLANN mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+      mqLizGA4Z8QZ_2GYQ1inC 	 
+    
+            _16997326787393468537.setParams mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    _9098980761384425343 mevHkLo7kL5WL0_0mLIhr 	 
+    	  
+    		   
+    keyframes mstJEG25u0Qv4VQocWgKl 	_10576739190144361304 mfF196cGKZ_LkBPN8ZWlr 	 
+,FrameMatcher mrPFLPKakBKjOOnkuhZUP 	 
+    	  
+    		   
+     
+     
+ 
+  MODE_ASSIGNED,_14938569619851839146.maxDescDistance*2,0.6,true,3 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+     
+    myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    
+            _637068542992099399 mA7hUM4UKqFyb_LJLsook 	 
+    	  
+  _16997326787393468537.match mBGM118Iia8vm6zcNTuB6 	 
+    	  
+    		   
+     
+     
+ 
+_16940374161810747371,FrameMatcher me0ZKHp2Id3eLmP_6GMtk 	 
+    	  
+    		MODE_ALL mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   
+      mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		 
+             mcs2IPsFq8XN5a3t5KBLK 	 
+    	  
+    		   
+     
+     _637068542992099399.size mIJkWACd8Uom4Jv6selID 	 
+    	  
+    meN5YYBBVg5DStfnyA8Dd 	 
+    	  
+30 mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+   mqlayz2fShj6ePxekxwRg 	 
+    	  
+    		   
+     
+     
+ 
+  	 
+                
+                 mWIOGoR1XyrR6fw03i9px 	 
+    	  
+    		   
+    auto &_2654435878:_637068542992099399 mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		 
+                    _2654435878.trainIdx mR22jPCjbltZ3tbBmn_6w 	 
+  _9098980761384425343 mgi5Boc5f0emw5eocZbgV 	 
+    	  
+   keyframes mRjEKX4QN9MTvSEtCTNd7 	 
+    	_10576739190144361304 mtEI4bSjtkyV5O0qz_vBz 	 
+    	  
+    		   
+     
+     
+ 
+  .ids mZ9T0z5VdOHGC7rra8Fzk 	 
+ _2654435878.trainIdx mWi16Wz7P86SIJlTQEzCB 	 mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+     
+     
+ 
+  	
+                 mBUCZuaNioFkzVtaa2sRQ 	 
+    	  
+    		   
+ _14671559813105454070 mRDD8w83SsPKbGXy_JkEO 	 
+    	  
+    		   
+   _5769551021164122736 myu64GAT8DgGBhNOOCqvd 	 
+    	  
+  
+                _9870110657242862171 mtmFAz7pcnIFLgYGMf4eK 	PnPSolver mNQimRrYQ8Mz6YI9KM7Fn 	solvePnp mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+     
+     
+ _16940374161810747371,_9098980761384425343,_637068542992099399,_14671559813105454070,_10576739190144361304 mJk4eXgp_IeFV2YvLaQC7 	 
+ mxIwd_EJpfr1C9jwU7IyL 	 
+    	
+                 mWYYMqZtRPklZ6ldYQlW8 	 
+    	  
+    		 mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+     
+ _9870110657242862171 mKJK3THIuAwgeFpuGLN8L 	 
+    	  
+30 mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		   
+   _5769551021164122736 mRDD8w83SsPKbGXy_JkEO 	 
+    	  
+    		   
+    _14671559813105454070 mI30mSPxGJaQtkEjJfoQX 	 
+   
+             mqVdZVftPR84WTjiOiVfT 	 
+    	  
+    		   
+     
+   
+             mkQFhH7KKo8wEpsoToABe 	 
+    	  
+    		   
+     
+   _9870110657242862171 mtmFAz7pcnIFLgYGMf4eK 	 
+ 0 myu64GAT8DgGBhNOOCqvd 	 
+    	  
+         m_ECAXF5hGu1UMoS2l1KU 	 
+    	  
+    		   
+     
+ 
+         mRIlZ0NriRkVMhRpycZqI 	 
+    	  
+    		   
+     
+     
+ 
+  	_3763415994652820314 m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+     
+         mHbSWrX6OPeRP2Igmog8G 	 
+    	  
+    		   
+     
+     
+ 
+   mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+     
+     
+ 
+  _9870110657242862171 mW202Akoy5o2_FFUMtz7a 	 
+    	 30 msDy4S0F6Zdx78ZUnbARe 	  mjXlfKOCTRjUV9apwYcb7 	 
+    	  
+
+            _3763415994652820314 mH9fKsRtHWNu77RGN1xmn 	 
+    	  
+    		   
+     
+4 mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		  
+             mozBzR4ceXlDTd_eA9UWj 	 
+    	  
+    		   auto _2654435878:  _637068542992099399  mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+     mSH1h4yGhaMSu8y7JC_rY 	 
+    	  
+  
+                _9098980761384425343 msDVYCHuU_j2g_TdgX4Ta 	 
+    	  
+    map_points msGAdK1RZcxCitYemdpxc 	 
+    	  
+    		   
+     
+_2654435878.trainIdx mOwAFTnFZjoBWI2gNeAO_ 	 
+    	  
+  .lastFIdxSeen mXE5wWRmJGUY4EsEsgegT 	 
+    	  
+    		   
+     
+  _16940374161810747371.fseq_idx mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    	
+                _9098980761384425343 mcvX0B8TDw1gEtqXtgT4T 	 
+    	  
+    		   
+     
+     map_points mstJEG25u0Qv4VQocWgKl 	 
+ _2654435878.trainIdx mtEI4bSjtkyV5O0qz_vBz 	 
+.setVisible mIJkWACd8Uom4Jv6selID 	 mC_gLvnw5tkMWRQheRKr5 	
+             mMGejH_coNc3kGxAdXVex 	 
+   
+         m_ECAXF5hGu1UMoS2l1KU 	 
+    	  
+    		   
+     
+        else mbqHQotWhg0sv6ViuZXc3 	 
+    	  
+    		   
+  
+            _637068542992099399.clear mJFtpHxfnoGMxp1wzTBMr 	 
+    	  
+    		   
+     
+     
+ 
+ mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+            _3763415994652820314 mvA2vjSvRD7UmknjmYP5U 	 
+    	  
+    _14938569619851839146.projDistThr mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		 
+         mf0YJDuh2j5By5N13LunG 	 
+
+        
+         mEhFK99MtLRsCBaPNqnDs 	 
+    	  
+  _3521005873836563963  moHeIYzwbcFb6VaM90Aa9 	 
+ _9098980761384425343 mtNKEvBwMHNsmdH7BtZbM 	 
+    	  
+    matchFrameToMapPoints  mYcSgTugFLQcmWT7seaac 	 
+ _9098980761384425343 mgi5Boc5f0emw5eocZbgV 	 
+    	  
+    		   
+     
+   TheKpGraph.getNeighborsVLevel2 mTiWUgQKOeYLvNdGsR_oS 	 
+  _10576739190144361304,true mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+     
+     
+  , _16940374161810747371,  _5769551021164122736 ,_14938569619851839146.maxDescDistance*2, _3763415994652820314,true muC5cqYcHRXDD16noARI1 	 mwkk1d6uUiyaKys71tsUv 	 
+    	  
+   
+        
+        _637068542992099399.insert mBGM118Iia8vm6zcNTuB6 	 
+    	_637068542992099399.end mTGJXDnkacX2UX9dooHQu 	 
+    	  
+,_3521005873836563963.begin mJFtpHxfnoGMxp1wzTBMr 	 
+    	  
+    		   
+     
+ ,_3521005873836563963.end mGu_88Fdde5jsxW8v9whR 	 
+    	  
+    		   
+     
+     
+ 
+   mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+     
+     
+ 
+  	  mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+   
+        filter_ambiguous_query mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+     
+     
+ 
+_637068542992099399 mVFG05ubhW6ia_rWdS_Tv 	 
+     mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		 
+     msxc6utIaOFXg4WI3vB0q 	 
+    	  
+    		   
+  
+      mr0Gwya5kzUd694oxNDs4 	_8650310500205049352 moHeIYzwbcFb6VaM90Aa9 	 
+    	  
+    		   
+     
+     PnPSolver me0ZKHp2Id3eLmP_6GMtk 	 
+    	  
+    		   
+     
+     
+ solvePnp mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		   
+    _16940374161810747371,_9098980761384425343,_637068542992099399,_5769551021164122736,_10576739190144361304 msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		   
+  mxIwd_EJpfr1C9jwU7IyL 	 
+   
+    
+    
+     mWsMr8mjNljMAriyUwgnE 	 
+    	  
+    		   
+     
+ _6535949166237672095 mhL9dWuOWzLGBfRjwvYlN 	 false mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		
+     mAvI6WqVGKew5QUXF0T2l 	 
+    	  
+    		   
+     
+    mSdpFB1uEgpzM3bVmlHgT 	 
+  _16940374161810747371.markers.size mjjfaXD3tH8warSj13sVr 	 
+    	  
+ meN5YYBBVg5DStfnyA8Dd 	 
+    	  
+    		   
+     
+     
+ 0 mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+     
+   mMm9FLNsNOoyX7Tyb7vpT 	 
+    	  
+    		   
+    
+         mpgczyJuWNGXMBOxeP5oe 	 
+    	  
+    		  _9870110666330890270 mhL9dWuOWzLGBfRjwvYlN 	 
+    	  
+    		   
+    0 mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    	
+        
+         mmeJW_Q9h6ZBPzSBQVjMK 	 
+ size_t  _2654435874 mH9fKsRtHWNu77RGN1xmn 	 
+    	  
+    		   
+     
+  0 mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+     
+ _2654435874 mJCQ17ktBLqNw7sHF60R1 	 
+    	  
+    		   
+     
+     
+ 
+   _16940374161810747371.markers.size mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+    		   
+    mEm194VmPJuGh5y4tMUm5 	 
+    	  
+    		   
+   _2654435874 mUvBFztQfvp6FxGFsyoMW 	 
+    	  
+    		   
+     
+    mVmWtYm5gVtZj7Yq19XWE 	 mjXlfKOCTRjUV9apwYcb7 	
+            
+             mcRuULuI_AYJWzFSu1kB4 	 _11093822290813 mR22jPCjbltZ3tbBmn_6w 	 
+ _9098980761384425343 mVfb3IHZLk8rmg75VuqQZ 	 
+    	  
+    		   
+     map_markers.find mSdpFB1uEgpzM3bVmlHgT 	 
+    	  
+    		   
+     
+  _16940374161810747371.markers mMo20fFU0rdQJ7l5qqDaX 	 
+    	  
+    		   
+     
+ _2654435874 mAH84ftHkJMUldxM9fJHE 	.id mJk4eXgp_IeFV2YvLaQC7 	 
+ m_yMT4MKxrENTtLx5cA7n 	 
+    	
+             mz0gDEk4XJJySbEeCgC9P 	 
+    	  
+    		   
+ _11093822290813 mtDWQOqRguVWSWehbKECr 	 
+    	 _9098980761384425343 mtNKEvBwMHNsmdH7BtZbM 	 
+    	  map_markers.end mGu_88Fdde5jsxW8v9whR 	 
+ mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    continue mqLizGA4Z8QZ_2GYQ1inC 	 
+    
+             mr8s7pfvTmBWmxher3Oue 	 
+    	  
+    		   
+     
+     mbXhD242DJoibBjdI1JtA 	 
+    	  
+    		    mhNH3dNZkhrgawU6wbA6V 	 
+    	  
+    		   
+     
+     
+ 
+  _11093822290813 mtNKEvBwMHNsmdH7BtZbM 	 
+    	  
+    		   second.pose_g2m.isValid mFAl4ldpf7o2gKLWQ4bfu 	 
+    	  
+   mXftmBtLFUrPFw3lasjuW 	 
+    	  
+   continue mwkk1d6uUiyaKys71tsUv 	
+            _9870110666330890270 mTgR0xuTc2WA_FI5hAh2Q 	 
+    	  
+    		   
+     
+  mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		  
+            
+             muDvj5aUdXshb2AqqeEiu 	 
+    	  
+    		   
+     mSdpFB1uEgpzM3bVmlHgT 	 
+    	  
+    	_16940374161810747371.markers mstJEG25u0Qv4VQocWgKl 	 
+    	  
+    		   
+   _2654435874 mvFhi6DaS7eScbgWe07wY 	 
+    	  
+    		   
+   .poses.err_ratio  miGVtxwiqbDQsG6KBslZU 	 
+    	  
+    		  _14938569619851839146.aruco_minerrratio_valid mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+      continue mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+     
+     
+ 
+ 
+            _6535949166237672095 mIqjSmilXv9ILvDddB7nD 	 
+    	  
+    true mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+     
+     
+ 
+
+            break mo9Lbpy0Ap4RTl5O5Or1C 	
+         mqVdZVftPR84WTjiOiVfT 	 
+    	  
+         mAvI6WqVGKew5QUXF0T2l 	 
+    	  
+    		   
+     
+  mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		   
+    _9870110666330890270 mNF0G2xPBB22gI9XzMk2L 	 
+    	  
+    		   
+   1 mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+     
+     
+ _6535949166237672095 mR22jPCjbltZ3tbBmn_6w 	true mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+     
+  
+     mEjIWbivPeVc9WtxGDiWw 	 
+    	  
+    		   
+
+     mXYEIB3KYwzJOpssgkZxP 	 
+    	  
+     mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    _8650310500205049352 moCEmVQeGy8LzV8cAuk79 	 
+    	  
+    		30  mSSwrqUuoNnhMtvhM2vr3 	 
+    	  
+    	  mkyly54GlrbXuNeECTTqk 	 
+    	  
+    		   
+     
+     
+ 
+_6535949166237672095 mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+     
+     
+ 
+  	 mjXlfKOCTRjUV9apwYcb7 	 
+    	  
+    		   
+     
+
+      mSXTPhnnQgIi6ocmukNcV 	 
+    	  
+    		   
+   se3 mJFtpHxfnoGMxp1wzTBMr 	 mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+     
+     mL9oWJQ1n2xKG3FtRNowa 	 
+    	  
+    		   
+     
+     
+    
+     mN_UNAeshLaooczmV1nkW 	 
+    	  
+    		   
+     
+     
+ 
+  	 size_t _2654435874 mXE5wWRmJGUY4EsEsgegT 	 
+    	  0 mEm194VmPJuGh5y4tMUm5 	 
+    	  
+    		   
+     
+     
+ 
+  _2654435874 mbVOLbjVZO0YI60Vuguaq 	 
+    	  
+    		   
+     
+   _637068542992099399.size mTGJXDnkacX2UX9dooHQu 	 mI30mSPxGJaQtkEjJfoQX 	 
+   _2654435874 mMbWC8gQeXmnMqYEj20Wf 	 
+    	   mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		    mXdnll4yjwVy4uBDSjUe3 	 
+    	  
+    		   
+     
+
+            _9098980761384425343 mcvX0B8TDw1gEtqXtgT4T 	map_points mMo20fFU0rdQJ7l5qqDaX 	 
+    	  
+    		   
+_637068542992099399 mRjEKX4QN9MTvSEtCTNd7 	 _2654435874 mOwAFTnFZjoBWI2gNeAO_ 	 
+    	  
+   .trainIdx mGPgWaVxS3WdTr7rWsMw4 	 
+    	  
+    		   
+     
+     
+ 
+.setSeen mjjfaXD3tH8warSj13sVr 	 
+    	  
+    		   
+     
+     
+ 
+  	  m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		 
+            _16940374161810747371.ids mstJEG25u0Qv4VQocWgKl 	 
+    	  
+    		 _637068542992099399 mstJEG25u0Qv4VQocWgKl 	 
+    	  
+    		_2654435874 mtEI4bSjtkyV5O0qz_vBz 	 
+    	  
+    		   
+ .queryIdx mfF196cGKZ_LkBPN8ZWlr 	 
+    	  
+    		   
+      mIqjSmilXv9ILvDddB7nD 	 
+    	  
+    		   
+     
+_637068542992099399 mbtzLVjzLgaxYxNNltfyM 	 
+    	  
+    		   
+     
+    _2654435874 mtEI4bSjtkyV5O0qz_vBz 	.trainIdx mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+     
+     
+ 
+  
+             mHbSWrX6OPeRP2Igmog8G 	 
+    	  
+    		   
+     
+     
+ 
+  	 mgGCFceAojKPG0bK5eWQT 	 
+    	  
+   _637068542992099399 mMo20fFU0rdQJ7l5qqDaX 	 
+    	  
+    		   
+     
+   _2654435874 mWi16Wz7P86SIJlTQEzCB 	.imgIdx mrDas3egWRcEnvTodVRRA 	 
+    	  
+    		 -1 mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+     
+     
+ 
+  
+                _16940374161810747371.flags mMo20fFU0rdQJ7l5qqDaX 	 
+    	  
+    		   
+     
+     
+ 
+  	  _637068542992099399 mVLLVWqNz0_lGN56vY03t 	 
+    	  
+    		   
+   _2654435874 mWjWwCxBA7LLBixCoRsYZ 	 
+    	.queryIdx mQbYLzhvVQm8J2LNkC6S6 	 
+    	  
+    		   
+     
+     
+ 
+.set mbXhD242DJoibBjdI1JtA 	 
+    	  
+Frame me0ZKHp2Id3eLmP_6GMtk 	FLAG_OUTLIER,true mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+     
+ m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+     
+     
+     mqVdZVftPR84WTjiOiVfT 	 
+    	  
+    		   
+     
+     
+ 
+ 
+     mV4_AbWY8ymaWGsYOk0LC 	 
+    	  
+    		   
+     
+     
+ 
+ _5769551021164122736 mC_gLvnw5tkMWRQheRKr5 	
+ mEjIWbivPeVc9WtxGDiWw 	 
+    	  
+    		   
+     
+     
+ muW_4n008TrPdz3qsiq99 	 
+    	  
+    System miuOs6oIdxnQEMrFFk2n_ 	 
+    	  
+    		   
+     
+     
+ _14031550457846423181 mTiWUgQKOeYLvNdGsR_oS 	 
+    	   cv mrPFLPKakBKjOOnkuhZUP 	 
+    	 Mat &_46082544231248938, mqI5yMr4h6CHkceANuA43 	 
+    	  
+    		   
+     
+    _9971115036363993554 mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		   
+     
+     
+ 
+  	const mi6BqZOVmQyrEy6BLProP 	 
+    	  
+    		   
+     
+     
+ 
+     mise5YGBUx6xBGs9EUolB 	 
+    	  
+    		   _706246330297760 mXE5wWRmJGUY4EsEsgegT 	 
+    	  
+    		   
+     
+float mBGM118Iia8vm6zcNTuB6 	 
+    	  
+    		   
+     
+     
+ _46082544231248938.cols mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+     
+ /640.f mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    	
+    cv miuOs6oIdxnQEMrFFk2n_ 	 
+    	  
+    		   
+     
+     
+ 
+  	 Point2f _46082575822903876 mbXhD242DJoibBjdI1JtA 	 
+ _706246330297760,_706246330297760 mPaUdMg3fg2ipZY0Exj7X 	 
+    	  m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+  
+     mfQABlcyhvI43vfjabcjx 	 
+    	  
+    		   
+     
+    _16987668682974831349 mRDD8w83SsPKbGXy_JkEO 	 
+    	  
+false mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   
+     
+     
+ 
+ 
+      mWYYMqZtRPklZ6ldYQlW8 	 
+  mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+    		 _3857178690860967008 mw_MIhwcw8TZ9gTF3_mEt 	 
+    	 STATE_TRACKING mPaUdMg3fg2ipZY0Exj7X 	 
+ muH9A34QGuccPZkZDb32w 	 
+    	  
+    		 
+         mWIOGoR1XyrR6fw03i9px 	 
+    	  
+    		  size_t _2654435874 mvA2vjSvRD7UmknjmYP5U 	 
+    	  
+    0 mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+  _2654435874 miGVtxwiqbDQsG6KBslZU 	 
+    	  
+    		   
+    _14938569046430841631.ids.size mdbwYCIpGYWahFfTtU8zH 	 
+    	  
+ mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    	_2654435874 mTgR0xuTc2WA_FI5hAh2Q 	 
+    	  
+    		   
+     
+     mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+
+             mxkHJa5wooqhzaSxK7_fd 	 
+    	  
+    		   
+     
+   mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+   _14938569046430841631.ids mRjEKX4QN9MTvSEtCTNd7 	 
+    	  
+    		   
+     
+     _2654435874 mtEI4bSjtkyV5O0qz_vBz 	 
+    	  
+  mS3P8ZWKrLHg9h_5dW5He 	 
+    	  
+    		   
+     
+     
+ 
+ std mExFPeJBflhTWJKuQVWoB 	 
+    	  
+    		   
+     
+     numeric_limits mJCQ17ktBLqNw7sHF60R1 	 
+    	  
+    		   
+    uint32_t mNF0G2xPBB22gI9XzMk2L 	 
+  mMorzi7AHv5qXgdOZzcMd 	 
+    	  
+max mTGJXDnkacX2UX9dooHQu 	 
+    	  
+    		   
+    msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		   
+     
+   mbqHQotWhg0sv6ViuZXc3 	 
+    	  
+ 
+                 mbCI0BlZHp5kbKpNqa5Su 	 
+    	  
+    		   
+     
+     
+ 
+  mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+     
+     
+ 
+  	 mQIaw42evZrZGmIhV_U05 	 
+    	  
+    	_9098980761384425343 mcvX0B8TDw1gEtqXtgT4T 	 
+    	  map_points.is mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   
+   _14938569046430841631.ids mRjEKX4QN9MTvSEtCTNd7 	 
+    	  
+    		   
+     
+     
+_2654435874 mGPgWaVxS3WdTr7rWsMw4 	 
+    	  
+     mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+    msDy4S0F6Zdx78ZUnbARe 	 
+    	   continue mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+                cv mMorzi7AHv5qXgdOZzcMd 	 
+ Scalar _46082574599890393 mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		   
+     
+   0,255,0 mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+    myu64GAT8DgGBhNOOCqvd 	 
+    	  
+
+                 mr8s7pfvTmBWmxher3Oue 	 
+    	  
+    mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		   
+    mCzaOxAWpFlV3gHYCg4ev 	 
+    _9098980761384425343 mSwbK3nBcNZkvGxSXNOZy 	 
+    	  
+  map_points mVjuVop3osym9wWoq6p3w 	_14938569046430841631.ids mRjEKX4QN9MTvSEtCTNd7 	 
+    	  
+    		   
+ _2654435874 mvFhi6DaS7eScbgWe07wY 	 
+    	  
+    		   
+     
+   mtEI4bSjtkyV5O0qz_vBz 	 
+    	  
+    		   
+  .isStable mTGJXDnkacX2UX9dooHQu 	 
+    	  
+     msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		   
+     
+     
+ 
+  mjXlfKOCTRjUV9apwYcb7 	 
+    	  
+    		   
+     
+     
+ 
+ _46082574599890393 moHeIYzwbcFb6VaM90Aa9 	 
+    	cv mrS2zvlmrTf4L4KBRRYAU 	 
+    	  
+   Scalar mOAy4qGUJpdHQSVbVPq9E 	 
+  0,0,255 mVmWtYm5gVtZj7Yq19XWE 	 
+ myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		   
+      msxc6utIaOFXg4WI3vB0q 	 
+ 
+                cv mwuvkepREHprpx4i3n2RV 	 
+    	  
+    		   
+     
+   rectangle mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+     
+     
+ 
+  	 _46082544231248938,_9971115036363993554* mgGCFceAojKPG0bK5eWQT 	 
+ _14938569046430841631.kpts mZloAr3_PPw7622AVrUCe 	_2654435874 mQbYLzhvVQm8J2LNkC6S6 	 
+    	  
+    		   
+  -_46082575822903876 mT3v8xdcVsSvUtbwmHC7j 	,_9971115036363993554* mbXhD242DJoibBjdI1JtA 	 
+    	  
+    		   
+    _14938569046430841631.kpts mVLLVWqNz0_lGN56vY03t 	 
+ _2654435874 mAH84ftHkJMUldxM9fJHE 	 
+    	  
+    		   
+     
+    +_46082575822903876 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+     
+   ,_46082574599890393,_706246330297760 mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+ mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		
+             msxc6utIaOFXg4WI3vB0q 	 
+    	  
+    		   
+     
+    
+             mEYy4vDSh1urfYj6Y0xAX 	 
+ mdEGS_9gShKEEsK9RPbfj 	 
+    	  
+    		   _16987668682974831349 mXftmBtLFUrPFw3lasjuW 	 
+     mi6BqZOVmQyrEy6BLProP 	 
+    	  
+    		   
+
+                cv mMorzi7AHv5qXgdOZzcMd 	 
+  Scalar _46082574599890393 mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+    		   
+     
+ 255,0,0 mVFG05ubhW6ia_rWdS_Tv 	 
+    myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		   
+     
+    
+                cv me0ZKHp2Id3eLmP_6GMtk 	 
+    	  
+    		   
+rectangle mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		   _46082544231248938,_9971115036363993554* mBGM118Iia8vm6zcNTuB6 	 
+    	  
+_14938569046430841631.kpts mZloAr3_PPw7622AVrUCe 	 
+    	  
+    		   
+     _2654435874 mAH84ftHkJMUldxM9fJHE 	 
+    	  
+    		   
+-_46082575822903876 mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+    ,_9971115036363993554* mSdpFB1uEgpzM3bVmlHgT 	 _14938569046430841631.kpts mZloAr3_PPw7622AVrUCe 	 
+    	  _2654435874 mWjWwCxBA7LLBixCoRsYZ 	 
+    	  
+    		   
+     
+     
+ +_46082575822903876 msDy4S0F6Zdx78ZUnbARe 	,_46082574599890393,_706246330297760 mJk4eXgp_IeFV2YvLaQC7 	 
+    	 mI30mSPxGJaQtkEjJfoQX 	 
+             mMGejH_coNc3kGxAdXVex 	 
+    	  
+     mqVdZVftPR84WTjiOiVfT 	 
+    	  
+    		   
+   
+     mEYy4vDSh1urfYj6Y0xAX 	 
+    	  
+    		   
+     
+     
+ 
+  	  mcs2IPsFq8XN5a3t5KBLK 	 
+    	  
+    _9098980761384425343 mcvX0B8TDw1gEtqXtgT4T 	 
+    	  
+    		isEmpty mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+     msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		   
+     
+     
+ muH9A34QGuccPZkZDb32w 	 
+
+         mN_UNAeshLaooczmV1nkW 	 
+    	  
+    		   
+     
+     
+ 
+   mkcVgqnqADeTh3Pu1ogGF 	 
+    	  
+    		   
+     
+  _2654435881: _14938569046430841631.kpts mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		
+            cv mExFPeJBflhTWJKuQVWoB 	 
+    	  
+    		   
+     
+  rectangle mBGM118Iia8vm6zcNTuB6 	_46082544231248938,_9971115036363993554* mYcSgTugFLQcmWT7seaac 	 
+    	  
+    		  _2654435881-_46082575822903876 mJk4eXgp_IeFV2YvLaQC7 	 
+ ,_9971115036363993554* mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		  _2654435881+_46082575822903876 mVFG05ubhW6ia_rWdS_Tv 	 
+    ,cv mI3QeEk0K_mj1WaUiowht 	 
+    	  Scalar mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+     
+     
+255,0,0 mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+     
+ ,_706246330297760 mT3v8xdcVsSvUtbwmHC7j 	 mxIwd_EJpfr1C9jwU7IyL 	 
+
+     mEjIWbivPeVc9WtxGDiWw 	 
+    	  
+  
+    
+     mTy5S_mcphfNLzuJQ30Xe 	 
+    	  
+    		   
+     
+     
+auto _5221496220235804833:_14938569046430841631.markers mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+   mi6BqZOVmQyrEy6BLProP 	 
+    	  
+    		  
+         
+        cv mNQimRrYQ8Mz6YI9KM7Fn 	 
+    	  
+    		   
+     
+     
+ 
+  	Scalar _46082574599890393 mR22jPCjbltZ3tbBmn_6w 	 
+    	  
+    		   
+     
+     
+ 
+ cv mNQimRrYQ8Mz6YI9KM7Fn 	 
+    	  
+    		   
+     
+     
+Scalar mYcSgTugFLQcmWT7seaac 	 
+    	  
+    		   
+ 0,244,0 mXftmBtLFUrPFw3lasjuW 	 
+    	 mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+     
+         mz0gDEk4XJJySbEeCgC9P 	 
+     _9098980761384425343 mVfb3IHZLk8rmg75VuqQZ 	 
+    	  
+    		   
+     
+map_markers.count mYcSgTugFLQcmWT7seaac 	_5221496220235804833.id mSBNIRK1XqZg3XlWW_b3d 	 
+   mpjTyiESCVWYRDiT2x2RD 	 
+    	  
+    		   
+     
+0 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+     
+     
+ 
+ mSH1h4yGhaMSu8y7JC_rY 	 
+    
+             mGc5v1UWfDU7ttNcZryQG 	 
+    	  
+    		   
+     
+  _9098980761384425343 msDVYCHuU_j2g_TdgX4Ta 	 
+    	  
+    		   
+     
+     
+ map_markers.at mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		_5221496220235804833.id mxAXsCfNkscq4iQtE2AeY 	 
+    .pose_g2m.isValid mdbwYCIpGYWahFfTtU8zH 	 
+    	  
+    mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+  
+                _46082574599890393 mIqjSmilXv9ILvDddB7nD 	 
+    	  
+    		   
+cv mExFPeJBflhTWJKuQVWoB 	 
+    	  
+    		   
+   Scalar mBGM118Iia8vm6zcNTuB6 	 
+    	  
+    		   
+     
+     
+ 255,0,0 mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		   
+     
+    mQivdop_Gb4hqsWvOttc3 	 
+    
+            else
+                _46082574599890393 mXE5wWRmJGUY4EsEsgegT 	 
+    	 cv mNQimRrYQ8Mz6YI9KM7Fn 	 
+    	  
+    		   Scalar mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+   0,0,255 muC5cqYcHRXDD16noARI1 	 
+    	  
+   m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+     
+     
+ 
+  	
+         mEjIWbivPeVc9WtxGDiWw 	 
+    	  
+    		   
+     
+        
+         mozBzR4ceXlDTd_eA9UWj 	 
+    	  
+    		   
+     
+     
+ 
+ auto &_2654435881:_5221496220235804833.corners mPaUdMg3fg2ipZY0Exj7X 	 _2654435881 mrJcfxt4GvOx7AQVScfu1 	 
+    	  
+    		_9971115036363993554 mwkk1d6uUiyaKys71tsUv 	 
+
+         mvbe619pMTxqR0ISntFSZ 	 auto &_2654435881:_5221496220235804833.und_corners mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+ _2654435881 mfaXcqsSkd6ad3maNOmpF 	 
+    	  
+   _9971115036363993554 mEm194VmPJuGh5y4tMUm5 	 
+    	  
+  
+        
+        _5221496220235804833.draw mBGM118Iia8vm6zcNTuB6 	 
+_46082544231248938,_46082574599890393 mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		   
+    
+     mL9oWJQ1n2xKG3FtRNowa 	 
+    	  
+    		   
+     
+     
+ 
+ mqVdZVftPR84WTjiOiVfT 	 
+    	  
+    		   
+ 
+ mlwxuKRzwZKw4d0ABP68H 	 
+    	  
+    		   
+     
+     
+ 
+  System miuOs6oIdxnQEMrFFk2n_ 	 
+    	  
+    		   
+    globalOptimization mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+    		   
+    mjXlfKOCTRjUV9apwYcb7 	 
+    	  
+    		   
+     
+     
+ 
+
+     myydjxqnidOfg3YXIPfCh 	 
+    	  
+    	_11093822300040 mXE5wWRmJGUY4EsEsgegT 	 
+    	  
+    		   
+     
+     
+ GlobalOptimizer mrPFLPKakBKjOOnkuhZUP 	 
+    	create mSdpFB1uEgpzM3bVmlHgT 	 
+    	  
+    		   
+     
+    _14938569619851839146.global_optimizer mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+     
+     
+ 
+  mwkk1d6uUiyaKys71tsUv 	 
+
+    GlobalOptimizer mMorzi7AHv5qXgdOZzcMd 	 
+    	  
+    		   ParamSet _3005399798454910266 mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+   debug mNQimRrYQ8Mz6YI9KM7Fn 	 
+    	  
+    		   
+     
+     
+ 
+ Debug mExFPeJBflhTWJKuQVWoB 	 
+    	  
+    		 getLevel mJFtpHxfnoGMxp1wzTBMr 	 
+     mpC65FoK2NLadlWUAo9ps 	 
+    	  
+    		   
+11  mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		  mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+     
+     
+
+    _3005399798454910266.fixFirstFrame mRDD8w83SsPKbGXy_JkEO 	 
+    	  
+    		   
+  true mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+     
+     
+    _3005399798454910266.nIters mH9fKsRtHWNu77RGN1xmn 	 
+    	  
+    	10 mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+     
+     
+ 
+    _3005399798454910266.markersOptWeight moHeIYzwbcFb6VaM90Aa9 	 
+    	  
+     getParams mdbwYCIpGYWahFfTtU8zH 	 
+.markersOptWeight mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   
+     
+   
+    _3005399798454910266.minMarkersForMaxWeight mIqjSmilXv9ILvDddB7nD 	 
+    	  
+ getParams mFAl4ldpf7o2gKLWQ4bfu 	 
+    	  
+    		   
+     
+     
+ 
+  .minMarkersForMaxWeight mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+     
+    
+    _3005399798454910266.InPlaneMarkers mIqjSmilXv9ILvDddB7nD 	 
+    	  
+    		   
+     
+    getParams mGu_88Fdde5jsxW8v9whR 	 
+    	  
+    		   
+     
+     
+ 
+  	.inPlaneMarkers mqLizGA4Z8QZ_2GYQ1inC 	 
+    _11093822300040 mgi5Boc5f0emw5eocZbgV 	 
+    	  
+    		   
+     
+     
+ 
+  optimize mBGM118Iia8vm6zcNTuB6 	 
+  _9098980761384425343,_3005399798454910266  mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+ myu64GAT8DgGBhNOOCqvd 	 
+    	  
+
+    _9098980761384425343 mgi5Boc5f0emw5eocZbgV 	 
+    	  
+    		   
+removeBadAssociations mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+   _11093822300040 mtNKEvBwMHNsmdH7BtZbM 	 
+    	  
+    		   
+  getBadAssociations mTGJXDnkacX2UX9dooHQu 	 
+    	 ,2 mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+ mQivdop_Gb4hqsWvOttc3 	 
+    	  
+    		   
+     
+     
+ 
+ mqVdZVftPR84WTjiOiVfT 	
+ mdx9gS37IsjwWpaOb1ODY 	 
+    	  
+ System mNQimRrYQ8Mz6YI9KM7Fn 	 
+    	  
+    		   
+     
+     
+getLastProcessedFrame mecU92YjgSbB3VkEoZVK3 	 
+    	  
+    const mbqHQotWhg0sv6ViuZXc3 	 
+    	  
+    		   
+     
+     
+ 
+  	 return _14938569046430841631.fseq_idx mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+     
+     
+  msxc6utIaOFXg4WI3vB0q 	 
+    	  
+    		   
+     
+   
+ mol5p_9C0R9o_YMjX6nxS 	 System mMorzi7AHv5qXgdOZzcMd 	 
+    	  
+    		   
+     
+  setMode mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    	MODES _706246332824366 mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		    mSH1h4yGhaMSu8y7JC_rY 	 
+    	  
+    		   
+     
+     
+ 
+    _17450466964482625197 mIqjSmilXv9ILvDddB7nD 	 
+    	  
+    		 _706246332824366 myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		   
+     
+   
+ mwiKr6psttEx97f2NsYO1 	 
+    	  
+    		  
+  mgBFSWJlmkK48wSOW4b6N 	 
+    	  
+    		   
+     
+     
+ 
+System mExFPeJBflhTWJKuQVWoB 	 
+    	  
+    		   
+     
+     
+ 
+clear mdbwYCIpGYWahFfTtU8zH 	 
+    	  
+    		   
+   mjXlfKOCTRjUV9apwYcb7 	 
+    	 
+     _2869602498954317713 moHeIYzwbcFb6VaM90Aa9 	 
+    	  
+    		   
+     
+     std mMorzi7AHv5qXgdOZzcMd 	 
+    make_shared mkHL8KJw4VjwmGdgQrteX 	 
+    	  
+    		   
+MapManager mW202Akoy5o2_FFUMtz7a 	 
+    	  
+ mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+    		   
+     
+  mEm194VmPJuGh5y4tMUm5 	 
+    	  
+     _13028158409047949416 mA7hUM4UKqFyb_LJLsook 	false myu64GAT8DgGBhNOOCqvd 	 
+   
+     _3857178690860967008 moHeIYzwbcFb6VaM90Aa9 	 
+    	  
+    		STATE_LOST myu64GAT8DgGBhNOOCqvd 	 
+
+     _9098980761384425343.reset mGu_88Fdde5jsxW8v9whR 	 m_yMT4MKxrENTtLx5cA7n 	 
+    	  
+    		   
+   
+     _2044193291895307872 mhL9dWuOWzLGBfRjwvYlN 	 
+    	  
+    		   
+     
+std mExFPeJBflhTWJKuQVWoB 	 
+    	  
+    		   
+     make_shared mbVOLbjVZO0YI60Vuguaq 	 
+    	  
+MapInitializer mYbzFOKSwwNsD71cP1DkA 	 
+    	  
+    		   
+     
+     
+ 
+   mJFtpHxfnoGMxp1wzTBMr 	 
+    	  
+    		   
+     
+     
+ 
+ mEm194VmPJuGh5y4tMUm5 	 
+    	  
+    		   
+     
+     
+ 
+ 
+     _14463320619150402643 mR22jPCjbltZ3tbBmn_6w 	 
+    	  
+    		   cv mvpMkjoDGcQujDevHDZnx 	 
+    	  
+    		   
+     
+     
+ 
+Mat mrXXIs5j4DqJtj32aOG5F 	 
+    	  
+  mI30mSPxGJaQtkEjJfoQX 	
+     _10558050725520398793 mXE5wWRmJGUY4EsEsgegT 	 
+    	  
+    		   
+  -1 mqLizGA4Z8QZ_2GYQ1inC 	
+  mf0YJDuh2j5By5N13LunG 	 
+    	  
+    
+  mgBFSWJlmkK48wSOW4b6N 	System mExFPeJBflhTWJKuQVWoB 	 
+    	  
+    		   
+     
+saveToFile mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		   
+   string _16997227483604144380 mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+      mi4REkBAebpTZrzlvFEpD 	 
+    	  
+    		   
+     
+     
+ 
+  
+     waitForFinished mIJkWACd8Uom4Jv6selID 	 
+    	  
+    		   
+     
+     mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+     
+    
+     
+     fstream _706246330143775 mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+_16997227483604144380,ios_base mNQimRrYQ8Mz6YI9KM7Fn 	 
+    	  
+    		 binary|ios_base mNQimRrYQ8Mz6YI9KM7Fn 	out  mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		   
+     
+    mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+   
+      myfOHlfTLtRL7im7qSaYm 	 
+    	  
+    	 mkyly54GlrbXuNeECTTqk 	 
+    	  
+    		   
+     
+    _706246330143775 mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   
+     
+     throw std mMorzi7AHv5qXgdOZzcMd 	 
+    	  
+runtime_error mbXhD242DJoibBjdI1JtA 	string mlfybwyvp98TOJj0yuqhF 	 
+    __PRETTY_FUNCTION__ mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+  +"\x63\x6f\x75\x6c\x64\x20\x6e\x6f\x74\x20\x6f\x70\x65\x6e\x20\x66\x69\x6c\x65\x20\x66\x6f\x72\x20\x77\x72\x69\x74\x69\x6e\x67\x3a"+_16997227483604144380 mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		 mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+     
+     
+     
+     io_write mbVOLbjVZO0YI60Vuguaq 	 
+    	  
+    		   
+     
+  uint64_t mKJK3THIuAwgeFpuGLN8L 	 
+    	  
+    		   
+     
+     
+ 
+ mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+    182313,_706246330143775 mVmWtYm5gVtZj7Yq19XWE 	 
+  mI30mSPxGJaQtkEjJfoQX 	 
+  
+     _9098980761384425343 mdMNbPkq6p5KBhEVf3OFw 	 
+    	  
+    		   toStream mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		   
+_706246330143775 mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+  mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		   
+     
+     
+ 
+  
+      
+     _14938569619851839146.toStream mBGM118Iia8vm6zcNTuB6 	 
+    	  
+    		   
+     
+     
+ 
+  _706246330143775 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+     
+     
+ mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+     
+     
+ 
+
+     _706246330143775.write mOAy4qGUJpdHQSVbVPq9E 	 
+ mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    	char* mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		   
+     
+     
+ 
+  &_17976495724303689842,sizeof mSdpFB1uEgpzM3bVmlHgT 	 
+    	  
+    		   
+     
+     
+ 
+_17976495724303689842 mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		 mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+     
+     mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+     
+     
+ 
+  
+     _706246330143775.write mYcSgTugFLQcmWT7seaac 	 
+    	  
+    		   
+ mYcSgTugFLQcmWT7seaac 	 
+  char* mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+&_10576739190144361304,sizeof mSdpFB1uEgpzM3bVmlHgT 	 
+    	  
+    		   
+     
+     
+ _10576739190144361304 mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+     muC5cqYcHRXDD16noARI1 	 
+    	  
+    	 mEm194VmPJuGh5y4tMUm5 	 
+    	  
+  
+     _706246330143775.write mOAy4qGUJpdHQSVbVPq9E 	 
+ mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+   char* muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+     
+     
+&_13028158409047949416,sizeof mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		   
+     
+    _13028158409047949416 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    mVmWtYm5gVtZj7Yq19XWE 	 
     	  
     		   
      
  mQivdop_Gb4hqsWvOttc3 	 
     	  
-    		   
-     
-     _706246330143775.read mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		    mYcSgTugFLQcmWT7seaac 	 
-    	  
-    		   
-  char* mJk4eXgp_IeFV2YvLaQC7 	 
-    	  
-    		   
-     
- &_1227001083608564617,sizeof mgGCFceAojKPG0bK5eWQT 	 
-    	  
-    		   
-    _1227001083608564617 mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		   
-     
-     
-  mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-    		   
-     mo9Lbpy0Ap4RTl5O5Or1C 	 
-    	  
-
-     _706246330143775.read mYcSgTugFLQcmWT7seaac 	 
+    		 
+     _706246330143775.write mlfybwyvp98TOJj0yuqhF 	 
   mNQ6rNLARkxxSTP6tiTXG 	 
     	  
-    		 char* mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		   
-&_7599632917966626906,sizeof mbXhD242DJoibBjdI1JtA 	 
-    	  
-    		   
- _7599632917966626906 mT3v8xdcVsSvUtbwmHC7j 	 
-   mXftmBtLFUrPFw3lasjuW 	 
+    		char* msDy4S0F6Zdx78ZUnbARe 	 
     	  
     		   
      
-     m_yMT4MKxrENTtLx5cA7n 	 
+     
+ 
+  &_3857178690860967008,sizeof mTiWUgQKOeYLvNdGsR_oS 	 
     	  
     		   
      
+     
+ 
+  	 _3857178690860967008 mSBNIRK1XqZg3XlWW_b3d 	 
+    	   mT3v8xdcVsSvUtbwmHC7j 	  mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+     
+ 
+     _706246330143775.write mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		    mbXhD242DJoibBjdI1JtA 	 
+    	  
+   char* muC5cqYcHRXDD16noARI1 	 
+    	  
+ &_17450466964482625197,sizeof mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    	_17450466964482625197 muC5cqYcHRXDD16noARI1 	 
+    	  
+    	 mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+     mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
   
-     _706246330143775.read mUGrJMUolw0lb_KVyGK5N 	 
-    	 mOAy4qGUJpdHQSVbVPq9E 	 
+     _14938569046430841631.toStream mbXhD242DJoibBjdI1JtA 	 
+    	  
+    		   
+     
+     
+_706246330143775 mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+     
+      mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+     
+   
+     _4913157516830781457.toStream mBGM118Iia8vm6zcNTuB6 	 
+    	  
+    		   
+  _706246330143775 mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		   
+     
+     
+ 
+  	  mo9Lbpy0Ap4RTl5O5Or1C 	 
+     _3944249282595574931 mdMNbPkq6p5KBhEVf3OFw 	 
+    	  
+  toStream mbXhD242DJoibBjdI1JtA 	 
+    	  
+    		   
+     _706246330143775 mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+  myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		 
+     _2869602498954317713 mcvX0B8TDw1gEtqXtgT4T 	 
+    	  
+    		   
+   toStream mUGrJMUolw0lb_KVyGK5N 	 
+    	_706246330143775 muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
+      mEm194VmPJuGh5y4tMUm5 	 
+    	  
+
+     _1320287184975591154 mtNKEvBwMHNsmdH7BtZbM 	 
+    	  
+    		   
+     
+    toStream mbXhD242DJoibBjdI1JtA 	 
+    _706246330143775 mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+   myu64GAT8DgGBhNOOCqvd 	 
+ 
+     toStream__ mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+    		   
+ _14463320619150402643,_706246330143775 mSBNIRK1XqZg3XlWW_b3d 	 
+  mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   
+     
+    
+     _706246330143775.write mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		   
+     
+ mYcSgTugFLQcmWT7seaac 	 
+    char* mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+     
+&_10558050725520398793,sizeof mOAy4qGUJpdHQSVbVPq9E 	 
+_10558050725520398793 msDy4S0F6Zdx78ZUnbARe 	 
+    	  
+    		  mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+ mo9Lbpy0Ap4RTl5O5Or1C 	 
+    
+     _706246330143775.write mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+     mbXhD242DJoibBjdI1JtA 	 
     	  
     		   char* mVFG05ubhW6ia_rWdS_Tv 	 
     	  
     		   
-    &_13736188859597190254,sizeof mNQ6rNLARkxxSTP6tiTXG 	 
+     &_13033649816026327368,sizeof mYcSgTugFLQcmWT7seaac 	 
     	  
     		   
-  _13736188859597190254 mSBNIRK1XqZg3XlWW_b3d 	 mPaUdMg3fg2ipZY0Exj7X 	 
+  _13033649816026327368 mJk4eXgp_IeFV2YvLaQC7 	 
     	  
-    	 mo9Lbpy0Ap4RTl5O5Or1C 	 
- 
-     _16805767570017655115.fromStream mlfybwyvp98TOJj0yuqhF 	 
-    	 _706246330143775 mT3v8xdcVsSvUtbwmHC7j 	 m_yMT4MKxrENTtLx5cA7n 	 
+    		   
+     
+  mXftmBtLFUrPFw3lasjuW 	 
     	  
     		   
      
      
- 
+  mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+    
+     _706246330143775.flush mjjfaXD3tH8warSj13sVr 	 
+    	  
+ mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+
+  mf0YJDuh2j5By5N13LunG 	 
   
-     _6731656245229539747.fromStream mNQ6rNLARkxxSTP6tiTXG 	 
+  mDWwKMm0Bw8nxvI3ZwZnM 	 
     	  
     		   
-     _706246330143775 mSBNIRK1XqZg3XlWW_b3d 	 
+     
+    System mMorzi7AHv5qXgdOZzcMd 	 
+ readFromFile mbXhD242DJoibBjdI1JtA 	 
     	  
+    		   
+ string _16997227483604144380 mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		  mqlayz2fShj6ePxekxwRg 	 
+    	  
+    		   
+     
+  
+     ifstream _706246330143775 mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    	_16997227483604144380,ios mI3QeEk0K_mj1WaUiowht 	 
+    	  
+    		   
+    binary mSBNIRK1XqZg3XlWW_b3d 	 myu64GAT8DgGBhNOOCqvd 	 
+    	
+      mdEGS_9gShKEEsK9RPbfj 	 
+    	  
+    		    mC4FNAhGk_5NQroya9r4E 	 
+    	  
+    		   
+     _706246330143775 mPaUdMg3fg2ipZY0Exj7X 	 
+ throw std mvpMkjoDGcQujDevHDZnx 	 
+    	  
+    		   
+  runtime_error mbXhD242DJoibBjdI1JtA 	 
+    	  
+    		   
+     
+     
+ 
+  string mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+  __PRETTY_FUNCTION__ mT3v8xdcVsSvUtbwmHC7j 	+"\x63\x6f\x75\x6c\x64\x20\x6e\x6f\x74\x20\x6f\x70\x65\x6e\x20\x66\x69\x6c\x65\x20\x66\x6f\x72\x20\x72\x65\x61\x64\x69\x6e\x67\x3a"+_16997227483604144380 mPaUdMg3fg2ipZY0Exj7X 	 
+    	  mqLizGA4Z8QZ_2GYQ1inC 	 
+    	  
+    		   
+     
+     
+ 
+  	 
+      muDvj5aUdXshb2AqqeEiu 	 
+  mbXhD242DJoibBjdI1JtA 	 
+    	  
+    		   
+ io_read mk9nSfh6XGyonOYMC8C3M 	 
+    	  
+    		 uint64_t mW202Akoy5o2_FFUMtz7a 	 
+    	  
+    		   
+     
+     
+ mTiWUgQKOeYLvNdGsR_oS 	 
+    	  
+    		   _706246330143775 mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		   
+     
+      mS3P8ZWKrLHg9h_5dW5He 	 182313 mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+     
+       throw std mI3QeEk0K_mj1WaUiowht 	 
+    	  runtime_error mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		 string mSdpFB1uEgpzM3bVmlHgT 	__PRETTY_FUNCTION__ mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+  +"\x69\x6e\x76\x61\x6c\x69\x64\x20\x66\x69\x6c\x65\x20\x74\x79\x70\x65\x3a"+_16997227483604144380 mT3v8xdcVsSvUtbwmHC7j 	 
+    	  
+    		   
+     
+     
+  mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		  
+     _9098980761384425343 mXE5wWRmJGUY4EsEsgegT 	 
+    	  
+    		   
+     
+   std mvpMkjoDGcQujDevHDZnx 	 
+    	  
+    		   
+     
+     
+make_shared moCEmVQeGy8LzV8cAuk79 	 
+    	  
+    		   
+     
+  Map mzCa3iYOTZk3vOb9xFPuf 	 
+    	  
+    		   
+     
+     mRAYh0ARHPOc62CfGHWWO 	 
+    	  
+    		   
+     
+     
+ 
+  	  mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		   
+     _9098980761384425343 mj3rSXJDWd4j4OSGbS2oX 	 
+    	  
+    fromStream mYcSgTugFLQcmWT7seaac 	 
+    	  
+    		 _706246330143775 muC5cqYcHRXDD16noARI1 	 
+    	  
+    mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		  
+     _14938569619851839146.fromStream mTiWUgQKOeYLvNdGsR_oS 	 
+    	  _706246330143775 mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		   
+ mC_gLvnw5tkMWRQheRKr5 	 
+    	
+      _706246330143775.read mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+     
+     
+ mNQ6rNLARkxxSTP6tiTXG 	 
+    	  
+    		   
+     
+  char* mPaUdMg3fg2ipZY0Exj7X 	 
+ &_17976495724303689842,sizeof mgGCFceAojKPG0bK5eWQT 	 
+    	  
+_17976495724303689842 mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   
+     
+     
+  muC5cqYcHRXDD16noARI1 	 
+    	  
+    		   
    mqLizGA4Z8QZ_2GYQ1inC 	 
     	  
-    		   
-     
-     
- 
-  	 
-     _6644573796688729791 mevHkLo7kL5WL0_0mLIhr 	 
- fromStream mbXhD242DJoibBjdI1JtA 	 _706246330143775 mVFG05ubhW6ia_rWdS_Tv 	 
-    	   mo9Lbpy0Ap4RTl5O5Or1C 	 
+     _706246330143775.read mNQ6rNLARkxxSTP6tiTXG 	 
+    	  mOAy4qGUJpdHQSVbVPq9E 	 
     	  
     		   
-     
-     
-     _9141803538300908158 mtNKEvBwMHNsmdH7BtZbM 	 
-    	  
-    		   
-     
-     fromStream mSdpFB1uEgpzM3bVmlHgT 	 
+    char* mVFG05ubhW6ia_rWdS_Tv 	 
     	  
     		   
      
      
- _706246330143775 mVFG05ubhW6ia_rWdS_Tv 	 
-    	  
-   m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-    		   
-
-     _1508819710414606447 msDVYCHuU_j2g_TdgX4Ta 	 
-    	  
-    		   fromStream mSdpFB1uEgpzM3bVmlHgT 	_706246330143775 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		  mqLizGA4Z8QZ_2GYQ1inC 	 
+&_10576739190144361304,sizeof mNQ6rNLARkxxSTP6tiTXG 	 
     	  
     		   
      
-     
-
-     fromStream__ mNQ6rNLARkxxSTP6tiTXG 	 
+    _10576739190144361304 mT3v8xdcVsSvUtbwmHC7j 	 
     	  
-    		  _7053670376446719714,_706246330143775 mJk4eXgp_IeFV2YvLaQC7 	 
+    		   
+   mJk4eXgp_IeFV2YvLaQC7 	 
     	  
-    		  myu64GAT8DgGBhNOOCqvd 	 
+    		   
+   myu64GAT8DgGBhNOOCqvd 	 
+    	  
+    		
+     _706246330143775.read mgGCFceAojKPG0bK5eWQT 	 
     	  
     		   
      
-     
- 
-  	 
-     _706246330143775.read mbXhD242DJoibBjdI1JtA 	 
+      mSdpFB1uEgpzM3bVmlHgT 	char* mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+ &_13028158409047949416,sizeof mUGrJMUolw0lb_KVyGK5N 	 
     	  
     		   
      
-    mBGM118Iia8vm6zcNTuB6 	 
-    	  
-    		   char* mJk4eXgp_IeFV2YvLaQC7 	 
+  _13028158409047949416 msDy4S0F6Zdx78ZUnbARe 	 
     	  
     		   
      
-     
-&_1426313296465708397,sizeof mBGM118Iia8vm6zcNTuB6 	 
+  mSBNIRK1XqZg3XlWW_b3d 	 
+   mqLizGA4Z8QZ_2GYQ1inC 	 
     	  
-    _1426313296465708397 mxAXsCfNkscq4iQtE2AeY 	 
-    	  
-    		   
-     
-     muC5cqYcHRXDD16noARI1 	 
-    	  
-    		   
-     
-   m_yMT4MKxrENTtLx5cA7n 	 
-    	  
-   
      _706246330143775.read mTiWUgQKOeYLvNdGsR_oS 	 
-    	   mgGCFceAojKPG0bK5eWQT 	 
-    	char* mXftmBtLFUrPFw3lasjuW 	 
-    	  
-    		 &_16812765159998713427,sizeof mlfybwyvp98TOJj0yuqhF 	 
- _16812765159998713427 mPaUdMg3fg2ipZY0Exj7X 	 
-    	  
-    		   mJk4eXgp_IeFV2YvLaQC7 	 
     	  
     		   
- mI30mSPxGJaQtkEjJfoQX 	 
-    	  
-    		   
-     
-     
- 
- 
-  miXz43zs_DqtraKQW0m3N 	 
+     mTiWUgQKOeYLvNdGsR_oS 	 
+    char* mT3v8xdcVsSvUtbwmHC7j 	&_3857178690860967008,sizeof mlfybwyvp98TOJj0yuqhF 	 
+    	  _3857178690860967008 mT3v8xdcVsSvUtbwmHC7j 	  mPaUdMg3fg2ipZY0Exj7X 	  m_yMT4MKxrENTtLx5cA7n 	 
     	  
     		   
   
-  mMGejH_coNc3kGxAdXVex 	 
+     _706246330143775.read mbXhD242DJoibBjdI1JtA 	 
+    	  
+   mgGCFceAojKPG0bK5eWQT 	 
     	  
     		   
      
      
  
+  char* mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+     
+    &_17450466964482625197,sizeof mlfybwyvp98TOJj0yuqhF 	 
+    	  
+    		   
+     
+     
+ 
+ _17450466964482625197 mVFG05ubhW6ia_rWdS_Tv 	 
+    	  
+    		   
+     
+     
+  mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+    		   
+     
+    
+     _14938569046430841631.fromStream mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		 _706246330143775 mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		   mqLizGA4Z8QZ_2GYQ1inC 	 
+   
+     _4913157516830781457.fromStream mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+_706246330143775 mVmWtYm5gVtZj7Yq19XWE 	 
+    	  
+    		   
+     
+     
+ 
+   mwkk1d6uUiyaKys71tsUv 	 
+    	  
+    		 
+     _3944249282595574931 mgi5Boc5f0emw5eocZbgV 	 
+    	  
+    		fromStream mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+     
+   _706246330143775 mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		   
+     
+     
+ 
+     _2869602498954317713 msDVYCHuU_j2g_TdgX4Ta 	fromStream mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		   
+     
+  _706246330143775 muC5cqYcHRXDD16noARI1 	 mI30mSPxGJaQtkEjJfoQX 	 
+    	  
+ 
+     _1320287184975591154 msDVYCHuU_j2g_TdgX4Ta 	 
+    	  
+    		   
+     
+fromStream mUGrJMUolw0lb_KVyGK5N 	 
+    	  
+    		   
+     
+  _706246330143775 mPaUdMg3fg2ipZY0Exj7X 	 
+    	  
+    		   
+     
+     
+ 
+ mo9Lbpy0Ap4RTl5O5Or1C 	 
+    	  
+    		
+     fromStream__ mgGCFceAojKPG0bK5eWQT 	 
+    	  
+    		   
+     
+  _14463320619150402643,_706246330143775 mJk4eXgp_IeFV2YvLaQC7 	 
+    	  
+    		 mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+     
+     
+ 
+  
+     _706246330143775.read mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+     
+     mOAy4qGUJpdHQSVbVPq9E 	 
+    	  
+    		   
+     
+ char* mXftmBtLFUrPFw3lasjuW 	 
+    	  
+    		  &_10558050725520398793,sizeof mgGCFceAojKPG0bK5eWQT 	 
+   _10558050725520398793 mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+     
+  muC5cqYcHRXDD16noARI1 	 
+     mxIwd_EJpfr1C9jwU7IyL 	 
+    	  
+    		   
+     
+    
+     _706246330143775.read mSdpFB1uEgpzM3bVmlHgT 	 
+    	   mSdpFB1uEgpzM3bVmlHgT 	 
+  char* mSBNIRK1XqZg3XlWW_b3d 	 
+    	  
+    		&_13033649816026327368,sizeof mSdpFB1uEgpzM3bVmlHgT 	_13033649816026327368 muC5cqYcHRXDD16noARI1 	 
+   mxAXsCfNkscq4iQtE2AeY 	 
+    	  
+    		   
+     
+     
+ 
+  	 mC_gLvnw5tkMWRQheRKr5 	 
+    	  
+    		   
+     
+     
+ 
+ 
+  mqVdZVftPR84WTjiOiVfT 	 
+ 
+  mqVdZVftPR84WTjiOiVfT 	 
+    	  
+    		    
 
 #ifdef _4257555960817013426
-#undef  mN4RvsK7_XXMC2cNCwITM 
-#undef  mF1AFCmj7FNvcdn7hZ9B9 
-#undef  miFsrErvZNeg6kHpH01yE 
-#undef  mRIlZ0NriRkVMhRpycZqI 
-#undef  mljwEkmom23bYFuTS0b0b 
-#undef  mjXlfKOCTRjUV9apwYcb7 
-#undef  mwzFZRcSPi2Vsk45HpaLx 
-#undef  mNQ6rNLARkxxSTP6tiTXG 
-#undef  mdUyI4aAbhQ4X6fne1qVo 
-#undef  my5S_tF4_lSpButBKNitX 
-#undef  mFqi0ZIcB_YhZ2B8QBIQg 
-#undef  mZilF4nRNVEneBzggpX7Z 
-#undef  mr8s7pfvTmBWmxher3Oue 
-#undef mNfxZlRukKJI5Avx99qsiGytb0bdKx0
-#undef  mo9Lbpy0Ap4RTl5O5Or1C 
-#undef  moCEmVQeGy8LzV8cAuk79 
-#undef  mWi16Wz7P86SIJlTQEzCB 
-#undef  mGu_88Fdde5jsxW8v9whR 
-#undef  mhaG6yS3EwOInKAwIBoQN 
-#undef  mkufZC7kHsvxllmN0YBQv 
-#undef  mFWW5xb6SDILpyTp5GBZD 
-#undef  mEjIWbivPeVc9WtxGDiWw 
-#undef  mA7hUM4UKqFyb_LJLsook 
-#undef mr5W62IjRnZD0dRSEjUmruLxKfdAo6z
-#undef  mqUxZEnHM0zID6J2vVqke 
-#undef  mWsMr8mjNljMAriyUwgnE 
-#undef  mW202Akoy5o2_FFUMtz7a 
-#undef  mJCQ17ktBLqNw7sHF60R1 
-#undef  moI4EWKnn9rwdcRf81yt6 
-#undef mrklVs4e18EG0isgYms8QLiA8VS3ndK
-#undef  mY5hSAdXT4P60CSAZFBBa 
-#undef  mn5MlHVieFj6s1Arh9Q10 
-#undef  mxGJXkzb8EW07jCVTl0Jt 
-#undef  mGc5v1UWfDU7ttNcZryQG 
-#undef  mYbzFOKSwwNsD71cP1DkA 
-#undef mU6DxMMDeS8jnWvjm1Pm4JPiFG0vlkw
-#undef  mP7ddfBDehHbRqP8iGbq8 
-#undef  miGVtxwiqbDQsG6KBslZU 
-#undef  msxc6utIaOFXg4WI3vB0q 
-#undef  mR22jPCjbltZ3tbBmn_6w 
-#undef  m_1_RZETM1QJ8vycOakwy 
-#undef mDXs2D5chInPqYdznStufYbihGTFbR8
-#undef  mVEKXpiuZW9uJtiJR96kC 
-#undef  mxpEdWbhRRjZ1JMh3yxwy 
-#undef  mSwbK3nBcNZkvGxSXNOZy 
-#undef  mLTPi46EjqETKRikMKXiU 
-#undef  mK1g7l2eLzcTEZMoreGi3 
-#undef  mIqjSmilXv9ILvDddB7nD 
-#undef  maE84VqXoUUX_dnxUsfES 
-#undef  myX_vRc3UBQw14UHIrg7D 
-#undef  mmk2RogyswbtTiHnbCghT 
-#undef  mZCDcAPDXTOUnUkMgttvA 
-#undef  mCUW3oFzDeQf_LYRW_3Q7 
-#undef  mTiWUgQKOeYLvNdGsR_oS 
-#undef  mumKmtKc8SEEXbYxYxnDh 
-#undef  mZTdKHHWXvp9nTqOl4Xs2 
-#undef  mMW4T9X7Ncvxkcl9tdmuW 
-#undef  mI9xc5iM8fy3wmO_WiybU 
-#undef  mfLSKCXSc1DHeN38jALNR 
-#undef mTZV4xO_u33gH0m2pSZ0Kb_3WBL3eAy
-#undef  mVrsJpNNblNXrk9CJ_J45 
-#undef  mJivUzVExUJxvLMyR7vcv 
-#undef  mBGciDWaUfaa6OV3swXep 
-#undef  mZLojCl8cVD1576VM0g8u 
-#undef mkw8lGlDbQZaKMTP_YDPjvJLCWzkF1F
-#undef  mSH1h4yGhaMSu8y7JC_rY 
-#undef  mVOBFEtNftMS2NFrVW8bV 
-#undef  mLp5eeYn1TGnQEcop68VN 
-#undef  mypSLdUZlHtNg6EWZ4tk4 
-#undef mica9L0obWHIAMj8olmooNyaERwYWWb
-#undef  mS3spS0_ckVjORcpwfpZf 
-#undef mlXDtb4w4pC9DEeHyq5htHbqCmrrnZS
-#undef mLJzZsWnOmMS6V2RrU8dPGyS1KjXdWu
-#undef  m_oqkmDs8rXEbW2q16xvJ 
-#undef  mzCa3iYOTZk3vOb9xFPuf 
-#undef  mjg3Ot05P13DpFXIgvY3M 
-#undef  mJM70H6b9NGcqtHePCrZv 
-#undef  mMGejH_coNc3kGxAdXVex 
-#undef  mWQWZuZUxzgXcOZHMJMC_ 
-#undef  maPL1kl9f9VlgIn9jnnN_ 
-#undef  mZ_OIrsB5IK5mggFkrgFu 
-#undef  mcCwozNc9ZEKnXkmsh9Fj 
-#undef  mFASROAG4Q9353J70qH7c 
-#undef  mR8MpflZg6lk1qLQLX9P9 
-#undef  mO02z_ujA2bhihPtTtFSA 
-#undef  mQFhSiloYfIS2jNU3eZwh 
-#undef  mc2SFiyFAyMaXElAGl89t 
-#undef  mO9LYCrftPnMJePmJnE8_ 
-#undef  mstJEG25u0Qv4VQocWgKl 
-#undef  mS8JphOKBDH9MB5GkmcLq 
-#undef  mpgczyJuWNGXMBOxeP5oe 
-#undef mZc4Iz_sn6gUwXzL718AILBxUNure4r
-#undef mys8Mow1B0To5jHFE7OoGMaLlvNTYiw
-#undef  mJqFpzb57ph2rWKCmAfkM 
-#undef  mt3d6r2BuFfOvfXdOmaLX 
-#undef  mY7ZY9aprChsLCuD7yOm0 
-#undef  mrPFLPKakBKjOOnkuhZUP 
-#undef  moHeIYzwbcFb6VaM90Aa9 
-#undef  mpC65FoK2NLadlWUAo9ps 
-#undef mmG8ZucFjVjdpE_4gG32Ai2kdULxHoD
-#undef  mkbfWNsvNHk84u7zcYWL3 
-#undef myUjQEd8RpnmXHqwk8e1AWLvQ6gzt5H
-#undef  mQivdop_Gb4hqsWvOttc3 
-#undef  ml5d8mzmxNmQRMtpfZ82X 
-#undef  molF5K16MuyVvkFE7X8JI 
-#undef  miuOs6oIdxnQEMrFFk2n_ 
-#undef  mbXhD242DJoibBjdI1JtA 
-#undef  mgrODPzGHQfjmAyPsBdfg 
-#undef  mhDfF2VEdGrCP55eTHYvN 
-#undef mCOsHuy_LgH97Sv8cUUn62iDLX97wwR
-#undef mqjfrgUiAEDDEjlRkjAD2lLTvBK4_wM
-#undef  mHg0YG9R0Gb6ZE5xIr3dz 
-#undef m_V320PDi44AmWFVj_bsjmQ6FP8FK6B
-#undef  mdokA2SxdolKVBlsRM2BI 
-#undef  mfvgAAx_p4DiD5VQWew30 
-#undef  mrXXIs5j4DqJtj32aOG5F 
-#undef  mUmh6jnSKhpmWgXMnt8PS 
-#undef  me0ZKHp2Id3eLmP_6GMtk 
-#undef  mfQABlcyhvI43vfjabcjx 
-#undef  mAvI6WqVGKew5QUXF0T2l 
-#undef  mxt_R_jw78RlV2eo0D9pJ 
-#undef  mC_gLvnw5tkMWRQheRKr5 
-#undef  miKAllCm5PMbA2fU3LrvT 
-#undef  mV6teN3KtTJ8vHmQAuPWz 
-#undef  mJPHiCuIoYoltwiwwrI8_ 
-#undef  mKKmc4BHDTQao51cezkdW 
-#undef  mdx9gS37IsjwWpaOb1ODY 
-#undef  mrJARF3qaYOfBun2j_jcD 
-#undef  maWf7apYek19lMvO8A9jX 
-#undef  muzrhxIoqthv8PfiNihnX 
-#undef  mqI5yMr4h6CHkceANuA43 
-#undef  mW0689NsIXj0x_tZl_0ut 
-#undef  mTy5S_mcphfNLzuJQ30Xe 
-#undef  mzDmJqPikCTXlN8BGk0M9 
-#undef mHNb3kVFhkHg9E01geZBsldl9Bqqteh
-#undef  mZloAr3_PPw7622AVrUCe 
-#undef mgp30WAQApKqfYJi7b665A_Fsk0fLph
-#undef  mZqpoIg7XHbhgu_6iW7PX 
-#undef  mBUCZuaNioFkzVtaa2sRQ 
-#undef mfBrVitNz1gcglM0S0d_GaB2XQ6qIBt
-#undef  mO_k7IEuqtZq_e47ILYU9 
-#undef  mTGJXDnkacX2UX9dooHQu 
-#undef  mUGrJMUolw0lb_KVyGK5N 
-#undef  m_yMT4MKxrENTtLx5cA7n 
-#undef  m_Ww9T_ZoqJhMiIY0i1PJ 
-#undef  mcKERBksFL6yXYOLd7kWz 
-#undef mOrS38s7h3Veesv9767f3xN2895kQdx
-#undef mXk6lthHPSZVm77eowhQeQawrY_9rFf
-#undef  mVmEiQKd2V4SMp8srf2ip 
-#undef  mIBLQ6_qDoS3S2lLQGZ3e 
-#undef  mAtWayYkoRILYXB8QtRbg 
-#undef  mh6HrOJVrT3NM9Wdyz2It 
-#undef  mKQv8aH2lM5yjPYl5F768 
-#undef  mvz1OP7svCPSKfxJ2Wbqs 
-#undef  muUPvA5lgBIdnaP2X6gZ9 
-#undef  mLdCPhlCq1uVgMtM4YkSz 
-#undef  mY5qtQdkZ0Cq7TxfD2D9r 
-#undef  mise5YGBUx6xBGs9EUolB 
-#undef  mCFTZ4KBJ1F7Fkl00Fjcu 
-#undef  mQsihVvqkuYoG8jvPTYFO 
-#undef  mSXTPhnnQgIi6ocmukNcV 
-#undef  msz82ko2ZHqbIoF2aTtnd 
-#undef  mv_fAKjj2BjcHsnbiJfVx 
-#undef  mTgR0xuTc2WA_FI5hAh2Q 
-#undef  myMDc1DgE9_RLElsHtK4r 
-#undef  mB6lie_LwNp2j7sbjYel_ 
-#undef mXn6_dCt1InpPoeN7PJzsfcX40Bsl36
-#undef  mAckb35A91fK2dY3gHfaK 
-#undef  mMa2nYH1z474KyDSW_2Vs 
-#undef  mwuvkepREHprpx4i3n2RV 
-#undef  mYMxwp5lzvb08Oa8FUKdp 
-#undef  mgi5Boc5f0emw5eocZbgV 
-#undef mP58CIh6ze6yAP6qZBUSJEJWLJ4Ud8m
-#undef mPapA0sQobBdMYxf8n5k_d1XfFYtgTj
-#undef  mZjMv78yfz0yQEDayPDn4 
-#undef  mTmmYcodZhxYb9bt39OUl 
-#undef  mfnsIHmSLQOabKyJkuQOT 
-#undef  mBxIiY0bxajrRw6WjYleG 
-#undef  mj3rSXJDWd4j4OSGbS2oX 
-#undef  mQRLqWWTfqtTF6fXNey7C 
-#undef  mvFhi6DaS7eScbgWe07wY 
-#undef  mLS76iLDjnGxttL6L8yfX 
-#undef mS2uQ2KWlC98CK2b0R7E2P72sVnabdi
-#undef  mIbIpdgqmFRILtR4eBSgp 
-#undef mYEx6E3frdynb1tbeRHMsq4qjzx5lJI
-#undef  mKLTKWdkdn_ESJc3B3MOJ 
-#undef  mFruyY5vdoiszED1tVpm7 
-#undef  mFllaSnZNjV3YvL2YmAFh 
-#undef  mzoah9JwBIdWZVJcSU27j 
-#undef m_FIu8SC1mV9u96yGGq517GuyZBOKN2
-#undef mZ1ddPtgQf1469AgXd_hnhYWrItjdpa
-#undef  mP2Ml_iMNTficIMe44TSF 
-#undef  mwiKr6psttEx97f2NsYO1 
-#undef  mMo20fFU0rdQJ7l5qqDaX 
-#undef  mi4REkBAebpTZrzlvFEpD 
-#undef mE0T41d6zsvRVEKQweSBUEh_uGhgu22
-#undef  mHUTuX3q6rB5eWWYYPWQD 
-#undef  mvVEux0tzfHTcHloJ_PHd 
-#undef  mhL9dWuOWzLGBfRjwvYlN 
-#undef  mJdlQJg0rG2m7KHUChC3R 
-#undef  mL9oWJQ1n2xKG3FtRNowa 
-#undef  mXYEIB3KYwzJOpssgkZxP 
-#undef  mEm194VmPJuGh5y4tMUm5 
-#undef  mSdpFB1uEgpzM3bVmlHgT 
-#undef  mRAYh0ARHPOc62CfGHWWO 
-#undef  mccsFNEYvw261klEKqukf 
-#undef  myWBdZwdHWpQZqZ09m0Jq 
-#undef  mYcSgTugFLQcmWT7seaac 
-#undef  mKJK3THIuAwgeFpuGLN8L 
-#undef  mkHL8KJw4VjwmGdgQrteX 
-#undef  mfuDqjzDT73kQihIjSHez 
-#undef  moKypFwLFwBoz6rUVIuCY 
-#undef  mFS3Bzv40ET2Bg_bjcFGO 
-#undef  mwEEBMzfZV6O26soeDHeI 
-#undef  mfKtZiRp2HOdQqoTplnaI 
-#undef  mgs_uDQ8mSosYV9hCvlQU 
-#undef  mnpObQ1mWnyfQO24_ojBn 
-#undef  mMm9FLNsNOoyX7Tyb7vpT 
-#undef  mUrzesNXiQhLYupQ11MEa 
-#undef mVwXME5C65fIa3AvF3qdC4s8VSuRCn1
-#undef mv1RKc7QVwxlWT9SXxD8SO31MO6ME0P
-#undef  mBFhfgDfkdod6qHz7NdvN 
-#undef  mIHFqVJpFXgMDdHn2uhc3 
-#undef  mS0R9s7sfcYa3Nx39taZW 
-#undef  mOHlEjbyW9EyIFVYqPfh9 
-#undef  mYg3RpRsnYTFl5_yP9Off 
-#undef  mH7U1EdrCKalrHJxxWz_s 
-#undef  mHnBQIAphg35vDq0qZ1IH 
-#undef  mU7LO3jg27wf5nw3n8LF7 
-#undef  me2H4L3LXGkdv1CjOYaxx 
-#undef  map_Um1UEXeLIjOGoUw9U 
-#undef  mr0Gwya5kzUd694oxNDs4 
-#undef  mELweLHSjak68niq3oUpw 
-#undef  myu64GAT8DgGBhNOOCqvd 
-#undef  m_W9SY1N4eCI9HVCtY7k_ 
-#undef  mVWXLsp7dzQ63mhYH8afG 
-#undef  mtY6LxHDMoBxNaXBgiMYo 
-#undef  mJ55qvKfsfvRiFivJRFvq 
-#undef  ma6O7Vg8NwpyGvRwfbCOg 
-#undef  mdIyvr_duNyurtIQ2sC_1 
-#undef  mmtdRAqKU38Wmq22hGoY2 
-#undef  mbzQLzB5_GI6yqNIVcKo7 
-#undef  mFTobXyS5Vx9ebVESwR0T 
-#undef  mgBFSWJlmkK48wSOW4b6N 
-#undef  mbkARxvbbfyf_buO00mpB 
-#undef  mC4FNAhGk_5NQroya9r4E 
-#undef  mlfybwyvp98TOJj0yuqhF 
-#undef  mmeJW_Q9h6ZBPzSBQVjMK 
-#undef  mISlN399eTfrWHnidEKGu 
-#undef mvxShRWzqhGplR48sv87FTnON8YlX5V
-#undef  mtEI4bSjtkyV5O0qz_vBz 
-#undef  mevHkLo7kL5WL0_0mLIhr 
-#undef  mXdnll4yjwVy4uBDSjUe3 
-#undef mUn7QGLA73p6W5WWUA8kXR068R1LLaE
-#undef msMTjEcQRbmNfhQK9JCSaxiULsTRddS
-#undef  myfOHlfTLtRL7im7qSaYm 
-#undef  mNPH65O81GD4PdziT5g9G 
-#undef  mmIw4aId5JmbXYNH3gSAX 
-#undef  mJk4eXgp_IeFV2YvLaQC7 
-#undef  mNKI4p1bbhsctoprpzZld 
-#undef  mVzJJ8Dxt5T_4dzWC9bRk 
-#undef mqDiAL7DCz_mNYimuKlWv1DrEFI7zZX
-#undef  mEEA6W33vCS01rV9KTl0v 
-#undef  mqLizGA4Z8QZ_2GYQ1inC 
-#undef  mKH2zPRtp0X4JTntk4h2u 
-#undef  mIyrnAZ9pLZEaiK6Yst1L 
-#undef  myydjxqnidOfg3YXIPfCh 
-#undef mCtyM05tQpMzDpEgPuGhYcokT6M4tjW
-#undef  mkyly54GlrbXuNeECTTqk 
-#undef  mdEGS_9gShKEEsK9RPbfj 
-#undef  mafwB2WCPijyRRTuHGVwE 
-#undef  mKWQLdAVzYxp5QuNZ1ytt 
-#undef  mRPDwBN1TFChGSxh15CwJ 
-#undef  mhifiLHf3tBluSeI6D_kg 
-#undef  mxCgC8LoLiSZGVUV0OQXG 
-#undef  mLF5wNIO93YQsDKnsE8CQ 
-#undef  mCytWUAf5qvM6IOdaLIC3 
-#undef  mQ28kUfMOhNPxGTJTErTr 
-#undef  mCzaOxAWpFlV3gHYCg4ev 
-#undef  mDWwKMm0Bw8nxvI3ZwZnM 
-#undef mr11u0zLpFUybnlko22CUWxrLNKTqTm
-#undef  mQIYDh6QMMrUx6uxn_6So 
-#undef  mKdE4ZCfdDaB2HjFWW9ZV 
-#undef  mbtzLVjzLgaxYxNNltfyM 
-#undef  miPlatUaObQVOYOiw6SZF 
-#undef  mc6a7gZ5y0kWaTfPKjZL0 
-#undef  mjjfaXD3tH8warSj13sVr 
-#undef  mmSlUFoMxZtVX9CkQCe7O 
-#undef  mtmFAz7pcnIFLgYGMf4eK 
-#undef mjXwqRAhyk59NcNPAj326mdXnf1gVR2
-#undef  mcs2IPsFq8XN5a3t5KBLK 
-#undef mVNaGXNPhIIKr2hUgGHX4UaeDEMfi42
-#undef  mL8NdxI0A84_PQiCzjY0y 
-#undef  mrg1QVINMqbRYZWngNWmj 
-#undef  muoE4XIKfPRSXmzic7wiv 
-#undef  mBGM118Iia8vm6zcNTuB6 
-#undef mlXMiDtd6M4SH6uQB_NP4czeOXVoS5J
-#undef mPJW22oQ5EY7l3brt_yM6tZ98O1MaSS
-#undef  mExFPeJBflhTWJKuQVWoB 
-#undef  mWIOGoR1XyrR6fw03i9px 
-#undef  mVmWtYm5gVtZj7Yq19XWE 
-#undef  mutzl2HCpJ5IWzF1P08Yd 
-#undef  ma1pkHKHRslLKg1N_R3cS 
-#undef  mosqH7AZUNZeyz6yX3nN1 
-#undef  mgGCFceAojKPG0bK5eWQT 
-#undef  mLTITrFYKQEeVWAoGrzMF 
-#undef  mrJcfxt4GvOx7AQVScfu1 
-#undef mwVuNe3p0bvoSU3FXwiOAlf5xNTpUqD
-#undef mbJXAa63ZDuAqsedxrTDHusieLOgU0u
-#undef mJuuoPKr40SU5zHhNbbXqctl3TiKplZ
-#undef mpMKiDYPHUkbcUrOidGijQq7UOxlcWw
-#undef  mUgQbNDLTz7hiX8p2shmY 
-#undef  mO5I_G9WPuW9VC4inj5mo 
-#undef  mQIaw42evZrZGmIhV_U05 
-#undef mNop_E1tZVTfrIm1pI_Weo9Woj9KEvB
-#undef  mZ9T0z5VdOHGC7rra8Fzk 
-#undef  mfF196cGKZ_LkBPN8ZWlr 
-#undef mKyEK_R1QxAe18GNGI1HAEUse28S19p
-#undef  mANVdtEFAyD7H8nVwStxw 
-#undef mxTZSmMRscCjViBKa0Vr5qsi2p7WINa
-#undef  mZb18dCucFvoBd0bsf01O 
-#undef  miXz43zs_DqtraKQW0m3N 
-#undef  mNQimRrYQ8Mz6YI9KM7Fn 
-#undef mmPZkSy7hkphGU4PA4IHQSP49HWrI6I
-#undef  mAPqoF5haBWDrhI1NEj4F 
-#undef  mp1kzPPa8GX6cfigPyiyD 
-#undef  mHlvGgqu6yYQkoBxoydv2 
-#undef  mvcDBJfIynZthI5bz_HTe 
-#undef mVSnQ5bRFB6wfDS_yNBNbNu5E0uONgN
-#undef  mx4lt8TnYlZ5ZXw4BS3wS 
-#undef  mvaZ3U73Zn5gRZuytQKWY 
-#undef  mkQFhH7KKo8wEpsoToABe 
-#undef  mozBzR4ceXlDTd_eA9UWj 
-#undef mtNLFw2e0zAimBia6Svb24JdAELHSus
-#undef  mdbwYCIpGYWahFfTtU8zH 
-#undef  mVFG05ubhW6ia_rWdS_Tv 
-#undef  mfaXcqsSkd6ad3maNOmpF 
-#undef  mWYYMqZtRPklZ6ldYQlW8 
-#undef  mxTwhHDgHBwIAa0Dytqva 
-#undef  mYCupqIOYDMlnjNznUUG5 
-#undef  mcce2fXWVHACmBftaJ9Re 
-#undef  mraP1zuclX52fRr5CelTs 
-#undef mJhsXXxCEc7EzwcyisUS8yU1EArDvv5
-#undef  mRwYPGmWUou3ixNnKEWbv 
-#undef mC6s7k2DOay2vGSdayxevzArquG7kSe
-#undef  mUgtpRAYJj43Mf4SpepZP 
-#undef  mLMQAhvQYOFXZbKccuW7F 
-#undef  mT9nS5aSA2ErLjcHqOPSA 
-#undef mFGsmz168M0g5OuX5mDGXvoCfCP6cOP
-#undef  mwJXVmZ8MTqFBwgPAlydy 
-#undef  mbCI0BlZHp5kbKpNqa5Su 
-#undef  mg9IHDbTXxljO0nSnQKYh 
-#undef  mT6NDpoRTuoGE3dKWoXeh 
-#undef  mjeCTifvlIBEl0lPx4S9g 
-#undef  mRfik4dXiQLAdpjBrSV8e 
-#undef  mcvX0B8TDw1gEtqXtgT4T 
-#undef  mgrzSPnq5U03KE8vGp17K 
-#undef  mOE4ALZahxLkvGqMRmxIK 
-#undef mgw8BkP8SNV8jndx61xg0o50h_c5mif
-#undef  mcRuULuI_AYJWzFSu1kB4 
-#undef  mhJ97TQsVn_CNDDcdyvCc 
-#undef  mlZKVlBR7p58b0kfu8tFd 
-#undef  mecU92YjgSbB3VkEoZVK3 
-#undef  mtpa6CvplEq1shGwk4jxI 
-#undef  mgB7jkTLiZWzEF7KqbAfY 
-#undef  mAzTBw5jTPnBNbyO0BIkm 
-#undef  mRDD8w83SsPKbGXy_JkEO 
-#undef  mDe1564r6NJrCTudA8x0w 
-#undef  mxIwd_EJpfr1C9jwU7IyL 
-#undef  mvbe619pMTxqR0ISntFSZ 
-#undef  mybagCX6OK9hQIn4qwrFz 
-#undef mwQf1bclnsFMVqDYMJIbXxS45LZCFBv
-#undef  mZlJv5AWGo4iJ2lUt_qL9 
-#undef  mopnBBbnH3fttLLMFPoqR 
-#undef msLnXwUymv1zch0aKjqHGUlG8jOOe2L
-#undef  mmBcOrqJdEmcu_DE5N2Gx 
-#undef  mQ3_UtHSGY3eARbSl_X7q 
-#undef mbyFB_zuYrlaUAZ0YvrMZ0qMUWQI1_m
-#undef  mbCB2QE8sAa45H2Pxnfop 
-#undef  muH9A34QGuccPZkZDb32w 
-#undef  mf0E07qXAg4sDu7JIwESC 
-#undef  mrjcvI9ucBIaCRtqGyrWD 
-#undef  mZ4lxIR9Ss2_Hj_UqJEdU 
-#undef  mMbWC8gQeXmnMqYEj20Wf 
-#undef mItOvmgvVaCfcAbau5lsMFJBHZNgxMF
-#undef meiLv2EX65XvUvChPEjuN886Ha3hsh_
-#undef  mrS2zvlmrTf4L4KBRRYAU 
-#undef  mYJ8ThnKYhVFrfXpP62DT 
-#undef mEWPzjcYD7moMgjqWTXhQ08Ljc0mNua
-#undef  mEYy4vDSh1urfYj6Y0xAX 
-#undef  mMAhLBm751iJ4jZTmz1eQ 
-#undef  meH5OaCcZwH0xkfm5lpWj 
-#undef  muC5cqYcHRXDD16noARI1 
-#undef mOPUy9orrqKqHEN_9xN7pePKUGcDrG7
-#undef  myrvDyRCtal5mdHB28ZIe 
-#undef  mS3P8ZWKrLHg9h_5dW5He 
-#undef mfsUOzV7P_RilmCCGvwoeIlw4YJVgaK
-#undef  mFAl4ldpf7o2gKLWQ4bfu 
-#undef  mYvqzY31mCrOAE70tjB7u 
-#undef  mlEF62Izit24hGT_NqPIJ 
-#undef  mKx3hnVGJH14s80udXZp_ 
-#undef  mf0YJDuh2j5By5N13LunG 
-#undef  mAmoJDTG6Of2SbVxLbNlJ 
-#undef  mVjuVop3osym9wWoq6p3w 
-#undef  mOwAFTnFZjoBWI2gNeAO_ 
-#undef  mquP6o79T92Q5e7Uu95ew 
-#undef  mJ1vGQuHCiSCbbgKlE1zh 
-#undef mvPDntQyNRw6Z8gi8TqyeJNRh3HJzNV
-#undef  mCehD1sxzTv6MH7ymj2xb 
-#undef mIyyG3AKrblBJKxNwgTHaAp64amaZec
-#undef  miEkJpdzqdOiFySBrwOfd 
-#undef  mqZevfxEDPOS7RkGEtJFp 
-#undef  mJWj5YQLEzhdPuiJvzQ8O 
-#undef  monDVXoqIbwYZt9x_asGf 
-#undef mU4MGy3eTQcSf54RC1cbEcjQ3muIwTt
-#undef  mol5p_9C0R9o_YMjX6nxS 
-#undef  m_cHyr6QlGt5jYeD25QwT 
-#undef  mDHmz3NSVqdDEn8FHaIo5 
-#undef  mEbO1A7RXmhmRG12Qtq2A 
-#undef  mi2mlTodeof41MadCAEzi 
-#undef  mH9fKsRtHWNu77RGN1xmn 
-#undef  mteJvtUMKI6kC6j6RtZKr 
-#undef  mrIWO5AmcxVfFGpyNJzQE 
-#undef  mUvBFztQfvp6FxGFsyoMW 
-#undef  mbJiX6F_a_O98JuQH2rHf 
-#undef  mXbu2bQmZ_EIA6T8Pxs5C 
-#undef  mHOvssFtYMllM6IBWHFls 
-#undef mjJaL6ka1Was97xj02ttOG_WmmWOzk7
-#undef mKHQi_mCIV4qkj6rPUW3efpMPD0wNm5
-#undef  mf2ViRb3BWngxlNGam_05 
-#undef  my0vyIAimw3jadFZG1pnz 
-#undef  mcozC0jwDOrxnYpsfODix 
-#undef  mFVNERjMRO_ZEKm0TY73X 
-#undef  mk9nSfh6XGyonOYMC8C3M 
-#undef  msGAdK1RZcxCitYemdpxc 
-#undef  mFWbNGU5e6cuqyQa3XUry 
-#undef  mz_QhADZTe0uCEYYRSweR 
-#undef  myeiBNDHA8i8jhuL3IHRb 
-#undef  mXftmBtLFUrPFw3lasjuW 
-#undef  mEpG5N2fixtWboWua15h2 
-#undef  mWg9bTDKGk1fMQGpnNkAs 
-#undef  mpjTyiESCVWYRDiT2x2RD 
-#undef  mWaLwU5zB1H0AtUbS8Rz2 
-#undef myRBBsHypjh2pwIDUsBulCaJVULSzBl
-#undef  mhfoVR7GfGGYByYoTirWE 
-#undef  mTWpMMn_ueGNGrVaZzL0Q 
-#undef  mrDas3egWRcEnvTodVRRA 
-#undef  mFlx7sCaCoQxsjHSq_umO 
-#undef  mhNH3dNZkhrgawU6wbA6V 
-#undef  mYOSSG7sSqnMh0YV5DIrw 
-#undef  mqlayz2fShj6ePxekxwRg 
-#undef  mtDWQOqRguVWSWehbKECr 
-#undef  mEhFK99MtLRsCBaPNqnDs 
-#undef  mLdvrbXgkmVAVnc3aEbWU 
-#undef mUdlAesF5AuSJR8ScuRRyVZqheDCzBs
-#undef  mvA2vjSvRD7UmknjmYP5U 
-#undef  mghpafeSRXwbO0z_DbM3C 
-#undef  mNAtfKYOf6ADB9rVjcJk_ 
-#undef  mtq_QCXPpv2kX7L8PRz8d 
-#undef  mdMNbPkq6p5KBhEVf3OFw 
-#undef  mx0IHqzgubYGvmr3US2dG 
-#undef  mrxxDSozmVXbU0DdkvQZ8 
-#undef  mB0fx5ZWEe2g8Ci7LIhmM 
-#undef mVpqXAw8OwPya0In1DtR6DVSoVt5E4W
-#undef  mkcVgqnqADeTh3Pu1ogGF 
-#undef  mVAe2KWVqd9ISAzz02MVl 
-#undef mUx6m64LorImkLdiamz4MNnKfJ8Dgqd
-#undef mRPo0fFJbYzO3rl5SpSmQCkuEOXjwjR
-#undef  mweJTmqyXMKSMhERfzuxN 
-#undef  msDVYCHuU_j2g_TdgX4Ta 
-#undef mFbAfOobLBnSihi9oovZu4R6MDK5fsc
-#undef  mi05fm9uStmGibkKInn9I 
-#undef  mi6BqZOVmQyrEy6BLProP 
-#undef  mIgWcCjmm9URqJ9HNYW2A 
-#undef  mxkHJa5wooqhzaSxK7_fd 
-#undef  mIqwZsWoU0IEPB7TMb7wT 
-#undef  mK81mHSyZucxh8c_K9rnU 
-#undef  mZtjXWMVRX5W1YY5htRHo 
-#undef  msBPMso4NRYFcn5Y1myF_ 
-#undef mzIN4oy49lJQAPj1sTO7CuJrW8zh8vn
-#undef  mPvI5zVkkxdTYTCdGOJ2J 
-#undef  md3vFKQB1r7mKsD_TtoYY 
-#undef  mfRi_C6KlnAxop81XDZsV 
-#undef  mgux57p4wBZIWFfq6waj5 
-#undef  mYiyQbEDdMYkmeehBx6jp 
-#undef  meN5YYBBVg5DStfnyA8Dd 
-#undef  mQYacSpatR0AsiZrXS4cE 
-#undef  mPjeLalHATLRlVYohP5cu 
-#undef  mcBKtNACwQ_SnJx26otEZ 
-#undef mvmBqbIMsPhg4_ieHPNPA2054e72fsf
-#undef  mDUeb65ug1HYJ31338ssa 
-#undef  mglbnc94mbkalEyCkkDhv 
-#undef  mlnjjjDeP_rHq0Q8WRLNl 
-#undef  mT3v8xdcVsSvUtbwmHC7j 
-#undef  mw_MIhwcw8TZ9gTF3_mEt 
-#undef  mUnahx7x8KWu62epS7OxV 
-#undef mw7X0K6Ks1HDdQZVuUvEBE8sNNQUpVJ
-#undef mzuxgOk7A21FkrdsUSuvnxnfwzSM4d1
-#undef  mtIfgwpprqjFMhHY9FVrL 
-#undef  mTkuNOxSsNhHKtS5Aoyjl 
-#undef  mhRH54odsmIWcLq1D3rKZ 
-#undef me_x3XD35s4SQm68rZAxnDPyEScI4ko
-#undef  mPTzP5ovoJRtpRWISSe82 
-#undef  mI30mSPxGJaQtkEjJfoQX 
-#undef  mN_UNAeshLaooczmV1nkW 
-#undef  mxAXsCfNkscq4iQtE2AeY 
-#undef  m_j66qmf_xp1aP8o87JsC 
-#undef mEDGSyYfmKJTv5tj6wkNqd6mfHlWMjP
-#undef  mlwxuKRzwZKw4d0ABP68H 
-#undef  mAH84ftHkJMUldxM9fJHE 
-#undef  mGPgWaVxS3WdTr7rWsMw4 
-#undef  ml5pooDWTz1HG4AXabzV3 
-#undef  mE8uUKPmY8c0aMaRDvuqZ 
-#undef  mJFtpHxfnoGMxp1wzTBMr 
-#undef mtpK6cfRKaQfLmD5NlKZxIgtqI0KH8H
-#undef  mbKsAIYA4KftCqyFCiVR0 
-#undef  mrCE0fSuXGTiQ_zkRfAJ7 
-#undef  muPAQsfjksFeL917cY2qY 
-#undef  mTlKcfas8V6h_FPimPoyY 
-#undef  mLE5EGHIdfaJi3FG2wNSs 
-#undef  mAJj0tPIZvDaIRCwd81bO 
-#undef  mpBV2mt4yeFwcVEC5cxVw 
-#undef  mMorzi7AHv5qXgdOZzcMd 
-#undef  mNF0G2xPBB22gI9XzMk2L 
-#undef  mf5rJKHDmIhT9kr_E2lnd 
-#undef  mWRzp9vubS9UNcl2Anz32 
-#undef  mOed2_9RVQfFNiTyizmoU 
-#undef  mSSwrqUuoNnhMtvhM2vr3 
-#undef  mIJkWACd8Uom4Jv6selID 
-#undef  mWW5XPXuQhAy0ULFUxjSy 
-#undef mYXPVOM37XZ0D0TXXL_pa4oEPuGbOPa
-#undef  mWjWwCxBA7LLBixCoRsYZ 
-#undef mWi0N1XQtqS4eplLhvTPtL7YVDTI0uk
-#undef  mGeB1HfXInE4uBPHmIDCN 
-#undef  mzPBrKZLupkxN5F1reNis 
-#undef  mq2gz5KAY_yWyHzw3C8AU 
-#undef  mrrE9iifrKAQukpCdUvSg 
-#undef mz49HpzWnGZKPZ_SZ0VjCRqhMrTkbXD
-#undef  mpmXJjJFMEII76TcUeF6n 
-#undef  mdpN8SwUj7WdZrfZEdHOU 
-#undef mBPRy7dwggVK7T8mnFH4k3IHP5LNgxA
 #undef  mO5kQTjyeAtuoPXAKG8Fc 
-#undef  mwkk1d6uUiyaKys71tsUv 
-#undef  mt01qaUz2R0SKmPFSq0jx 
-#undef  mwbs0d2NlC_djcHtxQPj6 
-#undef  mNgaR6RP0DoWIwdccOwpn 
-#undef mtbFfPEOTUo9ZxMxuvpH7h3G0y34BUQ
-#undef mpzFaHYiXFWUKP8NPmYNuC3erXnFHiz
-#undef  muLh_AegzBLvbYcxrsotS 
-#undef  mIaPM1ms991SDrw4x6KTt 
-#undef  mb1P_epCWN8Wxasz2RKsj 
-#undef  mTWpr3m9V3RdtOrrhhpUi 
-#undef  mVIm1AJSzhahLlgKO9xQK 
-#undef  mPaUdMg3fg2ipZY0Exj7X 
-#undef  mvpMkjoDGcQujDevHDZnx 
-#undef momc0dVPjZSCmkiCD0NsIvJpksvAEq6
-#undef mUqaV4ZLGbvoX5uC3jxjOgaRtmgJvhY
-#undef  mdoDIGlHHE7UO_4pXUSmQ 
-#undef  mOeb4QCF4tk5CXqIGmTlK 
-#undef  mt3m0c1_35lMMq0E3cZsZ 
-#undef  mUFRPXFmygxcJ82L2LC5t 
-#undef  mPCAiE3B2oKNgoE3DnCGS 
-#undef  mRjEKX4QN9MTvSEtCTNd7 
-#undef mepF4kKPTKcm3_3zOgvFYIzxp7qltNj
-#undef  mRHtQqJtkyJMFTpmBQzRp 
-#undef mWy_AfkOoH2nnI2kX9dj2KXAIxmex5q
-#undef mT9ANLDUV9tykjN4uA8yhgGv3MmvkRG
-#undef  m_l2K0T8_C6RujcQWcodT 
-#undef  mjS5rO91VKWACucamZJvF 
-#undef  mflySGFqxQX_KaIEHAKSo 
-#undef  mfkkS3ig7woFqdOg7udAR 
-#undef  mNU1gzy6st0M0XRy_b50x 
-#undef  mVZIUasySfZXcql1nm24B 
-#undef  mbVOLbjVZO0YI60Vuguaq 
-#undef  mJJosB3DZCYh837sWRpN7 
-#undef  mYJhSIZr793lUcg7mTDWT 
-#undef  mXE5wWRmJGUY4EsEsgegT 
-#undef  miCOYqGikWLzThHPaHJqa 
-#undef  mQbYLzhvVQm8J2LNkC6S6 
-#undef  meoTw_X4Xqh45MaL_F2D7 
-#undef  mV4_AbWY8ymaWGsYOk0LC 
-#undef  mz0gDEk4XJJySbEeCgC9P 
-#undef  mcAnVuQmAnGunjGyL6dhh 
-#undef  mHbSWrX6OPeRP2Igmog8G 
-#undef  mtXIBsLV4PNo4xplHiuYW 
-#undef  mgT33OczCogeSJ9uFzScS 
-#undef mAgeWodR4T4ZrkJewFh58A0i0ajDXAw
-#undef  mPdND7yG0gLP1HGO5Lkvl 
 #undef  muW_4n008TrPdz3qsiq99 
-#undef  mw8HdfNy4mFP2ZdyEGSp5 
-#undef  mniwdnkZe0XDlHpwvfS6f 
-#undef  mGBA6VT3iuGw48FMYPVID 
-#undef  mgCpjhgiW1siuOOx31UVB 
-#undef  mhwa9v40jbZGyHdjZKnp7 
+#undef  mosqH7AZUNZeyz6yX3nN1 
+#undef  mB6lie_LwNp2j7sbjYel_ 
+#undef  mQRLqWWTfqtTF6fXNey7C 
+#undef  mAJj0tPIZvDaIRCwd81bO 
+#undef  mAckb35A91fK2dY3gHfaK 
+#undef  mWg9bTDKGk1fMQGpnNkAs 
+#undef  miXz43zs_DqtraKQW0m3N 
+#undef  mcZQV4r5il8OMRPl4Fijs 
+#undef  mLdCPhlCq1uVgMtM4YkSz 
+#undef  mqZevfxEDPOS7RkGEtJFp 
 #undef  mysXizvfs_r5HUdOYChFS 
-#undef  mSBNIRK1XqZg3XlWW_b3d 
-#undef  mxp2hpvJDbBGG9galOMeH 
-#undef  mVLLVWqNz0_lGN56vY03t 
-#undef  msDy4S0F6Zdx78ZUnbARe 
-#undef me5NQ5q4nzTEd8Focp_lQ2efTIGblTf
-#undef  mVfb3IHZLk8rmg75VuqQZ 
-#undef  mdN8xdqycKdYT96rU4KUK 
+#undef mNop_E1tZVTfrIm1pI_Weo9Woj9KEvB
+#undef  mWW5XPXuQhAy0ULFUxjSy 
+#undef  mI9xc5iM8fy3wmO_WiybU 
+#undef  miFsrErvZNeg6kHpH01yE 
+#undef  mYvqzY31mCrOAE70tjB7u 
+#undef  maPL1kl9f9VlgIn9jnnN_ 
+#undef  mPvI5zVkkxdTYTCdGOJ2J 
+#undef  mQIaw42evZrZGmIhV_U05 
+#undef  mtnnWCdgrIMkg48Nfdksz 
+#undef  mUgQbNDLTz7hiX8p2shmY 
+#undef  mMAhLBm751iJ4jZTmz1eQ 
+#undef  mtIfgwpprqjFMhHY9FVrL 
+#undef mYXPVOM37XZ0D0TXXL_pa4oEPuGbOPa
+#undef  mJqFpzb57ph2rWKCmAfkM 
+#undef  mccsFNEYvw261klEKqukf 
+#undef  mWIOGoR1XyrR6fw03i9px 
+#undef  mWi16Wz7P86SIJlTQEzCB 
+#undef  myWBdZwdHWpQZqZ09m0Jq 
+#undef mZc4Iz_sn6gUwXzL718AILBxUNure4r
+#undef  mOed2_9RVQfFNiTyizmoU 
+#undef  mraP1zuclX52fRr5CelTs 
+#undef mvPDntQyNRw6Z8gi8TqyeJNRh3HJzNV
+#undef  mHOvssFtYMllM6IBWHFls 
+#undef  mrJARF3qaYOfBun2j_jcD 
+#undef  mK1g7l2eLzcTEZMoreGi3 
+#undef mDXs2D5chInPqYdznStufYbihGTFbR8
+#undef  mzDmJqPikCTXlN8BGk0M9 
+#undef  mz0gDEk4XJJySbEeCgC9P 
+#undef  mPTzP5ovoJRtpRWISSe82 
+#undef mVwXME5C65fIa3AvF3qdC4s8VSuRCn1
+#undef  mZtjXWMVRX5W1YY5htRHo 
+#undef mqDiAL7DCz_mNYimuKlWv1DrEFI7zZX
 #undef  muh7SNXP3UdOZu6GOuG0_ 
+#undef  miKAllCm5PMbA2fU3LrvT 
+#undef  mO9LYCrftPnMJePmJnE8_ 
+#undef  mSH1h4yGhaMSu8y7JC_rY 
+#undef  muDvj5aUdXshb2AqqeEiu 
+#undef mjJaL6ka1Was97xj02ttOG_WmmWOzk7
+#undef  myeiBNDHA8i8jhuL3IHRb 
+#undef  mbtzLVjzLgaxYxNNltfyM 
+#undef  mS8JphOKBDH9MB5GkmcLq 
+#undef  mf0YJDuh2j5By5N13LunG 
+#undef mPJW22oQ5EY7l3brt_yM6tZ98O1MaSS
+#undef mVSnQ5bRFB6wfDS_yNBNbNu5E0uONgN
+#undef  mc6a7gZ5y0kWaTfPKjZL0 
+#undef  mx4lt8TnYlZ5ZXw4BS3wS 
+#undef  mVAe2KWVqd9ISAzz02MVl 
+#undef  mVrsJpNNblNXrk9CJ_J45 
+#undef  mKQv8aH2lM5yjPYl5F768 
+#undef  mrXXIs5j4DqJtj32aOG5F 
+#undef  mjg3Ot05P13DpFXIgvY3M 
+#undef  mpgczyJuWNGXMBOxeP5oe 
+#undef  mwEEBMzfZV6O26soeDHeI 
+#undef  mK81mHSyZucxh8c_K9rnU 
+#undef  mTiWUgQKOeYLvNdGsR_oS 
+#undef  mbXhD242DJoibBjdI1JtA 
+#undef  mSdpFB1uEgpzM3bVmlHgT 
+#undef mkw8lGlDbQZaKMTP_YDPjvJLCWzkF1F
+#undef  mJdlQJg0rG2m7KHUChC3R 
+#undef  mvz1OP7svCPSKfxJ2Wbqs 
+#undef  mUGrJMUolw0lb_KVyGK5N 
+#undef mAgeWodR4T4ZrkJewFh58A0i0ajDXAw
+#undef mr5W62IjRnZD0dRSEjUmruLxKfdAo6z
+#undef  mz_QhADZTe0uCEYYRSweR 
+#undef  mPCAiE3B2oKNgoE3DnCGS 
+#undef  mfaXcqsSkd6ad3maNOmpF 
+#undef  my5S_tF4_lSpButBKNitX 
+#undef  mBGM118Iia8vm6zcNTuB6 
+#undef  mUgtpRAYJj43Mf4SpepZP 
+#undef  msGAdK1RZcxCitYemdpxc 
+#undef  me2H4L3LXGkdv1CjOYaxx 
+#undef  mC4FNAhGk_5NQroya9r4E 
+#undef  miGVtxwiqbDQsG6KBslZU 
+#undef  mL9oWJQ1n2xKG3FtRNowa 
+#undef  mVekuqiofcOlLv1kcHh3u 
+#undef  mZ9T0z5VdOHGC7rra8Fzk 
+#undef  mANVdtEFAyD7H8nVwStxw 
+#undef  meH5OaCcZwH0xkfm5lpWj 
+#undef  mrS2zvlmrTf4L4KBRRYAU 
+#undef  mGPgWaVxS3WdTr7rWsMw4 
+#undef  mFVNERjMRO_ZEKm0TY73X 
+#undef  mLp5eeYn1TGnQEcop68VN 
+#undef  mJ1vGQuHCiSCbbgKlE1zh 
+#undef  mDe1564r6NJrCTudA8x0w 
+#undef meiLv2EX65XvUvChPEjuN886Ha3hsh_
+#undef mEWPzjcYD7moMgjqWTXhQ08Ljc0mNua
+#undef mU4MGy3eTQcSf54RC1cbEcjQ3muIwTt
+#undef  mtEI4bSjtkyV5O0qz_vBz 
+#undef  myu64GAT8DgGBhNOOCqvd 
+#undef mJhsXXxCEc7EzwcyisUS8yU1EArDvv5
+#undef  mJivUzVExUJxvLMyR7vcv 
+#undef  mr0Gwya5kzUd694oxNDs4 
+#undef  mHnBQIAphg35vDq0qZ1IH 
+#undef  mgrzSPnq5U03KE8vGp17K 
+#undef  mflySGFqxQX_KaIEHAKSo 
+#undef  mR8MpflZg6lk1qLQLX9P9 
+#undef  mJWj5YQLEzhdPuiJvzQ8O 
+#undef  mdIyvr_duNyurtIQ2sC_1 
+#undef  mZloAr3_PPw7622AVrUCe 
+#undef  mIgWcCjmm9URqJ9HNYW2A 
+#undef  mEYy4vDSh1urfYj6Y0xAX 
+#undef  mzoah9JwBIdWZVJcSU27j 
+#undef  mVIm1AJSzhahLlgKO9xQK 
+#undef  mBFhfgDfkdod6qHz7NdvN 
+#undef  mHUTuX3q6rB5eWWYYPWQD 
+#undef  mNU1gzy6st0M0XRy_b50x 
+#undef  mAtWayYkoRILYXB8QtRbg 
+#undef  mDUeb65ug1HYJ31338ssa 
+#undef  mcvX0B8TDw1gEtqXtgT4T 
+#undef  mcBKtNACwQ_SnJx26otEZ 
+#undef  mw8HdfNy4mFP2ZdyEGSp5 
+#undef  m_ECAXF5hGu1UMoS2l1KU 
+#undef  mFASROAG4Q9353J70qH7c 
+#undef  mT6NDpoRTuoGE3dKWoXeh 
+#undef  mp1kzPPa8GX6cfigPyiyD 
+#undef  maE84VqXoUUX_dnxUsfES 
+#undef mgp30WAQApKqfYJi7b665A_Fsk0fLph
+#undef  mtXIBsLV4PNo4xplHiuYW 
+#undef  mgi5Boc5f0emw5eocZbgV 
+#undef  mELweLHSjak68niq3oUpw 
+#undef  mSBNIRK1XqZg3XlWW_b3d 
+#undef mUdlAesF5AuSJR8ScuRRyVZqheDCzBs
+#undef  mNQimRrYQ8Mz6YI9KM7Fn 
+#undef  mY5qtQdkZ0Cq7TxfD2D9r 
+#undef  mQbYLzhvVQm8J2LNkC6S6 
+#undef  mRIlZ0NriRkVMhRpycZqI 
+#undef  mrPFLPKakBKjOOnkuhZUP 
+#undef  mV4_AbWY8ymaWGsYOk0LC 
+#undef mf1FVfgOgk3KwNVS6KX1X3r7wnpFHZm
+#undef  mNPH65O81GD4PdziT5g9G 
+#undef  mkufZC7kHsvxllmN0YBQv 
+#undef mbyFB_zuYrlaUAZ0YvrMZ0qMUWQI1_m
+#undef  mmk2RogyswbtTiHnbCghT 
+#undef mepF4kKPTKcm3_3zOgvFYIzxp7qltNj
+#undef mKyEK_R1QxAe18GNGI1HAEUse28S19p
+#undef  mrIWO5AmcxVfFGpyNJzQE 
+#undef  mXYEIB3KYwzJOpssgkZxP 
+#undef  mKWQLdAVzYxp5QuNZ1ytt 
+#undef mgw8BkP8SNV8jndx61xg0o50h_c5mif
+#undef  mxIwd_EJpfr1C9jwU7IyL 
+#undef mica9L0obWHIAMj8olmooNyaERwYWWb
+#undef  mHbSWrX6OPeRP2Igmog8G 
+#undef  mVOBFEtNftMS2NFrVW8bV 
+#undef mzuxgOk7A21FkrdsUSuvnxnfwzSM4d1
+#undef mwVuNe3p0bvoSU3FXwiOAlf5xNTpUqD
+#undef  mevHkLo7kL5WL0_0mLIhr 
+#undef  mh6HrOJVrT3NM9Wdyz2It 
+#undef  mzPBrKZLupkxN5F1reNis 
+#undef  mghpafeSRXwbO0z_DbM3C 
+#undef  mOAy4qGUJpdHQSVbVPq9E 
+#undef mItOvmgvVaCfcAbau5lsMFJBHZNgxMF
+#undef mmPZkSy7hkphGU4PA4IHQSP49HWrI6I
+#undef  miPlatUaObQVOYOiw6SZF 
+#undef mCOsHuy_LgH97Sv8cUUn62iDLX97wwR
+#undef  mxp2hpvJDbBGG9galOMeH 
+#undef  mLE5EGHIdfaJi3FG2wNSs 
+#undef  mRAYh0ARHPOc62CfGHWWO 
+#undef  mLF5wNIO93YQsDKnsE8CQ 
+#undef  mCFTZ4KBJ1F7Fkl00Fjcu 
+#undef  mxpEdWbhRRjZ1JMh3yxwy 
+#undef  mWQWZuZUxzgXcOZHMJMC_ 
+#undef  mEpG5N2fixtWboWua15h2 
+#undef  mbKsAIYA4KftCqyFCiVR0 
+#undef mU6DxMMDeS8jnWvjm1Pm4JPiFG0vlkw
+#undef  mwuvkepREHprpx4i3n2RV 
+#undef  mlfybwyvp98TOJj0yuqhF 
+#undef  mMa2nYH1z474KyDSW_2Vs 
+#undef mEDGSyYfmKJTv5tj6wkNqd6mfHlWMjP
+#undef  mYMxwp5lzvb08Oa8FUKdp 
+#undef  mN4RvsK7_XXMC2cNCwITM 
+#undef  mutzl2HCpJ5IWzF1P08Yd 
+#undef mpMKiDYPHUkbcUrOidGijQq7UOxlcWw
+#undef  mO_k7IEuqtZq_e47ILYU9 
+#undef  mlZKVlBR7p58b0kfu8tFd 
+#undef  mi4REkBAebpTZrzlvFEpD 
+#undef mys8Mow1B0To5jHFE7OoGMaLlvNTYiw
+#undef  mAH84ftHkJMUldxM9fJHE 
+#undef  mIbIpdgqmFRILtR4eBSgp 
+#undef  mbVOLbjVZO0YI60Vuguaq 
+#undef mvmBqbIMsPhg4_ieHPNPA2054e72fsf
+#undef  mYJhSIZr793lUcg7mTDWT 
+#undef  mRDD8w83SsPKbGXy_JkEO 
+#undef  miCOYqGikWLzThHPaHJqa 
+#undef  mZ_OIrsB5IK5mggFkrgFu 
+#undef  mrrE9iifrKAQukpCdUvSg 
+#undef  mQIYDh6QMMrUx6uxn_6So 
+#undef  mgrODPzGHQfjmAyPsBdfg 
+#undef  mlnjjjDeP_rHq0Q8WRLNl 
+#undef mFGsmz168M0g5OuX5mDGXvoCfCP6cOP
+#undef mIyyG3AKrblBJKxNwgTHaAp64amaZec
+#undef  muUPvA5lgBIdnaP2X6gZ9 
+#undef mtNLFw2e0zAimBia6Svb24JdAELHSus
+#undef  mL8NdxI0A84_PQiCzjY0y 
+#undef momc0dVPjZSCmkiCD0NsIvJpksvAEq6
+#undef  muoE4XIKfPRSXmzic7wiv 
+#undef mmG8ZucFjVjdpE_4gG32Ai2kdULxHoD
+#undef  mIJkWACd8Uom4Jv6selID 
+#undef mC6s7k2DOay2vGSdayxevzArquG7kSe
+#undef  mRHtQqJtkyJMFTpmBQzRp 
+#undef mfsUOzV7P_RilmCCGvwoeIlw4YJVgaK
+#undef  mb82bbtDRSdpvH4Q5VV6X 
+#undef  myX_vRc3UBQw14UHIrg7D 
+#undef mUx6m64LorImkLdiamz4MNnKfJ8Dgqd
+#undef  mEjIWbivPeVc9WtxGDiWw 
+#undef  mkHL8KJw4VjwmGdgQrteX 
+#undef  mhL9dWuOWzLGBfRjwvYlN 
+#undef  mHlvGgqu6yYQkoBxoydv2 
+#undef  mI3QeEk0K_mj1WaUiowht 
+#undef  mOE4ALZahxLkvGqMRmxIK 
+#undef  mI30mSPxGJaQtkEjJfoQX 
+#undef  mf0E07qXAg4sDu7JIwESC 
+#undef  mt01qaUz2R0SKmPFSq0jx 
+#undef  mYbzFOKSwwNsD71cP1DkA 
+#undef  mwzFZRcSPi2Vsk45HpaLx 
+#undef  mtmFAz7pcnIFLgYGMf4eK 
+#undef mUn7QGLA73p6W5WWUA8kXR068R1LLaE
+#undef  mLdvrbXgkmVAVnc3aEbWU 
+#undef  mWsMr8mjNljMAriyUwgnE 
+#undef mHNb3kVFhkHg9E01geZBsldl9Bqqteh
+#undef  mWjWwCxBA7LLBixCoRsYZ 
+#undef mOPUy9orrqKqHEN_9xN7pePKUGcDrG7
+#undef mPapA0sQobBdMYxf8n5k_d1XfFYtgTj
+#undef  mCytWUAf5qvM6IOdaLIC3 
+#undef  mBUCZuaNioFkzVtaa2sRQ 
+#undef  mLS76iLDjnGxttL6L8yfX 
+#undef  mdMNbPkq6p5KBhEVf3OFw 
+#undef  mMo20fFU0rdQJ7l5qqDaX 
+#undef  myydjxqnidOfg3YXIPfCh 
+#undef  mUmh6jnSKhpmWgXMnt8PS 
+#undef  mLTPi46EjqETKRikMKXiU 
+#undef  mPdND7yG0gLP1HGO5Lkvl 
+#undef  mZ4lxIR9Ss2_Hj_UqJEdU 
+#undef  myMDc1DgE9_RLElsHtK4r 
+#undef  mcRuULuI_AYJWzFSu1kB4 
+#undef  mdokA2SxdolKVBlsRM2BI 
+#undef  mNAtfKYOf6ADB9rVjcJk_ 
+#undef  m_W9SY1N4eCI9HVCtY7k_ 
+#undef  mrxxDSozmVXbU0DdkvQZ8 
+#undef  map_Um1UEXeLIjOGoUw9U 
+#undef  mF1AFCmj7FNvcdn7hZ9B9 
+#undef  mEEA6W33vCS01rV9KTl0v 
+#undef mXn6_dCt1InpPoeN7PJzsfcX40Bsl36
+#undef  mOHlEjbyW9EyIFVYqPfh9 
+#undef  mRjEKX4QN9MTvSEtCTNd7 
+#undef  mSwbK3nBcNZkvGxSXNOZy 
+#undef  miuOs6oIdxnQEMrFFk2n_ 
+#undef  my0vyIAimw3jadFZG1pnz 
+#undef mw7X0K6Ks1HDdQZVuUvEBE8sNNQUpVJ
+#undef m_FIu8SC1mV9u96yGGq517GuyZBOKN2
+#undef  mAmoJDTG6Of2SbVxLbNlJ 
+#undef  moHeIYzwbcFb6VaM90Aa9 
+#undef  monDVXoqIbwYZt9x_asGf 
+#undef  mpC65FoK2NLadlWUAo9ps 
+#undef me5NQ5q4nzTEd8Focp_lQ2efTIGblTf
+#undef  mumKmtKc8SEEXbYxYxnDh 
+#undef  mqUxZEnHM0zID6J2vVqke 
+#undef  mopnBBbnH3fttLLMFPoqR 
+#undef  mE8uUKPmY8c0aMaRDvuqZ 
+#undef  mdbwYCIpGYWahFfTtU8zH 
+#undef  mFTobXyS5Vx9ebVESwR0T 
+#undef  mOwAFTnFZjoBWI2gNeAO_ 
+#undef mCtyM05tQpMzDpEgPuGhYcokT6M4tjW
+#undef  mcs2IPsFq8XN5a3t5KBLK 
+#undef  mC7hzb7yA8ZYeXu1CO69e 
+#undef mr11u0zLpFUybnlko22CUWxrLNKTqTm
+#undef  ml5pooDWTz1HG4AXabzV3 
+#undef  mYJ8ThnKYhVFrfXpP62DT 
+#undef  mrg1QVINMqbRYZWngNWmj 
+#undef  mNgaR6RP0DoWIwdccOwpn 
+#undef mqjfrgUiAEDDEjlRkjAD2lLTvBK4_wM
+#undef  mJFtpHxfnoGMxp1wzTBMr 
+#undef  mv_fAKjj2BjcHsnbiJfVx 
+#undef  mniwdnkZe0XDlHpwvfS6f 
+#undef  mLTITrFYKQEeVWAoGrzMF 
+#undef mRPo0fFJbYzO3rl5SpSmQCkuEOXjwjR
+#undef mwQf1bclnsFMVqDYMJIbXxS45LZCFBv
+#undef  mS3P8ZWKrLHg9h_5dW5He 
+#undef  mhNH3dNZkhrgawU6wbA6V 
+#undef  mhaG6yS3EwOInKAwIBoQN 
+#undef  mH7U1EdrCKalrHJxxWz_s 
+#undef  mkcVgqnqADeTh3Pu1ogGF 
+#undef  muzrhxIoqthv8PfiNihnX 
+#undef  mg9IHDbTXxljO0nSnQKYh 
+#undef  mzCa3iYOTZk3vOb9xFPuf 
+#undef mS2uQ2KWlC98CK2b0R7E2P72sVnabdi
+#undef  mvA2vjSvRD7UmknjmYP5U 
+#undef  mgGCFceAojKPG0bK5eWQT 
+#undef  mcAnVuQmAnGunjGyL6dhh 
+#undef  mMm9FLNsNOoyX7Tyb7vpT 
+#undef  mV6teN3KtTJ8vHmQAuPWz 
 #undef  mzwLTwfbmQ5D2jzV7LROH 
-#undef  mbdlGyMOiuL6kjlXvSqqd 
-#undef  mbqHQotWhg0sv6ViuZXc3 
+#undef  mIaPM1ms991SDrw4x6KTt 
+#undef  mY8NZr9zd5VcrqfZxKQJH 
+#undef  myrvDyRCtal5mdHB28ZIe 
+#undef  mfkkS3ig7woFqdOg7udAR 
+#undef  mxTwhHDgHBwIAa0Dytqva 
+#undef  mIBLQ6_qDoS3S2lLQGZ3e 
+#undef  mKJK3THIuAwgeFpuGLN8L 
+#undef  mrJcfxt4GvOx7AQVScfu1 
+#undef  mNQ6rNLARkxxSTP6tiTXG 
+#undef  mYOSSG7sSqnMh0YV5DIrw 
+#undef  mhzXsKXJN7mpztq4AcAJP 
+#undef mTZV4xO_u33gH0m2pSZ0Kb_3WBL3eAy
+#undef  mCUW3oFzDeQf_LYRW_3Q7 
+#undef  mKH2zPRtp0X4JTntk4h2u 
+#undef  mol5p_9C0R9o_YMjX6nxS 
+#undef  msDy4S0F6Zdx78ZUnbARe 
+#undef mUqaV4ZLGbvoX5uC3jxjOgaRtmgJvhY
+#undef  m_1_RZETM1QJ8vycOakwy 
+#undef  mquP6o79T92Q5e7Uu95ew 
+#undef  mJ55qvKfsfvRiFivJRFvq 
+#undef  myfkTa1upxif9QPCqJYGo 
+#undef  mZqpoIg7XHbhgu_6iW7PX 
+#undef  mCzaOxAWpFlV3gHYCg4ev 
+#undef  mYCupqIOYDMlnjNznUUG5 
+#undef  mljwEkmom23bYFuTS0b0b 
+#undef  mvVEux0tzfHTcHloJ_PHd 
+#undef  mC_gLvnw5tkMWRQheRKr5 
+#undef  mfuDqjzDT73kQihIjSHez 
+#undef  mU7LO3jg27wf5nw3n8LF7 
+#undef  mybagCX6OK9hQIn4qwrFz 
+#undef  muH9A34QGuccPZkZDb32w 
+#undef  mo9Lbpy0Ap4RTl5O5Or1C 
+#undef  mb1P_epCWN8Wxasz2RKsj 
+#undef  mgs_uDQ8mSosYV9hCvlQU 
+#undef  mYg3RpRsnYTFl5_yP9Off 
+#undef  mZjMv78yfz0yQEDayPDn4 
+#undef  mExFPeJBflhTWJKuQVWoB 
+#undef  mAzTBw5jTPnBNbyO0BIkm 
+#undef mcwFVyZ5U2pcDCrXPAgxP4vgspzqlu3
+#undef  mbCI0BlZHp5kbKpNqa5Su 
+#undef mFbAfOobLBnSihi9oovZu4R6MDK5fsc
+#undef  mVmEiQKd2V4SMp8srf2ip 
+#undef  mhJ97TQsVn_CNDDcdyvCc 
+#undef  meN5YYBBVg5DStfnyA8Dd 
+#undef mxTZSmMRscCjViBKa0Vr5qsi2p7WINa
+#undef  mf5rJKHDmIhT9kr_E2lnd 
+#undef mlXDtb4w4pC9DEeHyq5htHbqCmrrnZS
+#undef  mZb18dCucFvoBd0bsf01O 
+#undef  mSXTPhnnQgIi6ocmukNcV 
+#undef  mjXlfKOCTRjUV9apwYcb7 
+#undef  mRPDwBN1TFChGSxh15CwJ 
+#undef  mDWwKMm0Bw8nxvI3ZwZnM 
+#undef  mqI5yMr4h6CHkceANuA43 
+#undef mKHQi_mCIV4qkj6rPUW3efpMPD0wNm5
+#undef mv1RKc7QVwxlWT9SXxD8SO31MO6ME0P
+#undef  mQsihVvqkuYoG8jvPTYFO 
+#undef mtbFfPEOTUo9ZxMxuvpH7h3G0y34BUQ
+#undef  mhwa9v40jbZGyHdjZKnp7 
+#undef mWy_AfkOoH2nnI2kX9dj2KXAIxmex5q
+#undef msMTjEcQRbmNfhQK9JCSaxiULsTRddS
+#undef  mBGciDWaUfaa6OV3swXep 
+#undef mE0T41d6zsvRVEKQweSBUEh_uGhgu22
+#undef  mUFRPXFmygxcJ82L2LC5t 
+#undef  mAvI6WqVGKew5QUXF0T2l 
+#undef  mVFG05ubhW6ia_rWdS_Tv 
+#undef  mUrzesNXiQhLYupQ11MEa 
+#undef  mFS3Bzv40ET2Bg_bjcFGO 
+#undef  mkyly54GlrbXuNeECTTqk 
+#undef  me0ZKHp2Id3eLmP_6GMtk 
+#undef  mZLojCl8cVD1576VM0g8u 
+#undef  mtDWQOqRguVWSWehbKECr 
+#undef  mbkARxvbbfyf_buO00mpB 
+#undef  mgCpjhgiW1siuOOx31UVB 
+#undef  mRwYPGmWUou3ixNnKEWbv 
+#undef  mxCgC8LoLiSZGVUV0OQXG 
+#undef  mwkk1d6uUiyaKys71tsUv 
+#undef  mmBcOrqJdEmcu_DE5N2Gx 
+#undef  ma6O7Vg8NwpyGvRwfbCOg 
+#undef  mKx3hnVGJH14s80udXZp_ 
+#undef  mVzJJ8Dxt5T_4dzWC9bRk 
+#undef  mj3rSXJDWd4j4OSGbS2oX 
+#undef mjXwqRAhyk59NcNPAj326mdXnf1gVR2
+#undef  mYiyQbEDdMYkmeehBx6jp 
+#undef  mGu_88Fdde5jsxW8v9whR 
+#undef  msxc6utIaOFXg4WI3vB0q 
+#undef  mQFhSiloYfIS2jNU3eZwh 
+#undef  mvpMkjoDGcQujDevHDZnx 
+#undef  mNF0G2xPBB22gI9XzMk2L 
+#undef  mP2Ml_iMNTficIMe44TSF 
+#undef  mB0fx5ZWEe2g8Ci7LIhmM 
+#undef  mgBFSWJlmkK48wSOW4b6N 
+#undef  mY5hSAdXT4P60CSAZFBBa 
+#undef  mk9nSfh6XGyonOYMC8C3M 
+#undef mvxShRWzqhGplR48sv87FTnON8YlX5V
+#undef  mFAl4ldpf7o2gKLWQ4bfu 
+#undef  mvaZ3U73Zn5gRZuytQKWY 
+#undef  m_j66qmf_xp1aP8o87JsC 
+#undef  mKKmc4BHDTQao51cezkdW 
+#undef  mkbfWNsvNHk84u7zcYWL3 
+#undef mP58CIh6ze6yAP6qZBUSJEJWLJ4Ud8m
+#undef mNfxZlRukKJI5Avx99qsiGytb0bdKx0
+#undef  mmIw4aId5JmbXYNH3gSAX 
+#undef mBPRy7dwggVK7T8mnFH4k3IHP5LNgxA
+#undef  mJM70H6b9NGcqtHePCrZv 
+#undef  mtNKEvBwMHNsmdH7BtZbM 
+#undef  m_l2K0T8_C6RujcQWcodT 
+#undef  mWaLwU5zB1H0AtUbS8Rz2 
+#undef  mwJXVmZ8MTqFBwgPAlydy 
+#undef  mTmmYcodZhxYb9bt39OUl 
+#undef  mY7ZY9aprChsLCuD7yOm0 
+#undef mT9ANLDUV9tykjN4uA8yhgGv3MmvkRG
+#undef  mgux57p4wBZIWFfq6waj5 
+#undef  mSSwrqUuoNnhMtvhM2vr3 
 #undef md0oVktsx1pBS882l8zyIRjNfobA6ch
 #undef mJx1hfXrHT_dfDmEhQBC_Pvh6H5muIx
-#undef mf1FVfgOgk3KwNVS6KX1X3r7wnpFHZm
-#undef  mI3QeEk0K_mj1WaUiowht 
-#undef  mmAvkrWz9or7FSKyep8Gr 
-#undef  mcZQV4r5il8OMRPl4Fijs 
-#undef  mtNKEvBwMHNsmdH7BtZbM 
-#undef  myfkTa1upxif9QPCqJYGo 
-#undef  mqVdZVftPR84WTjiOiVfT 
-#undef mcwFVyZ5U2pcDCrXPAgxP4vgspzqlu3
-#undef  m_ECAXF5hGu1UMoS2l1KU 
-#undef  mY8NZr9zd5VcrqfZxKQJH 
-#undef  mC7hzb7yA8ZYeXu1CO69e 
-#undef  muDvj5aUdXshb2AqqeEiu 
-#undef  mY6fIyAOJfhz5nUdrWiVY 
-#undef  mVekuqiofcOlLv1kcHh3u 
-#undef  mOAy4qGUJpdHQSVbVPq9E 
-#undef  mb82bbtDRSdpvH4Q5VV6X 
+#undef  mJPHiCuIoYoltwiwwrI8_ 
+#undef  mfKtZiRp2HOdQqoTplnaI 
+#undef  mgT33OczCogeSJ9uFzScS 
+#undef  mMW4T9X7Ncvxkcl9tdmuW 
+#undef  mTy5S_mcphfNLzuJQ30Xe 
+#undef mbJXAa63ZDuAqsedxrTDHusieLOgU0u
+#undef  mGeB1HfXInE4uBPHmIDCN 
+#undef  mglbnc94mbkalEyCkkDhv 
+#undef  mRfik4dXiQLAdpjBrSV8e 
+#undef  mpmXJjJFMEII76TcUeF6n 
 #undef mKBHPoItjfMlV0wiBB4zhY7eGHfZlUN
-#undef  mS8RHH9YrzfK1kS8XUlWM 
-#undef  mltszUqwX6pYfxYVtnKha 
+#undef  mVjuVop3osym9wWoq6p3w 
+#undef  mFllaSnZNjV3YvL2YmAFh 
+#undef  mq2gz5KAY_yWyHzw3C8AU 
+#undef  mrDas3egWRcEnvTodVRRA 
+#undef  mDHmz3NSVqdDEn8FHaIo5 
+#undef  miEkJpdzqdOiFySBrwOfd 
+#undef mVpqXAw8OwPya0In1DtR6DVSoVt5E4W
+#undef  mKdE4ZCfdDaB2HjFWW9ZV 
+#undef  mfLSKCXSc1DHeN38jALNR 
+#undef  mi6BqZOVmQyrEy6BLProP 
+#undef  mrCE0fSuXGTiQ_zkRfAJ7 
+#undef  mO5I_G9WPuW9VC4inj5mo 
+#undef mXk6lthHPSZVm77eowhQeQawrY_9rFf
+#undef  msBPMso4NRYFcn5Y1myF_ 
+#undef  mteJvtUMKI6kC6j6RtZKr 
+#undef  mypSLdUZlHtNg6EWZ4tk4 
+#undef  mZCDcAPDXTOUnUkMgttvA 
+#undef  mvcDBJfIynZthI5bz_HTe 
+#undef  mS3spS0_ckVjORcpwfpZf 
+#undef  mlEF62Izit24hGT_NqPIJ 
+#undef  mbdlGyMOiuL6kjlXvSqqd 
+#undef  m_yMT4MKxrENTtLx5cA7n 
+#undef  myfOHlfTLtRL7im7qSaYm 
+#undef  mWYYMqZtRPklZ6ldYQlW8 
+#undef  mxGJXkzb8EW07jCVTl0Jt 
+#undef  mozBzR4ceXlDTd_eA9UWj 
+#undef  m_Ww9T_ZoqJhMiIY0i1PJ 
+#undef  mZTdKHHWXvp9nTqOl4Xs2 
+#undef  mJCQ17ktBLqNw7sHF60R1 
+#undef myUjQEd8RpnmXHqwk8e1AWLvQ6gzt5H
+#undef mlXMiDtd6M4SH6uQB_NP4czeOXVoS5J
+#undef  mXdnll4yjwVy4uBDSjUe3 
+#undef  mQ3_UtHSGY3eARbSl_X7q 
+#undef  mXftmBtLFUrPFw3lasjuW 
+#undef  mTgR0xuTc2WA_FI5hAh2Q 
+#undef  mVLLVWqNz0_lGN56vY03t 
+#undef  mXE5wWRmJGUY4EsEsgegT 
+#undef  mGBA6VT3iuGw48FMYPVID 
+#undef m_V320PDi44AmWFVj_bsjmQ6FP8FK6B
+#undef  ma1pkHKHRslLKg1N_R3cS 
+#undef mOrS38s7h3Veesv9767f3xN2895kQdx
+#undef  mvFhi6DaS7eScbgWe07wY 
+#undef  mdUyI4aAbhQ4X6fne1qVo 
+#undef  mZlJv5AWGo4iJ2lUt_qL9 
+#undef mLJzZsWnOmMS6V2RrU8dPGyS1KjXdWu
+#undef  moCEmVQeGy8LzV8cAuk79 
+#undef mtpK6cfRKaQfLmD5NlKZxIgtqI0KH8H
+#undef  mt3d6r2BuFfOvfXdOmaLX 
+#undef mVNaGXNPhIIKr2hUgGHX4UaeDEMfi42
+#undef  molF5K16MuyVvkFE7X8JI 
+#undef  mi05fm9uStmGibkKInn9I 
+#undef  mHg0YG9R0Gb6ZE5xIr3dz 
+#undef  mFWW5xb6SDILpyTp5GBZD 
+#undef  mW0689NsIXj0x_tZl_0ut 
+#undef mJuuoPKr40SU5zHhNbbXqctl3TiKplZ
+#undef  mbCB2QE8sAa45H2Pxnfop 
+#undef  mBxIiY0bxajrRw6WjYleG 
+#undef  moKypFwLFwBoz6rUVIuCY 
+#undef mZ1ddPtgQf1469AgXd_hnhYWrItjdpa
+#undef  mpBV2mt4yeFwcVEC5cxVw 
+#undef  mFqi0ZIcB_YhZ2B8QBIQg 
+#undef mWi0N1XQtqS4eplLhvTPtL7YVDTI0uk
+#undef  mN_UNAeshLaooczmV1nkW 
+#undef  mVmWtYm5gVtZj7Yq19XWE 
+#undef  mTWpr3m9V3RdtOrrhhpUi 
+#undef  mfQABlcyhvI43vfjabcjx 
+#undef  mFruyY5vdoiszED1tVpm7 
+#undef  mecU92YjgSbB3VkEoZVK3 
+#undef  mOeb4QCF4tk5CXqIGmTlK 
+#undef  mc2SFiyFAyMaXElAGl89t 
+#undef  mO02z_ujA2bhihPtTtFSA 
+#undef  mpjTyiESCVWYRDiT2x2RD 
+#undef  mwiKr6psttEx97f2NsYO1 
+#undef  mW202Akoy5o2_FFUMtz7a 
+#undef  mJk4eXgp_IeFV2YvLaQC7 
+#undef  mr8s7pfvTmBWmxher3Oue 
+#undef  mS0R9s7sfcYa3Nx39taZW 
+#undef  mrjcvI9ucBIaCRtqGyrWD 
+#undef  mmeJW_Q9h6ZBPzSBQVjMK 
+#undef  mCehD1sxzTv6MH7ymj2xb 
+#undef  mWRzp9vubS9UNcl2Anz32 
+#undef  mmtdRAqKU38Wmq22hGoY2 
+#undef  mIHFqVJpFXgMDdHn2uhc3 
+#undef  mjeCTifvlIBEl0lPx4S9g 
+#undef  mx0IHqzgubYGvmr3US2dG 
+#undef msLnXwUymv1zch0aKjqHGUlG8jOOe2L
+#undef  mYcSgTugFLQcmWT7seaac 
+#undef  mVEKXpiuZW9uJtiJR96kC 
+#undef  mtY6LxHDMoBxNaXBgiMYo 
+#undef  mXbu2bQmZ_EIA6T8Pxs5C 
+#undef  mn5MlHVieFj6s1Arh9Q10 
+#undef mpzFaHYiXFWUKP8NPmYNuC3erXnFHiz
+#undef me_x3XD35s4SQm68rZAxnDPyEScI4ko
+#undef  mVZIUasySfZXcql1nm24B 
+#undef  mhfoVR7GfGGYByYoTirWE 
+#undef  mLMQAhvQYOFXZbKccuW7F 
 #undef  mol7dpMQ0btdFqXAptKQR 
-#undef  mhzXsKXJN7mpztq4AcAJP 
-#undef  mtnnWCdgrIMkg48Nfdksz 
+#undef  mFWbNGU5e6cuqyQa3XUry 
+#undef  mqVdZVftPR84WTjiOiVfT 
+#undef  mA7hUM4UKqFyb_LJLsook 
+#undef  mEbO1A7RXmhmRG12Qtq2A 
+#undef  msDVYCHuU_j2g_TdgX4Ta 
+#undef  mjjfaXD3tH8warSj13sVr 
+#undef  mMorzi7AHv5qXgdOZzcMd 
+#undef  mxkHJa5wooqhzaSxK7_fd 
+#undef  mJJosB3DZCYh837sWRpN7 
+#undef  mPaUdMg3fg2ipZY0Exj7X 
+#undef  moI4EWKnn9rwdcRf81yt6 
+#undef  mafwB2WCPijyRRTuHGVwE 
+#undef  mxAXsCfNkscq4iQtE2AeY 
+#undef  mEhFK99MtLRsCBaPNqnDs 
+#undef  muC5cqYcHRXDD16noARI1 
+#undef  muLh_AegzBLvbYcxrsotS 
+#undef  mbzQLzB5_GI6yqNIVcKo7 
+#undef  mlwxuKRzwZKw4d0ABP68H 
+#undef  mMbWC8gQeXmnMqYEj20Wf 
+#undef  mKLTKWdkdn_ESJc3B3MOJ 
+#undef  mIyrnAZ9pLZEaiK6Yst1L 
+#undef  mR22jPCjbltZ3tbBmn_6w 
+#undef  mjS5rO91VKWACucamZJvF 
+#undef  mEm194VmPJuGh5y4tMUm5 
+#undef  mfRi_C6KlnAxop81XDZsV 
+#undef  mtq_QCXPpv2kX7L8PRz8d 
+#undef  mIqjSmilXv9ILvDddB7nD 
+#undef  mFlx7sCaCoQxsjHSq_umO 
+#undef  mISlN399eTfrWHnidEKGu 
+#undef  mi2mlTodeof41MadCAEzi 
+#undef  mweJTmqyXMKSMhERfzuxN 
+#undef  mwbs0d2NlC_djcHtxQPj6 
+#undef  mw_MIhwcw8TZ9gTF3_mEt 
+#undef  mbJiX6F_a_O98JuQH2rHf 
+#undef  mPjeLalHATLRlVYohP5cu 
+#undef  mtpa6CvplEq1shGwk4jxI 
+#undef  mVWXLsp7dzQ63mhYH8afG 
+#undef  mdpN8SwUj7WdZrfZEdHOU 
+#undef  mhifiLHf3tBluSeI6D_kg 
+#undef  m_cHyr6QlGt5jYeD25QwT 
+#undef  ml5d8mzmxNmQRMtpfZ82X 
+#undef  mMGejH_coNc3kGxAdXVex 
+#undef  mkQFhH7KKo8wEpsoToABe 
+#undef  mQYacSpatR0AsiZrXS4cE 
+#undef  mnpObQ1mWnyfQO24_ojBn 
+#undef  mVfb3IHZLk8rmg75VuqQZ 
+#undef  mcCwozNc9ZEKnXkmsh9Fj 
+#undef  mNKI4p1bbhsctoprpzZld 
+#undef  mltszUqwX6pYfxYVtnKha 
+#undef  mUvBFztQfvp6FxGFsyoMW 
+#undef  mT9nS5aSA2ErLjcHqOPSA 
+#undef  m_oqkmDs8rXEbW2q16xvJ 
+#undef  mmAvkrWz9or7FSKyep8Gr 
+#undef  mcozC0jwDOrxnYpsfODix 
+#undef myRBBsHypjh2pwIDUsBulCaJVULSzBl
+#undef  mvbe619pMTxqR0ISntFSZ 
+#undef  mTGJXDnkacX2UX9dooHQu 
+#undef  mcKERBksFL6yXYOLd7kWz 
+#undef mYEx6E3frdynb1tbeRHMsq4qjzx5lJI
+#undef  mTlKcfas8V6h_FPimPoyY 
+#undef mfBrVitNz1gcglM0S0d_GaB2XQ6qIBt
+#undef  mH9fKsRtHWNu77RGN1xmn 
+#undef  mQ28kUfMOhNPxGTJTErTr 
+#undef  mcce2fXWVHACmBftaJ9Re 
+#undef  mbqHQotWhg0sv6ViuZXc3 
+#undef  msz82ko2ZHqbIoF2aTtnd 
+#undef mz49HpzWnGZKPZ_SZ0VjCRqhMrTkbXD
+#undef  mdx9gS37IsjwWpaOb1ODY 
+#undef  mdEGS_9gShKEEsK9RPbfj 
+#undef  mmSlUFoMxZtVX9CkQCe7O 
+#undef  mise5YGBUx6xBGs9EUolB 
+#undef  mIqwZsWoU0IEPB7TMb7wT 
+#undef  mfvgAAx_p4DiD5VQWew30 
+#undef mzIN4oy49lJQAPj1sTO7CuJrW8zh8vn
+#undef  mTkuNOxSsNhHKtS5Aoyjl 
+#undef  mP7ddfBDehHbRqP8iGbq8 
+#undef  mhDfF2VEdGrCP55eTHYvN 
+#undef  mGc5v1UWfDU7ttNcZryQG 
+#undef  mxt_R_jw78RlV2eo0D9pJ 
+#undef  mY6fIyAOJfhz5nUdrWiVY 
+#undef  meoTw_X4Xqh45MaL_F2D7 
+#undef  muPAQsfjksFeL917cY2qY 
+#undef  mdN8xdqycKdYT96rU4KUK 
+#undef  mS8RHH9YrzfK1kS8XUlWM 
+#undef  mt3m0c1_35lMMq0E3cZsZ 
+#undef  md3vFKQB1r7mKsD_TtoYY 
+#undef  mfnsIHmSLQOabKyJkuQOT 
+#undef  mZilF4nRNVEneBzggpX7Z 
+#undef  mQivdop_Gb4hqsWvOttc3 
+#undef  maWf7apYek19lMvO8A9jX 
+#undef  mf2ViRb3BWngxlNGam_05 
+#undef  mdoDIGlHHE7UO_4pXUSmQ 
+#undef  mgB7jkTLiZWzEF7KqbAfY 
+#undef  mTWpMMn_ueGNGrVaZzL0Q 
+#undef  mT3v8xdcVsSvUtbwmHC7j 
+#undef  mfF196cGKZ_LkBPN8ZWlr 
+#undef  mstJEG25u0Qv4VQocWgKl 
+#undef  mAPqoF5haBWDrhI1NEj4F 
+#undef mrklVs4e18EG0isgYms8QLiA8VS3ndK
+#undef  mqLizGA4Z8QZ_2GYQ1inC 
+#undef  mUnahx7x8KWu62epS7OxV 
+#undef  mhRH54odsmIWcLq1D3rKZ 
+#undef  mqlayz2fShj6ePxekxwRg 
 #endif

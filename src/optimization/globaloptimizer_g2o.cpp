@@ -31,7 +31,7 @@
 #include <iostream>
 
 //#define ORIGINAL_G2O_SBA
-namespace reslam{
+namespace ucoslam{
 
 
 class  MarkerEdgeX: public  g2o::BaseBinaryEdge<4, Vector8D,  VertexSE3Expmap,  VertexSE3Expmap>
@@ -92,14 +92,9 @@ void GlobalOptimizerG2O::setParams(std::shared_ptr<Map> map, const ParamSet &xp 
 
 
 
-
     _params=xp;
-//    _InvScaleFactors.reserve(map->keyframes.front().scaleFactors.size());
-//    for(auto f:map->keyframes.front().scaleFactors) _InvScaleFactors.push_back(f);
-
-
-    for(int i=map->_maxOctaveLevel; i>=0; i--)
-        _InvScaleFactors.push_back(1./pow(map->_scaleFactor, i));
+    _InvScaleFactors.reserve(map->keyframes.front().scaleFactors.size());
+    for(auto f:map->keyframes.front().scaleFactors) _InvScaleFactors.push_back(1./f);
 
 
     //Find the frames and points that will be used
@@ -223,14 +218,7 @@ void GlobalOptimizerG2O::setParams(std::shared_ptr<Map> map, const ParamSet &xp 
         vPoint->setMarginalized(true);
         Optimizer->addVertex(vPoint);
         point_edges_frameId[mp_id].reserve(mp.frames.size());
-        double edge_weight=1;
-        float weight_map;
-        if( mp.isFromMapOriginal() )
-            weight_map=1;
-        else
-            weight_map=0.5;//0.5
-
-
+        float edge_weight=1;
 
         //SET EDGES
          for( const auto &f_info:mp.frames)
@@ -253,7 +241,7 @@ void GlobalOptimizerG2O::setParams(std::shared_ptr<Map> map, const ParamSet &xp 
                 e->setVertex(1, dynamic_cast<g2o::OptimizableGraph::Vertex*>(Optimizer->vertex(usedFramesIdOpt.at(f_info.first))));
                 e->setMeasurement(obs);
                 //try a different confidence based on the robustness (n times seen)
-                e->setInformation(Eigen::Matrix2d::Identity()*_InvScaleFactors[kpUn.octave]*weight_map);
+                e->setInformation(Eigen::Matrix2d::Identity()*_InvScaleFactors[kpUn.octave]);
                 e->setRobustKernel(createKernel(thHuber2D,edge_weight));
                 Optimizer->addEdge(e);
                 point_edges_frameId[mp_id].push_back(edge_frameId_stereo((void*)e,f_info.first,false));
@@ -283,8 +271,8 @@ void GlobalOptimizerG2O::setParams(std::shared_ptr<Map> map, const ParamSet &xp 
                     e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(Optimizer->vertex(usedPointsIdOpt.at(mp_id))));
                     e->setVertex(1, dynamic_cast<g2o::OptimizableGraph::Vertex*>(Optimizer->vertex(usedFramesIdOpt.at(f_info.first))));
                     e->setMeasurement(obs);
-                    e->setInformation(Eigen::Matrix4d::Identity()*double(_InvScaleFactors[kpUn.octave]*weight_map));
-                    e->setRobustKernel(createKernel(thHuber4D,edge_weight));
+                    e->setInformation(Eigen::Matrix4d::Identity()*double(_InvScaleFactors[kpUn.octave]));
+                    e->setRobustKernel(createKernel(thHuber3D,edge_weight));
                     e->fx_1 = Frame.imageParams.fx(0);
                     e->fy_1 = Frame.imageParams.fy(0);
                     e->cx_1 = Frame.imageParams.cx(0);
@@ -295,11 +283,11 @@ void GlobalOptimizerG2O::setParams(std::shared_ptr<Map> map, const ParamSet &xp 
                     e->cx_2 = Frame.imageParams.cx(1);
                     e->cy_2 = Frame.imageParams.cy(1);
 
-                    Q2T.copyTo(e->Q2T);
+                    e->Q2T = Q2T;
 
                     Optimizer->addEdge(e);
                     point_edges_frameId[mp_id].push_back(edge_frameId_stereo((void*)e,f_info.first,false,true));
-                    frame_kpOptWeight[f_info.first]+=4*_InvScaleFactors[kpUn.octave];
+                    frame_kpOptWeight[f_info.first]+=3*_InvScaleFactors[kpUn.octave];
                 }
                 else{
                     //stereo observation
@@ -314,7 +302,7 @@ void GlobalOptimizerG2O::setParams(std::shared_ptr<Map> map, const ParamSet &xp 
                     e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(Optimizer->vertex(usedPointsIdOpt.at(mp_id))));
                     e->setVertex(1, dynamic_cast<g2o::OptimizableGraph::Vertex*>(Optimizer->vertex(usedFramesIdOpt.at(f_info.first))));
                     e->setMeasurement(obs);
-                    e->setInformation(Eigen::Matrix3d::Identity()*double(_InvScaleFactors[kpUn.octave]*weight_map));
+                    e->setInformation(Eigen::Matrix3d::Identity()*double(_InvScaleFactors[kpUn.octave]));
                     e->setRobustKernel(createKernel(thHuber3D,edge_weight));
                     e->fx = Frame.imageParams.fx();
                     e->fy = Frame.imageParams.fy();
@@ -360,23 +348,22 @@ void GlobalOptimizerG2O::setParams(std::shared_ptr<Map> map, const ParamSet &xp 
     ///////////////////////////////////////
 
 
-     int MarkerVertices=0;
     for(auto &m:marker_info){
-        reslam::Marker &marker= map->map_markers.at(m.first);
+        ucoslam::Marker &marker= map->map_markers.at(m.first);
         VertexSE3Expmap * vSE3 = new VertexSE3Expmap();
         vSE3->setEstimate(toSE3Quat( marker.pose_g2m));
         vSE3->setId(m.second.IdOptmz);
         Optimizer->addVertex(vSE3);
         m.second.vertex=vSE3;
         totalVars+=6;
-        MarkerVertices++;
     }
+
 
 
     double totalMarkerWeight=0;
     for(const auto &m:marker_info){
         VertexSE3Expmap * vSE3 =  (VertexSE3Expmap *)m.second.vertex;
-        reslam::Marker &marker= map->map_markers.at(m.first);
+        ucoslam::Marker &marker= map->map_markers.at(m.first);
 
         //Now add the links between markers and frames
         for(auto fid:marker.frames){
@@ -407,7 +394,6 @@ void GlobalOptimizerG2O::setParams(std::shared_ptr<Map> map, const ParamSet &xp 
 
         }
     }
-
     ////
     /// The Planar case:
     ///  create relationship between markers if planar case
@@ -459,6 +445,7 @@ void GlobalOptimizerG2O::setParams(std::shared_ptr<Map> map, const ParamSet &xp 
 }
 
 void GlobalOptimizerG2O::optimize(std::shared_ptr<Map> map, const ParamSet &p ) {
+    std::cout << "void GlobalOptimizerG2O::optimize(std::shared_ptr<Map> map, const ParamSet &p )" << std::endl;
     __UCOSLAM_ADDTIMER__
         setParams(map,p);
     __UCOSLAM_TIMER_EVENT__("Setparams");
@@ -466,7 +453,7 @@ void GlobalOptimizerG2O::optimize(std::shared_ptr<Map> map, const ParamSet &p ) 
     __UCOSLAM_TIMER_EVENT__("Optmize");
     getResults(map);
     __UCOSLAM_TIMER_EVENT__("getResults");
-
+    std::cout << "void GlobalOptimizerG2O::optimize(std::shared_ptr<Map> map, const ParamSet &p ) ends" << std::endl;
 }
 
 
@@ -474,29 +461,28 @@ void GlobalOptimizerG2O::optimize(std::shared_ptr<Map> map, const ParamSet &p ) 
 
 
 void GlobalOptimizerG2O::optimize(bool *stopASAP ){
-
+    return;
+    std::cout << "void GlobalOptimizerG2O::optimize(bool *stopASAP )" << std::endl;
     __UCOSLAM_ADDTIMER__
         Optimizer->initializeOptimization();
     Optimizer->setForceStopFlag(stopASAP);
     Optimizer->setVerbose( _params.verbose);
 #pragma message "warning: change this to consider maximum interstep error"
 
-    __UCOSLAM_TIMER_EVENT__("Init");
     Optimizer->optimize(_params.nIters,1);
-    __UCOSLAM_TIMER_EVENT__("First Optimization "+std::to_string(_params.nIters));
+//    Optimizer->optimize(_params.nIters,1);
     bool continueProcessing=true;
     if(stopASAP!=nullptr)
         if(*stopASAP) continueProcessing=false;
-
     if( continueProcessing)
     {
         for( auto &mp_id:usedMapPoints)
         {
             for(auto e_fix:point_edges_frameId.at (mp_id)){
                 if (e_fix.isMultiCam){
-                    if( ((EdgeMultiCam2_SE3ProjectXYZ*)e_fix.first)->chi2()>Chi4D || !((EdgeMultiCam2_SE3ProjectXYZ*)e_fix.first)->isDepthPositive())
-                        ((EdgeMultiCam2_SE3ProjectXYZ*)e_fix.first)->setLevel(1);
-                    ((EdgeMultiCam2_SE3ProjectXYZ*)e_fix.first)->setRobustKernel(0);
+                    if( ((EdgeStereoSE3ProjectXYZ*)e_fix.first)->chi2()>Chi4D || !((EdgeStereoSE3ProjectXYZ*)e_fix.first)->isDepthPositive())
+                        ((EdgeStereoSE3ProjectXYZ*)e_fix.first)->setLevel(1);
+                    ((EdgeStereoSE3ProjectXYZ*)e_fix.first)->setRobustKernel(0);
                 }
 
                 else if (e_fix.isStereo){
@@ -512,28 +498,24 @@ void GlobalOptimizerG2O::optimize(bool *stopASAP ){
                 }
             }
         }
-        int nmarkerEdges=0;
         for(auto me:marker_edges){
             MarkerEdge *medge=(MarkerEdge *)me;
             if (medge->chi2()>Chi8D)  medge->setLevel(0);
             medge->setRobustKernel(0);
-            nmarkerEdges++;
         }
         // Optimize again without the outliers
 
         Optimizer->initializeOptimization();
-        __UCOSLAM_TIMER_EVENT__(" Second opt prepare");
         Optimizer->optimize(_params.nIters*2,1);
-        __UCOSLAM_TIMER_EVENT__(" Second optimization nmarkerEdges="+std::to_string(nmarkerEdges));
 
     }
-
+    std::cout << "void GlobalOptimizerG2O::optimize(bool *stopASAP ) ends" << std::endl;
 
 }
 
 void GlobalOptimizerG2O::getResults(std::shared_ptr<Map>  map){
 __UCOSLAM_ADDTIMER__
-
+    std::cout << "void getResults" << std::endl;
     auto toCvMat=[](const g2o::SE3Quat &SE3)
     {
         Eigen::Matrix<double,4,4> eigMat = SE3.to_homogeneous_matrix();
@@ -573,12 +555,7 @@ __UCOSLAM_ADDTIMER__
         //check each projection
         for(auto e_fix:point_edges_frameId.at (mp.id)){
             bool isBad=false;
-            if (e_fix.isMultiCam){
-                //if( ((EdgeStereoSE3ProjectXYZ*)e_fix.first)->chi2()>Chi4D || !((EdgeStereoSE3ProjectXYZ*)e_fix.first)->isDepthPositive())
-                if( ((EdgeMultiCam2_SE3ProjectXYZ*)e_fix.first)->chi2()>Chi4D || !((EdgeMultiCam2_SE3ProjectXYZ*)e_fix.first)->isDepthPositive())
-                    isBad=true;
-            }
-            else if(e_fix.isStereo){
+            if(e_fix.isStereo){
                 if( ((EdgeStereoSE3ProjectXYZ*)e_fix.first)->chi2()>Chi3D || !((EdgeStereoSE3ProjectXYZ*)e_fix.first)->isDepthPositive())
                     isBad=true;
             }
@@ -606,7 +583,7 @@ __UCOSLAM_ADDTIMER__
     for( auto &mp_id:usedMapPoints)
         map->updatePointNormalAndDistances(mp_id);
     __UCOSLAM_TIMER_EVENT__("Updated points and normal distances");
-
+    std::cout << "void getResults ends"  << std::endl;
 }
 
 

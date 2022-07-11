@@ -21,7 +21,7 @@
 #include "basictypes/io_utils.h"
 #include <fbow/fbow.h>
 #include <opencv2/highgui.hpp>
-namespace reslam {
+namespace ucoslam {
 Frame::Frame(){
     bowvector=std::make_shared<fbow::fBow>();
     bowvector_level=std::make_shared<fbow::fBow2>();
@@ -52,7 +52,6 @@ void Frame::copyTo( Frame &f)const{
     f.KpDescType=KpDescType;
     f.minXY=minXY;
     f.maxXY=maxXY;
-    f.fromMapOriginal=fromMapOriginal;
  }
 
 
@@ -123,7 +122,7 @@ int Frame::getMarkerIndex(uint32_t id)const  {
 
 }
 
-reslam::MarkerObservation Frame::getMarker(uint32_t id) const{
+ucoslam::MarkerObservation Frame::getMarker(uint32_t id) const{
     for(const auto &m:markers)
         if (uint32_t(m.id)==id)return m;
     throw std::runtime_error("Frame::getMarker Could not find the required marker");
@@ -228,9 +227,6 @@ reslam::MarkerObservation Frame::getMarker(uint32_t id) const{
       //cout<<"Frame .18. ="<<hash<<endl;//16
       hash+=keypoint_kdtree.getHash();
       //cout<<"Frame .19. ="<<hash<<endl;//16
-
-      hash+=fromMapOriginal;
-      //cout<<"Frame .20. ="<<hash<<endl;//16
       return hash;
 
   }
@@ -259,6 +255,7 @@ void Frame::clear()
       //returns a map point observation from the current information
        minXY=cv::Point2f(0,0);
        maxXY=cv::Point2f(std::numeric_limits<float>::max(),std::numeric_limits<float>::max());
+
 }
 
 void Frame::toStream(std::ostream &str) const  {
@@ -299,7 +296,6 @@ void Frame::toStream(std::ostream &str) const  {
     str.write((char*)&minXY,sizeof(minXY));
     str.write((char*)&maxXY,sizeof(maxXY));
 
-    str.write((char*)&fromMapOriginal,sizeof(fromMapOriginal));
 
 
     magic=134244;
@@ -343,11 +339,7 @@ void Frame::fromStream(std::istream &str) {
     str.read((char*)&minXY,sizeof(minXY));
     str.read((char*)&maxXY,sizeof(maxXY));
 
-    str.read((char*)&fromMapOriginal,sizeof(fromMapOriginal));
-
-
     str.read((char*)&magic,sizeof(magic));
-
    if ( magic!=134244)throw std::runtime_error("Frame::fromStream error in magic");
    //  create_kdtree();
 }
@@ -360,7 +352,7 @@ void FrameSet::toStream(ostream &str) const {
     //set magic
     int magic=88888;
     str.write((char*)&magic,sizeof(magic));
-     ReusableContainer<reslam::Frame>::toStream(str);
+     ReusableContainer<ucoslam::Frame>::toStream(str);
  }
 
 void FrameSet::fromStream(istream &str)
@@ -369,7 +361,7 @@ void FrameSet::fromStream(istream &str)
     str.read((char*)&magic,sizeof(magic));
     if (magic!=88888) throw std::runtime_error("FrameSet::fromStream error reading magic");
 
-    ReusableContainer<reslam::Frame>::fromStream(str);
+    ReusableContainer<ucoslam::Frame>::fromStream(str);
 
 }
 uint64_t FrameSet::getSignature()const{
@@ -412,6 +404,54 @@ void Frame::removeUnUsedKeyPoints(){
      std::map<uint32_t,uint32_t> old_new;
     for(int i=0;i<ids.size();i++){
         if( ids[i]!=std::numeric_limits<uint32_t>::max()){
+            ids[curIdx]=ids[i];
+            flags[curIdx]=flags[i];
+            und_kpts[curIdx]=und_kpts[i];
+            kpts[curIdx]=kpts[i];
+            desc.row(i).copyTo(desc.row(curIdx));
+            if(bowvector_level)
+                old_new.insert({i,curIdx});
+            curIdx++;
+         }
+    }
+    ids.resize(curIdx);
+    flags.resize(curIdx);
+    und_kpts.resize(curIdx);
+    kpts.resize(curIdx);
+    desc.resize(curIdx);
+    create_kdtree();
+    //remove rom bowvector_level
+    if(bowvector_level){
+        vector<uint32_t> toremove;
+        for(auto &kv:*bowvector_level.get())
+        {
+            int nvalid=0;
+            for(auto &e: kv.second){
+                auto it=old_new.find(e);
+                if(it==old_new.end())
+                    e=-1;
+                else{
+                    e=it->second;
+                    nvalid++;
+                }
+            }
+            if(nvalid!=0){
+                //remove elements with -1
+                kv.second.erase(std::remove_if(kv.second.begin(),kv.second.end(), [](const int &e){return e==-1 ;}), kv.second.end());
+            }
+            else//it will be entirely removed
+                toremove.push_back(kv.first);
+        }
+        for(auto r:toremove) bowvector_level->erase(r);
+    }
+}
+
+void Frame::removeOldKeyPoints(){
+    int curIdx=0;
+    
+    std::map<uint32_t,uint32_t> old_new;
+    for(int i=0;i<ids.size();i++){
+        if( i == 0 ){
             ids[curIdx]=ids[i];
             flags[curIdx]=flags[i];
             und_kpts[curIdx]=und_kpts[i];

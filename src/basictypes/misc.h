@@ -24,7 +24,7 @@
 #include <vector>
 #include "debug.h"
 
-namespace reslam{
+namespace ucoslam{
 //Returns the matches between two frames. Basic method using first a brute force, and then computing ratio to second best match
 //[queryIdx=f1; train =f2]
 std::vector<cv::DMatch> match_frames(const Frame &f1, const Frame &f2, double nn_match_ratio=0.8f);
@@ -319,18 +319,18 @@ void savePointsToPCD(const std::vector<cv::Point3f> &points, std::string filenam
 
 //------------- aruco
 //given a set of markers in two views, returns the most likely location of the camera
-cv::Mat ARUCO_initialize(const std::vector<reslam::MarkerObservation> &markers1,
-                                      const std::vector<reslam::MarkerObservation> &markers2,
-                                      const reslam::ImageParams &cp, float markerSize,
+cv::Mat ARUCO_initialize(const std::vector<ucoslam::MarkerObservation> &markers1,
+                                      const std::vector<ucoslam::MarkerObservation> &markers2,
+                                      const ucoslam::ImageParams &cp, float markerSize,
                                       float  minCornerPixDist, float repj_err_Thres, float minDistance,
                                       std::map<uint32_t,se3> &_marker_poses);    //in the global reference system of each marker. Computed in  getRtFromMarkerSet
 
 //estimates the best marker pose when observed from multiple views
 //if can estimate a reliable pose returns the marker pose g2m
-cv::Mat ARUCO_bestMarkerPose(const vector<reslam::MarkerObservation> &marker_views, const vector<se3> &frameposes_f2g, const reslam::ImageParams &cp);
+cv::Mat ARUCO_bestMarkerPose(const vector<ucoslam::MarkerObservation> &marker_views, const vector<se3> &frameposes_f2g, const ucoslam::ImageParams &cp);
 //given a marker observed in multiple locations, returns the best pose in each view by analyzing pair
 //obtains the position that minimizes the reprojection errors
-//vector<cv::Mat> ARUCO_correctMarkerPoses(const vector<aruco::Marker> &marker_views, const reslam::ImageParams &cp,float markerSize);
+//vector<cv::Mat> ARUCO_correctMarkerPoses(const vector<aruco::Marker> &marker_views, const ucoslam::ImageParams &cp,float markerSize);
 
 
 

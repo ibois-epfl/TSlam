@@ -22,7 +22,7 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
-namespace reslam{
+namespace ucoslam{
 /**Represents a transform in the SE3 space. Rotation + Translation
  * The class allows a seamless integration with opencv routines while preserving the minimal compacted memory of 6 components
  */

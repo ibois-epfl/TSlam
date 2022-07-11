@@ -22,7 +22,7 @@
 #include <cstdint>
 #include <iostream>
 #include <cassert>
-namespace reslam{
+namespace ucoslam{
 
 /** A container that can grow, without moving existing data from its location in memory
  **/

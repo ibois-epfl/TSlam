@@ -26,7 +26,7 @@
 #include  "g2o/types/sim3/sim3.h"
 #include "map_types/marker.h"
 
-namespace reslam{
+namespace ucoslam{
 
 typedef Eigen::Matrix<double,8,1,Eigen::ColMajor>    Vector8D;
 
@@ -116,12 +116,12 @@ public:
 
   double fx, fy, cx, cy;
 
-  MarkerEdge(const reslam::Marker &marker,uint32_t frameid){
+  MarkerEdge(const ucoslam::Marker &marker,uint32_t frameid){
       marker_id=marker.id;
       frame_id=frameid;
      _delta_der=1e-4;//set the delta increment to compute the partial derivative for Jacobians
       auto pointsA=marker.get3DPoints(false);
-//      reslam::Marker::get3DPointsLocalRefSystem(size);
+//      ucoslam::Marker::get3DPointsLocalRefSystem(size);
       for(int i=0;i<4;i++){
           auto &p=pointsA[i];
           points[i]=g2o::Vector3(p.x,p.y,p.z);
@@ -180,7 +180,7 @@ public:
 
   double fx, fy, cx, cy;
 
-  MarkerEdgePlanar(const reslam::Marker &marker,uint32_t frameid){
+  MarkerEdgePlanar(const ucoslam::Marker &marker,uint32_t frameid){
       marker_id=frameid;
       frame_id=frameid;
      _delta_der=1e-4;//set the delta increment to compute the partial derivative for Jacobians
@@ -541,7 +541,7 @@ public:
 
   double fx, fy, cx, cy;
 
-  MarkerEdgeOnlyProject(reslam::Marker &marker){
+  MarkerEdgeOnlyProject(ucoslam::Marker &marker){
      _delta_der=1e-4;//set the delta increment to compute the partial derivative for Jacobians
       auto pointsA=marker.get3DPoints(false);
       for(int i=0;i<pointsA.size();i++){
@@ -702,98 +702,6 @@ public:
 
   Eigen::Vector3d Xw;
   double fx, fy, cx, cy, bf;
-
-  virtual bool read(std::istream& is){throw std::runtime_error("Not implemented");}
-  virtual bool write(std::ostream& os) const{throw std::runtime_error("Not implemented");}
-
-};
-
-class  EdgeMultiCam2_SE3ProjectXYZOnlyPose: public  g2o::BaseUnaryEdge<4, Eigen::Vector4d, VertexSE3Expmap>{
-public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
-  EdgeMultiCam2_SE3ProjectXYZOnlyPose(){}
-
-
-  void computeError()  {
-    const VertexSE3Expmap* v1 = static_cast<const VertexSE3Expmap*>(_vertices[0]);
-    Eigen::Vector4d obs(_measurement);
-    _error = obs - cam_project(v1->estimate().map(Xw));
-  }
-
-  bool isDepthPositive() {
-    const VertexSE3Expmap* v1 = static_cast<const VertexSE3Expmap*>(_vertices[0]);
-    return (v1->estimate().map(Xw))(2)>0.0;
-  }
-
-
-//  virtual void linearizeOplus(){
-//      VertexSE3Expmap * vi = static_cast<VertexSE3Expmap *>(_vertices[0]);
-//      Eigen::Vector3d xyz_trans = vi->estimate().map(Xw);
-
-//      double x = xyz_trans[0];
-//      double y = xyz_trans[1];
-//      double z = xyz_trans[2];
-//      double invz = 1.0/xyz_trans[2];
-//      double invz_2 = invz*invz;
-
-//      double x2 = Q2T.at<float>(0,0)*x + Q2T.at<float>(0,1)*y + Q2T.at<float>(0,2)*z + Q2T.at<float>(0,3);
-//      double y2 = Q2T.at<float>(1,0)*x + Q2T.at<float>(1,1)*y + Q2T.at<float>(1,2)*z + Q2T.at<float>(1,3);
-//      double z2 = Q2T.at<float>(2,0)*x + Q2T.at<float>(2,1)*y + Q2T.at<float>(2,2)*z + Q2T.at<float>(2,3);
-//      double invz2 = 1.0/z2;
-//      double invz2_2 = invz2*invz2;
-
-
-
-//      _jacobianOplusXi(0,0) = x*y*invz_2 *fx_1;
-//      _jacobianOplusXi(0,1) = -(1+(x*x*invz_2)) *fx_1;
-//      _jacobianOplusXi(0,2) = y*invz *fx_1;
-//      _jacobianOplusXi(0,3) = -invz *fx_1;
-//      _jacobianOplusXi(0,4) = 0;
-//      _jacobianOplusXi(0,5) = x*invz_2 *fx_1;
-
-//      _jacobianOplusXi(1,0) = (1+y*y*invz_2) *fy_1;
-//      _jacobianOplusXi(1,1) = -x*y*invz_2 *fy_1;
-//      _jacobianOplusXi(1,2) = -x*invz *fy_1;
-//      _jacobianOplusXi(1,3) = 0;
-//      _jacobianOplusXi(1,4) = -invz *fy_1;
-//      _jacobianOplusXi(1,5) = y*invz_2 *fy_1;
-
-//      _jacobianOplusXi(2,0) = x2*y2*invz2_2 *fx_2;
-//      _jacobianOplusXi(2,1) = -(1+(x2*x2*invz2_2)) *fx_2;
-//      _jacobianOplusXi(2,2) = y2*invz2 *fx_2;
-//      _jacobianOplusXi(2,3) = -invz2 *fx_2;
-//      _jacobianOplusXi(2,4) = 0;
-//      _jacobianOplusXi(2,5) = x2*invz2_2 *fx_2;
-
-//      _jacobianOplusXi(3,0) = (1+y2*y2*invz2_2) *fy_2;
-//      _jacobianOplusXi(3,1) = -x2*y2*invz2_2 *fy_2;
-//      _jacobianOplusXi(3,2) = -x2*invz2 *fy_2;
-//      _jacobianOplusXi(3,3) = 0;
-//      _jacobianOplusXi(3,4) = -invz2 *fy_2;
-//      _jacobianOplusXi(3,5) = y2*invz2_2 *fy_2;
-//    }
-
-  inline Eigen::Vector4d cam_project(const Eigen::Vector3d & trans_xyz) const{
-      Eigen::Vector4d res;
-
-      const float invz = 1.0f/trans_xyz[2];
-      res[0] = trans_xyz[0]*invz*fx_1 + cx_1;
-      res[1] = trans_xyz[1]*invz*fy_1 + cy_1;
-
-      const double x_c2 = Q2T.at<float>(0,0)*trans_xyz[0] + Q2T.at<float>(0,1)*trans_xyz[1] + Q2T.at<float>(0,2)*trans_xyz[2] + Q2T.at<float>(0,3);
-      const double y_c2 = Q2T.at<float>(1,0)*trans_xyz[0] + Q2T.at<float>(1,1)*trans_xyz[1] + Q2T.at<float>(1,2)*trans_xyz[2] + Q2T.at<float>(1,3);
-      const double z_c2 = Q2T.at<float>(2,0)*trans_xyz[0] + Q2T.at<float>(2,1)*trans_xyz[1] + Q2T.at<float>(2,2)*trans_xyz[2] + Q2T.at<float>(2,3);
-      const float invz2 = 1.0f/z_c2;
-      res[2] = x_c2*invz2*fx_2 + cx_2;
-      res[3] = y_c2*invz2*fy_2 + cy_2;
-
-      return res;
-  }
-
-  cv::Mat Q2T;
-  double fx_1, fy_1, cx_1, cy_1, fx_2, fy_2, cx_2, cy_2 ;
-  Eigen::Vector3d Xw;
 
   virtual bool read(std::istream& is){throw std::runtime_error("Not implemented");}
   virtual bool write(std::ostream& os) const{throw std::runtime_error("Not implemented");}

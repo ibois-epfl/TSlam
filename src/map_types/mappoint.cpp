@@ -22,7 +22,7 @@
 #include "frame.h"
 
 using namespace std;
-namespace reslam {
+namespace ucoslam {
 
 template<typename T>
 bool are_ranges_equal(T it1_start,T it1_end,T it2_start,T it2_end){
@@ -77,14 +77,12 @@ MapPoint::MapPoint(){
      //cout<<"mp 10. "<<sig<<endl;
      sig+=nTimesSeen;
      //cout<<"mp 11. "<<sig<<endl;
-     sig+=nTimesVisible; //<-----
+     sig+=nTimesVisible;
      //cout<<"mp 12. "<<sig<<endl;
      sig+=mfMaxDistance;
      //cout<<"mp 13. "<<sig<<endl;
      sig+=mfMinDistance;
      //cout<<"mp 14. "<<sig<<endl;
-     sig+=fromMapOriginal;
-     //cout<<"mp 15. "<<sig<<endl;
 
      return sig;
  }
@@ -113,7 +111,6 @@ void MapPoint::fromStream(std::istream &str){
     str.read((char*)&mfMinDistance,sizeof(mfMinDistance));
      str.read((char*)&kfSinceAddition,sizeof(kfSinceAddition));
      str.read((char*)&lastFIdxSeen,sizeof(lastFIdxSeen));
-     str.read((char*)&fromMapOriginal,sizeof(fromMapOriginal));
 
 
 
@@ -143,7 +140,7 @@ void MapPoint::toStream(std::ostream &str)const{
     str.write((char*)&mfMinDistance,sizeof(mfMinDistance));
      str.write((char*)&kfSinceAddition,sizeof(kfSinceAddition));
      str.write((char*)&lastFIdxSeen,sizeof(lastFIdxSeen));
-     str.write((char*)&fromMapOriginal,sizeof(fromMapOriginal));
+
 }
 void MapPoint::scalePoint(float scaleFactor){
     pos3d*=scaleFactor;

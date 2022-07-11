@@ -8,9 +8,9 @@
 #include <opencv2/imgproc.hpp>
 #include <string>
 #include <thread>
-#include "reslam.h"
+#include "ucoslam.h"
 #include "map.h"
-namespace reslam{
+namespace ucoslam{
 //Class using an opencv window to render and manipulate a sgl scene
 
 
@@ -113,7 +113,7 @@ protected:
 
 private:
     void  blending(const cv::Mat &a,float f,cv::Mat &io);
-    vector<sgl::Point3> getMarkerIdPcd(reslam::Marker &minfo , float perct);
+    vector<sgl::Point3> getMarkerIdPcd(ucoslam::Marker &minfo , float perct);
 };
 
 MapDrawer::MapDrawer( ){setParams(1  );}
@@ -164,7 +164,7 @@ void MapDrawer::draw(cv::Mat &image, std::shared_ptr<Map> map,const cv::Mat &cam
         //set the marker points
         for(auto m:map_markers){
             bool redopoints=false;
-            reslam::Marker &marker=m.second;
+            ucoslam::Marker &marker=m.second;
             if(!marker.pose_g2m.isValid())continue;
             if(marker_points.count(m.first)==0) redopoints=true;
             else if(!(marker_points[m.first].pose == marker.pose_g2m)) redopoints=true;
@@ -187,7 +187,7 @@ void MapDrawer::drawScene(int ptSize ){
         _a_b_16[1]=a;
         return a_b;
     };
-    auto drawMarker=[](sgl::Scene &Scn, const reslam::Marker &m , int width=1){
+    auto drawMarker=[](sgl::Scene &Scn, const ucoslam::Marker &m , int width=1){
         Scn.setLineSize(width);
         auto points=m.get3DPoints();
         Scn.drawLine((sgl::Point3*)&points[0],(sgl::Point3*)&points[1],{0,0,255});
@@ -413,7 +413,7 @@ void MapDrawer::draw(cv::Mat &image ) {
 
 
 
-vector<sgl::Point3> MapDrawer::getMarkerIdPcd(reslam::Marker &minfo,float perct=1 )
+vector<sgl::Point3> MapDrawer::getMarkerIdPcd(ucoslam::Marker &minfo,float perct=1 )
 {
     auto  mult=[](const cv::Mat& m, cv::Point3f p)
     {

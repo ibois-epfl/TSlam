@@ -30,10 +30,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using namespace std;
 
-SequenceOptimizer::SequenceOptimizer(reslam::Map &um/*,std::map<unsigned int,std::map<unsigned int,cv::Point3f>> &local_keypoint_positions*/){
-    reslam::Map& ucoslam_map=um;
+SequenceOptimizer::SequenceOptimizer(ucoslam::Map &um/*,std::map<unsigned int,std::map<unsigned int,cv::Point3f>> &local_keypoint_positions*/){
+    ucoslam::Map& ucoslam_map=um;
 
-    for(reslam::Frame &f: ucoslam_map.keyframes){
+    for(ucoslam::Frame &f: ucoslam_map.keyframes){
         frame_transforms[f.idx].setParams(f.pose_f2g.inv(), f.idx);
     }
     for(auto &f:frame_transforms){
@@ -41,7 +41,7 @@ SequenceOptimizer::SequenceOptimizer(reslam::Map &um/*,std::map<unsigned int,std
     }
 
     mappoint_errors.reserve(ucoslam_map.map_points.size());
-    for(reslam::MapPoint mp:ucoslam_map.map_points){
+    for(ucoslam::MapPoint mp:ucoslam_map.map_points){
         if(mp.isBad())
             continue;
         std::vector<std::pair<uint32_t,uint32_t>> assosiated_frames=mp.getObservingFrames();

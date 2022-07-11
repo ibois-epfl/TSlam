@@ -20,15 +20,15 @@
 #define _StereoRectify_H
 #include <string>
 #ifdef STANDALONE
-    #define RESLAM_API
+    #define UCOSLAM_API
 #else
     #include "imageparams.h"
-    #include "reslam_exports.h"
+    #include "ucoslam_exports.h"
 #endif
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <thread>
-namespace reslam{
+namespace ucoslam{
 
 /** Stereo image rectification
  *
@@ -38,7 +38,7 @@ namespace reslam{
  *
  * The file must have the matrices for stereo rectification ( M1,M2,D1...) and image dimensions (image_width,image_height)
  */
-class RESLAM_API StereoRectify{
+class UCOSLAM_API StereoRectify{
 public:
 
 

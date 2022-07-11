@@ -22,21 +22,19 @@
 #if  CV_MAJOR_VERSION >= 3
 #include "gridextractor.h"
 #endif
-namespace reslam{
+namespace ucoslam{
 
 void Feature2DSerializable::detectAndCompute(cv::InputArray image, cv::InputArray mask, std::vector<cv::KeyPoint>& keypoints,
                                               cv::OutputArray descriptors, FeatParams params  ){
 
     detectAndCompute_impl(image,mask,keypoints,descriptors,params);
-
-    for(auto &kpt:keypoints) kpt.octave= (getParams().nOctaveLevels-1) - kpt.octave;
 }
 
 std::shared_ptr<Feature2DSerializable> Feature2DSerializable::create(DescriptorTypes::Type type ){
     std::shared_ptr<Feature2DSerializable> fdetector;
 
     if(type==DescriptorTypes::DESC_ORB) {
-            auto orbmur= std::make_shared<reslam::ORBextractor>( );
+            auto orbmur= std::make_shared<ucoslam::ORBextractor>( );
             fdetector=orbmur;
     }
 #if  CV_MAJOR_VERSION >= 3

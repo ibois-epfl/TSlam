@@ -26,7 +26,7 @@
 #include "map_types/frame.h"
 #include "map_types/covisgraph.h"
 
-namespace reslam{
+namespace ucoslam{
 
 
 class System;

@@ -23,7 +23,7 @@
 #include <vector>
 #include <functional>
 
-namespace reslam{
+namespace ucoslam{
 //heap having at the top the minimum element
 template<typename T, class comparison=std::less<T>,typename Container=std::vector<T>>
 class Heap{

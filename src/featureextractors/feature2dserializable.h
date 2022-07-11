@@ -20,10 +20,10 @@
 #define UCOSLAM_FEATURE2DSerializable_H
 #include <memory>
 #include <opencv2/features2d/features2d.hpp>
-#include "reslamtypes.h"
+#include "ucoslamtypes.h"
 
 
-namespace reslam{
+namespace ucoslam{
 
 /**Class that allows serialization of the feature extractor. Is reimplemented by all feature extractors designed
  */
@@ -34,7 +34,7 @@ public:
     struct FeatParams{
         int nthreads=-1;//auto
         int maxFeatures=4000;
-        int nOctaveLevels=-1;
+        int nOctaveLevels=8;
         float scaleFactor=1.2;
         float sensitivity=0;
 

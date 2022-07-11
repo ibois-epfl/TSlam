@@ -15,8 +15,7 @@
 *
 * You should have received a copy of the GNU General Public License
 * along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
-**/
-#include "map.h"
+*/#include "map.h"
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
 #include "basictypes/io_utils.h"
@@ -28,70 +27,70 @@
 #include "basictypes/hash.h"
 #include "basictypes/fastmat.h"
 #include "basictypes/osadapter.h"
-#include "utils/system.h"
-namespace reslam{
+namespace ucoslam{
+
 //bool Map::operator==(const Map &m)const{
 //    return map_points==m.map_points;
 //}
 //  Map *Map::ptr=0;
+
 //Map* Map::singleton(){
 //    if (ptr==0)   ptr=new Map();
 //    return ptr;
 //}
+
 float Map::getTargetFocus()const{
     if (keyframes.size()==0)return -1;
     return keyframes.begin()->imageParams.fx();
 }
+
 //! \param camPos 3D position of the camera (i.e. translation)
 MapPoint & Map::addNewPoint(uint32_t frameSeqId){
     auto it_idx=map_points.insert(MapPoint());
     it_idx.first->id=it_idx.second;
-    if(state==STATE::MODIFIED)
-        it_idx.first->setFromMapOriginal(false);
-     return map_points[it_idx.second];
+    return map_points[it_idx.second];
 }
- Marker &Map::addMarker(const reslam::MarkerObservation &m){
+
+ Marker &Map::addMarker(const ucoslam::MarkerObservation &m){
      if( !map_markers.is(m.id))
          map_markers.insert( {m.id,m});
      return map_markers[m.id];
  }
+
+
  void Map::addMarkerObservation(uint32_t markerId,uint32_t KeyFrame){
      assert(keyframes.is(KeyFrame));
      assert(map_markers.count(markerId));
+
      Marker &marker= map_markers.at(markerId);//creates if not yet
      assert(marker.frames.count(KeyFrame)==0);//is not yet added
+
      //add connection with all frames in this point
      for(auto fi:marker.frames)
          TheKpGraph.createIncreaseEdge( fi,KeyFrame,4);
      //add the observation of this frame to the marker
      marker.frames.insert(KeyFrame);
  }
+
   Frame &Map::addKeyFrame(const Frame&f ){
+
       __UCOSLAM_ADDTIMER__
-//     assert(getTargetFocus()<0 || fabs( getTargetFocus()-f.imageParams.fx())<10);//
-//     if (getTargetFocus()>0)
-//         if ( fabs( getTargetFocus()-f.imageParams.fx())>10) throw std::runtime_error("Map::addKeyFrame keyframes added should have a similar focus than these already in the dataset");
+     assert(getTargetFocus()<0 || fabs( getTargetFocus()-f.imageParams.fx())<10);//
+
+     if (getTargetFocus()>0)
+         if ( fabs( getTargetFocus()-f.imageParams.fx())>10) throw std::runtime_error("Map::addKeyFrame keyframes added should have a similar focus than these already in the dataset");
              //we must be sure that the id is correct (returns the id, and must be the same already used)
-    uint32_t kf_id=keyframes.addFrame(f);
+     uint32_t kf_id=keyframes.addFrame(f);
      //work with the new frame, and free the pointer
      Frame &newFrame=keyframes[kf_id];
-     //If map is modified, it changes the flag in the frame
-     if(state==STATE::MODIFIED)
-        newFrame.setFromMapOriginal(false);
       newFrame.idx=kf_id;
      //add it to the database
      __UCOSLAM_TIMER_EVENT__("addFrame");
      TheKFDataBase.add(newFrame);
      __UCOSLAM_TIMER_EVENT__("Add to database");
-     if(((int)f.scaleFactors.size())-1 > _maxOctaveLevel)
-     {
-         if(_maxOctaveLevel!=-1) assert(_maxOctaveLevel==(((int)f.scaleFactors.size())-1));
-         if(_scaleFactor!=-1) assert(_scaleFactor==f.scaleFactors[1]);
-        _maxOctaveLevel=(int)f.scaleFactors.size()-1;
-        _scaleFactor=f.scaleFactors[1];
-     }
      return newFrame;
  }
+
  // void Map::addKeyFrameObservation(uint32_t mapId, uint32_t frameId, uint32_t frame_kpidx){
  //     addMapPointObservation(mapId,frameId,frame_kpidx);return;
  //     assert(map_points.is(mapId));
@@ -106,6 +105,8 @@ MapPoint & Map::addNewPoint(uint32_t frameSeqId){
  //         if (of.first!=frameId)
  //             TheKpGraph.createIncreaseEdge( frameId, of.first);
  // }
+
+
  void Map::addMapPointObservation(uint32_t mapId,uint32_t frameId,uint32_t frame_kpidx){
      assert(keyframes.is(frameId));
      assert(map_points.is(mapId));
@@ -116,16 +117,19 @@ MapPoint & Map::addNewPoint(uint32_t frameSeqId){
      //add connection with all frames in this point
      for(auto fi:mp.getObservingFrames())
          TheKpGraph.createIncreaseEdge( fi.first,frameId);
+
      //register now the observation
      keyframes[frameId].ids[frame_kpidx]=mapId;
      mp.frames.insert({frameId,frame_kpidx});
      //add the observation of this frame to the point
      updatePointInfo(mapId);
  }
+
  bool Map::removeMapPointObservation(uint32_t pointId,uint32_t frameId,uint32_t minNumProjPoints){
      assert (map_points.is(pointId));
      auto &TheMapPoint=map_points[pointId];
      if (TheMapPoint.isStereo()) minNumProjPoints--;
+
      if ( TheMapPoint.getNumOfObservingFrames()<=minNumProjPoints){
          removePoint(pointId);
          return true;
@@ -142,15 +146,24 @@ MapPoint & Map::addNewPoint(uint32_t frameSeqId){
      }
      return false;
  }
+
+
+
+
 // uint32_t MapPoint::removePointObservation(uint32_t point,uint32_t frame,int32_t minNumProj=0 ){
 //     assert(map_points.is[point]);
 //     assert(map_points.frames.count(frame));
+
+
 // }
+
+
  void Map::removePoint(uint32_t pid_remove, bool fullRemoval){
      assert(map_points .is(pid_remove));
+
      auto  &MP=map_points [pid_remove];
      MP.setBad (true);
-     vector<uint32_t> frames;frames.reserve(MP.frames.size());
+     vector<uint32_t> frames; frames.reserve(MP.frames.size());
      for(auto f_id:MP.frames){//remove each frame connection
          frames.push_back(f_id.first);
          if ( keyframes[f_id.first].ids[f_id.second]==pid_remove)
@@ -164,7 +177,9 @@ MapPoint & Map::addNewPoint(uint32_t frameSeqId){
          //finally, remove the point
          map_points.erase(pid_remove);
      }
+
  }
+
  void Map::removeKeyFrames(const std::set<uint32_t> &keyFrames,int minNumProjPoints){
      for(auto fidx:keyFrames){
          const auto &frame=keyframes[fidx];
@@ -174,6 +189,7 @@ MapPoint & Map::addNewPoint(uint32_t frameSeqId){
          for(auto ids: frame.ids)
              if (ids!=numeric_limits<uint32_t>::max())
                  removeMapPointObservation(ids,fidx,minNumProjPoints);
+
          //remove its reference in the markers
          for(auto marker:frame.markers)
              map_markers[marker.id].frames.erase(fidx);
@@ -184,11 +200,14 @@ MapPoint & Map::addNewPoint(uint32_t frameSeqId){
          _debug_msg_("Removing Frame "<<fidx);
      }
  }
+
  float Map::getFrameMedianDepth(uint32_t frame_idx){
+
      assert(keyframes.count(frame_idx)!=0);
      const auto &frame=keyframes[frame_idx];
      //must transform the points to the camera
      //compute the average depth of the frame and check the ratio baseline/depth
+
      vector<float> depths;
      depths.reserve(frame.ids.size());
       for(auto p:frame.ids){
@@ -198,6 +217,7 @@ MapPoint & Map::addNewPoint(uint32_t frameSeqId){
              depths.push_back( p.z);
          }
      }
+
      //now the marker points
      for(auto m:frame.markers){
          assert(  map_markers.count(m.id) );
@@ -211,11 +231,13 @@ MapPoint & Map::addNewPoint(uint32_t frameSeqId){
      }
      std::sort(depths.begin(),depths.end());
     return depths[depths.size()/2];
+
 //     auto outliers=outlierFiltering(depths,3);
 //     //compute the mean without the outliers
 //     removeFromVector(depths,outliers);
 //     float  mean =0;
 //     for(auto d:depths) mean+=d;
+
 //     return  mean/float(depths.size());
  }
 void Map::clear(){
@@ -225,13 +247,16 @@ void Map::clear(){
     TheKpGraph.clear();
     TheKFDataBase.clear();
 }
+
 uint32_t Map::getNextFrameIndex()const{return keyframes.getNextPosition();}
+
 bool Map::hasPointStereoObservations(uint32_t mpIdx)const{
     for(const auto &frame:map_points.at(mpIdx).frames){
         if ( keyframes[frame.first].getDepth(frame.second)!=0)return true;
     }
     return false;
 }
+
 void Map::fuseMapPoints(uint32_t mp1,uint32_t mp2 ,bool fullRemovePoint2){
     //save observations
     auto &Mp2=map_points[mp2];
@@ -257,6 +282,7 @@ void Map::scale(double scaleFactor){
         t*=scaleFactor;
     }
 }
+
 void Map::applyTransform(cv::Mat m4x4){
     if(!(m4x4.cols==m4x4.rows && m4x4.cols==4))
         throw std::runtime_error(string(__PRETTY_FUNCTION__)+" invlida inut  matrix. Must be homogeneous 4x4 matrix");
@@ -266,54 +292,66 @@ void Map::applyTransform(cv::Mat m4x4){
     m44_32f_rot.at<float>(0,2)=0;
     m44_32f_rot.at<float>(1,2)=0;
     m44_32f_rot.at<float>(2,2)=0;
+
+
     for(auto &m:map_markers)
         m.second.pose_g2m =   m44_32f*  m.second.pose_g2m;
+
     for(auto &p:map_points){
          p.pos3d =   m44_32f*  p.pos3d;
         p.normal= m44_32f_rot*p.normal;
     }
+
     for(auto &kf:keyframes)
          kf.pose_f2g= (m44_32f*kf.pose_f2g.inv()).inv() ;
+
+
 }
 bool Map::centerRefSystemInMarker(uint32_t markerId){
+
+
     if (!map_markers.is(markerId)) return false;
     auto &marker=map_markers[markerId];
     if(!marker.pose_g2m.isValid()) return false;
+
     applyTransform(marker.pose_g2m.inv());
-    return false;
+    return true;
 }
+
+
+
+
 void Map::toStream(iostream &str)  {
     lock(__FUNCTION__,__FILE__,__LINE__);
     TheKFDataBase.toStream(str);
+
     map_points.toStream(str);
     toStream__kv_complex(map_markers,str);
     keyframes.toStream(str);
     TheKpGraph.toStream(str);
-    str.write((char*)&_maxOctaveLevel,sizeof(_maxOctaveLevel));
-    str.write((char*)&_scaleFactor,sizeof(_scaleFactor));
-    str.write((char*)&state,sizeof(state));
     unlock(__FUNCTION__,__FILE__,__LINE__);
 }
+
 void Map::fromStream(std::istream &str){
     lock(__FUNCTION__,__FILE__,__LINE__);
     clear();
+
     TheKFDataBase.fromStream(str);
     map_points.fromStream(str);
     fromStream__kv_complexmap(map_markers,str);
     keyframes.fromStream(str);
     TheKpGraph.fromStream(str);
-    str.read((char*)&_maxOctaveLevel,sizeof(_maxOctaveLevel));
-    str.read((char*)&_scaleFactor,sizeof(_scaleFactor));
-    str.read((char*)&state,sizeof(state));
     unlock(__FUNCTION__,__FILE__,__LINE__);
 }
+
 void Map::saveToFile(std::string   fp)  {
-    std::fstream file(fp, ios::out/*|ios::binary*/);
+    std::fstream file(fp, ios::out|ios::binary);
     if (!file) throw std::runtime_error("Could not open file for writing:"+fp);
     uint64_t sig=225237124;//magic number
     file.write((char*)&sig,sizeof(sig));
     toStream(file);
 }
+
 void Map::readFromFile(std::string fp){
     std::ifstream file(fp,std::ios::binary);
     if (!file) throw std::runtime_error("Could not open file for reading:"+fp);
@@ -339,14 +377,10 @@ uint64_t Map::getSignature(bool print)const{
      if(print)cout<<"     Map sig 4. ="<<sig<<endl;
      sig+=TheKFDataBase.getSignature();
      if(print)cout<<"     Map sig 5. ="<<sig<<endl;
-     sig+=_maxOctaveLevel;
-     if(print)cout<<"     Map sig 6. ="<<sig<<endl;
-     sig+=_scaleFactor;
-     if(print)cout<<"     Map sig 7. ="<<sig<<endl;
-     sig+=state;
-     if(print)cout<<"     Map sig 8. ="<<sig<<endl;
      return sig;
+
 }
+
 bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
       std::unique_lock<std::mutex> lockconsistency(consitencyMutex);
     bool consistent=true;
@@ -356,8 +390,10 @@ bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
 //            consistent=false;
 //        }
 //    }
+
     if ( keyframes.size()==1)return true;
  if(useMutex)   lock(__FUNCTION__,__FILE__,__LINE__);
+
 //check the number of elements in the graph is the same as the number of frames
 //    if ((TheKpGraph.size()+TheMarkerGraph.size()) >=keyframes.size() ){
 //        consistent=false;
@@ -369,6 +405,7 @@ bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
             consistent=false;
             cerr<<" Frame "<<f.idx<<" not in any of the Graphs"<<endl;
         }
+
     //check points are valid
     for(const auto & p:map_points){
         if (! p.isValid()){
@@ -376,6 +413,7 @@ bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
             consistent=false;
         }
     }
+
     //check that points-frames are consistent
      for(const auto & p:map_points){
         if (p.isBad())continue;
@@ -391,6 +429,7 @@ bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
             }
         }
     }
+
     //check consistency of point-frames the other way around
     for(auto &f:keyframes){
         for(auto id:f.ids){
@@ -407,6 +446,7 @@ bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
             }
         }
     }
+
     //everypoint must have at least two projections
         for(const auto &p:map_points){
             bool isStereo=false;
@@ -417,12 +457,15 @@ bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
                 consistent=false;
             }
         }
+
+
         for(const auto &p:map_points){
             if (p.frames.size()==0){
                 cerr<<"Point "<<p.id<<" should have at least one projection "<<endl;
                 consistent=false;
             }
         }
+
     //////MARKERS
     //check that marker-frames are consistent
     for(const auto & m:map_markers){
@@ -441,6 +484,7 @@ bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
             }
         }
     }
+
     //check consistency of marker-frames the other way around
     for(auto &f:keyframes){
         for(const auto &m:f.markers){
@@ -455,6 +499,7 @@ bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
                 }
         }
     }
+
     //check that all markers detected are in the map, even if without valid position
     {
      for(const auto &frame:keyframes)
@@ -464,6 +509,7 @@ bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
                 consistent=false;
             }
     }
+
     //ckeck the covisibility graph of markers is consistent
    if (0) {
         //to do so, create the covis graph here
@@ -487,14 +533,19 @@ bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
                 consistent=false;
             }
         }
+
         for(auto fij:TheKpGraph.getEdgeWeightMap()){
             if (frame_commonmakers.count(fij.first)==0){
                 auto i_j=CovisGraph::separe(fij.first);
                 cerr<<"Marker graph edge "<<i_j.first<<"-"<<i_j.second<<" should not be"<<endl;
                 consistent=false;
+
             }
         }
+
     }
+
+
 //    //check that if a marker has a valid position, there is at least two views to the marker(ie, they have not been removed)
 //    for(const auto &m:map_markers){
 //        if (m.second.frames.size()<2 && m.second.pose_g2m.isValid()){
@@ -502,6 +553,7 @@ bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
 //            consistent=false;
 //        }
 //    }
+
     //check no nan point
     for(  auto &p:map_points)
     {
@@ -511,6 +563,7 @@ bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
             cerr<<"point "<<p.id<<" is nan"<<endl;
         }
     }
+
     //all frames in KFDatabase and no other
     {
         if (!TheKFDataBase.isEmpty()){//it is valid
@@ -530,6 +583,7 @@ bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
         }
     }
     //check that matches are correct
+
 //    for(auto m:map_matches){
 ////        if (map_points.is(m.trainIdx)){
 ////            cout<<"Match to map point "<<m.trainIdx<< " is incorrect"<<endl;
@@ -540,6 +594,7 @@ bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
 //            consistent=false;
 //        }
 //    }
+
     //covis graph
     if (checkCovisGraph){
          CovisGraph auxCV;
@@ -560,15 +615,18 @@ bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
                     auxCV.createIncreaseEdge(frames[i],frames[j],4);
                 }
         }
+
         //now compare
         auto n1= auxCV.getNodes( );
         auto n2= TheKpGraph.getNodes( );
+
         //check are equal
         if (n1!=n2){
             cerr<<"Covisgraph missing nodes (y)"<<endl;
             consistent=false;
         }
         //now, check the neighbors of each
+
         for(auto n:n1){
             auto neigh1=auxCV.getNeighbors(n);
             auto neigh2=TheKpGraph.getNeighbors(n);
@@ -581,18 +639,26 @@ bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
                 if (auxCV.getEdge(n,ne1)!=TheKpGraph.getEdge(n,ne1) ){
                     cerr<<"Edge of nodes "<<n<<","<<ne1<< " is incorrect. It is:"<<TheKpGraph.getEdge(n,ne1) <<" and shoudl be :"<<auxCV.getEdge(n,ne1) <<endl;
                     consistent=false;
+
                 }
         }
     }
+
+
+
     if(useMutex)  unlock(__FUNCTION__,__FILE__,__LINE__);
+
     _debug_msg_("Consistency CHECK PASSED="<<consistent);
     return consistent;
 }
 vector<uint32_t> Map::relocalizationCandidates(Frame &frame,const std::set<uint32_t> &excludedFrames){
     return TheKFDataBase.relocalizationCandidates(frame,keyframes,TheKpGraph,true,0,excludedFrames);
 }
+
+
 std::vector<cv::DMatch> Map::matchFrameToMapPoints( const std::vector<uint32_t > &  used_frames, Frame & curframe, const cv::Mat & pose_f2g_, float minDescDist, float maxRepjDist,bool markMapPointsAsVisible,bool useAllPoints,std::set<uint32_t> excludedPoints)
 {
+
     Se3Transform pose_f2g;pose_f2g=pose_f2g_;
     __UCOSLAM_ADDTIMER__
     //remove this already seen that have been marked with the lastSeqFrameIdx in the map point
@@ -607,22 +673,30 @@ std::vector<cv::DMatch> Map::matchFrameToMapPoints( const std::vector<uint32_t >
         }
         smap_ids.erase(std::remove(smap_ids.begin(), smap_ids.end(),  std::numeric_limits<uint32_t>::max()),smap_ids.end());
     }
+
     __UCOSLAM_TIMER_EVENT__("step2");
     if (smap_ids.size()==0) return {};
+
     //Condition 2. Compute angle between current viewing ray and the map point mean viewing direction
     //             Discard if v.dot(n) < cos(60)
+
     cv::Point3f camCenter= pose_f2g.inv()*cv::Point3f(0,0,0);  //obtain camera center in global reference system
     // Project points given pose
     __UCOSLAM_TIMER_EVENT__("step3");
+
+
     std::vector<cv::DMatch> map_matchesLocalMap; // [query=kpts; train=map]
     map_matchesLocalMap.reserve(smap_ids.size());
+
     float fx=curframe.imageParams.CameraMatrix.at<float>(0,0);
     float fy=curframe.imageParams.CameraMatrix.at<float>(1,1);
     float cx=curframe.imageParams.CameraMatrix.at<float>(0,2);
     float cy=curframe.imageParams.CameraMatrix.at<float>(1,2);
+
     // Find matches map-points keypoints
     for (uint32_t mpix = 0; mpix < smap_ids.size(); mpix++)
     {
+
         MapPoint &mapPoint=map_points[ smap_ids[mpix] ];
         float viewCos=mapPoint.getViewCos(camCenter);
         if (viewCos<0.5) continue;
@@ -637,28 +711,28 @@ std::vector<cv::DMatch> Map::matchFrameToMapPoints( const std::vector<uint32_t >
             continue;
         p3d.z=1./p3d.z;
         cv::Point2f p2d(  p3d.x*fx*p3d.z+cx,p3d.y*fy*p3d.z+cy);
+
         if ( !(p2d.x>curframe.minXY.x  &&p2d.y>curframe.minXY.y  &&p2d.x<curframe.maxXY.x &&p2d.y<curframe.maxXY.y))
             continue;
         //mark as visible
         if (markMapPointsAsVisible)
             mapPoint.setVisible( );
+
         // ----------------------------------------------------------
         //now, analyze these and find the one with minimal descriptor distance
         int best_candidate_kp=-1,bestLevel=0,bestLevel2=-1;
         //now, predict the octave
-        //int predictedOctave=curframe.predictScale(distToPoint,mapPoint.getMaxDistanceInvariance() );
-        //float radius_scale=pow(curframe.scaleFactors[1], predictedOctave);
-        int predictedOctave=curframe.predictScale(distToPoint,mapPoint.getMaxDistanceInvariance(), _maxOctaveLevel);
-//        int sc= floor(log(System::getParams().maxFocalLength/System::getParams().minFocalLength)/log(curframe.scaleFactors[1]) - predictedOctave);
-//        if(sc<0) sc=0;
-//        float radius_scale=pow(curframe.scaleFactors[1], sc);
-        float radius_scale=pow(curframe.scaleFactors[1], _maxOctaveLevel-predictedOctave);
-//        float radius_scale=curframe.scaleFactors[curframe.scaleFactors.size()-predictedOctave];
+        int predictedOctave=curframe.predictScale(distToPoint,mapPoint.getMaxDistanceInvariance() );//scaleFactorLog,curframe.scaleFactors.size());
+
+        float radius_scale=curframe.scaleFactors[predictedOctave];
+
         if(viewCos<0.98) radius_scale*=1.6;
+
         float best_candidate_distance=std::numeric_limits<float>::max(),bestdistance2=std::numeric_limits<float>::max();
+
         // Find keypoints closer (spatial distance) to this map point
-        //vector<uint32_t> keyp_region=curframe.getKeyPointsInRegion(p2d,radius_scale*maxRepjDist,predictedOctave-1,predictedOctave);
-        vector<uint32_t> keyp_region=curframe.getKeyPointsInRegion(p2d,radius_scale*maxRepjDist,predictedOctave,predictedOctave+1);
+        vector<uint32_t> keyp_region=curframe.getKeyPointsInRegion(p2d,radius_scale*maxRepjDist,predictedOctave-1,predictedOctave);
+
 #pragma message "todo: check disparity to discard outliers"
         for (auto kp_idx : keyp_region )
         {
@@ -674,8 +748,11 @@ std::vector<cv::DMatch> Map::matchFrameToMapPoints( const std::vector<uint32_t >
                         bestdistance2=desc_dist;
                         bestLevel2=curframe.und_kpts[kp_idx].octave;
                     }
+
                 }
         }
+
+
         if (best_candidate_kp!=-1){
             bool valid=true;
             if ( bestLevel2==bestLevel && best_candidate_distance> 0.8*bestdistance2)  valid=false;
@@ -689,13 +766,20 @@ std::vector<cv::DMatch> Map::matchFrameToMapPoints( const std::vector<uint32_t >
         }
     }
     __UCOSLAM_TIMER_EVENT__("step4");
+
+
+
     _debug_msg("final number of matches= "<<map_matchesLocalMap.size(),10);
     filter_ambiguous_query(map_matchesLocalMap);
+
+
     _debug_msg("final number of matches2= "<<map_matchesLocalMap.size(),10);
     return map_matchesLocalMap;
 }
+
 double Map::globalReprojChi2( const std::vector<uint32_t> &used_frames , std::vector<float > *chi2vector,
                                std::vector<std::pair<uint32_t,uint32_t> > *map_frame_ids,bool useKeyPoints,bool useMarkers) {
+
     double chi2Sum=0;
     int np=0;
     if (chi2vector!=0) {
@@ -706,6 +790,7 @@ double Map::globalReprojChi2( const std::vector<uint32_t> &used_frames , std::ve
         map_frame_ids->clear();
         map_frame_ids->reserve(map_points.size());
     }
+
     //set all used frames info
     vector<bool> usedFramesVector;
     if ( used_frames.size()==0) usedFramesVector=std::vector<bool>(keyframes.capacity(),true);
@@ -713,6 +798,7 @@ double Map::globalReprojChi2( const std::vector<uint32_t> &used_frames , std::ve
         usedFramesVector=std::vector<bool>(keyframes.capacity(),false);
         for(auto f:used_frames) usedFramesVector[f]=true;
     }
+
     //set in the frames the projection matrix
     if (useKeyPoints){
     for(  auto & p:map_points){
@@ -725,8 +811,7 @@ double Map::globalReprojChi2( const std::vector<uint32_t> &used_frames , std::ve
                 if ( !isnan(p2.x)){
                         cv::Point2f kp= frame.und_kpts[f.second].pt;
                         auto ee=p2-kp;
-                        //float inv_scale_factor=1./frame.scaleFactors[frame.und_kpts[f.second].octave];
-                        float inv_scale_factor=pow(frame.getScaleFactor(),frame.und_kpts[f.second].octave);
+                        float inv_scale_factor=1./frame.scaleFactors[frame.und_kpts[f.second].octave];
                         float chi2=inv_scale_factor *( ee.x*ee.x+ee.y*ee.y);
                         chi2Sum+=chi2;
                         if (chi2vector) chi2vector-> push_back(chi2  );
@@ -737,6 +822,7 @@ double Map::globalReprojChi2( const std::vector<uint32_t> &used_frames , std::ve
         }
     }
     }
+
     //do the same for markers
     if(useMarkers){
         for(const auto & m:map_markers){
@@ -767,16 +853,18 @@ void Map::removeBadAssociations(const vector<std::pair<uint32_t,uint32_t>> &BadA
         removeMapPointObservation(badAssoc.first,badAssoc.second,minNumPtObs);
     }
 }
+
 void Map::updatePointNormalAndDistances(uint32_t pid){
     struct bestObs{
-        uint32_t frame=std::numeric_limits<uint32_t>::min();
-        int octave=std::numeric_limits<int>::min();
-        uint32_t kpIdx=std::numeric_limits<uint32_t>::min();
+        uint32_t frame=std::numeric_limits<uint32_t>::max();
+        int octave=std::numeric_limits<int>::max();
+        uint32_t kpIdx=std::numeric_limits<uint32_t>::max();
     } bOb;
     assert(map_points.is(pid));
     MapPoint &mp=map_points[pid];
     assert(mp.frames.size()>0);
-    //compute the new normal of the point and the best observation(highest octave)
+
+    //compute the new normal of the point and the best observation(lowest octave)
     auto p3d=mp.getCoordinates();
     cv::Point3f avrgNormal(0,0,0);
     double normSum=0;
@@ -785,33 +873,29 @@ void Map::updatePointNormalAndDistances(uint32_t pid){
         cv::Point3f normal=frame.getCameraCenter()-p3d;
         avrgNormal+=normal;
         normSum+=cv::norm(normal);
-        if(bOb.octave<frame.und_kpts[f.second].octave){
+
+        if(bOb.octave>frame.und_kpts[f.second].octave){
             bOb.octave=frame.und_kpts[f.second].octave;
             bOb.frame=f.first;
             bOb.kpIdx=f.second;
         }
     }
+
      avrgNormal*=1./normSum;
      mp.setNormal(avrgNormal);
+
+
      //compute the min and max invariance distance of the keypoint
      {
          auto &BestObsFrame=keyframes[bOb.frame];
          const float dist = cv::norm(mp.getCoordinates() - BestObsFrame.getCameraCenter());
-//         float sf=BestObsFrame.scaleFactors[1];
-//         int level = floor(log(System::getParams().maxFocalLength/System::getParams().minFocalLength)/log(sf)) - BestObsFrame.und_kpts[bOb.kpIdx].octave;
-         //int level = floor(log(System::getParams().maxFocalLength/System::getParams().minFocalLength)/log(sf)) - BestObsFrame.scaleFactors[BestObsFrame.und_kpts[bOb.kpIdx].octave];
-         //int level = BestObsFrame.scaleFactors.size() - BestObsFrame.und_kpts[bOb.kpIdx].octave;
-//         if(level<0) level=0;
-//         float mfMaxDistance = dist*pow(sf, level);
-//         float mfMinDistance = dist/BestObsFrame.scaleFactors[BestObsFrame.und_kpts[bOb.kpIdx].octave];
-         float mfMaxDistance = dist*pow(System::getParams().scaleFactor, _maxOctaveLevel- BestObsFrame.und_kpts[bOb.kpIdx].octave);
-         float mfMinDistance = mfMaxDistance/pow(System::getParams().scaleFactor, _maxOctaveLevel);
-//         const float levelScaleFactor =  BestObsFrame.scaleFactors[BestObsFrame.und_kpts[bOb.kpIdx].octave];
-//         float mfMaxDistance = dist*levelScaleFactor;
-//       int maxOct=  std::min(BestObsFrame.und_kpts[bOb.kpIdx].octave+3,int(BestObsFrame.scaleFactors.size()-1));
-//         float mfMinDistance =( mfMaxDistance/BestObsFrame.scaleFactors.back());
+         const float levelScaleFactor =  BestObsFrame.scaleFactors[BestObsFrame.und_kpts[bOb.kpIdx].octave];
+         float mfMaxDistance = dist*levelScaleFactor;
+       //int maxOct=  std::min(BestObsFrame.und_kpts[bOb.kpIdx].octave+3,int(BestObsFrame.scaleFactors.size()-1));
+         float mfMinDistance =( mfMaxDistance/BestObsFrame.scaleFactors.back());
          mp.setMinMaxConfDistance(mfMinDistance,mfMaxDistance);
      }
+
 }
 void Map::updatePointInfo(uint32_t pid){
     assert(map_points.is(pid));
@@ -820,32 +904,48 @@ void Map::updatePointInfo(uint32_t pid){
     auto obsFrames=map_points[pid].getObservingFrames();
     assert(obsFrames.size()>0);
     //now, compute the best descriptor
-     //save distances between all observed ones
+
+    //save distances between all observed ones
     FastMat<float> fm_desc_dist(obsFrames.size(),obsFrames.size());//oversized matrix
     fm_desc_dist.setTo(std::numeric_limits<float>::max());
+
     for(size_t i=0;i<obsFrames.size();i++){
         fm_desc_dist(i,i)=0;
          for(size_t j=i+1;j<obsFrames.size();j++){
             fm_desc_dist(j,i)=fm_desc_dist(i,j)=MapPoint::getDescDistance(keyframes[obsFrames[i].first].desc,obsFrames[i].second ,keyframes[obsFrames[j].first].desc,(obsFrames[j].second) );
         }
     }
+
+
     //accumulate values and get best
     pair<int,float> best(-1,std::numeric_limits<float>::max());
     for(size_t r=0;r<obsFrames.size();r++){
         float sum=0;
         float *ptr= fm_desc_dist.ptr(r);
         for(size_t c=0;c<obsFrames.size();c++) sum+=ptr[c];
+
         if (sum<best.second)
             best={r,sum};
     }
+
+
     auto bestObsDescFrame=obsFrames[best.first];
+
     mp.setDescriptor( keyframes[bestObsDescFrame.first].desc,bestObsDescFrame.second);
+
+
+
 }
+
+
+
 void  Map::exportToFile(std::string filepath,  const cv::Scalar &colorPoints,const cv::Scalar &colorKeyFrames,const cv::Scalar &colorMarkers, const set<uint32_t> &specialKeyFrames,cv::Scalar colorSpecialKeyFrame)const{
+
     auto float2Uchar=[](float f,int index){
         uchar *uc=(uchar*)&f;
         return (int)uc[index];
     };
+
     auto getExtension=[](std::string str){
         string ext;
         if(str.size()<=3)return ext;
@@ -856,7 +956,11 @@ void  Map::exportToFile(std::string filepath,  const cv::Scalar &colorPoints,con
     string ext=getExtension(filepath);
     if(ext!="pcd" && ext!="ply")  throw std::runtime_error(" Map::exportToFile Invalid extension: "+ext);
     auto points=getMapPoints4Export (   colorPoints,  colorKeyFrames, colorMarkers, specialKeyFrames,  colorSpecialKeyFrame);
+
+
     std::ofstream filePCD ( filepath, std::ios::binary );
+
+
     if(ext=="pcd"){
         filePCD<<"# .PCD v.7 - Point Cloud Data file format\nVERSION .7\nFIELDS x y z rgb\nSIZE 4 4 4 4\nTYPE F F F F\nCOUNT 1 1 1 1\nVIEWPOINT 0 0 0 1 0 0 0\nWIDTH "<<points.size()<<"\nHEIGHT 1\nPOINTS "<<points.size()<<"\nDATA binary\n";
         filePCD.write((char*)&points[0],points.size()*sizeof(points[0]));
@@ -876,8 +980,12 @@ void  Map::exportToFile(std::string filepath,  const cv::Scalar &colorPoints,con
             filePCD.write((char*)&p[0],15);
 //            filePCD<<p[0]<<" "<<p[1]<<" "<<p[2]<<" "<<float2Uchar(p[3],0)<<" "<<float2Uchar(p[3],1)<<" "<<float2Uchar(p[3],2)<<endl;
         }
+
     }
 }
+
+
+
 std::vector<cv::Vec4f> Map::getMapPoints4Export(  cv::Scalar colorPoints, cv::Scalar colorKeyFrames,cv::Scalar colorMarkers, const set<uint32_t> & specialKeyFrame, cv::Scalar colorSpecialKeyFrame)const{
     auto color2float=[](cv::Scalar color){
         float fcolor;uchar *c=(uchar*)&fcolor;
@@ -887,6 +995,7 @@ std::vector<cv::Vec4f> Map::getMapPoints4Export(  cv::Scalar colorPoints, cv::Sc
     };
     std::vector<cv::Vec4f> points2write;
     //markers
+
     if(colorMarkers[0]!=-1){
         for(const auto &m:map_markers)
         {
@@ -897,7 +1006,9 @@ std::vector<cv::Vec4f> Map::getMapPoints4Export(  cv::Scalar colorPoints, cv::Sc
                 points2write.insert(points2write.end(),points_id.begin(),points_id.end());
              }
         }
+
     }
+
     if(colorKeyFrames[0]!=-1){
         cerr<<__FILE__<<" "<<__LINE__<<" Map::getMapPoints4Export colorKeyFrames[0]!=-1 not adapted to version 1.1.0 "<<endl;
 //        vector<cv::Point3f> marker_points = { cv::Point3f ( -markerSize/2., markerSize/2.,0 ),cv::Point3f ( markerSize/2., markerSize /2.,0 ),
@@ -907,8 +1018,10 @@ std::vector<cv::Vec4f> Map::getMapPoints4Export(  cv::Scalar colorPoints, cv::Sc
 //            vector<cv::Point3f> mpoints(4);
 //            for(int i=0;i<4;i++)  mpoints[i]=mult(f2c, marker_points[i]);
 //            //  for(auto p:mpoints)cout<<p<<endl;
+
 //            cv::Scalar kfColor=colorKeyFrames;
 //            if( specialKeyFrame.count(frame.idx)!=0)  kfColor=colorSpecialKeyFrame;
+
 //            auto pcam=getPcdPoints( mpoints,kfColor,25);
 //            points2write.insert(points2write.end(),pcam.begin(),pcam.end());
 //            auto points_id=getMarkerIdPcd(frame.pose_f2g.inv(), cv::norm(marker_points[0]-marker_points[1]),frame.idx,kfColor);
@@ -929,6 +1042,7 @@ std::vector<cv::Vec4f> Map::getMapPoints4Export(  cv::Scalar colorPoints, cv::Sc
             points2write.push_back(cv::Vec4f(p3d.x,p3d.y,p3d.z,color2float(color)));
         }
     }
+
     //add the viewing direction
     float pointViewDirectionDist=0;
     if (pointViewDirectionDist>0){
@@ -937,14 +1051,18 @@ std::vector<cv::Vec4f> Map::getMapPoints4Export(  cv::Scalar colorPoints, cv::Sc
             auto pc=p.getCoordinates();
             auto pviewdir=getPcdPointsLine(pc,pc+(v*pointViewDirectionDist),cv::Scalar  (255,125,125),25);
             points2write.insert(points2write.end(),pviewdir.begin(),pviewdir.end());
+
         }
     }
     return points2write;
+
 }
+
 std::vector<cv::Vec4f> Map::getPcdPointsLine(const cv::Point3f &a,const cv::Point3f &b,cv::Scalar color,int npoints ) const{
     vector<cv::Vec4f> points;
     float fcolor;uchar *c=(uchar*)&fcolor;
     for(int i=0;i<3;i++)c[i]=color[i];
+
     //lines joining points
     cv::Point3f v=b-a;
     float ax=1./float(npoints);//npoints
@@ -954,11 +1072,13 @@ std::vector<cv::Vec4f> Map::getPcdPointsLine(const cv::Point3f &a,const cv::Poin
     }
     return points;
 }
+
 std::vector<cv::Vec4f> Map::getPcdPoints(const vector<cv::Point3f> &mpoints,cv::Scalar color,int npoints ) const{
    vector<cv::Vec4f> points;
    double msize=cv::norm(mpoints[0]-mpoints[1]);
    float fcolor;uchar *c=(uchar*)&fcolor;
    for(int i=0;i<3;i++)c[i]=color[i];
+
    //lines joining points
    for(size_t i=0;i<mpoints.size();i++){
        cv::Point3f v=mpoints[(i+1)%mpoints.size()]-mpoints[i];
@@ -968,6 +1088,7 @@ std::vector<cv::Vec4f> Map::getPcdPoints(const vector<cv::Point3f> &mpoints,cv::
            points.push_back(cv::Vec4f(p3.x,p3.y,p3.z, fcolor));
        }
    }
+
    //line indicating direction
    //take first and second, first and last , and get the cross vector indicating the direction
    cv::Point3f v1=mpoints[1]-mpoints[0];
@@ -976,21 +1097,30 @@ std::vector<cv::Vec4f> Map::getPcdPoints(const vector<cv::Point3f> &mpoints,cv::
    v2*=1./cv::norm(v2);
    cv::Point3f vz=v2.cross(v1);
    vz*=1./cv::norm(vz);//now, unit
+
    //set the center
    cv::Point3f center=(mpoints[0]+mpoints[1]+mpoints[2]+mpoints[3])*0.25;
    float ax=(msize/3)/100;
    for(float x=0;x<=msize/3;x+=ax){
        cv::Point3f p3=center+vz*x;
        points.push_back(cv::Vec4f(p3.x,p3.y,p3.z, fcolor));
+
    }
+
+
    return points;
+
 }
+
 std::vector<cv::Vec4f> Map::getMarkerIdPcd(const Marker &marker,  cv::Scalar color )const{
+
     auto _to_string=[](const uint32_t&val){
         std::stringstream sstr;
         sstr<<val;
         return sstr.str();
     };
+
+
     cv::Mat rt_g2m;
     marker.pose_g2m.convertTo(rt_g2m,CV_32F);
     //estimate marker size as the maximum size between any two points
@@ -998,6 +1128,7 @@ std::vector<cv::Vec4f> Map::getMarkerIdPcd(const Marker &marker,  cv::Scalar col
     for(int i=0;i<marker.points3d.size();i++)
         for(int j=i+1;j<marker.points3d.size();j++)
             _markerSize=std::max(_markerSize,float( cv::norm(marker.points3d[i]-marker.points3d[j])));
+
      //marker id as a set of points
     string text = _to_string(marker.id);
     int fontFace = cv::FONT_HERSHEY_SCRIPT_SIMPLEX;
@@ -1016,19 +1147,30 @@ std::vector<cv::Vec4f> Map::getMarkerIdPcd(const Marker &marker,  cv::Scalar col
     for(int y=0;y<img.rows;y++)
         for(int x=0;x<img.cols;x++)
             if (img.at<uchar>(y,x)!=0) points_id.push_back( cv::Point3f((float(x)/float(img.cols))-0.5,(float(img.rows-y)/float(img.rows))-0.5,0));
+
+
     //now,scale
     for(auto &p:points_id)p*=markerSize_2;
     //finally, translate
     for(auto &p:points_id)p= mult<float>( rt_g2m,p);
     //now, add to ouput
+
     float fcolor;uchar *c=(uchar*)&fcolor;
     for(int i=0;i<3;i++)c[i]=color[i];
+
     vector<cv::Vec4f> res;
     for(auto &p:points_id)
         res.push_back(cv::Vec4f(p.x,p.y,p.z, fcolor));
+
+
+
     return res;
 }
+
+
+
 int64_t Map::getReferenceKeyFrame(const Frame &frame, float minDist) {
+
     //find the ids of the points detected and the frames they belong to
     std::map<uint32_t,zeroinitvar<int> > frame_counter;
     for(auto id:frame.ids){
@@ -1044,12 +1186,17 @@ int64_t Map::getReferenceKeyFrame(const Frame &frame, float minDist) {
     }
     //no matches found,
     if  (frame_counter.size()==0)   return  -1;
+
     pair<int64_t,int> BestOne(-1,0);
     for(auto fc:frame_counter)
         if (fc.second >  BestOne.second) BestOne=std::make_pair(fc.first,fc.second);
+
     return BestOne.first;
+
 }
+
 se3 Map::getBestPoseFromValidMarkers(const Frame &frame,const vector<uint32_t> &markersOfFrameToBeUsed_,float minErrorRatio){
+
     vector<uint32_t> markersValidPose;
     for(auto m:markersOfFrameToBeUsed_){
         auto it=map_markers.find(m);
@@ -1058,6 +1205,7 @@ se3 Map::getBestPoseFromValidMarkers(const Frame &frame,const vector<uint32_t> &
                 markersValidPose.push_back(it->first);
         }
     }
+
     struct minfo{
         int id;
         cv::Mat rt_f2m;
@@ -1079,6 +1227,8 @@ se3 Map::getBestPoseFromValidMarkers(const Frame &frame,const vector<uint32_t> &
         mi.rt_f2m=marker_poseinfo.sols[1];
         all_marker_locations.push_back(mi);
     }
+
+
     //try using more than one marker approach
     if (markersValidPose.size()>=2) {
         //collect all the markers 3d locations
@@ -1090,6 +1240,7 @@ se3 Map::getBestPoseFromValidMarkers(const Frame &frame,const vector<uint32_t> &
             auto p3d=map_markers[ml.id].get3DPoints();
             markerPoints3d.insert(markerPoints3d.end(),p3d.begin(),p3d.end());
         }
+
         //take the all poses and select the one that minimizes the global reproj error
         vector<cv::Mat> allPoses;
         for(auto & ml:all_marker_locations){
@@ -1108,6 +1259,7 @@ se3 Map::getBestPoseFromValidMarkers(const Frame &frame,const vector<uint32_t> &
         pose_f2g_out=se3(rv,tv);
         _debug_msg("err opt="<< reprj_error(markerPoints3d,markerPoints2d,frame.imageParams.undistorted(),  pose_f2g_out),10);
     }
+
     if ( pose_f2g_out.isValid()==false &&  good_marker_locations.size()>0){
         std::sort(good_marker_locations.begin(),good_marker_locations.end(),[](const minfo &a,const minfo &b){return a.err<b.err;});
         auto best=good_marker_locations[0];
@@ -1115,10 +1267,14 @@ se3 Map::getBestPoseFromValidMarkers(const Frame &frame,const vector<uint32_t> &
         pose_f2g_out= best.rt_f2m *map_markers.at(best.id).pose_g2m.inv();
     }
     return   pose_f2g_out;
+
 }
 std::set<uint32_t> Map::getNeighborKeyFrames(uint32_t fidx,bool includeFidx){
+
     return TheKpGraph.getNeighbors(fidx,includeFidx);
 }
+
+
 void Map::saveToMarkerMap(std::string filepath)const {
     aruco::MarkerMap Mmap;
     std::string dict;
@@ -1127,7 +1283,7 @@ void Map::saveToMarkerMap(std::string filepath)const {
     Mmap.setDictionary(dict);
     Mmap.mInfoType=aruco::MarkerMap::METERS;
     for(const auto &mm:map_markers){
-        const reslam::Marker &marker=mm.second;
+        const ucoslam::Marker &marker=mm.second;
         if (!marker.pose_g2m.isValid()) continue;
         aruco::Marker3DInfo m3di;
         m3di.id=marker.id;
@@ -1137,6 +1293,7 @@ void Map::saveToMarkerMap(std::string filepath)const {
     }
     Mmap.saveToFile(filepath);
 }
+
 void Map::removeUnUsedKeyPoints(){
     for(auto &kf:keyframes){
         kf.removeUnUsedKeyPoints();//returns the indices
@@ -1147,6 +1304,35 @@ void Map::removeUnUsedKeyPoints(){
         }
     }
 }
+
+int kfRemoved = -1;
+void Map::removeOldKeyPoints(){
+    // int keepAmount = 5;
+    // std::cout << "keyframes size: " << keyframes.size() << std::endl;
+    // if(keyframes.size() < keepAmount || kfRemoved == keyframes.size() - keepAmount - 1) return;
+
+    // int kfToRemove = keyframes.size() - keepAmount - 1;
+    // kfRemoved = kfToRemove;
+    // auto &kf = keyframes[kfToRemove];
+    // for(auto &kf:keyframes){
+    //     kf.removeOldKeyPoints();
+    //     // must change in the mappoint references
+    //     std::cout << kf.ids.size() << std::endl;
+    //     for(int i=0;i<kf.ids.size();i++){
+    //         auto &mp=map_points[ kf.ids[i]];
+    //         mp.frames[kf.idx]=i;
+    //     }
+    // }
+    for(auto &kf:keyframes){
+        kf.removeUnUsedKeyPoints();//returns the indices
+        //must change in the mappoint references
+        for(int i=0;i <kf.ids.size();i++){
+            auto &mp=map_points[ kf.ids[i]];
+            mp.frames[kf.idx]=i;
+        }
+    }
+}
+
 void Map::removeWeakConnections(uint32_t kf,float minWeight){
     auto isMakerInFrame=[](int mid,const Frame &f){
         for(auto m:f.markers)
@@ -1165,6 +1351,7 @@ void Map::removeWeakConnections(uint32_t kf,float minWeight){
         //they must not share markers
         for(auto m:KF.markers)
             if( isMakerInFrame(m.id,KF2)) continue;
+
         if( TheKpGraph.getWeight(kf,kf2)<minWeight){
             //find shared mappoints and remove observations
             for(auto pidx:KF.ids){
@@ -1178,4 +1365,5 @@ void Map::removeWeakConnections(uint32_t kf,float minWeight){
         }
     }
 }
+
 }

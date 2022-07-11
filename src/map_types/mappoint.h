@@ -18,7 +18,7 @@
 */
 #ifndef ucoslam_MapPoint_H
 #define ucoslam_MapPoint_H
-#include "reslam_exports.h"
+#include "ucoslam_exports.h"
 #include <opencv2/core/core.hpp>
 #include <map>
 #include <vector>
@@ -26,12 +26,12 @@
 #include <bitset>
 #include "basictypes/safemap.h"
 #include "basictypes/flag.h"
-namespace reslam {
+namespace ucoslam {
 
 class Frame;
 /**Represents a 3d point of the environment
  */
-class RESLAM_API MapPoint
+class UCOSLAM_API MapPoint
 {
     friend class Map;
  public:
@@ -68,11 +68,7 @@ class RESLAM_API MapPoint
 
     inline void setNormal(cv::Point3f n){normal=n;}
     inline void setSeen() { if(nTimesSeen<std::numeric_limits<uint16_t>::max()) nTimesSeen++;}
-    inline void setVisible(  ){
-        if(nTimesVisible<std::numeric_limits<uint16_t>::max())
-            nTimesVisible++;
-    }
-    inline float getNTimesSeen()const{return nTimesSeen;}
+    inline void setVisible(  ){  if(nTimesVisible<std::numeric_limits<uint16_t>::max())  nTimesVisible++;}
     inline int geNTimesVisible( )const{     return nTimesVisible;}
     inline float getTimesUnseen()const{ return (nTimesVisible==0)? 0:float(nTimesVisible-nTimesSeen)/float(nTimesVisible);}
     inline float getVisibility()const{ return  (nTimesVisible==0)?0:float(nTimesSeen)/float(nTimesVisible);}
@@ -123,16 +119,12 @@ class RESLAM_API MapPoint
     inline void setBad(bool v){flags.set(FLAG_BAD,v);}
     inline void setStereo(bool v){flags.set(FLAG_STEREO,v);}
     inline void setStable(bool v){flags.set(FLAG_STABLE,v);}
-    bool isFromMapOriginal( )const{return fromMapOriginal;}
-    void setFromMapOriginal(bool v){ fromMapOriginal = v;}
-
 private:
     Flag flags;
 //    bool isStable=false;//indicates if it is an stable point that need no further recheck
 //    bool isBad=false;//excludes this point from optimization
 //    bool isStereo=false;
 
-    bool fromMapOriginal=true;
     cv::Mat _desc; //Representative descriptor of the map point
     cv::Point3f normal=cv::Point3f(std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN()); //! Mean viewing direction
     uint16_t nTimesSeen=0,nTimesVisible=0;

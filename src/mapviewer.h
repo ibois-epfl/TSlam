@@ -8,9 +8,9 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <string>
 #include <thread>
-#include "reslam.h"
+#include "ucoslam.h"
 #include "map.h"
-namespace reslam{
+namespace ucoslam{
 //Class using an opencv window to render and manipulate a sgl scene
 
 
@@ -48,8 +48,6 @@ private:
     std::map<uint32_t,Marker> map_markers;
 
     std::map<uint32_t,Se3Transform> _FSetPoses;
-    std::map<uint32_t,bool> _FSetType;
-
     int64_t curKF=-1;
     CovisGraph CVGraph;
 
@@ -115,7 +113,7 @@ protected:
 
 private:
     void  blending(const cv::Mat &a,float f,cv::Mat &io);
-    vector<sgl::Point3> getMarkerIdPcd(reslam::Marker &minfo , float perct);
+    vector<sgl::Point3> getMarkerIdPcd(ucoslam::Marker &minfo , float perct);
 };
 
 MapDrawer::MapDrawer( ){setParams(1  );}
@@ -158,7 +156,6 @@ void MapDrawer::draw(cv::Mat &image, std::shared_ptr<Map> map,const cv::Mat &cam
     userMessage=additional_msg;
     _cameraImage=cameraImage;
     _FSetPoses.clear();
-    _FSetType.clear();
     mapPoints.clear();
     mapPointsNormals.clear();
     if (map){
@@ -171,10 +168,7 @@ void MapDrawer::draw(cv::Mat &image, std::shared_ptr<Map> map,const cv::Mat &cam
         CVGraph=map->TheKpGraph;
         map->unlock(__FUNCTION__,__FILE__,__LINE__);
 
-        for(auto fs:map->keyframes)
-        {   _FSetPoses.insert({fs.idx,fs.pose_f2g.inv()});
-            _FSetType.insert({fs.idx,fs.isFromMapOriginal()});
-        };
+        for(auto fs:map->keyframes) _FSetPoses.insert({fs.idx,fs.pose_f2g.inv()});
 
         //set the marker points
         for(auto m:map_markers){
@@ -201,7 +195,7 @@ void MapDrawer::drawScene(int ptSize ){
         _a_b_16[1]=a;
         return a_b;
     };
-    auto drawMarker=[](sgl::Scene &Scn, const reslam::Marker &m , int width=1){
+    auto drawMarker=[](sgl::Scene &Scn, const ucoslam::Marker &m , int width=1){
         Scn.setLineSize(width);
         auto points=m.get3DPoints();
         Scn.drawLine((sgl::Point3*)&points[0],(sgl::Point3*)&points[1],{0,0,255});
@@ -280,13 +274,7 @@ void MapDrawer::drawScene(int ptSize ){
         for(auto kf:_FSetPoses){
             if (curKF==kf.first)
                 drawFrame(_Scene,kf.second,sgl::Color (125,0,200),2);
-            else
-            {
-                if(_FSetType[kf.first])
-                    drawFrame(_Scene,kf.second,sgl::Color(255,0,0),1);
-                else
-                    drawFrame(_Scene,kf.second,sgl::Color(255,0,255),1);
-            }
+            else drawFrame(_Scene,kf.second,sgl::Color(255,0,0),1);
             // _Scene.pushModelMatrix(sgl::Matrix44(kf.second.ptr<float>(0)));
             // drawPyramid(_Scene,0.1,0.05,0.04,color);
             //                    _Scene.popModelMatrix();
@@ -433,7 +421,7 @@ void MapDrawer::draw(cv::Mat &image ) {
 
 
 
-vector<sgl::Point3> MapDrawer::getMarkerIdPcd(reslam::Marker &minfo,float perct=1 )
+vector<sgl::Point3> MapDrawer::getMarkerIdPcd(ucoslam::Marker &minfo,float perct=1 )
 {
     auto  mult=[](const cv::Mat& m, cv::Point3f p)
     {

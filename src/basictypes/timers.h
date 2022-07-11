@@ -25,7 +25,7 @@
 #include <vector>
 #include <iostream>
 #include "debug.h"
-namespace reslam{
+namespace ucoslam{
 
 //timer
 

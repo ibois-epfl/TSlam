@@ -29,7 +29,7 @@
 #include <opencv2/xfeatures2d/nonfree.hpp>
 
 #endif
-namespace reslam{
+namespace ucoslam{
 float GridExtractor::getMinDescDistance()const{
     switch(_ftype){
     case F2D_GRID_ORB: return 50;

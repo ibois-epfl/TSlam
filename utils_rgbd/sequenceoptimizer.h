@@ -35,11 +35,11 @@ class SequenceOptimizer
 {
     class Frame2Global: public nanogo::Variable<double>{
     public:
-        reslam::Se3Transform _G2F;
+        ucoslam::Se3Transform _G2F;
         int32_t id=-1;
         int32_t extra=8347947;
 
-        void setParams(reslam::Se3Transform G2F,int Id){
+        void setParams(ucoslam::Se3Transform G2F,int Id){
             needPreparation=true;
             _G2F=G2F;
             id=Id;
@@ -94,11 +94,11 @@ class SequenceOptimizer
     
     std::vector<MappointError> mappoint_errors;
     
-    reslam::Map ucoslam_map;
+    ucoslam::Map ucoslam_map;
     nanogo::Graph<double> op_graph;
 
 public:
-    SequenceOptimizer(reslam::Map &um);
+    SequenceOptimizer(ucoslam::Map &um);
     void optimize();
     void getTransforms(std::map<unsigned int,cv::Mat> &result);
 };

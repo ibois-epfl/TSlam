@@ -17,7 +17,7 @@
 * along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
 #include "io_utils.h"
-namespace reslam{
+namespace ucoslam{
 void   toStream__ ( const  cv::Mat &m,std::ostream &str ) {
 
     int r=0,c=0,t=0;

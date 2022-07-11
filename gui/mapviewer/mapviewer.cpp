@@ -52,7 +52,7 @@ MapViewer::MapViewer(ModuleSetMainWindow *parent ):AppModule (parent) {
     setToolBar(toolbar);
     //    setControlPanel(_tbox);
 
-    std::shared_ptr< reslam::Map > map=std::make_shared<reslam::Map>();
+    std::shared_ptr< ucoslam::Map > map=std::make_shared<ucoslam::Map>();
     mapdrawer= std::make_shared<MapDrawer>( );
     mapdrawer->set(map);
     _glWindow->insert(mapdrawer,"Map");
@@ -76,7 +76,7 @@ void MapViewer::on_openmap_action(){
 
 
         try{
-            std::shared_ptr< reslam::Map > map=std::make_shared<reslam::Map>();
+            std::shared_ptr< ucoslam::Map > map=std::make_shared<ucoslam::Map>();
             map->readFromFile(file.toStdString());
             mapdrawer->set(map);
             _glWindow->updateScene();

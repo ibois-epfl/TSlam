@@ -22,15 +22,15 @@
 #include <opencv2/core/core.hpp>
 #include <vector>
 #include <set>
-#include "reslam_exports.h"
+#include "ucoslam_exports.h"
 #include "basictypes/se3.h"
 #include "basictypes/se3transform.h"
-namespace reslam {
+namespace ucoslam {
 
 /**A marker in the 3D space.
  */
 
-class RESLAM_API Marker{
+class UCOSLAM_API Marker{
 public:
     Marker(){}
     Marker(uint32_t Id,Se3Transform g2m):id(Id),pose_g2m(g2m){}
@@ -86,7 +86,7 @@ struct MarkerPosesIPPE
 };
 /**The projection of a marker in an image
  */
-class RESLAM_API MarkerObservation:public Marker{
+class UCOSLAM_API MarkerObservation:public Marker{
 public:
     MarkerObservation(){}
     MarkerObservation(const Marker &m):Marker(m){}

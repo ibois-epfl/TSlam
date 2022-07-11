@@ -23,7 +23,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 using namespace std;
-namespace reslam{
+namespace ucoslam{
 
 
 

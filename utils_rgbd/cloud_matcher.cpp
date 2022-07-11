@@ -215,7 +215,7 @@ int main(int argc, char *argv[]){
     theta=0;
     cv::Rodrigues(cv::Vec3f(0,0,theta),marker_rotation);
 
-    global2ref_T=reslam::rigidBodyTransformation_Horn1987(orig_markers_corners.at(ref_marker),ref_marker_corners,true);
+    global2ref_T=ucoslam::rigidBodyTransformation_Horn1987(orig_markers_corners.at(ref_marker),ref_marker_corners,true);
     global2ref_T(cv::Range(0,3),cv::Range(0,3))=marker_rotation*global2ref_T(cv::Range(0,3),cv::Range(0,3));
     cv::Matx33f R(global2ref_T(cv::Range(0,3),cv::Range(0,3)));
     cv::Vec3f t(global2ref_T(cv::Range(0,3),cv::Range(3,4)));
@@ -314,7 +314,7 @@ int main(int argc, char *argv[]){
             }
         }
         //get the transformation and transform the new cloud
-        cv::Mat T=reslam::rigidBodyTransformation_Horn1987(new_marker_points,orig_marker_points,true);
+        cv::Mat T=ucoslam::rigidBodyTransformation_Horn1987(new_marker_points,orig_marker_points,true);
         cout<<T<<endl;
         new_cloud=new_cloud.transform(T);
         cout<<"CLOUD SIZE NOW!: "<<new_cloud.size()<<endl;
@@ -409,7 +409,7 @@ int main(int argc, char *argv[]){
         PCD_IO::write_ply(new_cloud_folder+"merged_heightmap.ply",hm_pc);
         new_height_map.writeToFile(new_cloud_folder+"merged.heightmap");
         //    ofstream out_file(new_cloud_folder+"/click_transform",ios_base::binary);
-        //    cv::Mat click_T=reslam::rigidBodyTransformation_Horn1987(new_mouse_3D_coords,orig_mouse_3D_coords,true);
+        //    cv::Mat click_T=ucoslam::rigidBodyTransformation_Horn1987(new_mouse_3D_coords,orig_mouse_3D_coords,true);
         //    //write transform
         //    for(int i=0;i<3;i++)
         //        for(int j=0;j<4;j++)

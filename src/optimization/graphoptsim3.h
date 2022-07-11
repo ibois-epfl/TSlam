@@ -24,7 +24,7 @@
 #include "map_types/covisgraph.h"
 
 
-namespace reslam{
+namespace ucoslam{
 
 
 

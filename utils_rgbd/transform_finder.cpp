@@ -103,7 +103,7 @@ int main(int argc, char* argv[]){
     //get click transfrom
     vector<cv::Point3f> click_positions_dest=read_click_positions(dest_folder+"/mousepoints");
     vector<cv::Point3f> click_positions_source=read_click_positions(source_folder+"/mousepoints");
-    cv::Mat click_transfrom=reslam::rigidBodyTransformation_Horn1987(click_positions_source,click_positions_dest,true);
+    cv::Mat click_transfrom=ucoslam::rigidBodyTransformation_Horn1987(click_positions_source,click_positions_dest,true);
 
     PointCloud clicked_pc;
     for(size_t i=0;i<click_positions_source.size();i++){

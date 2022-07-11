@@ -126,7 +126,7 @@ void getTransformsPointCloud(shared_ptr<RGBDReader> rgbd_reader, PointCloud &pc,
     }
 }
 
-void keyframe_transforms_to_io_vec(reslam::SparseLevMarq<double>::eVector &io_vec){
+void keyframe_transforms_to_io_vec(ucoslam::SparseLevMarq<double>::eVector &io_vec){
     io_vec.resize(keyframe_transforms.size()*6);
     unsigned int curr_index=0;
     for(std::pair<const unsigned int,cv::Mat> &keyframe_transform:keyframe_transforms){
@@ -141,7 +141,7 @@ void keyframe_transforms_to_io_vec(reslam::SparseLevMarq<double>::eVector &io_ve
     }
 }
 
-void io_vec_to_keyframe_transforms(reslam::SparseLevMarq<double>::eVector &io_vec){
+void io_vec_to_keyframe_transforms(ucoslam::SparseLevMarq<double>::eVector &io_vec){
     unsigned int curr_index=0;
     for(std::pair<const unsigned int,cv::Mat> &keyframe_transform:keyframe_transforms){
         cv::Mat transform=cv::Mat::eye(4,4,CV_32FC1);
@@ -156,7 +156,7 @@ void io_vec_to_keyframe_transforms(reslam::SparseLevMarq<double>::eVector &io_ve
     }
 }
 
-void error_function(const typename reslam::SparseLevMarq<double>::eVector &input, typename reslam::SparseLevMarq<double>::eVector &error){
+void error_function(const typename ucoslam::SparseLevMarq<double>::eVector &input, typename ucoslam::SparseLevMarq<double>::eVector &error){
 
     vector<vector<vector<double>>> mappoint_diffs(mappoint_keyframe_keypoint_coords.size());
     unsigned int mappoint_index=0;
@@ -223,14 +223,14 @@ void draw_keypoint_lines(PointCloud &pc){
     }
 }
 
-void get_keyframe_transforms(reslam::Map &m){
+void get_keyframe_transforms(ucoslam::Map &m){
     for(auto &keyframe:m.keyframes){
         keyframe.pose_f2g.inv().copyTo(keyframe_transforms[keyframe.idx]);
     }
 }
 
-void get_keyframe_transforms_and_3D_keypoint_coords(reslam::Map &m){//uses map mpoint to filter keyframes (usefult when using keypoints to register the clouds)
-    for(reslam::MapPoint& mappoint:m.map_points) {
+void get_keyframe_transforms_and_3D_keypoint_coords(ucoslam::Map &m){//uses map mpoint to filter keyframes (usefult when using keypoints to register the clouds)
+    for(ucoslam::MapPoint& mappoint:m.map_points) {
         map<unsigned int,cv::Point3f> keyframe_keypoint_coords;
 
         if(!mappoint.isBad()){
@@ -240,7 +240,7 @@ void get_keyframe_transforms_and_3D_keypoint_coords(reslam::Map &m){//uses map m
                 unsigned int keyframe_index=mappoint_keyframe.first;
                 unsigned int keypoint_index=mappoint_keyframe.second;
 
-                reslam::Frame &keyframe=m.keyframes[keyframe_index];
+                ucoslam::Frame &keyframe=m.keyframes[keyframe_index];
                 cv::KeyPoint keypoint=keyframe.und_kpts[keypoint_index];
                 //only use the keypoints in the first octave
                 if(keyframe.getDepth(keypoint_index)<=2.0 && keypoint.octave==0 && !std::isnan(keypoint.pt.x) && !std::isnan(keypoint.pt.y) && !keyframe.isBad()){
@@ -551,7 +551,7 @@ int main(int argc, char *argv[])
     shared_ptr<RGBDReader> rgbd_reader=RGBDReaderFactory::getReader(argv[3],argv[2]);
     rgbd_reader->readCalib(calib_path);
 
-    reslam::Map m;
+    ucoslam::Map m;
     m.readFromFile(map_path);
 
     vector<PointCloud> keyframe_clouds, smooth_clouds;
@@ -570,7 +570,7 @@ int main(int argc, char *argv[])
         if(keyframe_transforms.count(keyframe.idx)==1){//if the key frame has a transformation add the frame and keyframe indices to the maps
             frame2keyframe_index[keyframe.fseq_idx]=keyframe.idx;
             keyframe2frame_index[keyframe.idx]=keyframe.fseq_idx;
-            for(reslam::MarkerObservation &mo:keyframe.markers)//get 2d marker corners from all keyframes
+            for(ucoslam::MarkerObservation &mo:keyframe.markers)//get 2d marker corners from all keyframes
                 marker_frame_2d_corners[mo.id][keyframe.fseq_idx]=mo.corners;
         }
 
@@ -600,7 +600,7 @@ int main(int argc, char *argv[])
     ref_marker_corners[2]=cv::Point3f(half_size,-half_size,0);
     ref_marker_corners[3]=cv::Point3f(-half_size,-half_size,0);
 
-    global2ref_T=reslam::rigidBodyTransformation_Horn1987((*marker_frame_3d_corners.at(ref_marker_id).begin()).second,ref_marker_corners,true);
+    global2ref_T=ucoslam::rigidBodyTransformation_Horn1987((*marker_frame_3d_corners.at(ref_marker_id).begin()).second,ref_marker_corners,true);
 
 //    for(PointCloud &pc:smooth_clouds){//remove the plane
 //        PointCloud pc_t=pc.transform(global2ref_T);
@@ -707,7 +707,7 @@ int main(int argc, char *argv[])
 //    ref_marker_corners[2]=cv::Point3f(half_size,-half_size,0);
 //    ref_marker_corners[3]=cv::Point3f(-half_size,-half_size,0);
 
-//    cv::Mat global2ref_T=reslam::rigidBodyTransformation_Horn1987(marker_average_3d_corners[ref_marker_id],ref_marker_corners,true);
+//    cv::Mat global2ref_T=ucoslam::rigidBodyTransformation_Horn1987(marker_average_3d_corners[ref_marker_id],ref_marker_corners,true);
 //    //convert the pointclouds to height maps, then merge the heightmaps and write the result
 //    const cv::Rect2f heightmap_range(-0.2,-0.2,2,1);
 //    const float cell_size=0.002;
@@ -795,9 +795,9 @@ int main(int argc, char *argv[])
     }
 
     //optimization----------
-    reslam::SparseLevMarq<double>::eVector io_vec;
-    reslam::SparseLevMarq<double> solver;
-    reslam::SparseLevMarq<double>::Params p;
+    ucoslam::SparseLevMarq<double>::eVector io_vec;
+    ucoslam::SparseLevMarq<double> solver;
+    ucoslam::SparseLevMarq<double>::Params p;
     p.verbose=true;
     p.min_average_step_error_diff=0.0000001;
     solver.setParams(p);

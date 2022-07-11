@@ -22,14 +22,14 @@
 #include <memory>
 #include <vector>
 #include <set>
-#include "reslam_exports.h"
-namespace reslam{
+#include "ucoslam_exports.h"
+namespace ucoslam{
 class KFDataBaseVirtual;
 class Frame;
 class FrameSet;
 class CovisGraph;
 
-class RESLAM_API KeyFrameDataBase{
+class UCOSLAM_API KeyFrameDataBase{
 public:
     KeyFrameDataBase();
     void loadFromFile(const std::string &filePathOrNothing);

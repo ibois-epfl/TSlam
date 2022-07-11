@@ -29,14 +29,14 @@
 #include <cstdint>
 #include <vector>
 #include <mutex>
-#include "reslam_exports.h"
+#include "ucoslam_exports.h"
 using namespace std;
 
-namespace reslam
+namespace ucoslam
 {
 
 
-class RESLAM_API CovisGraph
+class UCOSLAM_API CovisGraph
 {
 public:
     CovisGraph();

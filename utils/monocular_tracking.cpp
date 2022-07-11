@@ -19,14 +19,14 @@ int getCurrentFrameIndex(cv::VideoCapture &vcap,bool isLive){
     if (isLive)return cIndexLive++;
     else return  vcap.get(CV_CAP_PROP_POS_FRAMES);
 }
-void savePosesToFile(string filename, const std::map<uint32_t, reslam::se3> &fmp);
+void savePosesToFile(string filename, const std::map<uint32_t, ucoslam::se3> &fmp);
 
 int main(int argc,char **argv){
     CmdLineParser cml(argc,argv);
     if (argc<3 || cml["-h"]){
         cerr<<"Usage: (video|live[:cameraIndex(0,1...)])    world    [-st starts the processing stopped ]  [-outposes outfile] [-skip n: skips the first n frames of video] [-debug level]"<<endl;return -1;
     }
-    reslam::debug::Debug::setLevel( stoi(cml("-debug","0")));
+    ucoslam::debug::Debug::setLevel( stoi(cml("-debug","0")));
     int waitTime=2;
     if (cml["-st"]) waitTime=0;
 
@@ -58,17 +58,17 @@ int main(int argc,char **argv){
     }
 
 
-    auto TViewer = reslam::MapViewer::create(cml["-noX"] ? "" : "Cv");
-    reslam::Slam Slam;
+    auto TViewer = ucoslam::MapViewer::create(cml["-noX"] ? "" : "Cv");
+    ucoslam::Slam Slam;
     cv::Size vsize(0,0);
     cv::Mat in_image;
 
 
     Slam.readFromFile( argv[2]);
-    Slam.setMode(reslam::Slam::MODE_LOCALIZATION);
+    Slam.setMode(ucoslam::Slam::MODE_LOCALIZATION);
     Slam.resetTracker();//reset the location and remove previous stored locations
 
-    reslam::TimerAvrg Fps;
+    ucoslam::TimerAvrg Fps;
 
     while(in_image.empty())vcap>>in_image;
     bool finished=false;
@@ -78,7 +78,7 @@ int main(int argc,char **argv){
         Fps.start();
         Slam.process(in_image,currentFrameIndex);
         Fps.stop();
-        int k = TViewer->show(reslam::Map::singleton(), Slam.getCurrentPose_f2g(), Slam.getShowImage(),"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
+        int k = TViewer->show(ucoslam::Map::singleton(), Slam.getCurrentPose_f2g(), Slam.getShowImage(),"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
         if (k==27)finished=true;
         vcap>>in_image;
     }
@@ -176,7 +176,7 @@ void getQuaternionAndTranslationfromMatrix44(const cv::Mat& M_in, float& qx, flo
     ty = M.at<float>(1, 3);
     tz = M.at<float>(2, 3);
 }
-void savePosesToFile(string filename, const std::map<uint32_t, reslam::se3>& fmp)
+void savePosesToFile(string filename, const std::map<uint32_t, ucoslam::se3>& fmp)
 {
     std::ofstream file(filename);
     float qx, qy, qz, qw, tx, ty, tz;
