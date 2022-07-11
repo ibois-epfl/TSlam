@@ -97,7 +97,7 @@ std::string info;
 
         > Move the code cause the lag into another thread, and let the main thread keep going
         
-        > Just cancel it
+        > ✔️ Just cancel it
 
 ### 
 ``` cpp
