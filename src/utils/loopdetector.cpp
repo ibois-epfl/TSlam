@@ -1689,24 +1689,20 @@ _14756094128870157179 * float ( _16988745808691518194.at <
 
   ;
 
-     return
+    return _6807036698572949990;
+}
 
-    _6807036698572949990 ;
+void test(cv::InputArray _opoints){
+  cv::Mat opoints = _opoints.getMat();
+  int npoints = std::max(opoints.checkVector(3, CV_32F), opoints.checkVector(3, CV_64F));
+  cout << "npoints = " << npoints << endl;
+  opoints = opoints.reshape(3, npoints);
+  cout << "count = " << std::max(opoints.cols, opoints.rows) << endl;
+}
 
- }
 
-std ::
 
-     vector <
-
-  LoopDetector ::
-
-  LoopClosureInfo >
-
-    LoopDetector ::
-
-  _8671179296205241382 (
-
+std::vector<LoopDetector::LoopClosureInfo> LoopDetector::_8671179296205241382 (
      Frame &_46082543180066935, int32_t _16940374156599401875 ) {
 
      auto
@@ -1924,9 +1920,8 @@ Mat ()
 
   ;
 
-# 4100 "/app/example.cpp"
 #pragma message "warning: Check the loop detector is correct with the FrameMatcher"
-# 4100 "/app/example.cpp"
+
 
      for(
 
@@ -2039,24 +2034,12 @@ auto _2654435878:_6807036698572949990 )
 
       endl ;
     
-    if (_16937225740828192533.size() > 6) {
-      
-        cv :: solvePnPRansac (
-          _16937225740828192533,_16937225740828189009, _46082543180066935.imageParams.CameraMatrix,cv ::
-
-    Mat :: zeros ( 1,5,CV_32F ) ,_175247759698,_175247759831,false,100,2.5,0.99,_6807141016080266659 )
-
-   ;
-    } else {
-      int a;
-      cin >> a;
       cv :: solvePnPRansac (
           _16937225740828192533,_16937225740828189009, _46082543180066935.imageParams.CameraMatrix,cv ::
 
     Mat :: zeros ( 1,5,CV_32F ) ,_175247759698,_175247759831,false,100,2.5,0.99,_6807141016080266659 )
 
    ;
-    }
          if
 
  (
