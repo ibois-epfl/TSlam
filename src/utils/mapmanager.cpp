@@ -201,7 +201,6 @@ false ;
 #pragma message "warning : in non-sequential mode detected markers in loop closure are not proceesed properly?"
          if( System ::getParams ().reLocalizationWithMarkers && !System :: getParams ().isInstancing )
          {
-          cout << "detect loop from markers" << endl;
           _8346364136266015358 = _14139181480504378433 -> detectLoopFromMarkers ( _175247760268,_10707402391749537314 ) ;
          }
           
@@ -303,7 +302,7 @@ _8346364136266015358.foundLoop ()
  getParams ()
 
 .reLocalizationWithMarkers && !System ::getParams ().isInstancing ){
-  cout << "detect loop from markers 2" << endl;
+  
   _8346364136266015358 = _14139181480504378433 -> detectLoopFromMarkers ( _175247760268,_10707402391749537314 );
 }
 

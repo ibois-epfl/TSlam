@@ -83,23 +83,37 @@ std::string info;
 ### The lags
 - Seems to come out when inconstency introduced in the scene, I guess it's doing optimization on the map.
     - During Mapping
-        > ✔️ 2-phase mapping, which reduce this situation, but may still happen
-
-        > Move the code cause the lag into another thread, and let the main thread keep going => but this probably causes problem
-        
+        - ✔️ 2-phase mapping, which reduce this situation, but may still happen
+        - Move the code cause the lag into another thread, and let the main thread keep going => but this probably causes problem
         - This mostly happens when the timber is moved, so
-            > Mapping with only the markers: tried, the accuracy is not good
-            
-            > Sementic segmentaion which get rid of the background
+            - Mapping with only the markers: tried, the accuracy is not good
+            - Sementic segmentaion which get rid of the background
 
     - During intance
-        > Not updating Map -> timmer
+        - Not updating Map -> lower accuracy
+        - Move the code cause the lag into another thread, and let the main thread keep going
+        - ✔️ Just cancel it
+            > This has been tackled down by adding a system-scale parameter "-isInstancing", which disables the optimization process.
 
-        > Move the code cause the lag into another thread, and let the main thread keep going
-        
-        > ✔️ Just cancel it
+### Bug #1
+- This is actually a bug caused by OpenCV. [Link to the issue](https://github.com/opencv/opencv/pull/19253)
+- The problem should be solve by upgrading OpenCV to 4.5.5 and setting a flag when calling cv::solvePnPRansac(). This uses another algorithm (USAC), which also performs better than RANSAC. (So actually, we don't have to switch to 5.0.0)
+- Available Flags: [Link to the file on Github](https://github.com/opencv/opencv/blob/2a4926f4178681306999cfb04f6de601ec12f47b/modules/calib3d/include/opencv2/calib3d.hpp)
+```
+//! type of the robust estimation algorithm
+enum { LMEDS  = 4,  //!< least-median of squares algorithm
+       RANSAC = 8,  //!< RANSAC algorithm
+       RHO    = 16, //!< RHO algorithm
+       USAC_DEFAULT  = 32, //!< USAC algorithm, default settings
+       USAC_PARALLEL = 33, //!< USAC, parallel version
+       USAC_FM_8PTS = 34,  //!< USAC, fundamental matrix 8 points
+       USAC_FAST = 35,     //!< USAC, fast settings
+       USAC_ACCURATE = 36, //!< USAC, accurate settings
+       USAC_PROSAC = 37,   //!< USAC, sorted points, runs PROSAC
+       USAC_MAGSAC = 38    //!< USAC, runs MAGSAC++
+     };
+```
 
-### 
 ``` cpp
   what():  OpenCV(4.2.0) /home/tpp/Downloads/opencv-4.2.0/modules/calib3d/src/calibration.cpp:1171: error: (-2:Unspecified error) in function 'void cvFindExtrinsicCameraParams2(const CvMat*, const CvMat*, const CvMat*, const CvMat*, CvMat*, CvMat*, int)'
 > DLT algorithm needs at least 6 points for pose estimation from 3D-2D point correspondences. (expected: 'count >= 6'), where

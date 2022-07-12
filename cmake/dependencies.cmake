@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------------
 #   Find Dependencies
 # ----------------------------------------------------------------------------
-find_package(OpenCV  REQUIRED)
+find_package(OpenCV 4.5.5 REQUIRED)
 INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
 SET(UCOSLAM_REQUIRED_LIBRARIES ${OpenCV_LIBS})
 

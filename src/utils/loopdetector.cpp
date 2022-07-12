@@ -1692,15 +1692,6 @@ _14756094128870157179 * float ( _16988745808691518194.at <
     return _6807036698572949990;
 }
 
-void test(cv::InputArray _opoints){
-  cv::Mat opoints = _opoints.getMat();
-  int npoints = std::max(opoints.checkVector(3, CV_32F), opoints.checkVector(3, CV_64F));
-  cout << "npoints = " << npoints << endl;
-  opoints = opoints.reshape(3, npoints);
-  cout << "count = " << std::max(opoints.cols, opoints.rows) << endl;
-}
-
-
 
 std::vector<LoopDetector::LoopClosureInfo> LoopDetector::_8671179296205241382 (
      Frame &_46082543180066935, int32_t _16940374156599401875 ) {
@@ -2018,7 +2009,7 @@ auto _2654435878:_6807036698572949990 )
 
              }
          }
-# 4290 "/app/example.cpp"
+
         cv ::
 
      Mat _175247759698,_175247759831 ;
@@ -2033,11 +2024,11 @@ auto _2654435878:_6807036698572949990 )
  _16937225740828192533.size () <<
 
       endl ;
-    
+      
       cv :: solvePnPRansac (
           _16937225740828192533,_16937225740828189009, _46082543180066935.imageParams.CameraMatrix,cv ::
 
-    Mat :: zeros ( 1,5,CV_32F ) ,_175247759698,_175247759831,false,100,2.5,0.99,_6807141016080266659 )
+    Mat :: zeros ( 1,5,CV_32F ) ,_175247759698,_175247759831,false,100,2.5,0.99,_6807141016080266659, cv::USAC_ACCURATE )
 
    ;
          if
