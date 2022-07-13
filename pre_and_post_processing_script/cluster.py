@@ -5,11 +5,11 @@ import yaml
 import sympy as sp
 import random
 
-exported_tag_yml = '/home/tpp/UCOSlam-IBOIS/build/utils/long_piece_fullba.yml' 
+exported_tag_yml = '/home/tpp/UCOSlam-IBOIS/build/utils/merged_map.yml' 
 threshold_norm = 0.5
 threshold_dist = 100
 
-marker_rescale_factor = 1.9
+marker_rescale_factor = 2
 
 
 def rn():

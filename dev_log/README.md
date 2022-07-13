@@ -77,13 +77,14 @@ std::string info;
 ## TODO List
 - [ ] Enhancement / preprocessing
 - [ ] CMake on the main project
-- [ ] Fixing the failure (?) => The code is hidden in the obfuscated code
+- [ ] Rewrite the map post-processing code to C++
 
 ## Bugs to deal with
 ### The lags
 - Seems to come out when inconstency introduced in the scene, I guess it's doing optimization on the map.
     - During Mapping
         - ✔️ 2-phase mapping, which reduce this situation, but may still happen
+            > Made a python script to do the experiment. This should work.
         - Move the code cause the lag into another thread, and let the main thread keep going => but this probably causes problem
         - This mostly happens when the timber is moved, so
             - Mapping with only the markers: tried, the accuracy is not good
@@ -134,9 +135,9 @@ enum { LMEDS  = 4,  //!< least-median of squares algorithm
     at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libucoslam.so.1.1
 #16 0x00007ffff7f056d6 in ucoslam::MapManager::_12295639104386009589() () at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libucoslam.so.1.1
 #17 0x00007ffff7f06900 in ucoslam::MapManager::_8669746328630631075() () at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libucoslam.so.1.1
-
 ```
 
+### Bug #2
 ```cpp
 Thread 1 "ucoslam_monocul" received signal SIGSEGV, Segmentation fault.
 0x00007ffff7f8c64e in ucoslam::PnPSolver::solvePnp(ucoslam::Frame const&, std::shared_ptr<ucoslam::Map>, std::vector<cv::DMatch, std::allocator<cv::DMatch> >&, ucoslam::se3&, long) () from /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libucoslam.so.1.1
@@ -155,3 +156,15 @@ Program not restarted.
     at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libucoslam.so.1.1
 #5  0x0000555555568837 in main ()
 ```
+
+### Bug #3
+- Program stops unexpectedly with no error output, don't know why.
+- Mostly happenes during optimization.
+
+## Merge 2 maps
+### Input mask
+| Map 1 | Map 2 |
+| :---: | :---: |
+| ![](./merge_1.png) | ![](./merge_2.png) |
+### Merged Result
+![](./merge_result.png)
