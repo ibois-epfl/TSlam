@@ -138,7 +138,7 @@ enum { LMEDS  = 4,  //!< least-median of squares algorithm
 ```
 
 ### Bug #2
-- A work around is added at `src/optimization/pnpsolver.cpp:205` to check if the index is not exceed the size of the array.
+- A workaround is added at `src/optimization/pnpsolver.cpp:205` to check if the index is not exceed the size of the array.
 ```cpp
 if (map_matches[i].trainIdx >= TheMap->map_points.data_size()) return 0;
 ```
@@ -148,6 +148,10 @@ if (map_matches[i].trainIdx >= TheMap->map_points.data_size()) return 0;
 
 
 #### Original Error Message
+- Like #2, a workaround is added at `src/basictypes/picoflann.h:562` to check before access the vector.
+```cpp
+if (currNode.idx[i] >= container.size()) continue; 
+```
 ```cpp
 Thread 1 "ucoslam_monocul" received signal SIGSEGV, Segmentation fault.
 #0  0x00007ffff7f8c64e in ucoslam::PnPSolver::solvePnp(ucoslam::Frame const&, std::shared_ptr<ucoslam::Map>, std::vector<cv::DMatch, std::allocator<cv::DMatch> >&, ucoslam::se3&, long) () at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libucoslam.so.1.1

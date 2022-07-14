@@ -179,7 +179,7 @@ with open(exported_tag_yml, "r") as stream:
         cluster.bbox_mesh.paint_uniform_color(cluster.color)
 
         timber_mesh += cluster.bbox_mesh 
-        meshes.append(cluster.bbox_mesh)
+        # meshes.append(cluster.bbox_mesh)
 
     o3d.io.write_triangle_mesh("exported.ply", timber_mesh)
     

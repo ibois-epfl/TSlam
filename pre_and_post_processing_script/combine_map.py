@@ -27,6 +27,9 @@ for map_id, filename in enumerate(exported_tag_yml):
             marker_ids[map_id].append(marker["id"])
             marker_corners[map_id][marker["id"]] = np.array(marker["corners"])
 
+ref_ids = list(set(marker_ids[0]).intersection(marker_ids[1]))
+print_id = ref_ids[0]
+print("Reference markers:", ref_ids)
 
 # src_points = []
 # dst_points = []
@@ -36,8 +39,6 @@ dst_points = None
 
 for marker_id in marker_ids[0]:
     if marker_id in marker_ids[1]:
-        print(f"Marker {marker_id} is referenced.")
-        
         # src_points.append(marker_corners[0][marker_id])
         # dst_points.append(marker_corners[1][marker_id])
 
@@ -75,16 +76,16 @@ print(affine_matrix)
 print("---")
 
 print("Orinal position:")
-print(marker_corners[0][185])
+print(marker_corners[0][print_id])
 
 for id in marker_ids[0]:
     for i in range(4):
         marker_corners[0][id][i] = (affine_matrix @ marker_corners[0][id][i]) + t
 
 print("Reprojected position:")
-print(marker_corners[0][185])
+print(marker_corners[0][print_id])
 print("Destination position")
-print(marker_corners[1][185])
+print(marker_corners[1][print_id])
 
 print("---")
 
@@ -104,9 +105,6 @@ for id in marker_ids[1]:
     else:
         marker_corners_merged[id] = marker_corners[1][id]
 
-print(len(marker_corners_merged))
-print(marker_corners_merged)
-
 
 ###################
 # Export yml file #
@@ -123,8 +121,6 @@ for id in marker_corners_merged.keys():
             "corners": marker_corners_merged[id].tolist()
         }
     )
-
-print(yaml_data["aruco_bc_markers"])
 
 with open("merged_map.yml", "w") as f:
     yaml.dump(yaml_data, f, default_flow_style=True)
