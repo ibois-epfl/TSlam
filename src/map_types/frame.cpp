@@ -400,8 +400,8 @@ cv::Mat Frame::getImage(){
 }
 
 void Frame::removeUnUsedKeyPoints(){
-     int curIdx=0;
-     std::map<uint32_t,uint32_t> old_new;
+    int curIdx=0;
+    std::map<uint32_t,uint32_t> old_new;
     for(int i=0;i<ids.size();i++){
         if( ids[i]!=std::numeric_limits<uint32_t>::max()){
             ids[curIdx]=ids[i];

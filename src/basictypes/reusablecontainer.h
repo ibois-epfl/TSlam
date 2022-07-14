@@ -139,7 +139,8 @@ public:
     //indicates if the index-th element is (if false, it has been erased and no replaced)
     inline bool  is(uint32_t index)const;
     inline bool count(uint32_t index)const {return is(index);}
-    //returns number of valid elements
+    //returns number of valid elements$
+    inline uint32_t data_size()const{ return _data.size();}
     inline uint32_t size()const{ return _data.size()-_emptySpaces.size();}
     inline void toStream(std::ostream &str)const;
     inline void fromStream(std::istream &str) ;

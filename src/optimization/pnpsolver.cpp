@@ -114,23 +114,22 @@ bool PnPSolver::solvePnPRansac( const Frame &frame, std::shared_ptr<Map> map, st
     return true;
 }
 
-int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::vector<cv::DMatch> &map_matches, se3 &estimatedPose ,
-              int64_t currentKeyFrame){
+int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::vector<cv::DMatch> &map_matches, se3 &estimatedPose, int64_t currentKeyFrame){
     cv::Mat pose_io=estimatedPose.convert();
-
 
     //useful functions
     auto   toSE3Quat=[](const cv::Mat &cvT)
     {
         Eigen::Matrix<double,3,3> R;
         R << cvT.at<float>(0,0), cvT.at<float>(0,1), cvT.at<float>(0,2),
-                cvT.at<float>(1,0), cvT.at<float>(1,1), cvT.at<float>(1,2),
-                cvT.at<float>(2,0), cvT.at<float>(2,1), cvT.at<float>(2,2);
+             cvT.at<float>(1,0), cvT.at<float>(1,1), cvT.at<float>(1,2),
+             cvT.at<float>(2,0), cvT.at<float>(2,1), cvT.at<float>(2,2);
 
         Eigen::Matrix<double,3,1> t(cvT.at<float>(0,3), cvT.at<float>(1,3), cvT.at<float>(2,3));
 
         return g2o::SE3Quat(R,t);
     };
+
     auto  toCvMat=[](const g2o::SE3Quat &SE3)
     {
         Eigen::Matrix<double,4,4> eigMat = SE3.to_homogeneous_matrix();
@@ -140,9 +139,7 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
                 cvMat.at<float>(i,j)=eigMat(i,j);
 
         return cvMat.clone();
-
     };
-
 
     //Check if can START
     //no keypoints and no markers
@@ -202,20 +199,22 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
 
 
     vector<bool> vBadMatches(map_matches.size(),false);
-    double             KpWeightSum=0;
-    for(size_t i=0;i<map_matches.size();i++){
+    double KpWeightSum=0;
+    for(size_t i=0 ; i<map_matches.size() ; i++){
+        // workaround to get rid of bug #2
+        if (map_matches[i].trainIdx >= TheMap->map_points.data_size()) return 0;
 
-        auto kpt=frame.und_kpts[ map_matches[i].queryIdx] ;
-        auto &mp=TheMap->map_points[ map_matches[i].trainIdx];
-        auto p3d=mp.getCoordinates();
+        auto kpt=frame.und_kpts[ map_matches[i].queryIdx];
         float edge_weight=1;
+        
+        auto &mp=TheMap->map_points[ map_matches[i].trainIdx ];
+        auto p3d=mp.getCoordinates();
         if( !mp.isStable()) edge_weight=0.5;
 
 
         float depth=frame.getDepth(map_matches[i].queryIdx);
         //Monocular point
-        if(depth<=0  ){
-
+        if(depth<=0){
 
             Eigen::Matrix<double,2,1> obs;
             obs << kpt.pt.x , kpt.pt.y;
@@ -239,7 +238,6 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
         }
         //stereo point
         else{
-
             //SET EDGE
             Eigen::Matrix<double,3,1> obs;
             //compute the right proyection difference
@@ -277,7 +275,6 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
         KpWeightSum+=edge_weight;
 
     }
-
         //now, markers
         std::vector<std::pair<ucoslam::Marker,ucoslam::MarkerObservation> > marker_poses;
         if ( frame.markers.size()!=0 && currentKeyFrame!=-1){
@@ -311,7 +308,6 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
         double weight_marker= ((w_markers *totalNEdges)/ (1.- w_markers))/float(KpWeightSum);
 
         uint32_t vid=1;
-
 
         for(auto mpose: marker_poses){
             //add first the markers
@@ -347,7 +343,6 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
             marker_edges.push_back(e);
         }
 
-
     // We perform 4 optimizations, after each optimization we classify observation as inlier/outlier
     // At the next optimization, outliers are not included, but at the end they can be classified as inliers again.
 
@@ -365,8 +360,8 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
         for(size_t i=0, iend=edgesInfo.size(); i<iend; i++)
         {
             EdgeSE3ProjectXYZOnlyPose* e = (EdgeSE3ProjectXYZOnlyPose*) edgesInfo[i].ptr;
-
-            if(vBadMatches[i]) e->computeError();
+            if(vBadMatches[i])
+                e->computeError(); // problem
             vBadMatches[i]=e->chi2()>edgesInfo[i].MaxChi;
 
             e->setLevel(vBadMatches[i]?1:0);
@@ -392,9 +387,7 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
     pose_io=  toCvMat(SE3quat_recov);
 
 
-
     //set bad matches to -1 so that they will not be used
-
     int nbadmatches=0;
     for(size_t i=0;i<vBadMatches.size();i++)
         if ( vBadMatches[i]) {

@@ -559,7 +559,8 @@ private:
         if (currNode.isLeaf()){
             double worstDist=res.worstDist();
             for(size_t i=0;i<currNode.idx.size();i++){
-                double sqd=_distance.compute_distance(elem,container.at(currNode.idx[i]),adapter,DIMS,worstDist);
+                if (currNode.idx[i] >= container.size()) continue; 
+                double sqd=_distance.compute_distance(elem,container.at(currNode.idx[i]),adapter,DIMS,worstDist);                // problem is here
                 if (sqd<worstDist) {
                     res.push( {currNode.idx[i],sqd});
                     worstDist=res.worstDist();

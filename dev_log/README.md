@@ -114,7 +114,7 @@ enum { LMEDS  = 4,  //!< least-median of squares algorithm
        USAC_MAGSAC = 38    //!< USAC, runs MAGSAC++
      };
 ```
-
+#### Original Error Message
 ``` cpp
   what():  OpenCV(4.2.0) /home/tpp/Downloads/opencv-4.2.0/modules/calib3d/src/calibration.cpp:1171: error: (-2:Unspecified error) in function 'void cvFindExtrinsicCameraParams2(const CvMat*, const CvMat*, const CvMat*, const CvMat*, CvMat*, CvMat*, int)'
 > DLT algorithm needs at least 6 points for pose estimation from 3D-2D point correspondences. (expected: 'count >= 6'), where
@@ -138,14 +138,18 @@ enum { LMEDS  = 4,  //!< least-median of squares algorithm
 ```
 
 ### Bug #2
+- A work around is added at `src/optimization/pnpsolver.cpp:205` to check if the index is not exceed the size of the array.
+```cpp
+if (map_matches[i].trainIdx >= TheMap->map_points.data_size()) return 0;
+```
+
+- It should be act as if it doesn't find any matched points in that frame and skip it.
+
+
+
+#### Original Error Message
 ```cpp
 Thread 1 "ucoslam_monocul" received signal SIGSEGV, Segmentation fault.
-0x00007ffff7f8c64e in ucoslam::PnPSolver::solvePnp(ucoslam::Frame const&, std::shared_ptr<ucoslam::Map>, std::vector<cv::DMatch, std::allocator<cv::DMatch> >&, ucoslam::se3&, long) () from /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libucoslam.so.1.1
-(gdb) r
-The program being debugged has been started already.
-Start it from the beginning? (y or n) n
-Program not restarted.
-(gdb) backtrace
 #0  0x00007ffff7f8c64e in ucoslam::PnPSolver::solvePnp(ucoslam::Frame const&, std::shared_ptr<ucoslam::Map>, std::vector<cv::DMatch, std::allocator<cv::DMatch> >&, ucoslam::se3&, long) () at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libucoslam.so.1.1
 #1  0x00007ffff7f16e06 in ucoslam::System::_11166622111371682966(ucoslam::Frame&, ucoslam::se3) ()
     at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libucoslam.so.1.1
@@ -160,8 +164,12 @@ Program not restarted.
 ### Bug #3
 - Program stops unexpectedly with no error output, don't know why.
 - Mostly happenes during optimization.
+- vector::_M_range_check: __n (which is 1488514608) >= this->size() (which is 0)
 
 ## Merge 2 maps
+- Takes two tag maps (the exported .yml file) as input
+- Estimate the affine transformation matrix using OpenCV
+- 
 ### Input mask
 | Map 1 | Map 2 |
 | :---: | :---: |

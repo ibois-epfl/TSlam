@@ -463,7 +463,7 @@ void GlobalOptimizerG2O::optimize(bool *stopASAP ){
         Optimizer->initializeOptimization();
     Optimizer->setForceStopFlag(stopASAP);
     Optimizer->setVerbose( _params.verbose);
-#pragma message "warning: change this to consider maximum interstep error"
+    #pragma message "warning: change this to consider maximum interstep error"
 
     Optimizer->optimize(_params.nIters,1);
 //    Optimizer->optimize(_params.nIters,1);
@@ -500,7 +500,6 @@ void GlobalOptimizerG2O::optimize(bool *stopASAP ){
             medge->setRobustKernel(0);
         }
         // Optimize again without the outliers
-
         Optimizer->initializeOptimization();
         Optimizer->optimize(_params.nIters*2,1);
 
