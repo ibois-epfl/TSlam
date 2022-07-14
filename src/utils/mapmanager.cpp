@@ -16,14 +16,6 @@
 #include <omp.h>
 #endif
 
-# 1 "/app/example.cpp"
-# 1 "/app//"
-# 1 "<built-in>"
-# 1 "<command-line>"
-# 1 "/usr/include/stdc-predef.h" 1 3 4
-# 1 "<command-line>" 2
-# 1 "/app/example.cpp"
-# 635 "/app/example.cpp"
  namespace
 
   ucoslam {
@@ -322,135 +314,26 @@ _8346364136266015358.foundLoop ()
 
  }
 
- bool
-       MapManager ::
-
-mapUpdate (
-
-    )
-
-          {
-
-     if
-
-  (
-
- _9129579858736004991 !=
-
-   WAITINGFORUPDATE )
-
-         return
-       false
-       ;
-
-    _9129579858736004991 =
-
-     WORKING ;
-    _3370013330161650239 -> lock (
-
-  __FUNCTION__,"/app/example.cpp",1239 )
-
-  ;
-
-     if
-
-  (
-
-  _8346364136266015358.foundLoop ()
-  )
-
-         {
-
-        _14139181480504378433 ->
-
-correctMap (
-
- _8346364136266015358 )
-   ;
-
-        _12244964123780599670 ( _3370013330161650239 ->
-
-         keyframes [
-
-  _5097784010653838202 ]
-
-,_8346364136266015358 )
-
-  ;
-
-        _1061304613240460439 =
-
-     true ;
-
-     }
-
-    else {
-
-        vector <
- std ::
-
-  pair <
-
-      uint32_t,uint32_t >>
-
-  _8817940606606562997 ;
-
-         if
-      (
-
-     _15944432432468226297 )
-
-   {
-
-             _15944432432468226297 ->
-    getResults (
-
-  _3370013330161650239 )
-
-     ;
-
-             _8817940606606562997 =
-
-_15944432432468226297 -> getBadAssociations ()
-
-   ;
-
-            _15944432432468226297 =
-
- nullptr ;
-
-         }
-
-        _3370013330161650239 ->
-  removeBadAssociations (
-       _8817940606606562997,System ::
-      getParams ()
-
-     .minNumProjPoints )
-
-  ;
-     }
-
-     for(
-
- auto p:_7124056634192091721 )
-
-         if
-
-   (
-
- _3370013330161650239 -> map_points.is (
-   p )
-
-   )
-
-            _3370013330161650239 ->
-
-  removePoint (
-
-p )
-
-     ;
+bool MapManager::mapUpdate() {
+  if(_9129579858736004991 != WAITINGFORUPDATE ) return false;
+  
+  _9129579858736004991 = WORKING;
+  _3370013330161650239 -> lock (__FUNCTION__,"/app/example.cpp",1239 );
+  if(_8346364136266015358.foundLoop ()) {
+    _14139181480504378433 -> correctMap (_8346364136266015358);
+    _12244964123780599670 ( _3370013330161650239 -> keyframes [_5097784010653838202 ],_8346364136266015358 );
+    _1061304613240460439 = true;
+  } else { vector < std::pair<uint32_t,uint32_t> > _8817940606606562997;
+    if(_15944432432468226297 ){
+      _15944432432468226297 -> getResults (_3370013330161650239);
+      _8817940606606562997 = _15944432432468226297 -> getBadAssociations ();
+      _15944432432468226297 = nullptr ;
+    }
+    _3370013330161650239 -> removeBadAssociations( _8817940606606562997,System :: getParams ().minNumProjPoints );
+  }
+  for( auto p:_7124056634192091721 )
+    if( _3370013330161650239 -> map_points.is(p) )
+      _3370013330161650239 -> removePoint(p);
 
     _7124056634192091721.clear ()
 
@@ -5142,7 +5025,6 @@ i )
  )
 
        ;
-# 9679 "/app/example.cpp"
     std ::
 
      list <
@@ -5987,7 +5869,6 @@ _3370013330161650239,_3005399798454910266 )
   uint32_t _16937255065087280628, int
    _3005399802176474746 )
        {
-# 11097 "/app/example.cpp"
      bool
       _16116701644373052209 =
 
@@ -6743,7 +6624,6 @@ _5232059496475995487 =
     _11093822343890.curRefFrame,true )
 
      ;
-# 12444 "/app/example.cpp"
      auto
 
        &_16935669825082873233 =

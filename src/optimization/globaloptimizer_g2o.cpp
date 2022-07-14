@@ -459,6 +459,7 @@ void GlobalOptimizerG2O::optimize(std::shared_ptr<Map> map, const ParamSet &p ) 
 
 
 void GlobalOptimizerG2O::optimize(bool *stopASAP ){
+    // cout << "GlobalOptimizerG2O::optimize(bool *stopASAP )" << endl;
     __UCOSLAM_ADDTIMER__
         Optimizer->initializeOptimization();
     Optimizer->setForceStopFlag(stopASAP);

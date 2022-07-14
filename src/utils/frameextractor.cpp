@@ -12,14 +12,7 @@
 #include "xflann/xflann.h"
 #include "utils/framematcher.h"
 
-# 1 "/app/example.cpp"
-# 1 "/app//"
-# 1 "<built-in>"
-# 1 "<command-line>"
-# 1 "/usr/include/stdc-predef.h" 1 3 4
-# 1 "<command-line>" 2
-# 1 "/app/example.cpp"
-# 634 "/app/example.cpp"
+
  namespace
 
 ucoslam {
@@ -575,7 +568,6 @@ _988585933247351277 [ _6807036698572949990 [
    _2654435874 ]
 
   .z ;
-# 1975 "/app/example.cpp"
  }
 
  void
@@ -743,7 +735,6 @@ float >
 
          ( 
  2,2 ) ;
-# 2385 "/app/example.cpp"
          float _6461801683607599397 =    std ::
 
 numeric_limits <
@@ -783,7 +774,6 @@ numeric_limits <
  ( 
     _16937466872311873851,_2654435875 )
     ;
-# 2493 "/app/example.cpp"
                  if( 
     std ::
 
@@ -944,7 +934,6 @@ pow (
 
 .octave ]
      )       continue ;
-# 2854 "/app/example.cpp"
                  if(std ::
 
    abs ( 
@@ -1044,7 +1033,6 @@ _6461801683607599397 )
                 _46082575882272165.distance =    _6461801683607599397 ;
                 _6807036698572949990.push_back ( _46082575882272165 )
     ;
-# 3130 "/app/example.cpp"
              }
 
          }
@@ -1236,7 +1224,6 @@ _2654435874 ]
 
       max ()
      ;
-# 3575 "/app/example.cpp"
          for(    size_t _2654435875 =    0 ;
    _2654435875 <
 
@@ -2444,7 +2431,6 @@ cv ::
  ;
 
      }
-# 6410 "/app/example.cpp"
     _46082543180066935.scaleFactors.resize ( 
 _8033463663468506753 ->
 

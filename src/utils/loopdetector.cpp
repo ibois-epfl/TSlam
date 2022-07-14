@@ -10,14 +10,6 @@
 #include "basictypes/osadapter.h"
 #include <xflann/xflann.h>
 
-# 1 "/app/example.cpp"
-# 1 "/app//"
-# 1 "<built-in>"
-# 1 "<command-line>"
-# 1 "/usr/include/stdc-predef.h" 1 3 4
-# 1 "<command-line>" 2
-# 1 "/app/example.cpp"
-# 635 "/app/example.cpp"
  namespace
 
      ucoslam {
@@ -431,7 +423,6 @@ _11093822290813 !=
   }
 
     ;
-# 1342 "/app/example.cpp"
     vector <
 
   se3 >
@@ -645,7 +636,6 @@ _175247760151 )
      ;
 
      }
-# 1718 "/app/example.cpp"
       uint32_t
 
   _10881656904441569450 =
