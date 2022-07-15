@@ -25,7 +25,7 @@ MapManager ()
 
       {
 
-    _9129579858736004991 =
+    _curState =
        IDLE ;
 
     _14139181480504378433 =
@@ -65,7 +65,7 @@ Map >
 
    {
 
-    _3370013330161650239 =
+    TheMap =
 
   _11093822290287 ;
 
@@ -93,7 +93,7 @@ Map >
 
   const {
 
-   return _5097784010653838202 ;
+   return _lastAddedKeyFrame ;
 
    }
 
@@ -110,7 +110,7 @@ Map >
      (
      !
 
-_3370013330161650239 )
+TheMap )
     ;
 
       }
@@ -182,7 +182,7 @@ false ;
 
      (
 
-      _9129579858736004991.load ()
+      _curState.load ()
 
    ==
 
@@ -243,7 +243,7 @@ _8346364136266015358.foundLoop ()
 
         ;
 
-                _5860250156218117893.push (
+                keyframesToAdd.push (
 
        _46082575805180420 )
     ;
@@ -254,7 +254,7 @@ _8346364136266015358.foundLoop ()
 
           ! _4098354751575524583.joinable ()
   )
-                    _12295639104386009589 ()
+                    mainFunction ()
 
      ;
 
@@ -315,95 +315,57 @@ _8346364136266015358.foundLoop ()
  }
 
 bool MapManager::mapUpdate() {
-  if(_9129579858736004991 != WAITINGFORUPDATE ) return false;
+  if(_curState != WAITINGFORUPDATE ) return false;
   
-  _9129579858736004991 = WORKING;
-  _3370013330161650239 -> lock (__FUNCTION__,"/app/example.cpp",1239 );
+  _curState = WORKING;
+  TheMap -> lock (__FUNCTION__,__FILE__,__LINE__);
   if(_8346364136266015358.foundLoop ()) {
     _14139181480504378433 -> correctMap (_8346364136266015358);
-    _12244964123780599670 ( _3370013330161650239 -> keyframes [_5097784010653838202 ],_8346364136266015358 );
+    _12244964123780599670 ( TheMap -> keyframes [_lastAddedKeyFrame ],_8346364136266015358 );
     _1061304613240460439 = true;
   } else { vector < std::pair<uint32_t,uint32_t> > _8817940606606562997;
     if(_15944432432468226297 ){
-      _15944432432468226297 -> getResults (_3370013330161650239);
+      _15944432432468226297 -> getResults (TheMap);
       _8817940606606562997 = _15944432432468226297 -> getBadAssociations ();
       _15944432432468226297 = nullptr ;
     }
-    _3370013330161650239 -> removeBadAssociations( _8817940606606562997,System :: getParams ().minNumProjPoints );
+    TheMap -> removeBadAssociations( _8817940606606562997,System :: getParams ().minNumProjPoints );
   }
-  for( auto p:_7124056634192091721 )
-    if( _3370013330161650239 -> map_points.is(p) )
-      _3370013330161650239 -> removePoint(p);
+  for( auto p:PointsToRemove )
+    if( TheMap -> map_points.is(p) )
+      TheMap -> removePoint(p);
 
-    _7124056634192091721.clear ()
+  PointsToRemove.clear ();
 
-         ;
+  // if(System::getParams().isInstancing) {
+  //   if(newInsertedKeyFrames.size() > 20){
+  //     KeyFramesToRemove.insert(newInsertedKeyFrames.front());
+  //     // TheMap->removeKeyFrames(set<uint32_t>({newInsertedKeyFrames.front()}),System::getParams().minNumProjPoints);
+  //     newInsertedKeyFrames.pop();
+  //   }    
+  // }
 
-    _3370013330161650239 ->
+  TheMap->removeKeyFrames ( KeyFramesToRemove,System::getParams().minNumProjPoints);
 
-     removeKeyFrames (
 
-   _2225497823225366210,System ::
- getParams ()
+    if(_13990461397173511559) {
+      _1061304613240460439 = true;
+    }
 
-         .minNumProjPoints )
-   ;
+    _13909239728712143806 = TheMap->keyframes [_lastAddedKeyFrame].pose_f2g;
 
-     for(
+    TheMap->removeWeakConnections(_11028815416989897150,8);
 
-         auto kf:_2225497823225366210 )
+    TheMap -> unlock (__FUNCTION__,"/app/example.cpp",1525);
 
-   _15327812228135655144.erase (
+    PointsToRemove.clear ()
+    ;
 
-        kf )
+    KeyFramesToRemove.clear ()
 
     ;
 
-     if(
-
-    _13990461397173511559 )
-
- {
-
-        _1061304613240460439 =
-
- true ;
-
-     }
-
-    _13909239728712143806 =
-
-         _3370013330161650239 ->
-
-    keyframes [
-
-_5097784010653838202 ]
-
-     .pose_f2g ;
-
-     _3370013330161650239 ->
-
-        removeWeakConnections (
-
-     _11028815416989897150,8 )
-       ;
-
-    _3370013330161650239 ->
-
-    unlock (
-
-    __FUNCTION__,"/app/example.cpp",1525 )
-
-       ;
-
-    _7124056634192091721.clear ()
-    ;
-
-    _2225497823225366210.clear ()
-
-    ;
-
-    _9129579858736004991 =
+    _curState =
 
   IDLE ;
 
@@ -470,11 +432,11 @@ thread (
         _4090819199315697352 =
        true ;
 
-        _4098394392539754261 =
+        _hurryUp =
 
 false ;
 
-        _5860250156218117893.push (
+        keyframesToAdd.push (
 
 NULL )
    ;
@@ -508,7 +470,7 @@ _4098354751575524583.joinable ()
 
   true ;
 
-        _5860250156218117893.push (
+        keyframesToAdd.push (
 
   NULL )
     ;
@@ -522,15 +484,15 @@ _4098354751575524583.joinable ()
 
      false ;
 
-    _5860250156218117893.clear ()
+    keyframesToAdd.clear ()
 
  ;
 
-    _9129579858736004991 =
+    _curState =
 
      IDLE ;
 
-    _3370013330161650239.reset ()
+    TheMap.reset ()
 
   ;
 
@@ -551,11 +513,11 @@ _4098354751575524583.joinable ()
 
  ;
 
-    _7124056634192091721.clear ()
+    PointsToRemove.clear ()
 
   ;
 
-    _2225497823225366210.clear ()
+    KeyFramesToRemove.clear ()
 
    ;
 
@@ -582,7 +544,7 @@ _4098354751575524583.joinable ()
  LoopClosureInfo ()
         ;
 
-     _5097784010653838202 =
+     _lastAddedKeyFrame =
 
    std ::
 
@@ -600,80 +562,28 @@ _4098354751575524583.joinable ()
 
  false ;
 
-     _4098394392539754261 =
+     _hurryUp =
 
 false ;
 
  }
 
-Frame& MapManager ::
+Frame& MapManager::addKeyFrame ( Frame *newPtrFrame ){
+  auto _17591916323427771156 = [this]() {
+    int _8650310500306039378 = 0 ;
 
-       _1018502486064296669 (
+    for( auto &m:TheMap ->map_markers )
+      if(m.second.pose_g2m.isValid ()) _8650310500306039378 ++;
+        return _8650310500306039378 ;
+  };
 
- Frame *_10801929782564841966 )
+  Frame &_16937201236903537060_keyframe = TheMap->addKeyFrame(*newPtrFrame);
+  
+  newInsertedKeyFrames.push(_16937201236903537060_keyframe.idx);
 
-     {
+  _lastAddedKeyFrame = _16937201236903537060_keyframe.idx ;
 
-     auto
-
-     _17591916323427771156 =
-
-       [
-
-       this ]
-       ()
-
-  {
-
-         int
-
-      _8650310500306039378 =
-
-0 ;
-
-         for(
-
-      auto &m:_3370013330161650239 ->
-   map_markers )
-
-             if
-
-      (
-
-m.second.pose_g2m.isValid ()
-
-  )
-
- _8650310500306039378 ++
-
-     ;
-         return
-  _8650310500306039378 ;
-
-     }
-
- ;
-
-    Frame &_16937201236903537060 =
-
- _3370013330161650239 ->
-
-addKeyFrame (
-
-*_10801929782564841966 )
-
- ;
-
-    _5097784010653838202 = _16937201236903537060.idx ;
-
-    _15327812228135655144.insert (
-
- {
-
-_16937201236903537060.idx,0 }
- )
-
-  ;
+  youngKeyFrames.insert ( {_16937201236903537060_keyframe.idx,0 });
 
     vector <
 
@@ -683,7 +593,7 @@ _16937201236903537060.idx,0 }
 
      for(
 
-         auto &kf:_15327812228135655144 )
+         auto &kf:youngKeyFrames )
 
  {
         kf.second ++
@@ -704,7 +614,7 @@ _16937201236903537060.idx,0 }
 
      for( auto r:_16997208802817240490 )
 
-         _15327812228135655144.erase (
+         youngKeyFrames.erase (
 
 r )
 
@@ -717,7 +627,7 @@ r )
     getParams ()
        .KPNonMaximaSuppresion )
 
-        _16937201236903537060.nonMaximaSuppresion () ;
+        _16937201236903537060_keyframe.nonMaximaSuppresion () ;
 
      int
 
@@ -731,7 +641,7 @@ size_t _2654435874 =
 
 _2654435874 <
 
-    _16937201236903537060.ids.size ()
+    _16937201236903537060_keyframe.ids.size ()
 
     ;
 
@@ -745,7 +655,7 @@ _2654435874 <
 
      (
 
-      _16937201236903537060.ids [
+      _16937201236903537060_keyframe.ids [
       _2654435874 ]
 
  !=
@@ -762,13 +672,13 @@ max () )
 
          {
 
-              _3370013330161650239 ->
+              TheMap ->
 
          addMapPointObservation (
 
-   _16937201236903537060.ids [
+   _16937201236903537060_keyframe.ids [
 
-_2654435874 ] ,_16937201236903537060.idx,_2654435874 )
+_2654435874 ] ,_16937201236903537060_keyframe.idx,_2654435874 )
 
     ;
 
@@ -795,7 +705,7 @@ _2654435874 ] ,_16937201236903537060.idx,_2654435874 )
          _17591916323427771156 () ==
       0 &&
 
-      _3370013330161650239 ->
+      TheMap ->
 
  map_points.size ()
 
@@ -813,7 +723,7 @@ size_t _2654435878 =
     0 ;
 
 _2654435878 <
-   _16937201236903537060.markers.size ()
+   _16937201236903537060_keyframe.markers.size ()
     ;
 
    _2654435878 ++
@@ -825,10 +735,10 @@ _2654435878 <
 
    &_6406328991171953231 =
 
-    _3370013330161650239 ->
+    TheMap ->
 addMarker (
 
-_16937201236903537060.markers [
+_16937201236903537060_keyframe.markers [
 
 _2654435878 ]
 
@@ -836,9 +746,9 @@ _2654435878 ]
 
  ;
 
-        _3370013330161650239 -> addMarkerObservation (
+        TheMap -> addMarkerObservation (
 
-   _6406328991171953231.id,_16937201236903537060.idx )
+   _6406328991171953231.id,_16937201236903537060_keyframe.idx )
 
   ;
 
@@ -869,7 +779,7 @@ _6406328991171953231.pose_g2m.isValid ()
 
        {
 
-                 if( _16937201236903537060.markers [
+                 if( _16937201236903537060_keyframe.markers [
 
          _2654435878 ]
     .poses.err_ratio >
@@ -880,8 +790,8 @@ _6406328991171953231.pose_g2m.isValid ()
 
                     _6406328991171953231.pose_g2m =
 
-   _16937201236903537060.pose_f2g.inv ()
-     *_16937201236903537060.markers [
+   _16937201236903537060_keyframe.pose_f2g.inv ()
+     *_16937201236903537060_keyframe.markers [
 
  _2654435878 ]
 
@@ -1087,7 +997,7 @@ float >
                              float
   d =
 
- _5829010262908049596 ( _3370013330161650239 ->
+ _5829010262908049596 ( TheMap ->
 
 keyframes [
 
@@ -1096,7 +1006,7 @@ keyframes [
 i ]
 
    ]
-       .pose_f2g,_3370013330161650239 ->
+       .pose_f2g,TheMap ->
 
  keyframes [
 
@@ -1206,7 +1116,7 @@ se3 >
 
    {
 
-                    _16750267944260729636.push_back ( _3370013330161650239 ->
+                    _16750267944260729636.push_back ( TheMap ->
 
  keyframes [
 
@@ -1221,7 +1131,7 @@ f ]
   ;
                     _11822840474894279984.push_back (
 
-      _3370013330161650239 ->
+      TheMap ->
 
   keyframes [
 
@@ -1239,7 +1149,7 @@ f ]
 
       ARUCO_bestMarkerPose (
 
-_16750267944260729636,_11822840474894279984,_16937201236903537060.imageParams.undistorted ()
+_16750267944260729636,_11822840474894279984,_16937201236903537060_keyframe.imageParams.undistorted ()
 
       )
 
@@ -1283,11 +1193,11 @@ _16750267944260729636,_11822840474894279984,_16937201236903537060.imageParams.un
 
       ;
 
-         for( auto &m:_16937201236903537060.markers )
+         for( auto &m:_16937201236903537060_keyframe.markers )
 
        {
              auto
-    &mapMarker = _3370013330161650239 ->
+    &mapMarker = TheMap ->
  map_markers.at (
 
  m.id ) ;
@@ -1353,7 +1263,7 @@ std ::
 
  uint32_t >
 
-      p3dis = _16937201236903537060.getIdOfPointsInRegion (
+      p3dis = _16937201236903537060_keyframe.getIdOfPointsInRegion (
        center,maxDist )
 
     ;
@@ -1385,7 +1295,7 @@ distSum = 0 ;
 
      norm (
 
-   _16937201236903537060.pose_f2g*_3370013330161650239 ->
+   _16937201236903537060_keyframe.pose_f2g*TheMap ->
 
 map_points [
 
@@ -1412,7 +1322,7 @@ pid ]
 
    Mat f2m =
 
-   _16937201236903537060.pose_f2g*mapMarker.pose_g2m ;
+   _16937201236903537060_keyframe.pose_f2g*mapMarker.pose_g2m ;
 
              double
 
@@ -1451,7 +1361,7 @@ pid ]
 
              for(
 
- auto &m:_3370013330161650239 ->
+ auto &m:TheMap ->
   map_markers )
 
                 m.second.pose_g2m =
@@ -1469,7 +1379,7 @@ pid ]
 
    _6868692417182700890.first/_6868692417182700890.second ;
 
-            _3370013330161650239 ->
+            TheMap ->
 
     scale (
 
@@ -1492,96 +1402,38 @@ pid ]
      }
 
      return
- _16937201236903537060 ;
+ _16937201236903537060_keyframe ;
 
  }
 
- void
+void MapManager::mainFunction () {
+  _hurryUp = false ;
 
- MapManager ::
+  //first check if any new frame to be inserted
+  Frame *newPtrFrame ;
+  keyframesToAdd.pop(newPtrFrame);
+  if(newPtrFrame == NULL ) return;
 
-    _12295639104386009589 ()
-    {
+  _curState = WORKING ;
 
-    _4098394392539754261 =
-false ;
+  TheMap->lock (__FUNCTION__,__FILE__,__LINE__);
+  Frame &_16937201236903537060_keyframe = addKeyFrame ( newPtrFrame );
 
-    Frame *_10801929782564841966 ;
+  delete newPtrFrame;
 
-    _5860250156218117893.pop (
+  if( System :: getParams ().reLocalizationWithKeyPoints && !System :: getParams ().isInstancing )
+    _8346364136266015358 = _14139181480504378433 -> detectLoopFromKeyPoints ( _16937201236903537060_keyframe,_11028815416989897150 );
 
-  _10801929782564841966 )
+  TheMap->unlock ( __FUNCTION__,__FILE__,__LINE__);
 
-   ;
+  PointsToRemove = _8352839093262355382 ();
+  TheMap->removePoints ( PointsToRemove.begin () ,PointsToRemove.end () ,false );
 
-     if(
-       _10801929782564841966 ==
+  TheMap->lock (__FUNCTION__,__FILE__,__LINE__);
 
-         NULL )
+  int _175247759447 = 20;
 
-    return ;
-
-    _9129579858736004991 =
-
- WORKING ;
-
-    _3370013330161650239 ->
-
-       lock (
-      __FUNCTION__,"/app/example.cpp",3571 )
-
- ;
-    Frame &_16937201236903537060 =
-
- _1018502486064296669 (
-
-    _10801929782564841966 )
-
-        ;
-
-    delete _10801929782564841966 ;
-
-     if( System :: getParams ().reLocalizationWithKeyPoints && !System :: getParams ().isInstancing )
-    _8346364136266015358 = _14139181480504378433 -> detectLoopFromKeyPoints ( _16937201236903537060,_11028815416989897150 );
-
-    _3370013330161650239 ->
-   unlock ( __FUNCTION__,"/app/example.cpp",3632 )
-
-    ;
-
-    _7124056634192091721 =
-
-    _8352839093262355382 (
-
-   ) ;
-    _3370013330161650239 ->
-
- removePoints (
-   _7124056634192091721.begin () ,_7124056634192091721.end ()
-
-,false )
-
-        ;
-
-    _3370013330161650239 ->
-
-     lock (
-
-   __FUNCTION__,"/app/example.cpp",3667 )
-     ;
-
-     int
-
-_175247759447 =
-
-    20 ;
-
-     if
-
-  (
-
-    _16937201236903537060.imageParams.isStereoCamera ()
-      )
+  if(_16937201236903537060_keyframe.imageParams.isStereoCamera())
       {
 
         _175247759447 =
@@ -1593,17 +1445,17 @@ _175247759447 =
  const auto
        &nmp:_8820655757626307961 (
 
-     _16937201236903537060 )
+     _16937201236903537060_keyframe )
 
     )
 
   {
 
-             auto &mPoint = _3370013330161650239 ->
+             auto &mPoint = TheMap ->
 
 addNewPoint (
 
-  _16937201236903537060.fseq_idx )
+  _16937201236903537060_keyframe.fseq_idx )
 
     ;
 
@@ -1619,7 +1471,7 @@ addNewPoint (
 
     auto obs:nmp.frame_kpt )
 
-                _3370013330161650239 ->
+                TheMap ->
 
 addMapPointObservation (
      mPoint.id,obs.first,obs.second )
@@ -1636,7 +1488,7 @@ addMapPointObservation (
 
         _13988982604287804007 (
 
-       _16937201236903537060,_175247759447,System ::
+       _16937201236903537060_keyframe,_175247759447,System ::
 
        getParams ()
 
@@ -1654,11 +1506,11 @@ addMapPointObservation (
 
   &mPoint =
 
-       _3370013330161650239 ->
+       TheMap ->
 
      addNewPoint (
 
- _16937201236903537060.fseq_idx )
+ _16937201236903537060_keyframe.fseq_idx )
 
    ;
 
@@ -1670,166 +1522,53 @@ addMapPointObservation (
              for(
 auto obs:nmp.frame_kpt )
 
-                _3370013330161650239 ->
+    TheMap->addMapPointObservation (mPoint.id,obs.first,obs.second );
 
-addMapPointObservation (
+  }
 
- mPoint.id,obs.first,obs.second )
+  TheMap->unlock(__FUNCTION__,__FILE__,__LINE__);
 
-   ;
+  if (keyframesToAdd.empty ()) {
 
-         }
+    TheMap ->lock ( __FUNCTION__,__FILE__,__LINE__) ;
 
-    _3370013330161650239 -> unlock (
+    auto _16937196451844060927 = _17400054198872595804 ( _16937201236903537060_keyframe );
 
- __FUNCTION__,"/app/example.cpp",3850 )
-       ;
+    PointsToRemove.insert (
+      PointsToRemove.end(),
+      _16937196451844060927.begin(),
+      _16937196451844060927.end ()
+    );
 
-      if
-
-     (
-
- _5860250156218117893.empty ()
-
-            )
-
-   {
-
-        _3370013330161650239 ->
-
-   lock ( __FUNCTION__,"/app/example.cpp",3873 )
-    ;
-
-         auto
-
-  _16937196451844060927 =
-
- _17400054198872595804 ( _16937201236903537060 ) ;
-
-        _7124056634192091721.insert (
-
-     _7124056634192091721.end ()
-
-    ,_16937196451844060927.begin ()
-    ,_16937196451844060927.end ()
-
-  )
-
-   ;
-
-        _3370013330161650239 ->
-
-    unlock (
-   __FUNCTION__,"/app/example.cpp",3909 )
-
-     ;
-     }
-
-     {
-
-     int
-
-_706246332319248 =
-      0 ;
-
-     for(
-
-const auto
-
-    &mp:_3370013330161650239 ->
-
- map_points )
-         if
-
-       (
-
- mp.isBad ()
-     )
-
- _706246332319248 ++ ;
-
-      }
-
-     if
- (
-
-      !
-
-_4098394392539754261 &&
-   _3370013330161650239 ->
-
-keyframes.size ()
-   >
-
- 1 )
-
-         {
-
-        _11362629803814604768 (
-       _16937201236903537060.idx )
-
- ;
-
-     }
-
-     if(
-  ! _4098394392539754261 )
-
-   {
-
-        _2225497823225366210 =
-
-    _12040998890815479673 (
-
- _16937201236903537060.idx )
-
-   ;
-
-         for(
-
-  auto kf:_2225497823225366210 )
-
-            _3370013330161650239 ->
-       keyframes [
-kf ]
-
- .setBad (
-
- true )
-
-       ;
-
-     }
-
-    _9129579858736004991 =
-
-   WAITINGFORUPDATE ;
-
- }
-
-Se3Transform MapManager ::
-
-    getLastAddedKFPose ()
+    TheMap->unlock (__FUNCTION__,__FILE__,__LINE__);
+  }
 
   {
+    int _706246332319248 = 0;
 
- return
+    for( const auto &mp:TheMap->map_points )
+      if(mp.isBad()) _706246332319248 ++ ;
+  }
 
- _13909239728712143806 ;
+  if (!_hurryUp && TheMap->keyframes.size() > 1) {
+    _11362629803814604768 (_16937201236903537060_keyframe.idx);
+  }
 
- }
+  if(! _hurryUp ) {
+    KeyFramesToRemove = keyFrameCulling (_16937201236903537060_keyframe.idx );
+    for(  auto kf:KeyFramesToRemove )
+      TheMap->keyframes[kf].setBad( true );
+  }
+  _curState = WAITINGFORUPDATE ;
+}
 
- bool
+Se3Transform MapManager :: getLastAddedKFPose () {
+  return _13909239728712143806 ;
+}
 
-   MapManager ::
-  bigChange ()
-
-    const {
-
-     return
-
- _1061304613240460439 ;
- }
+bool MapManager::bigChange () const {
+  return _1061304613240460439 ;
+}
 
  void
 
@@ -1844,7 +1583,7 @@ Se3Transform MapManager ::
 
  {
 
-        _12295639104386009589 ()
+        mainFunction ()
 
  ;
 
@@ -1852,212 +1591,78 @@ Se3Transform MapManager ::
 
  }
 
-set < uint32_t >
-
-        MapManager ::
-
-       _12040998890815479673 (
-
-   uint32_t keyframe_idx )
-
-       {
-
-    set <
-uint32_t >
-
-   _6840168697625608294 ;
-
-     if(
-
-    System ::
-
-    getParams ()
-
- .detectMarkers && _3370013330161650239 ->
-
- map_markers.size ()
-
-   !=
-
- 0 )
-
-  {
-
-        vector <
-     uint32_t >
-       _16164152718668857888 ;
-
-        _6840168697625608294 =
-
- _5122744303662631154 (
-    keyframe_idx ) ;
-
-         for(
-
- auto kf:_6840168697625608294 )
-  {
-
-            const auto &ThisKFrame =
-    _3370013330161650239 ->
-
-         keyframes [
-
-kf ]
-
-    ;
-
-            std ::
-
-        set <
-
- uint32_t >
-
-  allFrames ;
-             for(
-    const auto
-
-&m:ThisKFrame.markers )
-                 for(
-
-    auto f:_3370013330161650239 ->
-
-         map_markers [ m.id ]
-
- .frames )
-                    allFrames.insert (
-f )
-
-      ;
-
-            allFrames.erase (
-
- kf )
-
-    ;
-
-             bool
-
-isRedundant =
-
-   false ;
-
-             for(
-
-     auto fidx:allFrames )
-
-      {
-
-                 int
-
-     nMarkersCommon =
-
-         0 ;
-
-                 for(
-
-const auto
-
-     &m:_3370013330161650239 ->
-
-  keyframes [ fidx ] .markers )
-
-                     if(
-
-     ThisKFrame.getMarkerIndex (
-
-m.id ) !=
-
--1 )
-   nMarkersCommon ++
-
-   ;
-
-                 if
-
-     (
-
-   nMarkersCommon ==
-
-   ThisKFrame.markers.size ()
-
-       ) {
-
-                    isRedundant =
-
-  true ;
-                    break ;
-
-                 }
-
-             }
-
-             if
-
-    (
-
-  !
-   isRedundant )
-
-                _16164152718668857888.push_back (
-
- kf )
-
-        ;
-         }
-
-         for(
-
-   auto f:_16164152718668857888 )
-
-            _6840168697625608294.erase (
- f )
-
-   ;
-
-     }
-
-     else
-
- if
-
-    (
-
-  System ::
-
-     getParams ()
-
-   .detectKeyPoints )
-
-         _6840168697625608294 =
-
- _5122744303662631154 (
-
-    keyframe_idx )
-
-       ;
-
-     else
-
-  if
- (
-
- System ::
-
-  getParams ()
-
-        .detectMarkers )
-       _6840168697625608294 =
-
- _17920146964341780569 (
-
-keyframe_idx )
-        ;
-
-      return
-
-  _6840168697625608294 ;
-
- }
+set<uint32_t> MapManager::keyFrameCulling (uint32_t keyframe_idx ){
+  set<uint32_t> KFtoRemove;
+
+  // keep deleting the new frame during instancing 
+  if(System::getParams().isInstancing) {
+
+    // cout << "newInsertedKeyFrames: ";
+    // queue<uint32_t> q = newInsertedKeyFrames;
+    // while(!q.empty()){
+    //   cout << q.front() << " ";
+    //   q.pop();
+    // }
+    // for(auto i: newInsertedKeyFrames){
+    //   cout << i << " ";
+    // }
+    // cout << endl;
+
+    // if there're > the specified number of new added frame, remove them
+    while(newInsertedKeyFrames.size() > 20){
+      auto kfIdxToBeRemoved = newInsertedKeyFrames.front();
+      newInsertedKeyFrames.pop();
+      KFtoRemove.insert(kfIdxToBeRemoved);
+    }
+
+    cout << "KFtoRemove: ";
+    for(auto i: KFtoRemove){
+      cout << i << " ";
+    }
+    cout << endl;
+  } else if(System::getParams().detectMarkers && TheMap->map_markers.size() != 0 ) {
+    vector <uint32_t > NotRedundant ;
+
+    KFtoRemove = _5122744303662631154(keyframe_idx);
+
+    for(auto kf:KFtoRemove)  {
+      const auto &ThisKFrame = TheMap->keyframes[kf];
+      std::set<uint32_t> allFrames;
+
+      for(const auto&m:ThisKFrame.markers)
+        for(auto f:TheMap->map_markers[m.id].frames)
+          allFrames.insert(f);
+
+      allFrames.erase(kf);
+
+      bool isRedundant = false;
+
+      for(auto fidx:allFrames) {
+        int nMarkersCommon = 0 ;
+        for(const auto &m:TheMap->keyframes[fidx].markers)
+          if(ThisKFrame.getMarkerIndex ( m.id ) != -1)
+            nMarkersCommon ++;
+          if(nMarkersCommon == ThisKFrame.markers.size()) {
+            isRedundant =  true;
+            break ;
+          }
+      }
+
+      if ( !isRedundant )
+        NotRedundant.push_back(kf);
+    }
+
+    for(auto f:NotRedundant)
+      KFtoRemove.erase(f);
+    }
+
+    else if( System::getParams().detectKeyPoints) KFtoRemove = _5122744303662631154 ( keyframe_idx );
+
+    else if( System::getParams().detectMarkers) KFtoRemove = _17920146964341780569 ( keyframe_idx );
+
+    return KFtoRemove ;
+
+}
 
 set <
     uint32_t >
@@ -2129,7 +1734,7 @@ uint32_t _2654435866 , uint32_t
 
   _46082575804458778 =
 
-    _3370013330161650239 ->
+    TheMap ->
      TheKpGraph.getNeighbors (
 
  keyframe_idx )
@@ -2138,7 +1743,7 @@ uint32_t _2654435866 , uint32_t
 
     _46082575804458778.erase (
 
-_3370013330161650239 ->
+TheMap ->
 
      keyframes.front ()
 
@@ -2180,7 +1785,7 @@ uint32_t > _3005399810248445333 (
 
         const auto&fi =
 
-_3370013330161650239 ->
+TheMap ->
 
 keyframes [
 
@@ -2206,7 +1811,7 @@ size_t j =
 
             const auto&fj =
 
-  _3370013330161650239 ->
+  TheMap ->
 
     keyframes [
 
@@ -2264,7 +1869,7 @@ j ]
 
          for(
 
-      auto m:_3370013330161650239 ->
+      auto m:TheMap ->
 
  keyframes [
  fidx ]
@@ -2698,7 +2303,7 @@ _5122744303662631154 (
 
       if
         (
- _3370013330161650239 ->
+ TheMap ->
 
          keyframes.size ()
 
@@ -2720,7 +2325,7 @@ System ::
      auto
 
    _46082575804458778 =
-      _3370013330161650239 ->
+      TheMap ->
    TheKpGraph.getNeighbors (
 
      keyframe_idx )
@@ -2741,7 +2346,7 @@ System ::
 
      for(
 
-   auto ykf:_15327812228135655144 )
+   auto ykf:youngKeyFrames )
 
         _46082575804458778.erase (
 
@@ -2782,7 +2387,7 @@ auto fidx:_46082575804458778 ) {
 
     &frame =
 
- _3370013330161650239 ->
+ TheMap ->
 
         keyframes [
 
@@ -2839,7 +2444,7 @@ max ()
 
 &mp =
 
-  _3370013330161650239 ->
+  TheMap ->
 
 map_points [
 
@@ -2897,7 +2502,7 @@ _16997202002988998048 )
 
    !
 
- _3370013330161650239 ->
+ TheMap ->
 
     keyframes [
 
@@ -2911,7 +2516,7 @@ _16997202002988998048 )
 
    (
 
-        _3370013330161650239 ->
+        TheMap ->
       keyframes [
 
  f_i.first ]
@@ -3074,7 +2679,7 @@ vector <
 
      for(
 
-     auto &mp:_3370013330161650239 ->
+     auto &mp:TheMap ->
 
   map_points )
 
@@ -3105,7 +2710,7 @@ std ::
  min ( uint32_t (
 
  3 )
-   ,_3370013330161650239 ->
+   ,TheMap ->
 
 keyframes.size ()
        )
@@ -3130,7 +2735,7 @@ min (
 
     2 )
 
-    ,_3370013330161650239 ->
+    ,TheMap ->
 
  keyframes.size ()
 
@@ -3455,7 +3060,7 @@ const Frame & _16997228172148074791 , uint32_t
 
    (
 
-    _3370013330161650239 ->
+    TheMap ->
 
   map_markers.size ()
  ==
@@ -3472,7 +3077,7 @@ const Frame & _16997228172148074791 , uint32_t
 
          if (
 
-     _3370013330161650239 ->
+     TheMap ->
 
   map_markers.count (
 
@@ -3500,7 +3105,7 @@ const Frame & _16997228172148074791 , uint32_t
 
    (
 
-    _3370013330161650239 ->
+    TheMap ->
 
  map_markers.count ( m.id ) !=
 
@@ -3510,7 +3115,7 @@ const Frame & _16997228172148074791 , uint32_t
 
              if(
 
-        _3370013330161650239 ->
+        TheMap ->
 
 map_markers.at (
 
@@ -3565,7 +3170,7 @@ getParams () .aruco_allowOneFrameInitialization )
 
          if
       (
-_3370013330161650239 ->
+TheMap ->
       map_markers.count (
 
     m.id )
@@ -3579,7 +3184,7 @@ _3370013330161650239 ->
             const auto
 
 &Marker =
-      _3370013330161650239 ->
+      TheMap ->
 
          map_markers.at (
 
@@ -3631,7 +3236,7 @@ max ()
   dist =
 
  cv ::
-   norm ( _3370013330161650239 ->
+   norm ( TheMap ->
 
 keyframes [
 
@@ -3702,7 +3307,7 @@ cv ::
 
      _16997228172148074791.pose_f2g.getTvec ()
 
-   ,_3370013330161650239 ->
+   ,TheMap ->
 
 keyframes [
 
@@ -3856,7 +3461,7 @@ getParams ()
     3 ;
 
      if(
-    _3370013330161650239 ->
+    TheMap ->
 
   keyframes.size ()
 
@@ -3880,7 +3485,7 @@ getParams ()
 
 &_3005399819707726498 =
 
-     _3370013330161650239 ->
+     TheMap ->
 
      keyframes [ _16940374161587532565 ]
 
@@ -3909,7 +3514,7 @@ uint32_t >
 
      &mapP =
 
-  _3370013330161650239 ->
+  TheMap ->
 
  map_points [
 
@@ -3971,7 +3576,7 @@ uint32_t >
 
      if
     (
-  _3370013330161650239 ->
+  TheMap ->
 
 keyframes.size ()
 
@@ -3983,7 +3588,7 @@ keyframes.size ()
 
   {
 
-  _3370013330161650239 ->
+  TheMap ->
 
     keyframes.front ()
 
@@ -3995,7 +3600,7 @@ keyframes.size ()
 
   _1515469360845371082 =
 
-  _3370013330161650239 ->
+  TheMap ->
 
 TheKpGraph.getNeighborsV (
 NewFrame.idx )
@@ -4019,7 +3624,7 @@ NewFrame.idx )
          if
 
      (
-     _3370013330161650239 ->
+     TheMap ->
 
        keyframes [
 _1515469360845371082 [
@@ -4074,14 +3679,14 @@ b )
         {
 
  return
-                _3370013330161650239 ->
+                TheMap ->
 
          TheKpGraph.getWeight (
 
      a,NewFrame.idx )
    >
 
-  _3370013330161650239 ->
+  TheMap ->
 
      TheKpGraph.getWeight (
 
@@ -4106,7 +3711,7 @@ b )
          auto
        medianDepth =
 
-     _3370013330161650239 ->
+     TheMap ->
     getFrameMedianDepth (
 
     neigh )
@@ -4120,7 +3725,7 @@ b )
 
         NewFrame.getCameraCenter ()
 
-        -_3370013330161650239 ->
+        -TheMap ->
 
      keyframes [
 
@@ -4134,7 +3739,7 @@ b )
 
   NewFrame.getCameraDirection ()
    .dot (
- _3370013330161650239 -> keyframes [
+ TheMap -> keyframes [
    neigh ]
  .getCameraDirection ()
       )
@@ -4193,7 +3798,7 @@ vector <
 
  _4969073986308462195 =
 
-   _3370013330161650239 ->
+   TheMap ->
 TheKpGraph.getNeighbors (
 
    mpCurrentKeyFrame .idx )
@@ -4219,7 +3824,7 @@ TheKpGraph.getNeighbors (
 
       !
 
-   _3370013330161650239 ->
+   TheMap ->
 
         keyframes [
   n ]
@@ -4263,7 +3868,7 @@ uint32_t >
 
         Frame &keyframe =
 
- _3370013330161650239 ->
+ TheMap ->
  keyframes [
 
  tkf ]
@@ -4289,7 +3894,7 @@ keyframe.getCameraCenter ()
 
       !
 
-      _3370013330161650239 -> map_points.is (
+      TheMap -> map_points.is (
 
          MpId )
     )
@@ -4297,7 +3902,7 @@ keyframe.getCameraCenter ()
 
             MapPoint&MP =
 
-  _3370013330161650239 ->
+  TheMap ->
 
  map_points [
   MpId ]
@@ -4498,7 +4103,7 @@ numeric_limits <
 
           {
 
-                    _3370013330161650239 -> fuseMapPoints (
+                    TheMap -> fuseMapPoints (
 
    keyframe.ids [
 
@@ -4528,7 +4133,7 @@ numeric_limits <
 
                 else {
 
-                    _3370013330161650239 ->
+                    TheMap ->
 
    addMapPointObservation (
 
@@ -4554,7 +4159,7 @@ numeric_limits <
 
    uint32_t >
 
-    _16997228247169055403 = _3370013330161650239 ->
+    _16997228247169055403 = TheMap ->
 
   getMapPointsInFrames (
    _8613511226855067609.begin ()
@@ -4590,7 +4195,7 @@ numeric_limits <
 
  &MP =
 
-        _3370013330161650239 ->
+        TheMap ->
 
 map_points [
    mpid ]
@@ -4764,7 +4369,7 @@ getParams ()
      )
        {
 
-                _3370013330161650239 ->
+                TheMap ->
 
  fuseMapPoints (
 
@@ -4793,7 +4398,7 @@ getParams ()
 
             else {
 
-                _3370013330161650239 ->
+                TheMap ->
 
     addMapPointObservation (
 
@@ -5227,7 +4832,7 @@ _11093821910177 ;
 
         Frame &frame2 =
 
-       _3370013330161650239 ->
+       TheMap ->
       keyframes [
 
     _13920901643832806846 [
@@ -5554,7 +5159,7 @@ di ++
             const auto
 
          &frame_kp =
-     _3370013330161650239 ->
+     TheMap ->
 
    keyframes [
    kp.second [
@@ -5611,7 +5216,7 @@ di ++
  auto fma:kp.second )
 
             mapPoint.frame_kpt.push_back (
-   { _3370013330161650239 ->
+   { TheMap ->
 
      keyframes [
   fma._681165095198498101 ]
@@ -5743,7 +5348,7 @@ ParamSet _3005399798454910266 (
       ==
 
       0 &&
-     _3370013330161650239 ->
+     TheMap ->
 
      map_markers.size ()
 
@@ -5756,7 +5361,7 @@ ParamSet _3005399798454910266 (
          auto
 
   _175247760151 =
-  _3370013330161650239 ->
+  TheMap ->
 
          keyframes.begin ()
 
@@ -5780,7 +5385,7 @@ _175247760151 ->
 
     _175247760151 !=
 
- _3370013330161650239 ->
+ TheMap ->
 
  keyframes.end ()
 
@@ -5830,7 +5435,7 @@ _175247760151 ->
 
      setParams (
 
-_3370013330161650239,_3005399798454910266 )
+TheMap,_3005399798454910266 )
 
      ;
 
@@ -5840,10 +5445,10 @@ _3370013330161650239,_3005399798454910266 )
 
     _15944432432468226297 ->
  getResults (
-     _3370013330161650239 )
+     TheMap )
 
         ;
-    _3370013330161650239 ->
+    TheMap ->
      removeBadAssociations (
 
  _15944432432468226297 ->
@@ -5874,7 +5479,7 @@ _3370013330161650239,_3005399798454910266 )
 
        false ;
      for(
-auto _2654435871:_3370013330161650239 -> keyframes )
+auto _2654435871:TheMap -> keyframes )
 
          if
    (
@@ -5899,7 +5504,7 @@ uint32_t >
 
  _46082575804458778 =
 
-             _3370013330161650239 ->
+             TheMap ->
        TheKpGraph.getNeighbors (
 
     _16937255065087280628,true )
@@ -5968,7 +5573,7 @@ System ::
 
 0 &&
 
- _3370013330161650239 ->
+ TheMap ->
 
       map_markers.size ()
        ==
@@ -5983,7 +5588,7 @@ System ::
          auto
 
 _175247760151 =
-  _3370013330161650239 ->
+  TheMap ->
 
 keyframes.begin ()
    ;
@@ -6004,7 +5609,7 @@ keyframes.begin ()
       (
 
   _175247760151 !=
-_3370013330161650239 ->
+TheMap ->
 
      keyframes.end ()
         )
@@ -6048,14 +5653,14 @@ idx )
 
     setParams (
 
- _3370013330161650239,_3005399798454910266 )
+ TheMap,_3005399798454910266 )
 
      ;
 
      _15944432432468226297 ->
      optimize (
 
-    &_4098394392539754261 )
+    &_hurryUp )
 
         ;
 
@@ -6073,7 +5678,7 @@ idx )
 
     while (
 
-      _9129579858736004991 ==
+      _curState ==
 
       WORKING )
 
@@ -6118,9 +5723,9 @@ _11093822380353 )
 
      char* )
 
-    &_5097784010653838202,sizeof (
+    &_lastAddedKeyFrame,sizeof (
 
-     _5097784010653838202 )
+     _lastAddedKeyFrame )
        )
 
     ;
@@ -6154,7 +5759,7 @@ _9728777609121731073 )
 
      _11093821926013 =
 
- _9129579858736004991.load ()
+ _curState.load ()
     ;
 
     _11093822381060.write (
@@ -6172,25 +5777,25 @@ char* )
 
     toStream__ (
 
- _5860250156218117893.buffer_,_11093822381060 )
+ keyframesToAdd.buffer_,_11093822381060 )
 
    ;
 
     toStream__ (
 
-  _7124056634192091721,_11093822381060 )
+  PointsToRemove,_11093822381060 )
 
      ;
 
     toStream__ (
 
- _2225497823225366210,_11093822381060 )
+ KeyFramesToRemove,_11093822381060 )
 
    ;
 
     toStream__kv (
 
-         _15327812228135655144,_11093822381060 )
+         youngKeyFrames,_11093822381060 )
 
         ;
 
@@ -6254,9 +5859,9 @@ _1061304613240460439 )
        (
      char* )
 
-&_4098394392539754261,sizeof (
+&_hurryUp,sizeof (
 
-        _4098394392539754261 )
+        _hurryUp )
 
     )
 
@@ -6318,9 +5923,9 @@ _11093822381060 )
 
 char* )
 
-     &_5097784010653838202,sizeof (
+     &_lastAddedKeyFrame,sizeof (
 
-  _5097784010653838202 )
+  _lastAddedKeyFrame )
 
       )
 
@@ -6353,7 +5958,7 @@ char* )
 
  _16987968640077875288 =
 
-    _9129579858736004991.load ()
+    _curState.load ()
 
          ;
 
@@ -6367,28 +5972,28 @@ char* )
  )
        ;
 
-    _9129579858736004991 =
+    _curState =
 
 _16987968640077875288 ;
 
     fromStream__ (
-       _5860250156218117893.buffer_,_11093822381060 )
+       keyframesToAdd.buffer_,_11093822381060 )
 
      ;
 
     fromStream__ (
 
-         _7124056634192091721,_11093822381060 )
+         PointsToRemove,_11093822381060 )
 
       ;
 
     fromStream__ (
- _2225497823225366210,_11093822381060 )
+ KeyFramesToRemove,_11093822381060 )
 
     ;
 
     fromStream__kv (
-    _15327812228135655144,_11093822381060 )
+    youngKeyFrames,_11093822381060 )
 
   ;
 
@@ -6451,9 +6056,9 @@ char* )
       (
 
 char* )
- &_4098394392539754261,sizeof (
+ &_hurryUp,sizeof (
 
-       _4098394392539754261 )
+       _hurryUp )
 
   )
 
@@ -6472,7 +6077,7 @@ uint64_t MapManager :: getSignature ()
     Hash _11093822380353 ;
 
     _11093822380353 +=
-      _5097784010653838202 ;
+      _lastAddedKeyFrame ;
 
     _11093822380353 +=
 
@@ -6483,19 +6088,19 @@ uint64_t MapManager :: getSignature ()
 
     _11093822380353 +=
 
-    _9129579858736004991.load ()
+    _curState.load ()
 
  ;
 
     _11093822380353 +=
 
- _5860250156218117893.size ()
+ keyframesToAdd.size ()
 
  ;
 
      for(
 
-   auto kv:_7124056634192091721 )
+   auto kv:PointsToRemove )
 
   _11093822380353 +=
 
@@ -6503,7 +6108,7 @@ kv ;
 
      for(
 
- auto kv:_2225497823225366210 )
+ auto kv:KeyFramesToRemove )
 
         _11093822380353 +=
 
@@ -6511,7 +6116,7 @@ kv ;
 
      for(
 
-  auto kv:_15327812228135655144 )
+  auto kv:youngKeyFrames )
 
      { _11093822380353 +=
     kv.first ;
@@ -6607,7 +6212,7 @@ set <
 
          _5232059496476615978 =
 
-        _3370013330161650239 ->
+        TheMap ->
 
 TheKpGraph.getNeighborsV (
 
@@ -6618,7 +6223,7 @@ TheKpGraph.getNeighborsV (
 
 _5232059496475995487 =
 
-   _3370013330161650239 ->
+   TheMap ->
       TheKpGraph.getNeighborsV (
 
     _11093822343890.curRefFrame,true )
@@ -6636,7 +6241,7 @@ _5232059496475995487 =
 
   !
 
-    _3370013330161650239 ->
+    TheMap ->
  keyframes.is (
 
 _6807141023702418932.idx )
@@ -6650,7 +6255,7 @@ _6807141023702418932.idx )
 
            _16935669825082873233 =
 
-    _1018502486064296669 (
+    addKeyFrame (
    &_6807141023702418932 )
 
    ;
@@ -6686,7 +6291,7 @@ _6807141023702418932.idx )
 
        !
 
- _3370013330161650239 ->
+ TheMap ->
 
    map_points [ match.trainIdx ]
 
@@ -6698,7 +6303,7 @@ _6807141023702418932.idx )
 
           {
 
-            _3370013330161650239 ->
+            TheMap ->
 
    addMapPointObservation (
 
@@ -6721,7 +6326,7 @@ _6807141023702418932.idx )
      auto
 _16937290651980367310 =
 
-    _3370013330161650239 ->
+    TheMap ->
 
   TheKpGraph.getNeighborsV (
 
@@ -6774,7 +6379,7 @@ _16937290651980367310 =
 
       &CurFrame =
 
-   _3370013330161650239 ->
+   TheMap ->
 
  keyframes [
 
@@ -6795,7 +6400,7 @@ _46082543279161383 (
 
 map_matches =
 
-     _3370013330161650239 ->
+     TheMap ->
 
     matchFrameToMapPoints (
 
@@ -6833,7 +6438,7 @@ map_matches =
           )
     {
 
-                        _3370013330161650239 ->
+                        TheMap ->
 
          fuseMapPoints (
 
@@ -6851,7 +6456,7 @@ map_matches =
                      }
 
                     else {
-                        _3370013330161650239 ->
+                        TheMap ->
 
  addMapPointObservation (
 match.trainIdx,CurFrame.idx,match.queryIdx )
@@ -6882,7 +6487,7 @@ match.trainIdx,CurFrame.idx,match.queryIdx )
 
      ;
 
-            _3370013330161650239 ->
+            TheMap ->
 
 removeBadAssociations (
  _15944432432468226297 ->

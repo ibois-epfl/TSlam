@@ -244,13 +244,13 @@ template<typename T>
 inline T& ReusableContainer<T>::at(uint32_t index){
     assert(index<_data.size());
     assert(_data[ index ].first==true);
-    return    _data[ index ].second ;
+    return _data[ index ].second ;
 }
 template<typename T>
 inline const T& ReusableContainer<T>::at(uint32_t index)const{
     assert(index<_data.size());
     assert(_data[ index ].first==true);
-    return    _data[ index ].second ;
+    return _data[ index ].second ;
 }
 
 //template<typename T>

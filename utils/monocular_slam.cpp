@@ -287,8 +287,34 @@ void fullbaOptimization(ucoslam::Map &TheMap){
     }
 }
 
+void enhanceImageBGR(const cv::Mat &imgIn, cv::Mat &imgOut){
+    // Start CLAHE Contrast Limited and Adaptive Histogram Equalization
+
+    //Get Intesity image
+    cv::Mat Lab_image;
+    cvtColor(imgIn, Lab_image, cv::COLOR_BGR2Lab);
+    std::vector<cv::Mat> Lab_planes(3);
+    cv::split(Lab_image, Lab_planes);  // now we have the L image in lab_planes[0]
+
+    // apply the CLAHE algorithm to the L channel
+    cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
+    clahe->setClipLimit(4);
+    // clahe->setTilesGridSize(cv::Size(10, 10));
+    cv::Mat clahe_L;
+    clahe->apply(Lab_planes[0], clahe_L);
+
+    // Merge the color planes back into an Lab image
+    clahe_L.copyTo(Lab_planes[0]);
+    cv::merge(Lab_planes, Lab_image);
+
+    // convert back to RGB
+    cv::cvtColor(Lab_image, imgOut, cv::COLOR_Lab2BGR);
+}
+
 int main(int argc,char **argv){
-	try {
+    bool errorFlag = false;
+	// try {
+
 		CmdLineParser cml(argc, argv);
         if (argc < 3 || cml["-h"]) {
             cerr << "Usage: (video|live[:cameraIndex(0,1...)])  camera_params.yml [-params ucoslam_params.yml] [-map world]  [-out name] [-scale <float>:video resize factor]"
@@ -311,6 +337,8 @@ int main(int argc,char **argv){
 
                  << endl; return -1;
 		}
+
+        
 
 		bool liveVideo = false;
         InputReader vcap;
@@ -354,6 +382,35 @@ int main(int argc,char **argv){
         auto TheMap=std::make_shared<ucoslam::Map>();
         //read the map from file?
         if ( cml["-map"]) TheMap->readFromFile(cml("-map"));
+        
+        ///////////////////////////////////////////
+        // Read from the text file
+        // ifstream yamlFile("/home/tpp/UCOSlam-IBOIS/build/utils/merged_map.yml");
+        // string yamlString;
+        // string tmpStr;
+        // while (getline(yamlFile, tmpStr)) {
+        //     yamlString += tmpStr;
+        // }
+
+        // map<int, vector<vector<double> > > markers;
+
+        // int index = yamlString.find("corners");
+        // int markerAmount = 95;
+        // for(int mi = 0; mi < markerAmount; mi++) {
+        //     vector<vector<double> > markerCorners;
+        //     for(int ci = 0; ci < 4; ci++){
+        //         vector<double> markerCorner(3);
+        //         for(int vi = 0; vi < 3; vi++){
+        //             markerCorner[vi] = getDouble(yamlString, index);
+        //         }
+        //         markerCorners.push_back(markerCorner);
+        //     }
+        //     int id = getInt(yamlString, index);
+        //     markers[id] = markerCorners;
+        // }
+        ////////////////////////////////////////////////
+
+
 
         Slam.setParams(TheMap, params,cml("-voc"));
 
@@ -426,69 +483,79 @@ int main(int argc,char **argv){
         cv::Mat camPose_c2g;
         int vspeed=stoi(cml("-vspeed","1"));
         while (!finish && !in_image.empty()) {
-            FpsComplete.start();
+            try{
+                FpsComplete.start();
 
-            //image resize (if required)
-            in_image = resize(in_image, vsize);
+                //image resize (if required)
+                in_image = resize(in_image, vsize);
 
 
-            //image undistortion (if required)
-            if(undistort ){               
-                cv::remap(in_image,auxImage,undistMap[0],undistMap[1],cv::INTER_CUBIC);
-                in_image=auxImage;
-                image_params.Distorsion.setTo(cv::Scalar::all(0));
+                //image undistortion (if required)
+                if(undistort ){               
+                    cv::remap(in_image,auxImage,undistMap[0],undistMap[1],cv::INTER_CUBIC);
+                    in_image=auxImage;
+                    image_params.Distorsion.setTo(cv::Scalar::all(0));
+                }
+
+                enhanceImageBGR(in_image, in_image);
+
+                int currentFrameIndex = vcap.getNextFrameIndex()-1;
+
+                Fps.start();
+                camPose_c2g=Slam.process(in_image, image_params,currentFrameIndex);
+                Fps.stop();
+
+
+                TimerDraw.start();
+                //            Slam.drawMatches(in_image);
+                //    char k = TheViewer.show(&Slam, in_image,"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
+                char k =0;
+                if(!cml["-noX"]) k=TheViewer.show(TheMap,   in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam.getCurrentKeyFrameIndex());
+                if (int(k) == 27 || k=='q')finish = true;//pressed ESC
+                TimerDraw.stop();
+
+                //save to output video?
+                if (!TheOutputVideo.empty()){
+                    auto image=TheViewer.getImage();
+                    if(!videoout.isOpened())
+                        videoout.open(TheOutputVideo, CV_FOURCC('X', '2', '6', '4'), stof(cml("-fps","30")),image.size()  , image.channels()!=1);
+                    if(videoout.isOpened())  videoout.write(image);
+                }
+
+                //reset?
+                if (k=='r') Slam.clear();
+                //write the current map
+                if (k=='e'){
+                    string number = std::to_string(currentFrameIndex);
+                    while (number.size() < 5) number = "0" + number;
+                    TheMap->saveToFile("world-"+number+".map");
+                }
+                if (k=='v'){
+                    Slam.saveToFile("slam.slm");
+                }
+                if(k=='s'){
+                    TheMap->saveToFile(cml("-out","world") +".map");
+                }
+                if(k=='o'){
+                    TheMap->saveToFile(cml("-out","world") +".map");
+                    TheMap->removeOldKeyPoints();
+                    fullbaOptimization(*TheMap);
+                    TheMap->saveToFile(cml("-out","world") +".map");
+                }
+                    
+                FpsComplete.stop();
+                if(currentFrameIndex % 100 == 0){
+                    // TheMap->removeUnUsedKeyPoints();
+                    // TheMap->removeOldFrames();
+
+                    cout << "Image " << currentFrameIndex << " fps=" << 1./Fps.getAvrg()<<" "<<1./FpsComplete.getAvrg();
+                    cout << " draw=" << 1./TimerDraw.getAvrg();
+                    cout << (camPose_c2g.empty()?" not tracked":" tracked") << endl;
+                }
+            } catch (const std::exception &ex) {
+                errorFlag = true;
+                cerr << ex.what() << endl;
             }
-
-
-            int currentFrameIndex = vcap.getNextFrameIndex()-1;
-
-            Fps.start();
-            camPose_c2g=Slam.process(in_image, image_params,currentFrameIndex);
-            Fps.stop();
-
-
-            TimerDraw.start();
-            //            Slam.drawMatches(in_image);
-            //    char k = TheViewer.show(&Slam, in_image,"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
-            char k =0;
-            if(!cml["-noX"]) k=TheViewer.show(TheMap,   in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam.getCurrentKeyFrameIndex());
-            if (int(k) == 27 || k=='q')finish = true;//pressed ESC
-            TimerDraw.stop();
-
-            //save to output video?
-            if (!TheOutputVideo.empty()){
-                auto image=TheViewer.getImage();
-                if(!videoout.isOpened())
-                    videoout.open(TheOutputVideo, CV_FOURCC('X', '2', '6', '4'), stof(cml("-fps","30")),image.size()  , image.channels()!=1);
-                if(videoout.isOpened())  videoout.write(image);
-            }
-
-            //reset?
-            if (k=='r') Slam.clear();
-            //write the current map
-            if (k=='e'){
-                string number = std::to_string(currentFrameIndex);
-                while (number.size() < 5) number = "0" + number;
-                TheMap->saveToFile("world-"+number+".map");
-            }
-            if (k=='v'){
-                Slam.saveToFile("slam.slm");
-            }
-            if(k=='s'){
-                TheMap->saveToFile(cml("-out","world") +".map");
-            }
-            if(k=='o'){
-                TheMap->saveToFile(cml("-out","world") +".map");
-                TheMap->removeOldKeyPoints();
-                fullbaOptimization(*TheMap);
-                TheMap->saveToFile(cml("-out","world") +".map");
-            }
-                
-            FpsComplete.stop();
-            cout << "Image " << currentFrameIndex << " fps=" << 1./Fps.getAvrg()<<" "<<1./FpsComplete.getAvrg();
-            cout << " draw=" << 1./TimerDraw.getAvrg();
-            cout << (camPose_c2g.empty()?" not tracked":" tracked") << endl;
-
             //read next
              vcap>>in_image;
             if(!camPose_c2g.empty()){
@@ -513,8 +580,12 @@ int main(int argc,char **argv){
         TheMap->saveToMarkerMap("markermap.yml");
 
 
-    }
-    catch (const std::exception &ex) {
-        cerr << ex.what() << endl;
+    // }
+    // catch (const std::exception &ex) {
+    //     errorFlag = true;
+    //     cerr << ex.what() << endl;
+    // }
+    if (errorFlag) {
+        cout << "Program ends with an error." << endl;
     }
 }

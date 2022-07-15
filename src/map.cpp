@@ -74,22 +74,23 @@ MapPoint & Map::addNewPoint(uint32_t frameSeqId){
 
   Frame &Map::addKeyFrame(const Frame&f ){
 
-      __UCOSLAM_ADDTIMER__
-     assert(getTargetFocus()<0 || fabs( getTargetFocus()-f.imageParams.fx())<10);//
+    __UCOSLAM_ADDTIMER__
+    assert(getTargetFocus()<0 || fabs( getTargetFocus()-f.imageParams.fx())<10);//
 
-     if (getTargetFocus()>0)
-         if ( fabs( getTargetFocus()-f.imageParams.fx())>10) throw std::runtime_error("Map::addKeyFrame keyframes added should have a similar focus than these already in the dataset");
-             //we must be sure that the id is correct (returns the id, and must be the same already used)
-     uint32_t kf_id=keyframes.addFrame(f);
-     //work with the new frame, and free the pointer
-     Frame &newFrame=keyframes[kf_id];
-      newFrame.idx=kf_id;
-     //add it to the database
-     __UCOSLAM_TIMER_EVENT__("addFrame");
-     TheKFDataBase.add(newFrame);
-     __UCOSLAM_TIMER_EVENT__("Add to database");
-     return newFrame;
- }
+    if (getTargetFocus()>0)
+        if (fabs(getTargetFocus()-f.imageParams.fx())>10) throw std::runtime_error("Map::addKeyFrame keyframes added should have a similar focus than these already in the dataset");
+
+    //we must be sure that the id is correct (returns the id, and must be the same already used)
+    uint32_t kf_id=keyframes.addFrame(f);
+    //work with the new frame, and free the pointer
+    Frame &newFrame=keyframes[kf_id];
+    newFrame.idx=kf_id;
+    //add it to the database
+    __UCOSLAM_TIMER_EVENT__("addFrame");
+    TheKFDataBase.add(newFrame);
+    __UCOSLAM_TIMER_EVENT__("Add to database");
+    return newFrame;
+}
 
  // void Map::addKeyFrameObservation(uint32_t mapId, uint32_t frameId, uint32_t frame_kpidx){
  //     addMapPointObservation(mapId,frameId,frame_kpidx);return;
@@ -107,23 +108,23 @@ MapPoint & Map::addNewPoint(uint32_t frameSeqId){
  // }
 
 
- void Map::addMapPointObservation(uint32_t mapId,uint32_t frameId,uint32_t frame_kpidx){
-     assert(keyframes.is(frameId));
-     assert(map_points.is(mapId));
-     MapPoint &mp=map_points[mapId];
-     assert(!isnan(mp.getCoordinates().x));
+void Map::addMapPointObservation(uint32_t mapId,uint32_t frameId,uint32_t frame_kpidx){
+    assert(keyframes.is(frameId));
+    assert(map_points.is(mapId));
+    MapPoint &mp=map_points[mapId];
+    assert(!isnan(mp.getCoordinates().x));
     //set it in keyframe
-     assert (keyframes[frameId].ids[frame_kpidx]==mapId || keyframes[frameId].ids[frame_kpidx]==std::numeric_limits<uint32_t>::max());
-     //add connection with all frames in this point
-     for(auto fi:mp.getObservingFrames())
-         TheKpGraph.createIncreaseEdge( fi.first,frameId);
+    assert (keyframes[frameId].ids[frame_kpidx]==mapId || keyframes[frameId].ids[frame_kpidx]==std::numeric_limits<uint32_t>::max());
+    //add connection with all frames in this point
+    for(auto fi:mp.getObservingFrames())
+        TheKpGraph.createIncreaseEdge( fi.first,frameId);
 
-     //register now the observation
-     keyframes[frameId].ids[frame_kpidx]=mapId;
-     mp.frames.insert({frameId,frame_kpidx});
-     //add the observation of this frame to the point
-     updatePointInfo(mapId);
- }
+    //register now the observation
+    keyframes[frameId].ids[frame_kpidx]=mapId;
+    mp.frames.insert({frameId,frame_kpidx});
+    //add the observation of this frame to the point
+    updatePointInfo(mapId);
+}
 
  bool Map::removeMapPointObservation(uint32_t pointId,uint32_t frameId,uint32_t minNumProjPoints){
      assert (map_points.is(pointId));
@@ -158,48 +159,83 @@ MapPoint & Map::addNewPoint(uint32_t frameSeqId){
 // }
 
 
- void Map::removePoint(uint32_t pid_remove, bool fullRemoval){
-     assert(map_points .is(pid_remove));
+void Map::removePoint(uint32_t pid_remove, bool fullRemoval){
+    assert(map_points.is(pid_remove));
 
-     auto  &MP=map_points [pid_remove];
-     MP.setBad (true);
-     vector<uint32_t> frames; frames.reserve(MP.frames.size());
-     for(auto f_id:MP.frames){//remove each frame connection
-         frames.push_back(f_id.first);
-         if ( keyframes[f_id.first].ids[f_id.second]==pid_remove)
-             keyframes[f_id.first].ids[f_id.second]=std::numeric_limits<uint32_t>::max();
-     }
-     if (fullRemoval){
-         //now, remove all frame connections
-         for(size_t i=0;i<frames.size();i++)
-             for(size_t j=i+1;j<frames.size();j++)
-                 TheKpGraph.decreaseRemoveEdge(frames[i],frames[j]);
-         //finally, remove the point
-         map_points.erase(pid_remove);
-     }
+    auto  &MP=map_points [pid_remove];
+    MP.setBad (true);
+    vector<uint32_t> frames; frames.reserve(MP.frames.size());
+    for(auto f_id:MP.frames){//remove each frame connection
+        frames.push_back(f_id.first);
+        if ( keyframes[f_id.first].ids[f_id.second]==pid_remove)
+            keyframes[f_id.first].ids[f_id.second]=std::numeric_limits<uint32_t>::max();
+    }
+    if (fullRemoval){
+        //now, remove all frame connections
+        for(size_t i=0;i<frames.size();i++)
+            for(size_t j=i+1;j<frames.size();j++)
+                TheKpGraph.decreaseRemoveEdge(frames[i],frames[j]);
+        
+        //finally, remove the point
+        map_points.erase(pid_remove);
+    }
 
- }
+}
 
- void Map::removeKeyFrames(const std::set<uint32_t> &keyFrames,int minNumProjPoints){
-     for(auto fidx:keyFrames){
-         const auto &frame=keyframes[fidx];
-         //first, remove from databse
-         TheKFDataBase.del(frame);
-         //remove its reference in the map points
-         for(auto ids: frame.ids)
-             if (ids!=numeric_limits<uint32_t>::max())
-                 removeMapPointObservation(ids,fidx,minNumProjPoints);
 
-         //remove its reference in the markers
-         for(auto marker:frame.markers)
-             map_markers[marker.id].frames.erase(fidx);
-         //finally, remove
-         keyframes.erase(fidx);
-         //also from covis graph
-         TheKpGraph.removeNode(fidx);
-         _debug_msg_("Removing Frame "<<fidx);
-     }
- }
+
+void Map::removeKeyFrames(const std::set<uint32_t> &keyFrames,int minNumProjPoints){
+    for(auto fidx:keyFrames){
+        const auto &frame=keyframes[fidx];
+        //first, remove from databse
+        TheKFDataBase.del(frame);
+        //remove its reference in the map points
+        for(auto ids: frame.ids)
+            if (ids!=numeric_limits<uint32_t>::max())
+                removeMapPointObservation(ids,fidx,minNumProjPoints);
+
+        //remove its reference in the markers
+        for(auto marker:frame.markers)
+            map_markers[marker.id].frames.erase(fidx);
+        //finally, remove
+        keyframes.erase(fidx);
+        //also from covis graph
+        TheKpGraph.removeNode(fidx);
+        _debug_msg_("Removing Frame "<<fidx);
+    }
+}
+
+void Map::removeOldKeyFrames(const std::set<uint32_t> &keyFrames,int mapKFNumber,int keepAmount){
+    if(keyFrames.size() - mapKFNumber < keepAmount){
+        return;
+    }
+    uint32_t latestFrameIdx;
+    if(!keyFrames.empty()) latestFrameIdx = *keyFrames.rbegin();
+    else return;
+
+    for(auto fidx:keyFrames){
+        if (fidx < mapKFNumber )  continue;
+        if (fidx + keepAmount > latestFrameIdx )  break;
+        
+        const auto &frame=keyframes[fidx];
+        //first, remove from databse
+        TheKFDataBase.del(frame);
+        //remove its reference in the map points
+        for(auto ids: frame.ids)
+            if (ids!=numeric_limits<uint32_t>::max())
+                removeMapPointObservation(ids,fidx,3);
+
+        //remove its reference in the markers
+        for(auto marker:frame.markers)
+            map_markers[marker.id].frames.erase(fidx);
+        //finally, remove
+        keyframes.erase(fidx);
+        //also from covis graph
+        TheKpGraph.removeNode(fidx);
+        _debug_msg_("Removing Frame "<<fidx);
+    }
+}
+
 
  float Map::getFrameMedianDepth(uint32_t frame_idx){
 

@@ -124,7 +124,7 @@ private:
     //remove the indicated points
     template<typename It>
     void removePoints(It beg, It end,bool fullRemoval=true){    for(auto it=beg;it!=end;it++) removePoint(*it,fullRemoval);}
-
+    
     //remove mappoint observation
     //returns true if the point has also been removed
     bool removeMapPointObservation(uint32_t kpt, uint32_t frame, uint32_t minNumProjPoints);
@@ -135,8 +135,9 @@ private:
     float  getFrameMedianDepth(uint32_t frame_idx);
 
     //remove the indicates keyframes and the mappoints with less than minNumProjPoints because of this
-   //Makes a full removal!!
+    //Makes a full removal!!
     void removeKeyFrames(const std::set<uint32_t> &keyFrames, int minNumProjPoints);
+    void removeOldKeyFrames(const std::set<uint32_t> &keyFrames, int mapKFNumber,int keepAmount=20);
 
     //returns the expected id of the next frame to be inserted
     uint32_t getNextFrameIndex()const;

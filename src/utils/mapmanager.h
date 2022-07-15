@@ -5,6 +5,7 @@
 #include <atomic>
 #include "basictypes/tsqueue.h"
 #include "utils/loopdetector.h"
+#include <queue>
 
  namespace
 
@@ -60,24 +61,11 @@ float >
  ;
 
 public:
-    enum STATE {
-      IDLE,WORKING,WAITINGFORUPDATE }
+    enum STATE { IDLE,WORKING,WAITINGFORUPDATE };
 
- ;
-
-    MapManager ()
-
-    ;
-
-     ~
-      MapManager ()
-
-      ;
-
-     void
-setParams (
-
- std ::
+    MapManager ();
+    ~MapManager ();
+    void setParams ( std ::
 
   shared_ptr <
 
@@ -157,20 +145,17 @@ getLastAddedKeyFrameIdx ()
 
  ;
 private:
-
      void
 
 _8669746328630631075 () ;
 
      void
 
-    _12295639104386009589 ()
+    mainFunction ()
 
   ;
 
-    Frame &_1018502486064296669 (
-   Frame *_2654435871 )
-      ;
+  Frame &addKeyFrame (Frame *_2654435871) ;
 
      bool
 
@@ -244,7 +229,7 @@ _16940374161587532565 )
 
   _8820655757626307961 (
 
-   Frame & _16937201236903537060 )
+   Frame & _16937201236903537060_keyframe )
       ;
 
     vector <
@@ -275,7 +260,7 @@ _16940374161587532565 )
     set <
    uint32_t >
 
-   _12040998890815479673 (
+   keyFrameCulling (
 
     uint32_t _13776525365726664701 )
 
@@ -343,14 +328,14 @@ BaseLoopDetector >
 
 Frame* >
 
-  _5860250156218117893 ;
+  keyframesToAdd ;
 
     std ::
 
   shared_ptr <
       Map >
 
-    _3370013330161650239 ;
+    TheMap ;
 
      bool
 
@@ -369,7 +354,7 @@ Frame* >
 
    STATE >
 
- _9129579858736004991 ;
+ _curState ;
 
      bool
        _4090819199315697352 =
@@ -392,13 +377,12 @@ std ::
 
  uint32_t >
 
-   _7124056634192091721 ;
+   PointsToRemove ;
 
-    set <
+  queue<uint32_t> newInsertedKeyFrames;
+  // unordered_map<uint32_t, list<uint32_t>::iterator> newInsertedKeyFramesMap;
 
- uint32_t >
-
-     _2225497823225366210 ;
+  set<uint32_t> KeyFramesToRemove;
 
     std :: shared_ptr < GlobalOptimizer >
     _15944432432468226297 ;
@@ -409,7 +393,7 @@ std ::
 
   >
 
-   _15327812228135655144 ;
+   youngKeyFrames ;
 
     Se3Transform _13909239728712143806 ;
 
@@ -430,7 +414,7 @@ std ::
         LoopClosureInfo _8346364136266015358 ;
 
      uint32_t
-  _5097784010653838202 =
+  _lastAddedKeyFrame =
 
    std ::
 
@@ -448,7 +432,7 @@ max ()
     false ;
 
      bool
-  _4098394392539754261 =
+  _hurryUp =
        false ;
 
      bool
