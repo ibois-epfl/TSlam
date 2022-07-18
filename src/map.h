@@ -59,8 +59,9 @@ public:
     void saveToMarkerMap(std::string filepath)const ;
     //cleans the unused keypoints from the frames. This will reduce a lot of space
     void removeUnUsedKeyPoints();
-    
-    void removeOldKeyPoints();
+    //merge with another map
+    void merge(Map mapB);
+
     //returns a unique hash value that identify the current status
     uint64_t getSignature(bool print=false)const;
     //exports the  a file for visualization. Possible formats are  .ply and .pcd (pcl library)
@@ -79,22 +80,23 @@ public:
     bool centerRefSystemInMarker(uint32_t markerId);
 
 
-//private use
+   //private use
    inline void lock(const std::string &func_name,const std::string &file, int line  ){IoMutex.lock();}
    inline void unlock(const std::string &func_name,const std::string &file,int line){IoMutex.unlock();}
    //The covisibility graph defines the relationship between keyframes. Two keyframes are connected in the graph if they share mappoints or markers
    CovisGraph TheKpGraph;
    //A database of keyframes employed for relocalization. It uses bag of words technique
    KeyFrameDataBase TheKFDataBase;
+
 private:
 
-   friend class LoopDetector;
-   friend class MapManager;
-   friend class System;
-   friend class MapInitializer;
-   friend class GlobalOptimizerG2O;
-   friend class PnPSolver;
-   friend class DebugTest;
+    friend class LoopDetector;
+    friend class MapManager;
+    friend class System;
+    friend class MapInitializer;
+    friend class GlobalOptimizerG2O;
+    friend class PnPSolver;
+    friend class DebugTest;
 
 
 

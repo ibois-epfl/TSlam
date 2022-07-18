@@ -22,8 +22,7 @@
 namespace ucoslam{
 template<typename Key,typename Val>
 class SafeMap:public std::map<Key,Val>{
-      public:
-
+public:
     inline bool is(const Key &v)const{return std::map<Key,Val>::count(v)!=0;}
 
     inline  Val & operator [](const Key &v){
