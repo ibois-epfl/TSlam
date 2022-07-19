@@ -552,15 +552,17 @@ int main(int argc,char **argv){
                     cout << " draw=" << 1./TimerDraw.getAvrg();
                     cout << (camPose_c2g.empty()?" not tracked":" tracked") << endl;
                 }
+                
+                //read next
+                vcap>>in_image;
+                if(!camPose_c2g.empty()){
+                    for(int s=0;s<vspeed-1;s++)
+                        vcap >> in_image;
+                }
+
             } catch (const std::exception &ex) {
                 errorFlag = true;
                 cerr << ex.what() << endl;
-            }
-            //read next
-             vcap>>in_image;
-            if(!camPose_c2g.empty()){
-                for(int s=0;s<vspeed-1;s++)
-                    vcap >> in_image;
             }
         }
 

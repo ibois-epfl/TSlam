@@ -1598,11 +1598,13 @@ set<uint32_t> MapManager::keyFrameCulling (uint32_t keyframe_idx ){
   if(System::getParams().isInstancing) {
 
     // cout << "newInsertedKeyFrames: ";
+    
     // queue<uint32_t> q = newInsertedKeyFrames;
     // while(!q.empty()){
     //   cout << q.front() << " ";
     //   q.pop();
     // }
+
     // for(auto i: newInsertedKeyFrames){
     //   cout << i << " ";
     // }
@@ -1615,11 +1617,6 @@ set<uint32_t> MapManager::keyFrameCulling (uint32_t keyframe_idx ){
       KFtoRemove.insert(kfIdxToBeRemoved);
     }
 
-    cout << "KFtoRemove: ";
-    for(auto i: KFtoRemove){
-      cout << i << " ";
-    }
-    cout << endl;
   } else if(System::getParams().detectMarkers && TheMap->map_markers.size() != 0 ) {
     vector <uint32_t > NotRedundant ;
 

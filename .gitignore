@@ -3,5 +3,6 @@
 build
 test_result
 *.map
+test.*
 
 sticker.pdf
