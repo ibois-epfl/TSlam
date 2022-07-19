@@ -538,7 +538,6 @@ int main(int argc,char **argv){
                 }
                 if(k=='o'){
                     TheMap->saveToFile(cml("-out","world") +".map");
-                    TheMap->removeOldKeyPoints();
                     fullbaOptimization(*TheMap);
                     TheMap->saveToFile(cml("-out","world") +".map");
                 }
