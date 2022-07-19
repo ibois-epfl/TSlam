@@ -256,7 +256,7 @@ void Map::removeOldKeyFrames(const std::set<uint32_t> &keyFrames,int mapKFNumber
 
      //now the marker points
      for(auto m:frame.markers){
-         assert(  map_markers.count(m.id) );
+         assert( map_markers.count(m.id) );
          if (  map_markers[m.id].pose_g2m.isValid() ){
              auto p3d=map_markers[m.id].get3DPoints();
              for(auto p:p3d) {
@@ -354,7 +354,45 @@ bool Map::centerRefSystemInMarker(uint32_t markerId){
     return true;
 }
 
+void Map::merge(Map mapB){
+    // Look for overlap markers
+    std::vector<uint32_t> overlapMarkerIds;
+    for(auto markerId: map_markers){
+        if(mapB.map_markers.find(markerId)){
+            overlapMarkerIds.push_back(markerId);
+        }
+    }
 
+    // Estimate the transformation matrix (B -> A)
+    std::vector<cv::Point3f> srcPoints, dstPoints;
+    for(id: overlapMarkerIds){
+        if ( map_markers[id].pose_g2m.isValid() && mapB.map_markers[id].pose_g2m.isValid() ){
+            // Marker points of this map
+            auto p3d = map_markers[id].get3DPoints();
+            for(auto p: p3d) {
+                dstPoints.push_back(p);
+            }
+
+            // Marker points of another map
+            p3d = mapB.map_markers[id].get3DPoints();
+            for(auto p: p3d) {
+                srcPoints.push_back(p);
+            }
+         }
+    }
+    cv::Mat transformationMatrix;
+    cv::estimateAffine3D(srcPoints, dstPoints, transformationMatrix);
+    
+    // Expend the last row (0, 0, 0, 1)
+    transformationMatrix.push_back(cv::Mat::zeros(1, 4, CV_64F));
+    transformationMatrix[3][3] = 1;
+    
+    // Reproject mapB to mapA
+    mapB.applyTransform(transformationMatrix);
+
+    // TODO: Merge the maps
+    
+}
 
 
 void Map::toStream(iostream &str)  {
