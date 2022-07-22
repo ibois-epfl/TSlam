@@ -7,103 +7,36 @@
 #include "utils/loopdetector.h"
 #include <queue>
 
- namespace
+namespace ucoslam {
 
-      ucoslam {
+class Map;
+class GlobalOptimizer ;
+class MapManager {
+  struct NewPointInfo {
+    cv :: Point3d pose ;
 
- class
+    bool isStereo = false ;
 
-     Map ;
+    vector < pair < uint32_t,uint32_t >    >   frame_kpt ;
 
- class
-
-    GlobalOptimizer ;
-
- class
-
-    MapManager {
-
- struct
-NewPointInfo {
-
-    cv ::
- Point3d pose ;
-
-     bool
-
-isStereo =
-     false ;
-
-    vector < pair <
-
-       uint32_t,uint32_t >
-        >
-
-   frame_kpt ;
-
-     float
-
-   dist =
-    std ::
-
-numeric_limits <
-
-float >
-
-  ::
-
- max ()
-
-      ;
-
- }
-
- ;
+    float  dist = std ::numeric_limits <float >  :: max ()    ;
+  };
 
 public:
-    enum STATE { IDLE,WORKING,WAITINGFORUPDATE };
+  enum STATE { IDLE,WORKING,WAITINGFORUPDATE };
 
-    MapManager ();
-    ~MapManager ();
-    void setParams ( std ::
+  MapManager ();
+  ~MapManager ();
+  void setParams ( std::shared_ptr<Map> map, bool EnableLoopClosure );
 
-  shared_ptr <
+  bool hasMap ()  const ;
+  void  start ()    ;
 
-Map >
-   map, bool
-   EnableLoopClosure )
+  void     stop ()   ;
 
- ;
+  void reset () ;
 
-     bool
-
-hasMap ()
-    const ;
-
-      void
-
-    start ()
-      ;
-
-     void
-
-        stop ()
-
-     ;
-
-     void
-
- reset ()
-
- ;
-
-     int
-
-    newFrame (
-
-Frame &kf, int32_t curkeyFrame )
-
-     ;
+  int    newFrame (Frame &kf, int32_t curkeyFrame );
 
      bool
 
@@ -141,30 +74,13 @@ getLastAddedKeyFrameIdx ()
 
      ;
 
-    uint64_t getSignature ()
-
- ;
-private:
-     void
-
-_8669746328630631075 () ;
-
-     void
-
-    mainFunction ()
-
-  ;
-
+  uint64_t getSignature ();
   Frame &addKeyFrame (Frame *_2654435871) ;
 
-     bool
-
-     _668185896188051300 (
- const Frame &_16997228172148074791 , uint32_t
-
-_16940374161587532565 )
-
-      ;
+private:
+  void _8669746328630631075 () ;
+  void mainFunction ();
+  bool _668185896188051300 ( const Frame &_16997228172148074791 , uint32_t _16940374161587532565 );
 
      bool
      _5906010176873986459 (
@@ -198,11 +114,11 @@ _16940374161587532565 )
 
    NewPointInfo >
 
-     _13988982604287804007 (
+     createNewPoints (
 
    Frame &_16935669825082873233 , uint32_t
 
- _175247759447 =
+ nn =
 
     20, uint32_t
 
@@ -229,7 +145,7 @@ _16940374161587532565 )
 
   _8820655757626307961 (
 
-   Frame & _16937201236903537060_keyframe )
+   Frame & keyframe_169372 )
       ;
 
     vector <
@@ -310,7 +226,7 @@ LoopClosureInfo &_11093822343890 )
      shared_ptr <
 
 BaseLoopDetector >
-        _4644858540263212367 (
+        createLoopDetector_464485 (
 
      bool _18278402211387234209 )
 
@@ -407,7 +323,7 @@ std ::
    shared_ptr <
 
   BaseLoopDetector >
-      _14139181480504378433 ;
+      _TheLoopDetector_141391 ;
 
     LoopDetector ::
 
@@ -437,7 +353,7 @@ max ()
 
      bool
 
- _10046998516135983211 =
+ _loopClosureEnabled_100469 =
       true ;
 
  }

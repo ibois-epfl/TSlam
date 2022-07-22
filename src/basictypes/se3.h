@@ -193,7 +193,7 @@ struct  se3{
     }
 
     inline cv::Mat   convert( )const{
-        if(!isValid())return cv::Mat();
+        if(!isValid())return cv::Mat::eye(4, 4, CV_32F);
         cv::Mat m(4,4,CV_32F);
         convert(m.ptr<float>(0));
         return m;

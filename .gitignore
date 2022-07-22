@@ -1,8 +1,16 @@
+# editor config
 .archive
 .vscode
+.idea
+
+# build
 build
-test_result
-*.map
+cmake-build-debug
+
+# temp file
 test.*
 
+# misc
+test_result
+*.map
 sticker.pdf

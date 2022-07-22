@@ -12,6500 +12,5306 @@
 #include <xflann/xflann.h>
 #include "basictypes/hash.h"
 #include "utils/framematcher.h"
+
 #ifdef USE_OMP
 #include <omp.h>
 #endif
 
- namespace
+namespace ucoslam {
 
-  ucoslam {
+    MapManager::MapManager() {
+        _curState = IDLE;
+        _TheLoopDetector_141391 = createLoopDetector_464485(_loopClosureEnabled_100469);
+    }
 
-MapManager ::
-MapManager ()
+    MapManager::~MapManager() {
+        stop();
+    }
 
-      {
+    void MapManager::setParams(std::shared_ptr<Map> map_110938, bool EnableLoopClosure_906574) {
+        TheMap = map_110938;
+        _loopClosureEnabled_100469 = EnableLoopClosure_906574;
+        _TheLoopDetector_141391 = createLoopDetector_464485(_loopClosureEnabled_100469);
+        _TheLoopDetector_141391->setParams(map_110938);
+    }
 
-    _curState =
-       IDLE ;
+    uint32_t MapManager::getLastAddedKeyFrameIdx() const {
+        return _lastAddedKeyFrame;
+    }
 
-    _14139181480504378433 =
+    bool MapManager::hasMap() const {
+        return !(!TheMap);
+    }
 
-    _4644858540263212367 (
-     _10046998516135983211 )
+    std::
 
-    ;
+    shared_ptr<
 
-  }
+            BaseLoopDetector>
 
-MapManager ::
+    MapManager::
+    createLoopDetector_464485(
 
-   ~
+            bool _18278402211387234209) {
 
-  MapManager ()
+        if (
+                _18278402211387234209)
+            return
 
-  {
+                    std::
 
-    stop ()
+                    make_shared<
 
-     ;
+                            LoopDetector>
 
- }
+                            ();
 
- void
+        else
+            return
+                    std::
 
-  MapManager ::
+                    make_shared<
+                            UselessLoopDetector>
 
-   setParams ( std ::
+                            ();
 
-    shared_ptr <
-Map >
+    }
 
-     _11093822290287, bool
-   _9065747888630806664 )
+    int MapManager::newFrame(
 
-   {
+            Frame &_175247760268, int32_t currentKeyFrameId) {
 
-    TheMap =
+        _11028815416989897150 =
 
-  _11093822290287 ;
+                currentKeyFrameId;
 
-    _10046998516135983211 =
- _9065747888630806664 ;
+        _9728777609121731073++;
 
-    _14139181480504378433 = _4644858540263212367 (
+        _1061304613240460439 =
 
-    _10046998516135983211 )
-    ;
+                false;
 
-    _14139181480504378433 ->
-
-    setParams ( _11093822290287 )
-
-    ;
-
- }
-
- uint32_t
-
-   MapManager ::
-
-   getLastAddedKeyFrameIdx ()
-
-  const {
-
-   return _lastAddedKeyFrame ;
-
-   }
-
- bool MapManager ::
-
-     hasMap ()
-
- const {
-
-   return
-
-   !
-
-     (
-     !
-
-TheMap )
-    ;
-
-      }
-
-std ::
-
-       shared_ptr <
-
-  BaseLoopDetector >
-
-  MapManager ::
-       _4644858540263212367 (
-
- bool _18278402211387234209 )
-
- {
-
-      if(
-  _18278402211387234209 )
-  return
-
- std ::
-
- make_shared <
-
- LoopDetector >
-
-    ()
-
-     ;
-
-     else
-       return
-    std ::
-
-     make_shared <
- UselessLoopDetector >
-
-          ()
-
-     ;
-
- }
-
- int
-      MapManager ::
-newFrame (
-
-         Frame &_175247760268, int32_t _10707402391749537314 )
-  {
-
-            _11028815416989897150 =
-
-   _10707402391749537314 ;
-
-    _9728777609121731073 ++ ;
-
-    _1061304613240460439 =
-
-false ;
-
-     int
-
-    _3209905912317706228 =
-
-  0 ;
-
-     if
-
-     (
-
-      _curState.load ()
-
-   ==
-
-    IDLE )
-
- {
-
-#pragma message "warning : in non-sequential mode detected markers in loop closure are not proceesed properly?"
-         if( System ::getParams ().reLocalizationWithMarkers && !System :: getParams ().isInstancing )
-         {
-          _8346364136266015358 = _14139181480504378433 -> detectLoopFromMarkers ( _175247760268,_10707402391749537314 ) ;
-         }
-          
-
-         if
-
-    (
-_8346364136266015358.foundLoop ()
-    )
-
-         {
-            _14139181480504378433 ->
-   correctMap (
-  _8346364136266015358 )
-
-   ;
-
-            _12244964123780599670 (
-       _175247760268,_8346364136266015358 )
-       ;
-
-            _1061304613240460439 =
-
-     true ;
-
-            _3209905912317706228 =
-       2 ;
-
-         }
-        else {
-
-             if
-
-      (
-
-    _668185896188051300 (
-      _175247760268,_10707402391749537314 )
-
-             )
-
- {
-
-                _9728777609121731073 = 0 ;
-
-                Frame *_46082575805180420 =
- new Frame (
-       _175247760268 )
-
-        ;
-
-                keyframesToAdd.push (
-
-       _46082575805180420 )
-    ;
-
-                 if
-
-  (
-
-          ! _4098354751575524583.joinable ()
-  )
-                    mainFunction ()
-
-     ;
+        int
 
                 _3209905912317706228 =
 
-  1 ;
+                0;
 
-             }
+        if
 
-            else {
+                (
 
-             }
+                _curState.load()
 
-         }
+                ==
 
-     }
-    else {
+                IDLE) {
 
-         if
+#pragma message "warning : in non-sequential mode detected markers in loop closure are not proceesed properly?"
+            if (System::getParams().reLocalizationWithMarkers && !System::getParams().isInstancing) {
+                _8346364136266015358 = _TheLoopDetector_141391->detectLoopFromMarkers(_175247760268, currentKeyFrameId);
+            }
 
-      (
 
-   _668185896188051300 (
+            if
 
-  _175247760268,_10707402391749537314 )
+                    (
+                    _8346364136266015358.foundLoop()
+                    ) {
+                _TheLoopDetector_141391->
+                        correctMap(
+                        _8346364136266015358);
 
-           )
+                _12244964123780599670(
+                        _175247760268, _8346364136266015358);
 
-   {
+                _1061304613240460439 =
 
-         }
+                        true;
 
-         if(
+                _3209905912317706228 =
+                        2;
 
- System ::
+            } else {
 
- getParams ()
+                if
 
-.reLocalizationWithMarkers && !System ::getParams ().isInstancing ){
-  
-  _8346364136266015358 = _14139181480504378433 -> detectLoopFromMarkers ( _175247760268,_10707402391749537314 );
-}
+                        (
 
-         if(
+                        _668185896188051300(
+                                _175247760268, currentKeyFrameId)
 
-  _8346364136266015358.foundLoop () )
+                        ) {
 
-   {
+                    _9728777609121731073 = 0;
 
-         }
+                    Frame *_46082575805180420 =
+                            new Frame(
+                                    _175247760268);
 
-     }
+                    keyframesToAdd.push(
 
-     return
+                            _46082575805180420);
 
- _3209905912317706228 ;
+                    if
 
- }
+                            (
 
-bool MapManager::mapUpdate() {
-  if(_curState != WAITINGFORUPDATE ) return false;
-  
-  _curState = WORKING;
-  TheMap -> lock (__FUNCTION__,__FILE__,__LINE__);
-  if(_8346364136266015358.foundLoop ()) {
-    _14139181480504378433 -> correctMap (_8346364136266015358);
-    _12244964123780599670 ( TheMap -> keyframes [_lastAddedKeyFrame ],_8346364136266015358 );
-    _1061304613240460439 = true;
-  } else { vector < std::pair<uint32_t,uint32_t> > _8817940606606562997;
-    if(_15944432432468226297 ){
-      _15944432432468226297 -> getResults (TheMap);
-      _8817940606606562997 = _15944432432468226297 -> getBadAssociations ();
-      _15944432432468226297 = nullptr ;
+                            !_4098354751575524583.joinable()
+                            )
+                        mainFunction();
+
+                    _3209905912317706228 =
+
+                            1;
+
+                } else {
+
+                }
+
+            }
+
+        } else {
+
+            if
+
+                    (
+
+                    _668185896188051300(
+
+                            _175247760268, currentKeyFrameId)
+
+                    ) {
+
+            }
+
+            if (
+
+                    System::
+
+                    getParams()
+
+                            .reLocalizationWithMarkers && !System::getParams().isInstancing) {
+
+                _8346364136266015358 = _TheLoopDetector_141391->detectLoopFromMarkers(_175247760268, currentKeyFrameId);
+            }
+
+            if (
+
+                    _8346364136266015358.foundLoop()) {
+
+            }
+
+        }
+
+        return
+
+                _3209905912317706228;
+
     }
-    TheMap -> removeBadAssociations( _8817940606606562997,System :: getParams ().minNumProjPoints );
-  }
-  for( auto p:PointsToRemove )
-    if( TheMap -> map_points.is(p) )
-      TheMap -> removePoint(p);
 
-  PointsToRemove.clear ();
+    bool MapManager::mapUpdate() {
+        if (_curState != WAITINGFORUPDATE) return false;
 
-  // if(System::getParams().isInstancing) {
-  //   if(newInsertedKeyFrames.size() > 20){
-  //     KeyFramesToRemove.insert(newInsertedKeyFrames.front());
-  //     // TheMap->removeKeyFrames(set<uint32_t>({newInsertedKeyFrames.front()}),System::getParams().minNumProjPoints);
-  //     newInsertedKeyFrames.pop();
-  //   }    
-  // }
+        _curState = WORKING;
+        TheMap->lock(__FUNCTION__, __FILE__, __LINE__);
+        if (_8346364136266015358.foundLoop()) {
+            _TheLoopDetector_141391->correctMap(_8346364136266015358);
+            _12244964123780599670(TheMap->keyframes[_lastAddedKeyFrame], _8346364136266015358);
+            _1061304613240460439 = true;
+        } else {
+            vector<std::pair<uint32_t, uint32_t> > _8817940606606562997;
+            if (_15944432432468226297) {
+                _15944432432468226297->getResults(TheMap);
+                _8817940606606562997 = _15944432432468226297->getBadAssociations();
+                _15944432432468226297 = nullptr;
+            }
+            TheMap->removeBadAssociations(_8817940606606562997, System::getParams().minNumProjPoints);
+        }
+        for (auto p: PointsToRemove)
+            if (TheMap->map_points.is(p))
+                TheMap->removePoint(p);
 
-  TheMap->removeKeyFrames ( KeyFramesToRemove,System::getParams().minNumProjPoints);
+        PointsToRemove.clear();
+
+        // if(System::getParams().isInstancing) {
+        //   if(newInsertedKeyFrames.size() > 20){
+        //     KeyFramesToRemove.insert(newInsertedKeyFrames.front());
+        //     // TheMap->removeKeyFrames(set<uint32_t>({newInsertedKeyFrames.front()}),System::getParams().minNumProjPoints);
+        //     newInsertedKeyFrames.pop();
+        //   }
+        // }
+
+        TheMap->removeKeyFrames(KeyFramesToRemove, System::getParams().minNumProjPoints);
 
 
-    if(_13990461397173511559) {
-      _1061304613240460439 = true;
+        if (_13990461397173511559) {
+            _1061304613240460439 = true;
+        }
+
+        _13909239728712143806 = TheMap->keyframes[_lastAddedKeyFrame].pose_f2g;
+
+        TheMap->removeWeakConnections(_11028815416989897150, 8);
+
+        TheMap->unlock(__FUNCTION__, "/app/example.cpp", 1525);
+
+        PointsToRemove.clear();
+
+        KeyFramesToRemove.clear();
+
+        _curState =
+
+                IDLE;
+
+        return
+
+                true;
+
     }
 
-    _13909239728712143806 = TheMap->keyframes [_lastAddedKeyFrame].pose_f2g;
+    void
 
-    TheMap->removeWeakConnections(_11028815416989897150,8);
+    MapManager::
+    start() {
+        if
 
-    TheMap -> unlock (__FUNCTION__,"/app/example.cpp",1525);
+                (_4098354751575524583.joinable()
 
-    PointsToRemove.clear ()
-    ;
+                )
 
-    KeyFramesToRemove.clear ()
+            return;
 
-    ;
+        _4090819199315697352 = false;
 
-    _curState =
+        _4098354751575524583 =
+                std::
 
-  IDLE ;
+                thread(
 
-     return
+                        [
 
-true ;
+                                this] {
 
- }
+                            this->
 
- void
+                                    _8669746328630631075();
 
-  MapManager ::
-       start ()
+                        }
 
-      {
-     if
+                );
+    }
 
-    ( _4098354751575524583.joinable ()
+    void
+    MapManager::
 
-  )
+    stop() {
 
-         return ;
+        if
 
-    _4090819199315697352 = false ;
+                (
 
-    _4098354751575524583 =
-  std ::
+                _4098354751575524583.joinable()
+                ) {
 
-thread (
+            _4090819199315697352 =
+                    true;
 
-     [
+            _hurryUp =
 
-   this ]
+                    false;
 
- {
+            keyframesToAdd.push(
 
- this ->
+                    NULL);
 
-    _8669746328630631075 ()
-    ;
+            _4098354751575524583.join();
 
-  }
+        }
 
-      )
+    }
 
- ;
- }
+    void
 
- void
-  MapManager ::
+    MapManager::
 
-    stop ()
+    reset() {
 
-      {
+        if
 
-     if
+                (
 
-     (
+                _4098354751575524583.joinable()
 
-      _4098354751575524583.joinable ()
-      )
-     {
+                ) {
 
+            _4090819199315697352 =
+
+                    true;
+
+            keyframesToAdd.push(
+
+                    NULL);
+
+            _4098354751575524583.join();
+
+        }
         _4090819199315697352 =
-       true ;
+
+                false;
+
+        keyframesToAdd.clear();
+
+        _curState =
+
+                IDLE;
+
+        TheMap.reset();
+
+        _11028815416989897150 =
+
+                std::
+                numeric_limits<
+
+                        uint32_t>
+
+                ::
+
+                max();
+
+        _15944432432468226297.reset();
+
+        PointsToRemove.clear();
+
+        KeyFramesToRemove.clear();
+
+        std::
+
+        map<
+
+                uint32_t, uint32_t
+
+        >
+                _14515052224023340288;
+
+        _TheLoopDetector_141391 =
+
+                createLoopDetector_464485(
+
+                        _loopClosureEnabled_100469);
+
+        _8346364136266015358 =
+
+                LoopDetector::
+
+                LoopClosureInfo();
+
+        _lastAddedKeyFrame =
+
+                std::
+
+                numeric_limits<
+
+                        uint32_t>
+
+                ::
+
+                max();
+
+        _13990461397173511559 =
+
+                false;
 
         _hurryUp =
 
-false ;
+                false;
 
-        keyframesToAdd.push (
+    }
 
-NULL )
-   ;
+    Frame &MapManager::addKeyFrame(Frame *newPtrFrame) {
+        auto _17591916323427771156 = [this]() {
+            int _8650310500306039378 = 0;
 
-        _4098354751575524583.join ()
-        ;
+            for (auto &m: TheMap->map_markers)
+                if (m.second.pose_g2m.isValid()) _8650310500306039378++;
+            return _8650310500306039378;
+        };
 
-     }
+        Frame &keyframe_169372 = TheMap->addKeyFrame(*newPtrFrame);
+        newInsertedKeyFrames.push(keyframe_169372.idx);
+        _lastAddedKeyFrame = keyframe_169372.idx;
+        youngKeyFrames.insert({keyframe_169372.idx, 0});
 
- }
+        vector<uint32_t> framesToRemove_169972;
+        for (auto &kf: youngKeyFrames) {
+            kf.second++;
+            if (kf.second > 3) framesToRemove_169972.push_back(kf.first);
+        }
 
- void
+        for (auto r: framesToRemove_169972) youngKeyFrames.erase(r);
 
-MapManager ::
+        if (System::getParams().KPNonMaximaSuppresion) keyframe_169372.nonMaximaSuppresion();
 
-     reset ()
+        int _1515507901219546526 = 0;
 
- {
+        for (size_t _2654435874 = 0; _2654435874 < keyframe_169372.ids.size(); _2654435874++) {
+            if (keyframe_169372.ids[_2654435874] != std::numeric_limits<uint32_t>::max()) {
+                TheMap->addMapPointObservation(keyframe_169372.ids[_2654435874], keyframe_169372.idx, _2654435874);
+                _1515507901219546526++;
+            }
+        }
 
-     if
+        _13990461397173511559 = false;
 
-          (
+        bool _14173211929012135714 = false;
 
-_4098354751575524583.joinable ()
+        if (_17591916323427771156() == 0 && TheMap->map_points.size() != 0)
+            _14173211929012135714 = true;
 
-  )
+        for (size_t _2654435878 = 0; _2654435878 < keyframe_169372.markers.size(); _2654435878++) {
+            auto &markerAdded = TheMap->addMarker(keyframe_169372.markers[_2654435878]);
+            TheMap->addMarkerObservation(markerAdded.id, keyframe_169372.idx);
 
-          {
+            if (!markerAdded.pose_g2m.isValid()) {
+                if (!_14173211929012135714 && System::getParams().aruco_allowOneFrameInitialization) {
+                    if (keyframe_169372.markers[_2654435878].poses.err_ratio >
+                        System::getParams().aruco_minerrratio_valid)
+                        markerAdded.pose_g2m =
+                                keyframe_169372.pose_f2g.inv() * keyframe_169372.markers[_2654435878].poses.sols[0];
 
-        _4090819199315697352 =
+                }
+            }
+            auto _5829010262908049596 = [](Se3Transform &_2654435866, Se3Transform &_2654435867) {
+                auto _175247759816 = _2654435866(cv::Range(0, 3), cv::Range(3, 4));
+                auto
 
-  true ;
+                        _175247759819 = _2654435867(cv::Range(0, 3), cv::Range(3, 4));
 
-        keyframesToAdd.push (
+                return cv::norm(_175247759816 - _175247759819);
+            };
 
-  NULL )
-    ;
+            if (!markerAdded.pose_g2m.isValid() &&
+                markerAdded.frames.size() >= size_t(System::getParams().aruco_minNumFramesRequired)) {
+                vector<uint32_t> _6807035637074954094(markerAdded.frames.begin(),
+                                                      markerAdded.frames.end());
+                vector<bool> _4942080627572011540(_6807035637074954094.size(), false);
 
-        _4098354751575524583.join ()
+                vector<uint32_t> _347298374087418072;
+                _347298374087418072.reserve(markerAdded.frames.size());
 
-         ;
+                for (
 
-     }
-    _4090819199315697352 =
+                        size_t i =
 
-     false ;
+                                0;
 
-    keyframesToAdd.clear ()
+                        i <
+                        _6807035637074954094.size();
 
- ;
+                        i++
 
-    _curState =
+                        ) {
 
-     IDLE ;
+                    if
 
-    TheMap.reset ()
+                            (
 
-  ;
+                            !
 
-    _11028815416989897150 =
+                                    _4942080627572011540[
 
-   std ::
-     numeric_limits <
+                                            i]
 
-  uint32_t >
+                            ) {
 
-      ::
+                        pair<
 
-     max ()
+                                int, float>
 
-    ;
+                                best(
 
-    _15944432432468226297.reset ()
+                                -1, std::
 
- ;
+                                numeric_limits<
 
-    PointsToRemove.clear ()
+                                        float>
 
-  ;
+                                ::
 
-    KeyFramesToRemove.clear ()
+                                lowest()
 
-   ;
+                        );
 
-    std ::
+                        for (
 
-   map <
+                                size_t j =
 
-      uint32_t, uint32_t
+                                        i + 1;
 
-     >
-   _14515052224023340288 ;
+                                j <
 
-    _14139181480504378433 =
+                                _6807035637074954094.size(); j++
 
-     _4644858540263212367 (
+                                ) {
 
-  _10046998516135983211 )
- ;
+                            if (
 
-     _8346364136266015358 =
+                                    !
 
-     LoopDetector ::
+                                            _4942080627572011540[
 
- LoopClosureInfo ()
-        ;
+                                                    j]
 
-     _lastAddedKeyFrame =
+                                    ) {
 
-   std ::
+                                float
+                                        d =
 
-     numeric_limits <
+                                        _5829010262908049596(TheMap->
 
-     uint32_t >
+                                                keyframes[
 
-   ::
+                                                                     _6807035637074954094[
 
-    max ()
+                                                                             i]
 
-  ;
+                                                             ]
+                                                                     .pose_f2g, TheMap->
 
-     _13990461397173511559 =
+                                                keyframes[
 
- false ;
+                                                                     _6807035637074954094[
+                                                                             j]
+                                                             ]
 
-     _hurryUp =
+                                                                     .pose_f2g);
 
-false ;
+                                if
 
- }
+                                        (d > System::
 
-Frame& MapManager::addKeyFrame ( Frame *newPtrFrame ){
-  auto _17591916323427771156 = [this]() {
-    int _8650310500306039378 = 0 ;
+                                getParams()
 
-    for( auto &m:TheMap ->map_markers )
-      if(m.second.pose_g2m.isValid ()) _8650310500306039378 ++;
-        return _8650310500306039378 ;
-  };
+                                        .minBaseLine &&
+                                         d >
 
-  Frame &_16937201236903537060_keyframe = TheMap->addKeyFrame(*newPtrFrame);
-  
-  newInsertedKeyFrames.push(_16937201236903537060_keyframe.idx);
+                                         best.first)
 
-  _lastAddedKeyFrame = _16937201236903537060_keyframe.idx ;
+                                    best =
 
-  youngKeyFrames.insert ( {_16937201236903537060_keyframe.idx,0 });
+                                            {
 
-    vector <
+                                                    j, d};
 
-    uint32_t >
+                            }
 
-      _16997208802817240490 ;
+                        }
 
-     for(
+                        if
+                                (
+                                best.first !=
 
-         auto &kf:youngKeyFrames )
+                                -1) {
 
- {
-        kf.second ++
-  ;
+                            _347298374087418072.push_back(
 
-         if
-      (
-  kf.second >
-   3 )
+                                    _6807035637074954094[
+                                            i]
 
-     _16997208802817240490.push_back (
+                            );
+                            _347298374087418072.push_back(
 
-    kf.first )
+                                    _6807035637074954094[
+                                            best.first]
 
-       ;
+                            );
 
-     }
+                            _4942080627572011540[
 
-     for( auto r:_16997208802817240490 )
+                                    i]
+                                    =
 
-         youngKeyFrames.erase (
+                                    true;
 
-r )
+                            _4942080627572011540[
 
-      ;
+                                    best.first] =
 
-     if(
+                                    true;
 
-   System ::
+                        }
 
-    getParams ()
-       .KPNonMaximaSuppresion )
+                    }
 
-        _16937201236903537060_keyframe.nonMaximaSuppresion () ;
+                }
 
-     int
+                if
 
-    _1515507901219546526 =
+                        (
 
-        0 ;
+                        _347298374087418072.size()
 
-     for(
-size_t _2654435874 =
-      0 ;
+                        >=
+                        size_t(
 
-_2654435874 <
+                                System::
 
-    _16937201236903537060_keyframe.ids.size ()
+                                getParams()
 
-    ;
+                                        .aruco_minNumFramesRequired)
+                        ) {
 
-         _2654435874 ++
+                    vector<ucoslam::
 
-        )
+                    MarkerObservation>
 
-      {
+                            _16750267944260729636;
 
-         if
+                    vector<
+                            se3>
 
-     (
+                            _11822840474894279984;
 
-      _16937201236903537060_keyframe.ids [
-      _2654435874 ]
+                    for (
+                        auto f: _347298374087418072) {
 
- !=
+                        _16750267944260729636.push_back(TheMap->
 
-  std ::
+                                keyframes[
 
-    numeric_limits <
+                                                                f]
 
-uint32_t >
+                                                                .getMarker(
 
-        ::
+                                                                        markerAdded.id)
 
-max () )
+                        );
+                        _11822840474894279984.push_back(
 
-         {
+                                TheMap->
 
-              TheMap ->
+                                        keyframes[
 
-         addMapPointObservation (
+                                        f]
 
-   _16937201236903537060_keyframe.ids [
+                                        .pose_f2g);
 
-_2654435874 ] ,_16937201236903537060_keyframe.idx,_2654435874 )
+                    }
 
-    ;
+                    auto
 
-              _1515507901219546526 ++
+                            _706246335742885 =
 
-      ;
+                            ARUCO_bestMarkerPose(
 
-         }
+                                    _16750267944260729636, _11822840474894279984,
+                                    keyframe_169372.imageParams.undistorted()
 
-     }
+                            );
 
-    _13990461397173511559 =
+                    if
 
-   false ;
+                            (
 
-     bool
+                            !_706246335742885.empty()
+                            ) {
 
-     _14173211929012135714 =
+                        markerAdded.pose_g2m = _706246335742885;
 
-    false ;
+                    }
 
-     if(
+                }
 
-         _17591916323427771156 () ==
-      0 &&
+            }
 
-      TheMap ->
+        }
 
- map_points.size ()
+        if (
 
-    !=
+                _14173211929012135714 &&
+                _17591916323427771156()
 
-0 )
-  _14173211929012135714 =
+                >
 
-     true ;
+                0) {
 
-     for(
+            pair<
+                    double, double>
 
-size_t _2654435878 =
+                    _6868692417182700890(
 
-    0 ;
+                    0, 0);
 
-_2654435878 <
-   _16937201236903537060_keyframe.markers.size ()
-    ;
+            for (auto &m: keyframe_169372.markers) {
+                auto
+                        &mapMarker = TheMap->
+                        map_markers.at(
 
-   _2654435878 ++
+                        m.id);
 
-     )
-  {
+                if
 
-         auto
+                        (
+                        !mapMarker.pose_g2m.isValid()
 
-   &_6406328991171953231 =
+                        )
 
-    TheMap ->
-addMarker (
+                    continue;
 
-_16937201236903537060_keyframe.markers [
+                cv::
 
-_2654435878 ]
+                Point2f center(
 
-     )
+                        0, 0);
 
- ;
+                for (
 
-        TheMap -> addMarkerObservation (
+                    auto p: m.und_corners)
 
-   _6406328991171953231.id,_16937201236903537060_keyframe.idx )
+                    center + p;
 
-  ;
+                center *=
 
-         if
+                        1. / 4.;
 
-  (
+                double
 
-   !
+                        maxDist =
+                        std::
 
-_6406328991171953231.pose_g2m.isValid ()
+                        numeric_limits<
 
-        )
+                                double>
 
- {
+                        ::
+                        min();
 
-             if
+                for (
 
-  (
-     !
+                    auto p: m.und_corners)
 
-       _14173211929012135714 &&
+                    maxDist =
 
-         System ::
+                            std::
+                            max(
 
-  getParams ()
+                                    cv::
 
-  .aruco_allowOneFrameInitialization )
+                                    norm(
 
-       {
+                                            center - p), maxDist);
 
-                 if( _16937201236903537060_keyframe.markers [
+                vector<
 
-         _2654435878 ]
-    .poses.err_ratio >
+                        uint32_t>
 
-  System ::
-     getParams ()
-.aruco_minerrratio_valid )
+                        p3dis = keyframe_169372.getIdOfPointsInRegion(
+                        center, maxDist);
 
-                    _6406328991171953231.pose_g2m =
+                if
 
-   _16937201236903537060_keyframe.pose_f2g.inv ()
-     *_16937201236903537060_keyframe.markers [
+                        (
 
- _2654435878 ]
+                        p3dis.size()
 
-  .poses.sols [
+                        <
 
-         0 ]
+                        5)
 
-    ;
+                    continue;
 
-             }
+                double
 
-         }
+                        distSum = 0;
 
-         auto
+                for (
+                    auto pid: p3dis) {
 
-    _5829010262908049596 =
-   [ ]
-  (
+                    distSum +=
 
-    Se3Transform &_2654435866,Se3Transform &_2654435867 ) {
+                            cv::
 
-             auto
+                            norm(
 
-     _175247759816 =
+                                    keyframe_169372.pose_f2g * TheMap->
 
-  _2654435866 (
+                                            map_points[
 
-  cv :: Range (
+                                            pid]
+                                            .getCoordinates()
 
-   0,3 )
-       ,cv ::
+                            );
 
- Range (
+                }
 
- 3,4 )
+                double
 
-  )
+                        avrgPointDist =
 
-    ;
+                        distSum / double(p3dis.size()
 
-             auto
+                        );
 
-   _175247759819 =
+                cv::
 
-   _2654435867 (
+                Mat f2m =
 
-    cv ::
- Range (
+                        keyframe_169372.pose_f2g * mapMarker.pose_g2m;
 
-   0,3 )
-       ,cv ::
-      Range (
-3,4 )
+                double
 
-     )
+                        frameDist =
 
-  ;
+                        cv::
 
-             return
+                        norm(
 
-    cv ::
-     norm (
+                                f2m.rowRange(
 
-    _175247759816-_175247759819 )
-     ;
+                                                0, 3)
+                                        .colRange(
 
-         }
+                                                3, 4)
+                        );
+                _6868692417182700890.first +=
 
-    ;
+                        frameDist / avrgPointDist;
 
-         if
-  ( !
+                _6868692417182700890.second++;
 
-   _6406328991171953231.pose_g2m.isValid ()
-    &&
-     _6406328991171953231.frames.size ()
-       >=
+            }
 
-size_t (
+            if
+                    (
 
-    System ::
+                    _6868692417182700890.second ==
 
-     getParams ()
+                    0) {
 
-.aruco_minNumFramesRequired )
+                for (
 
-  )
-     {
+                    auto &m: TheMap->
+                        map_markers)
 
-            vector <
+                    m.second.pose_g2m =
+                            se3();
 
-    uint32_t >
-      _6807035637074954094 (
-    _6406328991171953231.frames.begin ()
+            } else {
 
-    ,_6406328991171953231.frames.end ()
+                double
 
-      )
+                        _17370277987955713200 =
 
-         ;
-            std ::
+                        _6868692417182700890.first / _6868692417182700890.second;
 
-    vector <
+                TheMap->
 
-  bool > _4942080627572011540 (
-     _6807035637074954094.size ()
+                        scale(
 
-  ,false )
+                        _17370277987955713200);
 
-   ;
+                _10758134674558762512(
 
-            std ::
+                        10);
 
-         vector <
+                _13990461397173511559 =
 
-   uint32_t > _347298374087418072 ;
+                        true;
 
-     _347298374087418072.reserve (
+            }
 
-     _6406328991171953231.frames.size ()
+        }
 
-       )
+        return
+                keyframe_169372;
 
-   ;
+    }
 
-             for(
+    void MapManager::mainFunction() {
+        _hurryUp = false;
 
-  size_t i =
+        //first check if any new frame to be inserted
+        Frame *newPtrFrame;
+        keyframesToAdd.pop(newPtrFrame);
+        if (newPtrFrame == NULL) return;
 
-    0 ;
+        _curState = WORKING;
 
-   i <
-   _6807035637074954094.size ()
+        TheMap->lock(__FUNCTION__, __FILE__, __LINE__);
+        Frame &keyframe_169372 = addKeyFrame(newPtrFrame);
 
-  ;
+        delete newPtrFrame;
 
-       i ++
+        if (System::getParams().reLocalizationWithKeyPoints && !System::getParams().isInstancing)
+            _8346364136266015358 = _TheLoopDetector_141391->detectLoopFromKeyPoints(keyframe_169372,
+                                                                                    _11028815416989897150);
 
- )
+        TheMap->unlock(__FUNCTION__, __FILE__, __LINE__);
 
- {
+        PointsToRemove = _8352839093262355382();
+        TheMap->removePoints(PointsToRemove.begin(), PointsToRemove.end(), false);
 
-                 if
+        TheMap->lock(__FUNCTION__, __FILE__, __LINE__);
 
-  (
+        int nn = 20;
 
-     !
+        if (keyframe_169372.imageParams.isStereoCamera()) {
+            nn = 5;
 
-    _4942080627572011540 [
+            for (const auto &nmp: _8820655757626307961(keyframe_169372)) {
+                auto &mPoint = TheMap->addNewPoint(keyframe_169372.fseq_idx);
+                mPoint.setStereo(true);
 
-    i ]
+                mPoint.setCoordinates(nmp.pose);
 
-    )
-    {
+                for (auto obs: nmp.frame_kpt) TheMap->addMapPointObservation(mPoint.id, obs.first, obs.second);
+            }
+        }
 
-                    pair <
+        auto newPoints = createNewPoints(keyframe_169372, nn, System::getParams().maxNewPoints);
+        for (const auto &nmp: newPoints) {
+            auto &mPoint = TheMap->addNewPoint(keyframe_169372.fseq_idx);
 
- int,float >
+            mPoint.setCoordinates(nmp.pose);
 
-   best (
+            for (auto obs: nmp.frame_kpt) TheMap->addMapPointObservation(mPoint.id, obs.first, obs.second);
+        }
 
-   -1,std ::
+        TheMap->unlock(__FUNCTION__, __FILE__, __LINE__);
 
-     numeric_limits <
+        if (keyframesToAdd.empty()) {
 
-float >
+            TheMap->lock(__FUNCTION__, __FILE__, __LINE__);
 
-   ::
+            auto _16937196451844060927 = _17400054198872595804(keyframe_169372);
 
- lowest ()
+            PointsToRemove.insert(
+                    PointsToRemove.end(),
+                    _16937196451844060927.begin(),
+                    _16937196451844060927.end()
+            );
 
-     )
+            TheMap->unlock(__FUNCTION__, __FILE__, __LINE__);
+        }
 
-    ;
+        {
+            int _706246332319248 = 0;
 
-                     for(
+            for (const auto &mp: TheMap->map_points)
+                if (mp.isBad()) _706246332319248++;
+        }
 
-    size_t j =
+        if (!_hurryUp && TheMap->keyframes.size() > 1) {
+            _11362629803814604768(keyframe_169372.idx);
+        }
 
-    i+1 ;
+        if (!_hurryUp) {
+            KeyFramesToRemove = keyFrameCulling(keyframe_169372.idx);
+            for (auto kf: KeyFramesToRemove)
+                TheMap->keyframes[kf].setBad(true);
+        }
+        _curState = WAITINGFORUPDATE;
+    }
 
-  j <
+    Se3Transform MapManager::getLastAddedKFPose() {
+        return _13909239728712143806;
+    }
 
- _6807035637074954094.size ()
+    bool MapManager::bigChange() const {
+        return _1061304613240460439;
+    }
 
-     ; j ++
+    void
 
-  )
-   {
+    MapManager::
+    _8669746328630631075() {
 
-                         if(
+        while (!
 
-    !
+                _4090819199315697352) {
 
-     _4942080627572011540 [
+            mainFunction();
 
-    j ]
+        }
 
-     )
+    }
 
-  {
+    set<uint32_t> MapManager::keyFrameCulling(uint32_t keyframe_idx) {
+        set<uint32_t> KFtoRemove;
 
-                             float
-  d =
+        // keep deleting the new frame during instancing
+        if (System::getParams().isInstancing) {
 
- _5829010262908049596 ( TheMap ->
+            // cout << "newInsertedKeyFrames: ";
 
-keyframes [
+            // queue<uint32_t> q = newInsertedKeyFrames;
+            // while(!q.empty()){
+            //   cout << q.front() << " ";
+            //   q.pop();
+            // }
 
-   _6807035637074954094 [
+            // for(auto i: newInsertedKeyFrames){
+            //   cout << i << " ";
+            // }
+            // cout << endl;
 
-i ]
+            // if there're > the specified number of new added frame, remove them
+            while (newInsertedKeyFrames.size() > 20) {
+                auto kfIdxToBeRemoved = newInsertedKeyFrames.front();
+                newInsertedKeyFrames.pop();
+                KFtoRemove.insert(kfIdxToBeRemoved);
+            }
 
-   ]
-       .pose_f2g,TheMap ->
+        } else if (System::getParams().detectMarkers && TheMap->map_markers.size() != 0) {
+            vector<uint32_t> NotRedundant;
 
- keyframes [
+            KFtoRemove = _5122744303662631154(keyframe_idx);
 
-     _6807035637074954094 [
-     j ]
-      ]
+            for (auto kf: KFtoRemove) {
+                const auto &ThisKFrame = TheMap->keyframes[kf];
+                std::set<uint32_t> allFrames;
 
-   .pose_f2g )
+                for (const auto &m: ThisKFrame.markers)
+                    for (auto f: TheMap->map_markers[m.id].frames)
+                        allFrames.insert(f);
 
-    ;
+                allFrames.erase(kf);
 
-                             if
+                bool isRedundant = false;
 
-  ( d > System ::
+                for (auto fidx: allFrames) {
+                    int nMarkersCommon = 0;
+                    for (const auto &m: TheMap->keyframes[fidx].markers)
+                        if (ThisKFrame.getMarkerIndex(m.id) != -1)
+                            nMarkersCommon++;
+                    if (nMarkersCommon == ThisKFrame.markers.size()) {
+                        isRedundant = true;
+                        break;
+                    }
+                }
 
-    getParams ()
+                if (!isRedundant)
+                    NotRedundant.push_back(kf);
+            }
 
-    .minBaseLine &&
-   d >
+            for (auto f: NotRedundant)
+                KFtoRemove.erase(f);
+        } else if (System::getParams().detectKeyPoints) KFtoRemove = _5122744303662631154(keyframe_idx);
 
-  best.first )
+        else if (System::getParams().detectMarkers) KFtoRemove = _17920146964341780569(keyframe_idx);
+
+        return KFtoRemove;
+
+    }
+
+    set<
+            uint32_t>
+
+    MapManager::
+    _17920146964341780569(
+
+            uint32_t keyframe_idx) {
+
+        auto
+                _706246308970949 =
+
+                [
+
+                ]
+
+                        (
+
+                                uint32_t _2654435866, uint32_t
+
+                        _2654435867) {
+
+                    if (
+                            _2654435866 >
+
+                            _2654435867)
+
+                        swap(
+                                _2654435866, _2654435867);
+
+                    uint64_t _11093821964632;
+
+                    uint32_t
+
+                            *_6807034398601546557 =
+
+                            (
+                                    uint32_t *)
+
+                                    &_11093821964632;
+                    _6807034398601546557[
+                            0]
+
+                            =
+
+                            _2654435867;
+
+                    _6807034398601546557[
+
+                            1]
+                            =
+
+                            _2654435866;
+
+                    return
+                            _11093821964632;
+
+                };
+
+        auto
+
+                _46082575804458778 =
+
+                TheMap->
+                        TheKpGraph.getNeighbors(
+
+                        keyframe_idx);
+
+        _46082575804458778.erase(
+
+                TheMap->
+
+                                keyframes.front()
+
+                        .idx);
+
+        std::
+
+        map<
+
+                uint64_t, float>
+                _124580014028079534;
+
+        vector<
+                uint32_t> _3005399810248445333(
+                _46082575804458778.begin(), _46082575804458778.end()
+        );
+
+        for (
+
+                size_t i =
+
+                        0;
+
+                i <
+                _3005399810248445333.size();
+
+                i++
+
+                ) {
+
+            const auto &fi =
+
+                    TheMap->
+
+                            keyframes[
+
+                            _3005399810248445333[
+                                    i]
+
+                    ];
+            for (
+
+                    size_t j =
+
+                            i + 1;
+
+                    j <
+
+                    _3005399810248445333.size();
+                    j++
+                    ) {
+
+                const auto &fj =
+
+                        TheMap->
+
+                                keyframes[
+
+                                _3005399810248445333[
+
+                                        j]
+                        ];
+
+                _124580014028079534[
+
+                        _706246308970949(
+
+                                _3005399810248445333[
+
+                                        i], _3005399810248445333[
+
+                                        j]
+
+                        )
+
+                ]
+
+                        =
+
+                        cv::
+
+                        norm(
+
+                                fi.pose_f2g.getTvec()
+
+                                - fj.pose_f2g.getTvec()
+
+                        );
+
+            }
+        }
+
+        std::
+
+        map<
+                uint32_t, set<
+                        uint32_t>
+
+        >
+
+                _13773082371983786779;
+
+        for (
+
+            auto fidx: _46082575804458778) {
+
+            for (
+
+                auto m: TheMap->
+
+                    keyframes[
+                    fidx]
+
+                    .markers)
+
+                _13773082371983786779[
+
+                        m.id]
+                        .insert(
+
+                                fidx);
+
+        }
+
+        auto
+
+                _10086624862567280113 =
+
+                [
+
+                        &]
+                        (
+
+                                uint32_t _706246330143240, const set<
+
+                                uint32_t>
+
+                        &_3005401603918369918) {
+
+                    float
+
+                            _706246353090457 =
+
+                            0;
+                    for (
+
+                        auto f2idx: _3005401603918369918) {
+
+                        if (
+
+                                f2idx !=
+
+                                _706246330143240)
+                            _706246353090457 +=
+
+                                    _124580014028079534[
+
+                                            _706246308970949(
+                                                    _706246330143240, f2idx)];
+
+                    }
+
+                    return
+
+                            _706246353090457;
+                };
+
+        std::
+
+        map<
+
+                uint32_t, set<
+                        uint32_t>
+
+        >
+                _12358233879185425501;
+
+        for (
+            auto mf: _13773082371983786779) {
+            if
+                    (
+                    mf.second.size()
+
+                    <=
+
+                    size_t(
+                            System::
+
+                            getParams()
+
+                                    .maxVisibleFramesPerMarker)
+                    ) {
+
+                _12358233879185425501[
+
+                        mf.first]
+
+                        .insert(
+
+                                mf.second.begin(), mf.second.end()
+                        );
+
+            } else {
+
+                vector<
+
+                        uint32_t>
+
+                        vframes(
+                        mf.second.begin(), mf.second.end()
+                );
+
+                pair<
+
+                        size_t, size_t>
+
+                        bestIdx;
+                float
+
+                        maxD =
+                        std::
+
+                        numeric_limits<
+                                float>
+
+                        ::
+                        lowest();
+
+                for (
+
+                        size_t i =
+
+                                0; i <
+
+                                   vframes.size();
+
+                        i++
+
+                        ) {
+
+                    for (
+                            size_t j =
+
+                                    i + 1;
+
+                            j <
+
+                            vframes.size();
+
+                            j++
+
+                            ) {
+
+                        auto
+
+                                dist =
+
+                                _124580014028079534[
+
+                                        _706246308970949(
+
+                                                vframes[
+                                                        i], vframes[
+
+                                                        j]
+
+                                        )
+                                ];
+
+                        if
+
+                                (
+
+                                dist >
+
+                                maxD) {
+
+                            bestIdx =
+
+                                    {
+
+                                            vframes[i], vframes[
+
+                                            j]
+                                    };
+
+                            maxD =
+
+                                    dist;
+                        }
+
+                    }
+                }
+
+                _12358233879185425501[
+
+                        mf.first]
+
+                        .insert(bestIdx.first);
+
+                _12358233879185425501[
+
+                        mf.first]
+
+                        .insert(
+
+                                bestIdx.second);
+
+                while (
+                        _12358233879185425501[
+
+                                mf.first]
+
+                                .size()
+
+                        <
+
+                        size_t(
+
+                                System::
+
+                                getParams()
+
+                                        .maxVisibleFramesPerMarker)
+
+                        ) {
+
+                    std::
+
+                    pair<
+
+                            uint32_t, float>
+                            best(
+                            0, std::
+
+                            numeric_limits<
+
+                                    float>
+
+                            ::
+
+                            lowest()
+                    );
+                    for (
+
+                            size_t i =
+
+                                    0;
+
+                            i < vframes.size();
+
+                            i++
+
+                            ) {
+
+                        if
+                                (
+                                _12358233879185425501[
+
+                                        mf.first]
+
+                                        .count(
+                                                vframes[
+
+                                                        i]
+
+                                        )
+
+                                ==
+
+                                0) {
+
+                            auto d =
+
+                                    _10086624862567280113(
+
+                                            vframes[i], _12358233879185425501[
+                                                    mf.first]
+
+                                    );
+
+                            if
+
+                                    (
+
+                                    d >
+
+                                    best.second)
 
                                 best =
 
-   {
+                                        {
 
-       j,d }
-   ;
+                                                vframes[
+                                                        i], d};
 
-                         }
+                        }
 
-                     }
+                    }
 
-                     if
- (
-    best.first !=
+                    _12358233879185425501[
 
- -1 ) {
+                            mf.first]
+                            .insert(best.first);
 
-                        _347298374087418072.push_back (
+                }
 
-    _6807035637074954094 [
-i ]
+            }
 
-      )
+        }
 
-  ;
-                        _347298374087418072.push_back (
+        std::
 
- _6807035637074954094 [
-       best.first ]
+        set<
 
-      )
+                uint32_t>
 
-     ;
+                _16997237651734773759;
 
-                        _4942080627572011540 [
+        for (
 
-i ]
-       =
+            auto ms: _12358233879185425501)
 
-    true ;
+            _16997237651734773759.insert(
+                    ms.second.begin(), ms.second.end()
 
-                        _4942080627572011540 [
+            );
 
-    best.first ] =
+        std::
+        set<
 
-     true ;
+                uint32_t>
 
-                     }
+                _16997209188207231919;
 
-                 }
+        for (
 
-             }
+            auto fidx: _46082575804458778)
 
-             if
+            if (
 
-   (
+                    _16997237651734773759.count(
 
-  _347298374087418072.size ()
+                            fidx)
 
- >=
-     size_t (
+                    ==
 
-   System ::
+                    0)
 
-   getParams ()
+                _16997209188207231919.insert(
 
-   .aruco_minNumFramesRequired )
-  )
+                        fidx);
 
- {
+        return
+                _16997209188207231919;
 
-                vector < ucoslam ::
-
-   MarkerObservation >
-
- _16750267944260729636 ;
-
-                vector <
-se3 >
-
-         _11822840474894279984 ;
-
-                 for(
-    auto f:_347298374087418072 )
-
-   {
-
-                    _16750267944260729636.push_back ( TheMap ->
-
- keyframes [
-
-f ]
-
-  .getMarker (
-
-    _6406328991171953231.id )
-
-      )
-
-  ;
-                    _11822840474894279984.push_back (
-
-      TheMap ->
-
-  keyframes [
-
-       f ]
-
- .pose_f2g )
-
-      ;
-
-                 }
-
-                 auto
-
-     _706246335742885 =
-
-      ARUCO_bestMarkerPose (
-
-_16750267944260729636,_11822840474894279984,_16937201236903537060_keyframe.imageParams.undistorted ()
-
-      )
-
-        ;
-
-                 if
-
- (
-
-   ! _706246335742885.empty ()
-  )
-
-  {
-
-                    _6406328991171953231.pose_g2m = _706246335742885 ;
-
-                 }
-
-             }
-
-         }
-
-     }
-
-     if (
-
- _14173211929012135714 &&
-    _17591916323427771156 ()
-
-          >
-
-     0 )
- {
-
-        pair <
- double,double >
-
-     _6868692417182700890 (
-
-0,0 )
-
-      ;
-
-         for( auto &m:_16937201236903537060_keyframe.markers )
-
-       {
-             auto
-    &mapMarker = TheMap ->
- map_markers.at (
-
- m.id ) ;
-
-             if
-
-  (
-       ! mapMarker.pose_g2m.isValid ()
-
- )
-
-      continue ;
-
-            cv ::
-
-Point2f center (
-
-0,0 )
-     ;
-
-             for(
-
-    auto p:m.und_corners )
-
-center+p ;
-
-            center *=
-
-    1./4. ;
-
-             double
-
-    maxDist =
-      std ::
-
-    numeric_limits <
-
-  double >
-
-      ::
-     min () ;
-
-             for(
-
- auto p:m.und_corners )
-
-      maxDist =
-
-std ::
-    max (
-
-     cv ::
-
-   norm (
-
-         center-p )
-
-,maxDist )
-
- ;
-
-            vector <
-
- uint32_t >
-
-      p3dis = _16937201236903537060_keyframe.getIdOfPointsInRegion (
-       center,maxDist )
-
-    ;
-
-             if
-
- (
-
-     p3dis.size ()
-
- <
-
-5 )
-
-continue ;
-
-             double
-
-distSum = 0 ;
-
-             for(
-      auto pid:p3dis )
-
- {
-
-                distSum +=
-
-      cv ::
-
-     norm (
-
-   _16937201236903537060_keyframe.pose_f2g*TheMap ->
-
-map_points [
-
-pid ]
-    .getCoordinates ()
-
-         )
-
-        ;
-
-             }
-
-             double
-
-  avrgPointDist =
-
-   distSum/double ( p3dis.size ()
-
-      )
-
-     ;
-
-            cv ::
-
-   Mat f2m =
-
-   _16937201236903537060_keyframe.pose_f2g*mapMarker.pose_g2m ;
-
-             double
-
- frameDist =
-
-  cv ::
-
-     norm (
-
-       f2m.rowRange (
-
-  0,3 )
-      .colRange (
-
- 3,4 )
-       )
-        ;
-            _6868692417182700890.first +=
-
-  frameDist/avrgPointDist ;
-
-            _6868692417182700890.second ++
-
-  ;
-
-         }
-
-         if
- (
-
-         _6868692417182700890.second ==
-
-  0 )
-
-        {
-
-             for(
-
- auto &m:TheMap ->
-  map_markers )
-
-                m.second.pose_g2m =
- se3 ()
-
-      ;
-
-         }
-
-        else {
-
-             double
-
-    _17370277987955713200 =
-
-   _6868692417182700890.first/_6868692417182700890.second ;
-
-            TheMap ->
-
-    scale (
-
- _17370277987955713200 )
-
-   ;
-
-            _10758134674558762512 (
-
-   10 )
-
-    ;
-
-            _13990461397173511559 =
-
-         true ;
-
-         }
-
-     }
-
-     return
- _16937201236903537060_keyframe ;
-
- }
-
-void MapManager::mainFunction () {
-  _hurryUp = false ;
-
-  //first check if any new frame to be inserted
-  Frame *newPtrFrame ;
-  keyframesToAdd.pop(newPtrFrame);
-  if(newPtrFrame == NULL ) return;
-
-  _curState = WORKING ;
-
-  TheMap->lock (__FUNCTION__,__FILE__,__LINE__);
-  Frame &_16937201236903537060_keyframe = addKeyFrame ( newPtrFrame );
-
-  delete newPtrFrame;
-
-  if( System :: getParams ().reLocalizationWithKeyPoints && !System :: getParams ().isInstancing )
-    _8346364136266015358 = _14139181480504378433 -> detectLoopFromKeyPoints ( _16937201236903537060_keyframe,_11028815416989897150 );
-
-  TheMap->unlock ( __FUNCTION__,__FILE__,__LINE__);
-
-  PointsToRemove = _8352839093262355382 ();
-  TheMap->removePoints ( PointsToRemove.begin () ,PointsToRemove.end () ,false );
-
-  TheMap->lock (__FUNCTION__,__FILE__,__LINE__);
-
-  int _175247759447 = 20;
-
-  if(_16937201236903537060_keyframe.imageParams.isStereoCamera())
-      {
-
-        _175247759447 =
-
-     5 ;
-
-         for(
-
- const auto
-       &nmp:_8820655757626307961 (
-
-     _16937201236903537060_keyframe )
-
-    )
-
-  {
-
-             auto &mPoint = TheMap ->
-
-addNewPoint (
-
-  _16937201236903537060_keyframe.fseq_idx )
-
-    ;
-
-            mPoint.setStereo (
-
-     true )
-       ;
-
-            mPoint.setCoordinates (
-     nmp.pose ) ;
-
-             for(
-
-    auto obs:nmp.frame_kpt )
-
-                TheMap ->
-
-addMapPointObservation (
-     mPoint.id,obs.first,obs.second )
-
-      ;
-
-         }
-
-     }
-
-         auto
-
-    _1516014567936766152 =
-
-        _13988982604287804007 (
-
-       _16937201236903537060_keyframe,_175247759447,System ::
-
-       getParams ()
-
-         .maxNewPoints )
- ;
-
-         for(
-
-       const auto
-     &nmp:_1516014567936766152 )
-
-  {
-
-             auto
-
-  &mPoint =
-
-       TheMap ->
-
-     addNewPoint (
-
- _16937201236903537060_keyframe.fseq_idx )
-
-   ;
-
-            mPoint.setCoordinates (
-
-     nmp.pose )
-   ;
-
-             for(
-auto obs:nmp.frame_kpt )
-
-    TheMap->addMapPointObservation (mPoint.id,obs.first,obs.second );
-
-  }
-
-  TheMap->unlock(__FUNCTION__,__FILE__,__LINE__);
-
-  if (keyframesToAdd.empty ()) {
-
-    TheMap ->lock ( __FUNCTION__,__FILE__,__LINE__) ;
-
-    auto _16937196451844060927 = _17400054198872595804 ( _16937201236903537060_keyframe );
-
-    PointsToRemove.insert (
-      PointsToRemove.end(),
-      _16937196451844060927.begin(),
-      _16937196451844060927.end ()
-    );
-
-    TheMap->unlock (__FUNCTION__,__FILE__,__LINE__);
-  }
-
-  {
-    int _706246332319248 = 0;
-
-    for( const auto &mp:TheMap->map_points )
-      if(mp.isBad()) _706246332319248 ++ ;
-  }
-
-  if (!_hurryUp && TheMap->keyframes.size() > 1) {
-    _11362629803814604768 (_16937201236903537060_keyframe.idx);
-  }
-
-  if(! _hurryUp ) {
-    KeyFramesToRemove = keyFrameCulling (_16937201236903537060_keyframe.idx );
-    for(  auto kf:KeyFramesToRemove )
-      TheMap->keyframes[kf].setBad( true );
-  }
-  _curState = WAITINGFORUPDATE ;
-}
-
-Se3Transform MapManager :: getLastAddedKFPose () {
-  return _13909239728712143806 ;
-}
-
-bool MapManager::bigChange () const {
-  return _1061304613240460439 ;
-}
-
- void
-
-    MapManager ::
- _8669746328630631075 ()
-
-    {
-
-    while ( !
-
-    _4090819199315697352 )
-
- {
-
-        mainFunction ()
-
- ;
-
-     }
-
- }
-
-set<uint32_t> MapManager::keyFrameCulling (uint32_t keyframe_idx ){
-  set<uint32_t> KFtoRemove;
-
-  // keep deleting the new frame during instancing 
-  if(System::getParams().isInstancing) {
-
-    // cout << "newInsertedKeyFrames: ";
-    
-    // queue<uint32_t> q = newInsertedKeyFrames;
-    // while(!q.empty()){
-    //   cout << q.front() << " ";
-    //   q.pop();
-    // }
-
-    // for(auto i: newInsertedKeyFrames){
-    //   cout << i << " ";
-    // }
-    // cout << endl;
-
-    // if there're > the specified number of new added frame, remove them
-    while(newInsertedKeyFrames.size() > 20){
-      auto kfIdxToBeRemoved = newInsertedKeyFrames.front();
-      newInsertedKeyFrames.pop();
-      KFtoRemove.insert(kfIdxToBeRemoved);
     }
 
-  } else if(System::getParams().detectMarkers && TheMap->map_markers.size() != 0 ) {
-    vector <uint32_t > NotRedundant ;
+    set<
 
-    KFtoRemove = _5122744303662631154(keyframe_idx);
+            uint32_t>
+    MapManager::
 
-    for(auto kf:KFtoRemove)  {
-      const auto &ThisKFrame = TheMap->keyframes[kf];
-      std::set<uint32_t> allFrames;
+    _5122744303662631154(
 
-      for(const auto&m:ThisKFrame.markers)
-        for(auto f:TheMap->map_markers[m.id].frames)
-          allFrames.insert(f);
+            uint32_t keyframe_idx, int
 
-      allFrames.erase(kf);
+    max) {
 
-      bool isRedundant = false;
+        set<uint32_t>
 
-      for(auto fidx:allFrames) {
-        int nMarkersCommon = 0 ;
-        for(const auto &m:TheMap->keyframes[fidx].markers)
-          if(ThisKFrame.getMarkerIndex ( m.id ) != -1)
-            nMarkersCommon ++;
-          if(nMarkersCommon == ThisKFrame.markers.size()) {
-            isRedundant =  true;
-            break ;
-          }
-      }
+                _632169897324785074;
 
-      if ( !isRedundant )
-        NotRedundant.push_back(kf);
+        if
+                (
+                TheMap->
+
+                        keyframes.size()
+
+                <
+
+                size_t(
+
+                        System::
+                        getParams()
+
+                                .minNumProjPoints))
+
+            return
+                    {
+
+                    };
+
+        auto
+
+                _46082575804458778 =
+                TheMap->
+                        TheKpGraph.getNeighbors(
+
+                        keyframe_idx);
+
+        _46082575804458778.erase(
+
+                0);
+
+        _46082575804458778.erase(
+
+                1);
+
+        for (
+
+            auto ykf: youngKeyFrames)
+
+            _46082575804458778.erase(
+
+                    ykf.first);
+
+        vector<
+
+                pair<
+
+                        float, uint32_t>
+        >
+
+                _12397058489822015781;
+
+        int
+
+                _16997202002988998048 =
+
+                System::
+
+                getParams()
+
+                        .minNumProjPoints;
+
+        for (
+
+            auto fidx: _46082575804458778) {
+
+            int
+
+                    nRedundant = 0, nPoints =
+
+                    0;
+
+            auto
+
+                    &frame =
+
+                    TheMap->
+
+                            keyframes[
+
+                            fidx];
+
+            if
+
+                    (
+
+                    frame.isBad()
+                    )
+
+                continue;
+
+            for (
+
+                    size_t i =
+
+                            0;
+
+                    i <
+
+                    frame.ids.size(); i++
+
+                    ) {
+
+                if
+
+                        (
+
+                        frame.ids[
+
+                                i]
+                        !=
+
+                        std::
+
+                        numeric_limits<
+
+                                uint32_t>
+                        ::
+                        max()
+
+                        ) {
+
+                    auto
+
+                            &mp =
+
+                            TheMap->
+
+                                    map_points[
+
+                                    frame.ids[
+
+                                            i]
+
+                            ];
+
+                    if
+                            (
+                            mp.isBad()
+
+                            )
+
+                        continue;
+
+                    nPoints++;
+
+                    int
+
+                            nObs =
+
+                            0;
+
+                    if (
+
+                            mp.getNumOfObservingFrames()
+
+                            >
+                            size_t(
+
+                                    _16997202002988998048)
+
+                            ) {
+
+                        for (const auto
+
+                                    &f_i: mp.getObservingFrames()
+
+                                ) {
+
+                            if
+                                    (
+
+                                    f_i.first != fidx &&
+
+                                    !
+
+                                            TheMap->
+
+                                                    keyframes[
+
+                                                    f_i.first]
+
+                                                    .isBad()
+
+                                    )
+
+                                if
+
+                                        (
+
+                                        TheMap->
+                                                keyframes[
+
+                                                f_i.first]
+
+                                                .und_kpts[
+
+                                                f_i.second]
+
+                                                .octave <=
+
+                                        frame.und_kpts[
+                                                i]
+                                                .octave) {
+
+                                    nObs++;
+
+                                    if (
+                                            nObs >= _16997202002988998048) {
+
+                                        nRedundant++;
+                                        break;
+
+                                    }
+
+                                }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+            float
+                    redudantPerc =
+
+                    float(
+                            nRedundant)
+
+                    / float(
+
+                            nPoints);
+
+            if (
+
+                    redudantPerc >
+
+                    System::
+
+                    getParams()
+
+                            .KFCulling) {
+                _12397058489822015781.push_back(
+                        {
+
+                                redudantPerc, fidx}
+
+                );
+
+            }
+        }
+
+        if
+
+                (
+
+                _12397058489822015781.size()
+
+                >
+                max) {
+
+            std::
+
+            sort(
+
+                    _12397058489822015781.begin(), _12397058489822015781.end(), [
+
+                    ]
+
+                            (
+                                    const pair<
+
+                                            float, uint32_t>
+
+                                    &a, const pair<
+
+                                    float, uint32_t>
+
+                                    &b) {
+
+                        return a.first >
+                               b.first;
+
+                    }
+
+            );
+
+            _12397058489822015781.resize(
+
+                    max);
+
+        }
+
+        for (
+
+            auto kf_i: _12397058489822015781) {
+
+            _632169897324785074.insert(kf_i.second);
+
+        }
+
+        return
+
+                _632169897324785074;
+
     }
 
-    for(auto f:NotRedundant)
-      KFtoRemove.erase(f);
+    vector<
+
+            uint32_t>
+
+    MapManager::
+
+    _8352839093262355382(
+
+    ) {
+
+        std::
+
+        vector<
+
+                uint32_t> _11398643651601173081;
+
+        for (
+
+            auto &mp: TheMap->
+
+                map_points) {
+
+            if
+
+                    (
+
+                    !
+
+                            mp.isStable()
+
+                    &&
+
+                    !
+
+                            mp.isBad()
+                    ) {
+
+                uint32_t
+
+                        obsths =
+
+                        std::
+
+                        min(uint32_t(
+
+                                3), TheMap->
+
+                                keyframes.size()
+                        );
+
+                if
+
+                        (
+
+                        mp.isStereo()
+
+                        )
+
+                    obsths =
+
+                            std::
+
+                            min(
+
+                                    uint32_t(
+
+                                            2), TheMap->
+
+                                            keyframes.size()
+
+                            );
+
+                if
+
+                        (
+                        mp.getVisibility()
+
+                        < 0.25)
+                    mp.setBad(
+
+                            true);
+
+                else if (
+
+                        mp.kfSinceAddition >=
+
+                        1 &&
+
+                        mp.getNumOfObservingFrames()
+
+                        <
+
+                        obsths)
+
+                    mp.setBad(
+
+                            true);
+
+                else if (
+
+                        mp.kfSinceAddition >=
+
+                        3)
+
+                    mp.setStable(
+
+                            true);
+
+                if
+
+                        (
+
+                        mp.kfSinceAddition <
+
+                        5)
+
+                    mp.kfSinceAddition++;
+
+            }
+
+            if (
+
+                    mp.isStable()
+
+                    )
+
+                if
+                        (
+
+                        mp.getVisibility()
+
+                        < 0.1)
+
+                    mp.setBad(true);
+
+            if (
+
+                    mp.isBad()
+                    )
+                _11398643651601173081.push_back(
+
+                        mp.id);
+
+        }
+
+        return _11398643651601173081;
+
     }
 
-    else if( System::getParams().detectKeyPoints) KFtoRemove = _5122744303662631154 ( keyframe_idx );
+    bool
+    MapManager::
 
-    else if( System::getParams().detectMarkers) KFtoRemove = _17920146964341780569 ( keyframe_idx );
+    _668185896188051300(
+            const Frame &_16997228172148074791, uint32_t _16940374161587532565) {
 
-    return KFtoRemove ;
+        bool
+                _46082575734385716 =
 
-}
+                false, _706246335356026 =
 
-set <
-    uint32_t >
+                false, _6807035406428482711 =
 
-    MapManager ::
-_17920146964341780569 (
+                false;
 
- uint32_t keyframe_idx )
+        if
 
-   {
+                (
 
-      auto
-      _706246308970949 =
+                _16997228172148074791.imageParams.isStereoCamera()
 
-        [
+                )
 
-      ]
+            _6807035406428482711 =
+                    _11138245882866350888(
+                            _16997228172148074791, _16940374161587532565);
 
-      (
+        if
 
-uint32_t _2654435866 , uint32_t
+                (
 
-   _2654435867 )
+                System::
 
-     {
+                getParams()
 
-         if(
-       _2654435866 >
+                        .detectKeyPoints)
 
- _2654435867 )
+            _46082575734385716 =
 
-  swap (
- _2654435866,_2654435867 )
+                    _16884568726948844929(
 
-     ;
+                            _16997228172148074791, _16940374161587532565);
 
-        uint64_t _11093821964632 ;
+        if
 
-         uint32_t
+                (
 
- *_6807034398601546557 =
+                !
+                        _46082575734385716 &&
 
-  (
-  uint32_t* )
+                System::
 
- &_11093821964632 ;
-        _6807034398601546557 [
-      0 ]
+                getParams()
 
-      =
+                        .detectMarkers)
 
-    _2654435867 ;
+            _706246335356026 =
 
-        _6807034398601546557 [
+                    _5906010176873986459(
 
- 1 ]
- =
+                            _16997228172148074791, _16940374161587532565);
 
-    _2654435866 ;
+        return (
 
-         return
-  _11093821964632 ;
+                _46082575734385716 ||
 
-     }
+                _706246335356026 ||
 
-          ;
+                _6807035406428482711);
 
-     auto
+    }
 
-  _46082575804458778 =
+    bool MapManager::
+    _11138245882866350888(
 
-    TheMap ->
-     TheKpGraph.getNeighbors (
+            const Frame &_16997228172148074791, uint32_t
 
- keyframe_idx )
+    _16940374161587532565) {
 
-   ;
+        if
+                (
 
-    _46082575804458778.erase (
+                !
 
-TheMap ->
+                        _16997228172148074791.imageParams.isStereoCamera()
 
-     keyframes.front ()
+                )
 
-.idx )
+            return
 
- ;
+                    false;
 
-     std ::
+        int
 
- map <
+                _13282101351954432384 = 0;
 
-    uint64_t,float >
-   _124580014028079534 ;
+        int _1339477524456856999 =
 
-    vector <
-uint32_t > _3005399810248445333 (
- _46082575804458778.begin ()
+                0;
 
- ,_46082575804458778.end ()
-        )
+        for (
 
-    ;
+                size_t _2654435874 =
 
-     for(
+                        0;
 
-   size_t i =
+                _2654435874 <
 
-   0 ;
+                _16997228172148074791.und_kpts.size();
 
-  i <
-       _3005399810248445333.size ()
+                _2654435874++
+                ) {
 
-    ;
+            if (
 
-  i ++
+                    _16997228172148074791.getDepth(
 
-         )
-  {
+                            _2654435874)
 
-        const auto&fi =
+                    >
 
-TheMap ->
+                    0 &&
+                    _16997228172148074791.imageParams.isClosePoint(
 
-keyframes [
+                            _16997228172148074791.getDepth(
 
-  _3005399810248445333 [
-     i ]
+                                    _2654435874)
 
- ]
+                    )
 
- ;
-         for(
+                    ) {
 
-size_t j =
+                if
 
-   i+1 ;
+                        (
 
-    j <
+                        _16997228172148074791.ids[
 
-     _3005399810248445333.size ()
+                                _2654435874]
 
- ;
-      j ++
-     ) {
+                        !=
 
-            const auto&fj =
+                        std::
+                        numeric_limits<
+                                uint32_t>
 
-  TheMap ->
+                        ::
 
-    keyframes [
+                        max()
 
-  _3005399810248445333 [
+                        &&
 
-     j ]
-  ]
-       ;
+                        !
 
-            _124580014028079534 [
+                                _16997228172148074791.flags[_2654435874]
 
-    _706246308970949 (
+                                        .is(
 
- _3005399810248445333 [
+                                                Frame::
+                                                FLAG_OUTLIER)
 
-i ]
-   ,_3005399810248445333 [
+                        )
 
-j ]
+                    _1339477524456856999++;
 
-     )
+                else
+                    _13282101351954432384++;
+            }
+        }
 
-  ]
+        if
 
-       =
+                (
 
-   cv ::
+                (
+                        _1339477524456856999 <
 
-   norm (
+                        180 * System::
 
- fi.pose_f2g.getTvec ()
+                        getParams()
+                                .KFMinConfidence)
 
-      -fj.pose_f2g.getTvec ()
+                &&
 
-  )
+                (
 
-        ;
+                        _13282101351954432384 >
 
-             }
-     }
+                        120 * System::
 
-    std ::
+                        getParams()
 
- map <
-       uint32_t,set <
-    uint32_t >
+                                .KFMinConfidence)
 
-    >
+                )
 
- _13773082371983786779 ;
+            return
+                    true;
 
-     for(
+        else
+            return
+                    false;
 
-  auto fidx:_46082575804458778 ) {
+    }
 
-         for(
+    bool MapManager::
 
-      auto m:TheMap ->
+    _5906010176873986459(
 
- keyframes [
- fidx ]
+            const Frame &_16997228172148074791, uint32_t
+    _16940374161587532565) {
 
-     .markers )
+        if
 
-            _13773082371983786779 [
+                (
 
-  m.id ]
-     .insert (
+                TheMap->
 
- fidx )
-        ;
+                        map_markers.size()
+                ==
 
-     }
+                0)
 
-     auto
+            return false;
 
-       _10086624862567280113 =
+        for (
 
- [
+            auto m: _16997228172148074791.markers) {
 
- & ]
- (
+            if (
 
-    uint32_t _706246330143240,const set <
+                    TheMap->
 
- uint32_t >
+                            map_markers.count(
 
-   &_3005401603918369918 )
+                            m.id)
 
-   {
+                    ==
 
-             float
+                    0) {
 
-  _706246353090457 =
+                return
 
-        0 ;
-             for(
+                        true;
 
- auto f2idx: _3005401603918369918 )
+            }
 
-  {
+        }
 
-                 if (
+        for (
+            auto m: _16997228172148074791.markers) {
+            if
 
-     f2idx !=
+                    (
 
- _706246330143240 )
-                    _706246353090457 +=
+                    TheMap->
 
-         _124580014028079534 [
+                            map_markers.count(m.id) !=
 
- _706246308970949 (
-   _706246330143240,f2idx ) ]
+                    0) {
 
-     ;
+                if (
 
-             }
+                        TheMap->
 
-             return
+                                        map_markers.at(
 
-  _706246353090457 ;
-     }
+                                        m.id)
 
-     ;
+                                .pose_g2m.isValid()
 
-    std ::
+                        ==
+                        false) {
 
-map <
+                    if
 
- uint32_t,set <
- uint32_t >
+                            (
 
-         >
-     _12358233879185425501 ;
+                            (
 
-      for(
-auto mf:_13773082371983786779 )
+                                    _16997228172148074791.getMarkerPoseIPPE(
 
- {
-         if
-   (
-  mf.second.size ()
+                                                    m.id)
 
-     <=
+                                            .err_ratio >
+                                    System::
 
-      size_t (
-       System ::
+                                    getParams()
 
-    getParams ()
+                                            .aruco_minerrratio_valid) &&
 
-.maxVisibleFramesPerMarker )
-    )
+                            System::
+                            getParams().aruco_allowOneFrameInitialization) {
 
- {
+                        return
 
-            _12358233879185425501 [
+                                true;
 
-       mf.first ]
+                    }
 
- .insert (
+                }
 
-      mf.second.begin ()
+            }
 
- ,mf.second.end ()
-    )
+        }
 
-     ;
+        for (
 
-         }
+            auto m: _16997228172148074791.markers) {
 
-        else {
+            if
+                    (
+                    TheMap->
+                            map_markers.count(
 
-            vector <
+                            m.id)
 
-   uint32_t >
+                    !=
 
-  vframes (
-   mf.second.begin ()
+                    0) {
 
-,mf.second.end ()
-    )
+                const auto
 
-      ;
+                        &Marker =
+                        TheMap->
 
-            pair <
+                                map_markers.at(
 
-        size_t,size_t >
+                                m.id);
 
-     bestIdx ;
-      float
+                if (
 
-        maxD =
-     std ::
+                        Marker.frames.size()
 
-   numeric_limits <
- float >
+                        >=
+                        System::
 
-          ::
-  lowest ()
+                        getParams()
+                                .maxVisibleFramesPerMarker)
 
- ;
+                    continue;
 
-             for(
+                if (
 
-  size_t i =
+                        Marker.pose_g2m.isValid()
 
-  0 ; i <
+                        ) {
 
- vframes.size ()
+                    float
 
-  ;
+                            minDist =
+                            std::numeric_limits<
 
-    i ++
+                                    float>
+                            ::
 
- )
+                            max();
 
-    {
+                    for (
+                        auto
 
-                 for(
-size_t j =
+                                f: Marker.frames) {
 
- i+1 ;
+                        float
 
-     j <
+                                dist =
 
- vframes.size ()
-  ;
+                                cv::
+                                norm(TheMap->
 
-j ++
+                                        keyframes[
 
-   )
+                                             f]
 
- {
+                                             .pose_f2g.getTvec(), _16997228172148074791.pose_f2g.getTvec()
 
-                     auto
+                                );
 
-dist =
+                        if (
 
-     _124580014028079534 [
+                                dist <
+                                minDist)
 
- _706246308970949 (
+                            minDist =
 
- vframes [
-  i ]
+                                    dist;
 
- ,vframes [
+                    }
 
-     j ]
+                    if (
 
-        )
-      ]
+                            minDist >=
 
-  ;
+                            System::
 
-                     if
+                            getParams()
 
-     (
+                                    .minBaseLine) {
 
-   dist >
+                        return
 
- maxD )
+                                true;
 
-     {
+                    }
 
-                        bestIdx =
+                }
 
-   {
+            }
 
-     vframes [ i ]
+        }
 
-    ,vframes [
+        if (
 
-       j ]
-   }
+                _16997228172148074791.kpts.size()
 
- ;
+                !=
 
-                        maxD =
+                0)
 
- dist ;
-                     }
+            return
 
-                 }
-             }
+                    false;
 
-            _12358233879185425501 [
+        float
 
-mf.first ]
+                _16940368387347594694 =
 
-  . insert ( bestIdx.first )
-      ;
+                cv::
 
-            _12358233879185425501 [
+                norm(
 
-     mf.first ]
+                        _16997228172148074791.pose_f2g.getTvec(), TheMap->
 
- . insert (
+                                keyframes[
 
- bestIdx.second ) ;
+                                _16940374161587532565]
 
-            while (
-  _12358233879185425501 [
+                                .pose_f2g.getTvec()
+                );
 
- mf.first ]
+        if
 
-     .size ()
+                (
 
-      <
+                _16940368387347594694 >
+                System::
 
-  size_t (
+                getParams()
+                        .minBaseLine) {
 
-     System ::
+            return
 
-getParams ()
+                    true;
 
-  .maxVisibleFramesPerMarker )
+        }
 
-    )
+        return
+                false;
 
-   {
+    }
 
-                std ::
+    bool
 
-  pair <
+    MapManager::
 
-     uint32_t,float >
- best (
-    0, std ::
+    _16884568726948844929(
 
-    numeric_limits <
+            const Frame &_16997228172148074791, uint32_t _16940374161587532565) {
 
-   float >
+        auto _8222792191690573285 =
+                [
 
- ::
+                ]
 
-lowest ()
-        )
+                        (
 
-  ;
-                 for(
+                                const Frame &_2654435871) {
 
-size_t i =
+                    int
 
-    0 ;
+                            _2654435879 =
 
-  i < vframes.size ()
+                            0;
 
-  ;
+                    for (
 
-  i ++
+                            size_t _2654435874 =
 
-  )
-   {
+                                    0;
 
-                     if
-   (
-  _12358233879185425501 [
+                            _2654435874 <
 
-mf.first ]
+                            _2654435871.ids.size();
 
-         .count (
- vframes [
+                            _2654435874++
 
-   i ]
+                            )
 
-   )
+                        if
 
-   ==
+                                (
 
-  0 )
+                                _2654435871.ids[
 
-  {
+                                        _2654435874]
+                                !=
 
-                         auto d =
+                                std::
+                                numeric_limits<
 
- _10086624862567280113 (
+                                        uint32_t>::
+                                max()
 
-    vframes [ i ]
-       ,_12358233879185425501 [
-     mf.first ]
+                                )
 
- )
-  ;
+                            if
 
-                         if
+                                    (
 
-  (
+                                    !
 
-d >
+                                            _2654435871.flags[
 
-best.second )
+                                                    _2654435874]
 
-         best =
+                                                    .is(
 
-   {
+                                                            Frame::
 
-  vframes [
-i ]
+                                                            FLAG_OUTLIER)
 
-,d }
+                                    )
 
- ;
+                                _2654435879++;
 
-                     }
+                    return
 
-                 }
+                            _2654435879;
 
-                _12358233879185425501 [
+                };
 
-         mf.first ]
-. insert ( best.first )
-  ;
+        int
 
-             }
+                _8367785432631711677 =
 
-         }
+                _8222792191690573285(
 
-     }
+                        _16997228172148074791);
 
-    std ::
+        if
 
-      set <
+                (
 
-     uint32_t >
+                _8367785432631711677 <
 
-      _16997237651734773759 ;
+                20)
 
-     for(
+            return false;
 
-   auto ms:_12358233879185425501 )
+        float
 
-        _16997237651734773759.insert (
-       ms.second.begin ()
+                _10934236797308178385 =
 
-     ,ms.second.end ()
+                System::
 
-    )
+                getParams()
+                        .KFMinConfidence;
 
-  ;
+        uint32_t
 
-    std ::
-      set <
+                _3005399795202072660 =
 
-     uint32_t >
+                3;
 
-    _16997209188207231919 ;
+        if (
+                TheMap->
 
-     for(
+                        keyframes.size()
 
-auto fidx:_46082575804458778 )
+                ==
 
-         if(
-
- _16997237651734773759.count (
-
- fidx )
-
-    ==
-
- 0 )
-
- _16997209188207231919.insert (
-
-   fidx )
-
-     ;
-
-     return
-    _16997209188207231919 ;
-
- }
-
-set <
-
- uint32_t >
- MapManager ::
-
-_5122744303662631154 (
-
- uint32_t keyframe_idx, int
-
-       max )
-
-  {
-
-     set < uint32_t >
-
-   _632169897324785074 ;
-
-      if
-        (
- TheMap ->
-
-         keyframes.size ()
-
-   <
-
-       size_t (
-
-System ::
-      getParams ()
-
-    .minNumProjPoints ) )
-
-   return
-   {
-
- }
-    ;
-
-     auto
-
-   _46082575804458778 =
-      TheMap ->
-   TheKpGraph.getNeighbors (
-
-     keyframe_idx )
-
-  ;
-
-    _46082575804458778.erase (
-
-   0 )
-
-      ;
-
-    _46082575804458778.erase (
-
- 1 )
-
-  ;
-
-     for(
-
-   auto ykf:youngKeyFrames )
-
-        _46082575804458778.erase (
-
-         ykf.first )
-
-  ;
-
-    vector <
-
-   pair <
-
-     float,uint32_t >
-      >
-
-        _12397058489822015781 ;
-
-     int
-
-_16997202002988998048 =
-
-System ::
-
-getParams ()
-
-    .minNumProjPoints ;
-
-     for(
-
-auto fidx:_46082575804458778 ) {
-
-         int
-
-         nRedundant = 0,nPoints =
-
- 0 ;
-
-          auto
-
-    &frame =
-
- TheMap ->
-
-        keyframes [
-
-  fidx ]
-
-         ;
-
-         if
-
-      (
-
-  frame.isBad ()
-        )
-
-   continue ;
-
-         for(
-
-   size_t i =
-
-  0 ;
-
-  i <
-
-  frame.ids.size ()
- ; i ++
-
-      )
-
-     {
-
-             if
-
- (
-
-     frame.ids [
-
-    i ]
-      !=
-
-  std ::
-
-  numeric_limits <
-
-uint32_t >
-        ::
-max ()
-
-      )
-
- {
-
-                 auto
-
-&mp =
-
-  TheMap ->
-
-map_points [
-
-    frame.ids [
-
-i ]
-
-   ]
-
- ;
-
-                 if
- (
- mp.isBad ()
-
-     )
-
- continue ;
-
-                nPoints ++
-
-  ;
-
-                 int
-
-    nObs =
-
- 0 ;
-
-                 if(
-
-   mp.getNumOfObservingFrames ()
-
-   >
-       size_t (
-
-_16997202002988998048 )
-
-  )
-
-      {
-
-                     for( const auto
-
- &f_i:mp.getObservingFrames ()
-
-          )
-
-  {
-
-                         if
-        (
-
-     f_i.first != fidx &&
-
-   !
-
- TheMap ->
-
-    keyframes [
-
- f_i.first ]
-
-         .isBad ()
-
-       )
-
-                             if
-
-   (
-
-        TheMap ->
-      keyframes [
-
- f_i.first ]
-
-  .und_kpts [
-
-   f_i.second ]
-
-         .octave <=
-
- frame.und_kpts [
-      i ]
-    .octave )
-
-        {
-
-                                nObs ++
-
-    ;
-
-                                 if(
-   nObs >= _16997202002988998048 )
-
-            {
-
-                                    nRedundant ++
-        ;
-                                    break ;
-
-                                 }
-
-                             }
-
-                     }
-
-                 }
-
-             }
-
-         }
-
-         float
-redudantPerc =
-
-  float (
- nRedundant )
-
-       /float (
-
-nPoints )
-
- ;
-
-          if(
-
-    redudantPerc >
-
-    System ::
-
-        getParams ()
-
-        .KFCulling )
-
-     {
-            _12397058489822015781.push_back (
-     {
-
- redudantPerc,fidx }
-
- )
-       ;
-
-         }
-     }
-
-     if
-
-        (
-
-        _12397058489822015781.size ()
-
- >
-      max )
-
-      {
-
-        std ::
-
-     sort (
-
-     _12397058489822015781.begin ()
-
-    ,_12397058489822015781.end () , [
-
- ]
-
-     (
-  const pair <
-
-      float,uint32_t >
-
-       &a,const pair <
-
-   float,uint32_t >
-
-      &b )
-       {
-
-return a.first >
-     b.first ;
-
-  }
-
-      )
-
-     ;
-
-        _12397058489822015781.resize (
-
-max )
-
-   ;
-
-     }
-
-     for(
-
-  auto kf_i:_12397058489822015781 )
-
-       {
-
-        _632169897324785074.insert ( kf_i.second )
-
- ;
-
-     }
-
-     return
-
-    _632169897324785074 ;
-
- }
-
-vector <
-
-       uint32_t >
-
-         MapManager ::
-
-   _8352839093262355382 (
-
-        )
- {
-
-    std ::
-
- vector <
-
-    uint32_t > _11398643651601173081 ;
-
-     for(
-
-     auto &mp:TheMap ->
-
-  map_points )
-
-      {
-
-         if
-
-  (
-
-     !
-
-     mp.isStable ()
-
-    &&
-
-      !
-
-mp.isBad ()
-        )
-     {
-
-             uint32_t
-
-obsths =
-
-std ::
-
- min ( uint32_t (
-
- 3 )
-   ,TheMap ->
-
-keyframes.size ()
-       )
-
-      ;
-
-             if
-
-     (
-
-       mp.isStereo ()
-
-      )
-
-                obsths =
-
-std ::
-
-min (
-
-   uint32_t (
-
-    2 )
-
-    ,TheMap ->
-
- keyframes.size ()
-
-     )
-
-      ;
-
-             if
-
-     (
-      mp.getVisibility ()
-
-    < 0.25 ) mp.setBad (
-
-  true )
-
-   ;
-
-             else
-
-   if (
-
- mp.kfSinceAddition >=
-
-     1 &&
-
-      mp.getNumOfObservingFrames ()
-
-  <
-
-obsths )
-
-        mp.setBad (
-
-    true )
- ;
-
-             else
-
-  if(
-
-  mp.kfSinceAddition >=
-
-  3 )
-
-  mp.setStable (
-
-        true )
-       ;
-
-             if
-
-         (
-
-     mp.kfSinceAddition <
-
-  5 )
-
-     mp.kfSinceAddition ++
-
-  ;
-
-         }
-
-         if (
-
-     mp.isStable ()
-
-   )
-
-             if
-     (
-
-mp.getVisibility ()
-
- < 0.1 )
-
-    mp.setBad ( true ) ;
-
-         if(
-
- mp.isBad ()
- )
-      _11398643651601173081.push_back (
-
- mp.id )
-
- ;
-
-     }
-
-     return _11398643651601173081 ;
-
- }
- bool
- MapManager ::
-
-      _668185896188051300 (
-     const Frame & _16997228172148074791 , uint32_t _16940374161587532565 )
-
- {
-
-     bool
-  _46082575734385716 =
-
-  false,_706246335356026 =
-
-   false,_6807035406428482711 =
-
-  false ;
-
-     if
-
-      (
-
-   _16997228172148074791.imageParams.isStereoCamera ()
-
-   )
-
-        _6807035406428482711 =
-      _11138245882866350888 (
- _16997228172148074791,_16940374161587532565 ) ;
-
-     if
-
-       (
-
- System ::
-
-   getParams ()
-
- .detectKeyPoints )
-
-        _46082575734385716 =
-
- _16884568726948844929 (
-
-         _16997228172148074791,_16940374161587532565 )
-
-   ;
-
-     if
-
-    (
-
-   !
-    _46082575734385716 &&
-
-      System ::
-
- getParams ()
-
-.detectMarkers )
-
-        _706246335356026 =
-
-          _5906010176873986459 (
-
-_16997228172148074791 ,_16940374161587532565 ) ;
-
-     return (
-
-   _46082575734385716 ||
-
-   _706246335356026 ||
-
-_6807035406428482711 )
-
-         ;
-
- }
-
- bool MapManager ::
-_11138245882866350888 (
-
-  const Frame &_16997228172148074791, uint32_t
-
-  _16940374161587532565 )
-
- {
-
-     if
-      (
-
-       !
-
-  _16997228172148074791.imageParams.isStereoCamera ()
-
-   )
-
-           return
-
-false ;
-
-     int
-
-  _13282101351954432384 = 0 ;
-
-     int _1339477524456856999 =
-
-    0 ;
-
-     for(
-
-    size_t _2654435874 =
-
-      0 ;
-
-     _2654435874 <
-
-   _16997228172148074791.und_kpts.size () ;
-
-_2654435874 ++
- )
-      {
-
-         if (
-
- _16997228172148074791.getDepth (
-
-      _2654435874 )
-
-          >
-
- 0 &&
-     _16997228172148074791.imageParams.isClosePoint (
-
-  _16997228172148074791.getDepth (
-
- _2654435874 )
-
-      )
-
-      )
-       {
-
-             if
-
- (
-
- _16997228172148074791.ids [
-
-     _2654435874 ]
-
-        !=
-
- std ::
- numeric_limits <
-  uint32_t >
-
-   ::
-
-     max ()
-
-  &&
-
-          !
-
- _16997228172148074791.flags [ _2654435874 ]
-
-   .is (
-
-        Frame ::
-  FLAG_OUTLIER )
-
-        )
-
-                _1339477524456856999 ++
-   ;
-
-            else
-                _13282101351954432384 ++
-
-   ;
-         }
-     }
-
-      if
-
-     (
-
-    (
-  _1339477524456856999 <
-
-  180*System ::
-
-getParams ()
-   .KFMinConfidence )
-
-   &&
-
-  (
-
-    _13282101351954432384 >
-
-   120*System ::
-
-    getParams ()
-
-        .KFMinConfidence )
-
-     )
-
-         return
-   true ;
-
-      else return
-  false ;
-
- }
-
- bool MapManager ::
-
-  _5906010176873986459 (
-
-const Frame & _16997228172148074791 , uint32_t
- _16940374161587532565 )
-
-  {
-
-     if
-
-   (
-
-    TheMap ->
-
-  map_markers.size ()
- ==
-
-0 )
-
-    return false ;
-
-     for(
-
-  auto m:_16997228172148074791.markers )
-
-  {
-
-         if (
-
-     TheMap ->
-
-  map_markers.count (
-
- m.id )
-
-   ==
-
-  0 )
-
- {
-
-              return
-
- true ;
-
-         }
-
-     }
-
-     for(
-    auto m:_16997228172148074791.markers )
-
-  {
-         if
-
-   (
-
-    TheMap ->
-
- map_markers.count ( m.id ) !=
-
-     0 )
-
-    {
-
-             if(
-
-        TheMap ->
-
-map_markers.at (
-
-m.id )
-
-  .pose_g2m.isValid ()
-
- ==
-     false )
-
-   {
-
-                 if
-
-  (
-
-        (
-
- _16997228172148074791.getMarkerPoseIPPE (
-
-     m.id )
-
-        .err_ratio >
-System ::
-
-    getParams ()
-
-    .aruco_minerrratio_valid ) &&
-
- System ::
-getParams () .aruco_allowOneFrameInitialization )
-
-     {
-
-                     return
-
-  true ;
-
-                 }
-
-             }
-
-         }
-
-     }
-
-     for(
-
-     auto m:_16997228172148074791.markers )
-
-  {
-
-         if
-      (
-TheMap ->
-      map_markers.count (
-
-    m.id )
-
-  !=
-
-0 )
-
-   {
-
-            const auto
-
-&Marker =
-      TheMap ->
-
-         map_markers.at (
-
- m.id )
-
-      ;
-
-             if(
-
-   Marker.frames.size ()
-
-     >=
-  System ::
-
-    getParams ()
-       .maxVisibleFramesPerMarker )
-
-    continue ;
-
-             if(
-
- Marker.pose_g2m.isValid ()
-
-         )
-
-  {
-
-                 float
-
-    minDist =
-   std :: numeric_limits <
-
- float >
-       ::
-
-max ()
-
-      ;
-
-                 for(
-         auto
-
-  f: Marker.frames )
-
- {
-
-                     float
-
-  dist =
-
- cv ::
-   norm ( TheMap ->
-
-keyframes [
-
- f ]
-
- .pose_f2g.getTvec ()
-
-     ,_16997228172148074791.pose_f2g.getTvec ()
-
-   )
-
-      ;
-
-                     if(
-
-    dist <
-    minDist )
-
- minDist =
-
-dist ;
-
-                 }
-
-                 if(
-
-    minDist >=
-
-  System ::
-
-getParams ()
-
-.minBaseLine )
-
-    {
-
-                      return
-
-    true ;
-
-                 }
-
-             }
-
-         }
-
-     }
-
-     if(
-
-   _16997228172148074791.kpts.size ()
-
-    !=
-
-   0 )
-
-           return
-
-  false ;
-
-     float
-
-    _16940368387347594694 =
-
-cv ::
-
- norm (
-
-     _16997228172148074791.pose_f2g.getTvec ()
-
-   ,TheMap ->
-
-keyframes [
-
-    _16940374161587532565 ]
-
-    .pose_f2g.getTvec ()
-        )
-
-   ;
-
-     if
-
-    (
-
- _16940368387347594694 >
-     System ::
-
-        getParams ()
-   .minBaseLine ) {
-
-          return
-
-     true ;
-
-     }
-
-     return
- false ;
-
- }
- bool
-
-   MapManager ::
-
-   _16884568726948844929 (
-
-const Frame &_16997228172148074791, uint32_t _16940374161587532565 )
-
- {
-
-     auto _8222792191690573285 =
-  [
-
-     ]
-
-    (
-
- const Frame &_2654435871 )
-   {
-
-         int
-
-       _2654435879 =
-
-  0 ;
-
-         for(
-
-    size_t _2654435874 =
-
-      0 ;
-
-  _2654435874 <
-
-  _2654435871.ids.size () ;
-
-_2654435874 ++
-
-        )
-
-             if
-
- (
-
-     _2654435871.ids [
-
-    _2654435874 ]
-    !=
-
-    std ::
-   numeric_limits <
-
-uint32_t > ::
- max ()
-
-   )
-
-                 if
-
- (
-
-     !
-
-   _2654435871.flags [
-
-  _2654435874 ]
-
-    .is (
-
-  Frame ::
-
-   FLAG_OUTLIER )
-
-  )
-
-                   _2654435879 ++
-
-  ;
-
-         return
-
- _2654435879 ;
-
-     }
-
-  ;
-
-     int
-
-    _8367785432631711677 =
-
- _8222792191690573285 (
-
- _16997228172148074791 )
-
-  ;
-
-     if
-
-  (
-
-        _8367785432631711677 <
-
-    20 )
-
-return false ;
-
-     float
-
- _10934236797308178385 =
-
-System ::
-
-getParams ()
-   .KFMinConfidence ;
-
-     uint32_t
-
-   _3005399795202072660 =
-
-    3 ;
-
-     if(
-    TheMap ->
-
-  keyframes.size ()
-
-       ==
-
-2 )
-
-    {
+                2) {
 
             _3005399795202072660 =
 
-2 ;
+                    2;
 
-     }
+        }
 
-     int _16937194960156429046 =
+        int _16937194960156429046 =
 
- 0 ;
-
-    const auto
-
-&_3005399819707726498 =
-
-     TheMap ->
-
-     keyframes [ _16940374161587532565 ]
-
-    ;
-
-     for(
-
-auto id:_3005399819707726498.ids )
-
-   {
-
-         if
-
-     ( id !=
-
-std ::
-
-   numeric_limits <
-uint32_t >
-
-        :: max () )
-
-   {
-
-            const auto
-
-     &mapP =
-
-  TheMap ->
-
- map_points [
-
-  id ]
-
- ;
-
-             if (
-
-mapP.isBad ()
-
-    )
-
-      continue ;
-
-             if
-  (
-  mapP.getNumOfObservingFrames ()
-
-    <
-
-         _3005399795202072660 )
-      continue ;
-
-             _16937194960156429046 ++
- ;
-
-         }
-
-     }
-
-     if
-   (
-
-   _8367785432631711677 <
-
-   float (
-
-    _16937194960156429046 )
-
-* _10934236797308178385 )
-
-   return true ;
-
-     return
-
-    false ;
-
- }
-
-vector <
-
-uint32_t >
-
- MapManager ::
-
-    _489363023531416435 (
-       Frame &NewFrame,size_t maxFrames ) {
-
-     if
-    (
-  TheMap ->
-
-keyframes.size ()
-
-    <=
-
-2 )
-
-         return
-
-  {
-
-  TheMap ->
-
-    keyframes.front ()
-
-.idx }
-   ;
-
-    vector <
-   uint32_t >
-
-  _1515469360845371082 =
-
-  TheMap ->
-
-TheKpGraph.getNeighborsV (
-NewFrame.idx )
-
-  ;
-
-    size_t _2654435874 =
-
-        0 ;
-
-    while (
-
- _2654435874 <
-
-     _1515469360845371082.size ()
-
-  )
-
-  {
-
-         if
-
-     (
-     TheMap ->
-
-       keyframes [
-_1515469360845371082 [
-      _2654435874 ]
-
- ]
-
-   .isBad ()
-
- ) {
-
-            std ::
-  swap (
-
-        _1515469360845371082 [
-
-  _2654435874 ]
-
-    ,_1515469360845371082.back ()
-
-     )
-
-      ;
-
-            _1515469360845371082.pop_back ()
-
-         ;
-
-         }
-
-         else
-
-        _2654435874 ++
-
-  ;
-
-     }
-
-     std :: sort (
-       _1515469360845371082.begin ()
-
-        ,_1515469360845371082.end ()
-
-   , [
-
-    & ]
-      (
-
-     uint32_t a, uint32_t
-
-b )
-        {
-
- return
-                TheMap ->
-
-         TheKpGraph.getWeight (
-
-     a,NewFrame.idx )
-   >
-
-  TheMap ->
-
-     TheKpGraph.getWeight (
-
-  b,NewFrame.idx )
-
-     ;
-     }
-
-      )
-
-    ;
-
-    vector < uint32_t >
-
-  _18082515013534369065 ;
-
-     for(
-
-    auto neigh: _1515469360845371082 )
-        {
-
-         auto
-       medianDepth =
-
-     TheMap ->
-    getFrameMedianDepth (
-
-    neigh )
- ;
-
-         auto baseline =
-
-      cv ::
-
-       norm (
-
-        NewFrame.getCameraCenter ()
-
-        -TheMap ->
-
-     keyframes [
-
-    neigh ] .getCameraCenter ()
-
- )
-
-   ;
-
-         float acos =
-
-  NewFrame.getCameraDirection ()
-   .dot (
- TheMap -> keyframes [
-   neigh ]
- .getCameraDirection ()
-      )
-
-  ;
-
-         if(
-
-      acos >
-
-  0.6 && baseline/medianDepth >
-
-      System ::
-
-       getParams ()
-
-    .baseline_medianDepth_ratio_min )
-
-     _18082515013534369065.push_back (
-
-neigh )
-
-     ;
-
-         if
-
-         (
-
- _18082515013534369065.size ()
-     >=
-
- maxFrames )
-
-  break ;
-
-     }
-
-     return
- _18082515013534369065 ;
-
- }
-
-vector <
-
-    uint32_t >
-
-     MapManager ::
-
-       _17400054198872595804 (
-
-  Frame &mpCurrentKeyFrame )
-
-      {
-
-     auto
-
- _4969073986308462195 =
-
-   TheMap ->
-TheKpGraph.getNeighbors (
-
-   mpCurrentKeyFrame .idx )
- ;
-
-    set <
-
-     uint32_t >
-
- _8613511226855067609 ;
-
-    vector <
-
- uint32_t >
-        _18198621160182713342 ;
-     for(
-
-   auto n: _4969073986308462195 )
-
-         if
-
-          (
-
-      !
-
-   TheMap ->
-
-        keyframes [
-  n ]
-
-  .isBad ()
-
-  )
-
-            _8613511226855067609.insert (
-
-    n ) ;
-
-     int
-
- _1517243165919133649 =
-
- 0,_3005399801165696099 =
-
-  0 ;
-
-     float
-
-_175247759809 =
-
-      2.5 ;
-
-    vector <
-
-uint32_t >
- _13928263410240979211 =
-
-   mpCurrentKeyFrame.getMapPoints ()
-
-     ;
-
-       for(
-
-        auto tkf: _8613511226855067609 )
-
-        {
-
-        Frame &keyframe =
-
- TheMap ->
- keyframes [
-
- tkf ]
-
-   ;
-
-         cv ::
-
-Point3f camCenter =
-
-keyframe.getCameraCenter ()
-
- ;
-
-         for(
-    auto MpId:_13928263410240979211 )
-
-      {
-
-             if
-
-  (
-
-      !
-
-      TheMap -> map_points.is (
-
-         MpId )
-    )
-       continue ;
-
-            MapPoint&MP =
-
-  TheMap ->
-
- map_points [
-  MpId ]
-   ;
-
-             if
-
-   (
-
-       MP.isBad ()
-
-      )
-
-continue ;
-
-             if
-
-   (
-
-    MP.frames.count ( keyframe.idx )
-
- ) continue ;
-
-            cv ::
-Point2f p2d =
-
-  keyframe.project (
-
-        MP.getCoordinates ()
-
-   ,true,true ) ;
-
-             if(
-
-    isnan (
-
- p2d.x )
-
-         )
-
-  continue ;
-
-             float
-
-    dist =
-
-        cv ::
-
-norm (
-
-    camCenter-MP.getCoordinates ()
-
-    )
-
-   ;
-             if
-
- (
-
- dist <
-
- 0.8f*MP.getMinDistanceInvariance ()
-
-  ||
-
-  dist >
-
-    1.2f*MP.getMaxDistanceInvariance ()
-
- )
-
-     continue ;
-
-             if(
-
-  MP.getViewCos (
-
-   camCenter )
-
-    <
-
-     0.5 )
-
-continue ;
-
-             int
-
-nPredictedLevel =
-
-         mpCurrentKeyFrame.predictScale (
-
-   dist,MP.getMaxDistanceInvariance ()
-   )
-      ;
-
-               float
-     radius =
-
-         _175247759809*keyframe.scaleFactors [
-
-      nPredictedLevel ]
-
- ;
-
-             if
-        (
-
-  MP.getViewCos (
-  camCenter )
-
-       <
-
-     0.98 )
-
-   radius *=
-      1.4f ;
-
-            vector <
-
-uint32_t >
-
-   vkpIdx =
-      keyframe.getKeyPointsInRegion (
-
-    p2d,radius,nPredictedLevel-1,nPredictedLevel )
-
-     ;
-
-            pair < float,int >
-
-    best (
-
-    System ::
-
-     getParams ()
-
- .maxDescDistance+1e-3,-1 )
-      ;
-
-             for(
-
-  auto kpidx:vkpIdx ) {
-
-                 float
-
-   descDist =
-
- MP.getDescDistance (
-
-   keyframe.desc.row (
-   kpidx )
-
- )
-    ;
-
-                 if
-
-     (
-
- descDist <
-
-   best.first )
-
-                    best =
-
-      {
-descDist,kpidx }
-
-   ;
-             }
-
-             if
-     (
-
-best.second !=
-
--1 )
-
-     {
-
-                 if
-
-        (
-
-   keyframe.ids [
-
-   best.second ]
-
-          !=
-    std ::
-
-numeric_limits <
- uint32_t >
-        ::
-
-  max ()
-    )
-
-          {
-
-                    TheMap -> fuseMapPoints (
-
-   keyframe.ids [
-
-   best.second ]
-
-       ,MP.id,false )
-
-     ;
-
-                    _18198621160182713342.push_back (
-
-   MP.id )
-
-   ;
-
-                    MP.setBad (
-
- true )
-
- ;
-
-                    _3005399801165696099 ++
-
- ;
-
-                 }
-
-                else {
-
-                    TheMap ->
-
-   addMapPointObservation (
-
-         MP.id,keyframe.idx,best.second )
-
-      ;
-
-                    _1517243165919133649 ++
-
-      ;
-
-                 }
-
-             }
-
-         }
-
-     }
-
-    std ::
-
-      vector <
-
-   uint32_t >
-
-    _16997228247169055403 = TheMap ->
-
-  getMapPointsInFrames (
-   _8613511226855067609.begin ()
-
- ,_8613511226855067609.end ()
-
-     )
-
- ;
-
-     float
-
-   _13976965695925359212 =
- log (
-
- mpCurrentKeyFrame.getScaleFactor ()
-        )
-        ;
-
-    cv ::
-
-         Point3f _16987816518187263273 =
-
-         mpCurrentKeyFrame.getCameraCenter ()
-
- ;
-     for(
-
-  auto &mpid:_16997228247169055403 )
-   {
-
-         auto
-
- &MP =
-
-        TheMap ->
-
-map_points [
-   mpid ]
-
-       ;
-
-         if
-
-    (
-
-        MP.isBad ()
-    )
-
-   continue ;
-         if(
-
-    MP.isObservingFrame (
-
-    mpCurrentKeyFrame.idx )
-
- ) continue ;
-
-        cv ::
-
-  Point2f p2d =
-
-  mpCurrentKeyFrame.project (
-
-   MP.getCoordinates ()
-
-         ,true,true )
-
-  ;
-
-         if( isnan (
-
-p2d.x )
-
-     )
-    continue ;
-
-         float dist =
-
-    cv ::
-      norm (
-
-  _16987816518187263273-MP.getCoordinates () )
-
-    ;
-         if
-
-    (
-
-   dist <
-     0.8f*MP.getMinDistanceInvariance ()
-
-  ||
-
-  dist >
-
- 1.2f*MP.getMaxDistanceInvariance ()
-  )
-     continue ;
-
-         if(
-
-         MP.getViewCos ( _16987816518187263273 )
-
-  <
-
-      0.5 )
-
- continue ;
-
-         int
-     nPredictedLevel =
-
-    mpCurrentKeyFrame.predictScale (
-
-  dist,MP.getMaxDistanceInvariance ()
-
- )
-
- ;
-
-        const float
-
-         radius =
-
-  _175247759809*mpCurrentKeyFrame.scaleFactors [
-      nPredictedLevel ]
-      ;
-
-        vector <
- uint32_t >
-
-    vkpIdx =
-
- mpCurrentKeyFrame.getKeyPointsInRegion (
-
-   p2d,radius,nPredictedLevel-1,nPredictedLevel )
-       ;
-
-        pair <
-
-  float,int >
-
-     best (
- System ::
-
-getParams ()
-
-     .maxDescDistance+1e-3,-1 )
-
-      ;
-
-         for(
-
-   auto kpidx:vkpIdx )
-
- {
-
-             float
-
-     descDist =
-
-   MP.getDescDistance (
-
-  mpCurrentKeyFrame.desc.row ( kpidx )
-      )
-
-      ;
-             if
-       (
-    descDist <
-
- best.first )
-
-                best =
-
-  { descDist,kpidx }
-
-    ;
-
-         }
-
-         if
-
- (
-     best.second !=
-    -1 )
-
-  {
-
-             if
-
- (
-
- mpCurrentKeyFrame.ids [
-  best.second ]
-
-        !=
-
- std ::
-     numeric_limits <
-    uint32_t >
-
- ::
-     max ()
-
-     )
-       {
-
-                TheMap ->
-
- fuseMapPoints (
-
- mpCurrentKeyFrame.ids [
-
-   best.second ]
-
- ,MP.id,false )
-
-  ;
-
-                _18198621160182713342.push_back (
-
-   MP.id )
-
-        ;
-                MP.setBad (
- true )
-
-   ;
-                _3005399801165696099 ++
-
-    ;
-
-             }
-
-            else {
-
-                TheMap ->
-
-    addMapPointObservation (
-
- MP.id,mpCurrentKeyFrame.idx,best.second )
-     ;
-
-                _1517243165919133649 ++
-        ;
-
-             }
-
-         }
-     }
-
-     return
-
-   _18198621160182713342 ;
-
- }
-
-std ::
-
-  list < MapManager ::
-
-   NewPointInfo >
-
-   MapManager ::
-
-     _8820655757626307961 (
-
-   Frame & NewFrame )
-
-     {
-
-     if
-
-    (
-
-   !
-
-NewFrame.imageParams.isStereoCamera () )
-
-    return
-
-      {
-
-  } ;
-
-     struct
-
-  _14315452481299618814 {
-
-         float
-
-  _4616368654387135743 ;
-
-        size_t _5734006271547469041 ;
-
-         bool
-
-    operator <
-
-     (
-   const _14315452481299618814&_175247760080 ) const {
-
-return _4616368654387135743 <
-
-  _175247760080._4616368654387135743 ;
-
- }
-
-         bool operator >
-
-    (
-
- const _14315452481299618814&_175247760080 )
-
-  const { return _4616368654387135743 >
-
-  _175247760080._4616368654387135743 ;
-
- }
-
-     }
-
-  ;
-
-     if(
-
-System ::
-
-   getParams ()
-
-      .KPNonMaximaSuppresion )
-
-        NewFrame.nonMaximaSuppresion ()
-   ;
-
-    vector <
-
-     _14315452481299618814 >
-
-      _7619806436859450970 ;
-
-    _7619806436859450970.reserve (
-
-   NewFrame.ids.size ()
-
-     )
-
-    ;
-
-     for(
-       size_t i = 0 ; i < NewFrame.ids.size ()
-
- ;
-
-    i ++
-
-       )
-
-         if
-    (
-
-NewFrame.ids [
-
-  i ]
-
-       ==
-std ::
-
-   numeric_limits <
-
-uint32_t >
-
-  ::
-
-  max () &&
-
-     !
-   NewFrame.flags [
-
-     i ]
-   .is (
-
-    Frame ::
-
- FLAG_NONMAXIMA )
-
-           &&
-   NewFrame.getDepth (
-
-    i )
-
-    >
-
-  0 &&
-
-       NewFrame.imageParams.isClosePoint (
-
-  NewFrame.getDepth (
-
-   i )
-
-    )
-
-    )
-
-            _7619806436859450970.push_back (
-
-   {
-    NewFrame.getDepth (
-
-i )
-
-  ,i }
-
- )
-      ;
-
-     if(
-      _7619806436859450970.size ()
-
-      >
-
- ucoslam ::
-
-        System ::
-
-   getParams ()
-.maxNewPoints )
-
-     {
-
-        std ::
-
-  random_shuffle (
-
-  _7619806436859450970.begin ()
-
-,_7619806436859450970.end ()
-
-     )
-
-  ;
-
-     }
-
-    _7619806436859450970.resize (
-
-   std ::
-
-        min (
-
-     _7619806436859450970.size ()
-
-       ,size_t (
-
- ucoslam ::
-
-     System ::
-
-    getParams ()
-
-  .maxNewPoints )
-
- )
-
- )
-
-       ;
-    std ::
-
-     list <
-
- MapManager ::
-  NewPointInfo >
-
-  _4622533121193472218 ;
-
-     auto
-
-       _16937226146608657651 =
-
-     NewFrame.pose_f2g.inv () ;
-
-     for(
-
-   auto &kpd:_7619806436859450970 )
-
-        {
-
-        MapManager ::
-
- NewPointInfo mapPoint ;
-
-        mapPoint.pose =
-
-    _16937226146608657651*NewFrame.get3dStereoPoint (
-
-        kpd._5734006271547469041 ) ;
-
-        mapPoint.frame_kpt.push_back (
-
- {
-
- NewFrame.idx,kpd._5734006271547469041 }
-   )
-
-   ;
-        mapPoint.isStereo =
-
-true ;
-
-        _4622533121193472218.push_back ( mapPoint )
-       ;
-
-     ;
-     }
-
-     return
-
- _4622533121193472218 ;
-
- }
-
-std :: vector <
-
-   MapManager ::
-
-       NewPointInfo >
-     MapManager :: _13988982604287804007 (
-
-  Frame &NewFrame , uint32_t
-
-   nn, uint32_t
- maxPoints )
-
-         {
-
-     if
-
-       (
-
-  NewFrame.ids.size ()
-  ==
-
- 0 ) return {
-
-   }
-    ;
-
-     struct _3005401605294789533 {
-
-        _3005401605294789533 (
-
-uint32_t _13388472731815556334, uint32_t _1513938270035531338, uint32_t
-   _7736357855027240696,cv ::
-
-    Point3f _11093821910177, float
-
- _16937031022796222526 ) {
-
-            _18030119007246525509 =
-     _13388472731815556334 ;
-
-            _681165095198498101 =
-
- _1513938270035531338 ;
-
-            _10333569979786346575 =
-   _7736357855027240696 ;
-
-            _16701867013855893038 =
-
-_11093821910177 ;
-
-            _11690406023733055431 =
-
-     _16937031022796222526 ;
-
-         }
-
-         uint32_t _18030119007246525509 ;
-
-         uint32_t
-
-     _681165095198498101 ;
-
-         uint32_t
-
-     _10333569979786346575 ;
-
-        cv ::
-       Point3f _16701867013855893038 ;
-
-         float
-
-  _11690406023733055431 ;
-     }
-
-  ;
-
-     Se3Transform _3005399792197371186 =
-
-     NewFrame.pose_f2g.inv ()
-       ;
-
-    vector < uint32_t >
-
-     _13920901643832806846 =
-
-  _489363023531416435 (
-
-     NewFrame,nn ) ;
-
-    vector <
-    vector <
-      _3005401605294789533 >
-
-          >
-
- FrameMatches (
-
-    _13920901643832806846.size () )
-
-      ;
-
-    FrameMatcher _16937386958649118140 ;
-
-    _16937386958649118140.setParams (
- NewFrame,FrameMatcher ::
-
- MODE_UNASSIGNED,System ::
-
-   getParams ()
-    .maxDescDistance*2,0.6,true,std ::
-
-       numeric_limits <
-  int >
-
- ::
-
-  max ()
-
-          )
-
-      ;
-
-#pragma omp parallel for
-     for(
-
-   int mf =
-
-  0 ;
-
-  mf <
- int (
-
-    _13920901643832806846.size ()
-
-  )
-
- ;
-
-   mf ++
-
-     )
-
-  {
-
-        Frame &frame2 =
-
-       TheMap ->
-      keyframes [
-
-    _13920901643832806846 [
-
-         mf ]
-
-   ]
-        ;
-
-         cv ::
-    Mat FQ2T =
-
-     frame2.pose_f2g* (
-
-     NewFrame.pose_f2g.inv ()
-    )
-
-   ;
-
-       vector <
-
-   cv ::
-
-     DMatch >
-     matches =
- _16937386958649118140.matchEpipolar (
-
-    frame2,FrameMatcher ::
-
-     MODE_UNASSIGNED,FQ2T )
-
-    ;
-
-          vector <
-
-    cv ::
-Point3f > p3d =
-
-      Triangulate (
-
-      NewFrame,frame2,FQ2T,matches ) ;
-
-         float
-
-ratioFactor =
-   1.5f*System ::
-
-getParams ()
-
-        .scaleFactor ;
-
-         for(
- size_t i =
-
- 0 ;
-
-     i <
-
-  matches.size ()
-
-          ; i ++
-
- )
-
-             if
-
-  (
-
- !
-     isnan (
-      p3d [
-
-     i ]
-
- .x )
-
-    )
-
-         {
-
-                cv ::
-
-Point3f p3global =
-  _3005399792197371186*p3d [
-
- i ]
-
-       ;
-
-                 float
-
-  distNF =
-cv :: norm (
-
-   p3global-NewFrame.getCameraCenter ()
-  )
-
-   ;
-
-                 float
-
-  distF2 = cv ::
-    norm (
-
-   p3global-frame2.getCameraCenter ()
-
-      )
-
- ;
-
-                 if(
-
-distNF ==
-
-    0 ||
-
-         distF2 ==
-
-   0 )
-
-     continue ;
-
-                const float
-
-     ratioDist =
-    distNF/distF2 ;
-
-                 int
-
-oct_NewFrame =
-
-       NewFrame.und_kpts [
-    matches [
-
-   i ]
- .trainIdx ]
-
-   .octave ;
-
-                 int
-      oct_frame2 =
-
-   frame2.und_kpts [
-
-      matches [
-
-  i ]
-      .queryIdx ]
-
-.octave ;
-
-                const float
-
-   ratioOctave =
-
-    NewFrame.scaleFactors [
-oct_NewFrame ]
-
- /frame2.scaleFactors [
-
-    oct_frame2 ]
-    ;
-
-                 if(
-
-ratioDist*ratioFactor <
-
-       ratioOctave || ratioDist >
-
- ratioOctave*ratioFactor )
-
-                    continue ;
-
-                FrameMatches [ mf ]
-
-.push_back (
-   _3005401605294789533 (
-
- uint32_t (
-
-         matches [
-
-        i ]
-
-    .trainIdx )
-
-    ,frame2.idx, uint32_t (
-       matches [
-
-i ]
-
-.queryIdx )
-  ,p3global,matches [
-
-i ]
-
-     .distance )
-
-   ) ;
-
-             }
-
-     }
-
-     auto
-
-    _5829441678613027716 =
- [
-
-         ]
-
-       (
-
-   const uint32_t&_11093821926013 )
-
-      {
-
-  std ::
-
-   stringstream _706246330191125 ;
-_706246330191125 <<
-
-   _11093821926013 ;
-
-    return
-
-  _706246330191125.str ()
-
-       ;
-  }
-
-      ;
-
-    std ::
-       map <
-
-    uint32_t,vector <
-_3005401605294789533 >
-
-  >
-
- _11350249437170142625 ;
-
-     for(
- size_t mf =
-
-     0 ;
-
-         mf <
-   FrameMatches.size ()
-
-   ;
-
-mf ++ )
-         for( const auto
-&match: FrameMatches [
-
-    mf ]
-
-     )
-
-            _11350249437170142625 [
-
-  match._18030119007246525509 ]
-
-  .push_back (
-     match )
-
-        ;
-
-    std ::
-      vector <
-
-      MapManager ::
-
-      NewPointInfo >
-     _4622533121193472218 ;
-
-     for(
-
- auto &kp:_11350249437170142625 )
-
-     {
-
-        MapManager ::
-
- NewPointInfo mapPoint ;
-
-         int
-
-   bestDesc =
-
-  -1 ;
-         int bestOctave =
-std ::
-
-       numeric_limits <
-
-  int >
-
-   ::
-
-    max ()
-
-          ;
-         for(
-
-        size_t di =
-
-    0 ;
-
- di <
-
-   kp.second.size ()
-
-    ;
-
-di ++
-
-  )
-
-    {
-
-            const auto
-
-         &frame_kp =
-     TheMap ->
-
-   keyframes [
-   kp.second [
-
-  di ]
-
-        ._681165095198498101 ]
-
-.und_kpts [ kp.second [
-
-  di ]
-
-       ._10333569979786346575 ]
-
-   ;
-
-             if(
-
-   frame_kp.octave < bestOctave )
-
-  { bestDesc =
-
-  di ;
- }
-
-         }
+                0;
 
         const auto
 
-   &best_match =
+                &_3005399819707726498 =
 
-  kp.second [
-  bestDesc ]
+                TheMap->
 
- ;
+                        keyframes[_16940374161587532565];
 
-        mapPoint.pose =
+        for (
 
-          best_match._16701867013855893038 ;
+            auto id: _3005399819707726498.ids) {
 
-        mapPoint.dist =
-   best_match._11690406023733055431 ;
+            if
 
-        mapPoint.frame_kpt.push_back (
+                    (id !=
 
-       {
- NewFrame.idx, kp.first }
+                     std::
 
-  )
-    ;
+                     numeric_limits<
+                             uint32_t>
 
-         for(
+                     ::max()) {
 
- auto fma:kp.second )
+                const auto
 
-            mapPoint.frame_kpt.push_back (
-   { TheMap ->
+                        &mapP =
 
-     keyframes [
-  fma._681165095198498101 ]
+                        TheMap->
 
- .idx, fma._10333569979786346575 }
+                                map_points[
 
-  )
- ;
+                                id];
 
-        _4622533121193472218.push_back (
+                if (
 
- mapPoint )
+                        mapP.isBad()
 
-   ;
+                        )
 
-   ;
+                    continue;
 
-     }
+                if
+                        (
+                        mapP.getNumOfObservingFrames()
 
-     if (
-     _4622533121193472218.size ()
+                        <
 
-  >
- maxPoints )
+                        _3005399795202072660)
+                    continue;
 
- {
+                _16937194960156429046++;
 
-        std ::
+            }
 
-   sort (
-     _4622533121193472218.begin ()
+        }
 
-     ,_4622533121193472218.end ()
+        if
+                (
 
- , [
+                _8367785432631711677 <
 
-          ]
+                float(
 
-       (
+                        _16937194960156429046)
 
-const MapManager ::
+                * _10934236797308178385)
 
-   NewPointInfo &a,const MapManager ::
+            return true;
 
-      NewPointInfo &b )
+        return
 
-   {
-  return a.dist <
-
-  b.dist ;
+                false;
 
     }
 
-  )
+    vector<
 
-   ;
+            uint32_t>
 
-        _4622533121193472218.resize (
+    MapManager::
 
-       maxPoints )
+    _489363023531416435(
+            Frame &NewFrame, size_t maxFrames) {
 
-   ;
+        if
+                (
+                TheMap->
 
-     }
+                        keyframes.size()
 
-     return
+                <=
 
-        _4622533121193472218 ;
+                2)
 
- }
+            return
 
- void
+                    {
 
-  MapManager ::
+                            TheMap->
 
-    _10758134674558762512 (
+                                            keyframes.front()
 
-    int _3005399800582873013 )
+                                    .idx};
 
-        {
+        vector<
+                uint32_t>
 
-     GlobalOptimizer ::
+                _1515469360845371082 =
 
-ParamSet _3005399798454910266 (
+                TheMap->
 
-  debug ::
+                        TheKpGraph.getNeighborsV(
+                        NewFrame.idx);
 
-        Debug ::
+        size_t _2654435874 =
 
-       getLevel ()
-    >=
+                0;
 
-     11 )
-     ;
+        while (
 
-    _3005399798454910266.fixFirstFrame =
+                _2654435874 <
 
-    true ;
+                _1515469360845371082.size()
 
-    _3005399798454910266.nIters =
-  _3005399800582873013 ;
+                ) {
 
-    _3005399798454910266.markersOptWeight =
-   System ::
-       getParams ()
+            if
 
-  .markersOptWeight ;
+                    (
+                    TheMap->
 
-    _3005399798454910266.minMarkersForMaxWeight =
+                            keyframes[
+                            _1515469360845371082[
+                                    _2654435874]
 
-  System ::
+                    ]
 
-     getParams ()
-     .minMarkersForMaxWeight ;
+                            .isBad()
 
-    _3005399798454910266.InPlaneMarkers =
-       System ::
+                    ) {
 
-    getParams ()
+                std::
+                swap(
 
-   .inPlaneMarkers ;
+                        _1515469360845371082[
 
-     if
+                                _2654435874], _1515469360845371082.back()
 
- (
+                );
 
-   _3005399798454910266.fixed_frames.size ()
+                _1515469360845371082.pop_back();
 
-      ==
+            } else
 
-      0 &&
-     TheMap ->
+                _2654435874++;
 
-     map_markers.size ()
+        }
 
-  ==
+        std::sort(
+                _1515469360845371082.begin(), _1515469360845371082.end(), [
 
-     0 )
+                        &]
+                        (
 
- {
+                                uint32_t a, uint32_t
 
-         auto
+                        b) {
 
-  _175247760151 =
-  TheMap ->
+                    return
+                            TheMap->
 
-         keyframes.begin ()
+                                    TheKpGraph.getWeight(
 
-      ;
+                                    a, NewFrame.idx)
+                            >
 
-        _3005399798454910266.fixed_frames.insert (
+                            TheMap->
 
-_175247760151 ->
+                                    TheKpGraph.getWeight(
 
-    idx )
+                                    b, NewFrame.idx);
+                }
 
-        ;
+        );
 
-         ++
+        vector<uint32_t>
 
-   _175247760151 ;
+                _18082515013534369065;
 
-         if
+        for (
 
-     (
+            auto neigh: _1515469360845371082) {
 
-    _175247760151 !=
+            auto
+                    medianDepth =
 
- TheMap ->
+                    TheMap->
+                            getFrameMedianDepth(
 
- keyframes.end ()
+                            neigh);
 
-     )
+            auto baseline =
 
-     {
+                    cv::
 
-             if(
- _3005399798454910266.used_frames.count (
+                    norm(
 
-_175247760151 ->
-    idx )
+                            NewFrame.getCameraCenter()
 
-  ||
+                            - TheMap->
 
-  _3005399798454910266.used_frames.size ()
+                                    keyframes[
 
- ==
+                                    neigh].getCameraCenter()
 
-       0 )
+                    );
 
-                _3005399798454910266.fixed_frames.insert (
+            float acos =
 
-     _175247760151 ->
-     idx )
+                    NewFrame.getCameraDirection()
+                            .dot(
+                                    TheMap->keyframes[
+                                            neigh]
+                                            .getCameraDirection()
+                            );
 
-    ;
+            if (
 
-         }
+                    acos >
 
-     }
-    _15944432432468226297 =
+                    0.6 && baseline / medianDepth >
 
-      GlobalOptimizer ::
+                           System::
 
-  create (
+                           getParams()
 
- System ::
+                                   .baseline_medianDepth_ratio_min)
 
-  getParams ()
+                _18082515013534369065.push_back(
 
-    .global_optimizer )
+                        neigh);
 
- ;
+            if
 
-    _15944432432468226297 ->
+                    (
 
-     setParams (
+                    _18082515013534369065.size()
+                    >=
 
-TheMap,_3005399798454910266 )
+                    maxFrames)
 
-     ;
+                break;
 
-    _15944432432468226297 ->
+        }
 
-  optimize () ;
+        return
+                _18082515013534369065;
 
-    _15944432432468226297 ->
- getResults (
-     TheMap )
+    }
 
-        ;
-    TheMap ->
-     removeBadAssociations (
+    vector<
 
- _15944432432468226297 ->
+            uint32_t>
 
-     getBadAssociations ()
+    MapManager::
 
-  ,System ::
-    getParams ()
-       .minNumProjPoints )
+    _17400054198872595804(
 
-       ;
+            Frame &mpCurrentKeyFrame) {
 
-    _15944432432468226297 =
+        auto
 
-        nullptr ;
+                _4969073986308462195 =
 
- }
+                TheMap->
+                        TheKpGraph.getNeighbors(
 
- void MapManager ::
+                        mpCurrentKeyFrame.idx);
 
-  _11362629803814604768 (
+        set<
 
-  uint32_t _16937255065087280628, int
-   _3005399802176474746 )
-       {
-     bool
-      _16116701644373052209 =
+                uint32_t>
 
-       false ;
-     for(
-auto _2654435871:TheMap -> keyframes )
+                _8613511226855067609;
 
-         if
-   (
-       _2654435871.imageParams.isStereoCamera ()
+        vector<
 
-       )
+                uint32_t>
+                _18198621160182713342;
+        for (
 
-   {
+            auto n: _4969073986308462195)
 
-            _16116701644373052209 =
+            if
 
-    true ;
+                    (
 
-            break ;
+                    !
 
-         }
-    std ::
+                            TheMap->
 
- set <
+                                    keyframes[
+                                    n]
 
-uint32_t >
+                                    .isBad()
 
- _46082575804458778 =
+                    )
 
-             TheMap ->
-       TheKpGraph.getNeighbors (
+                _8613511226855067609.insert(
 
-    _16937255065087280628,true )
+                        n);
 
-        ;
+        int
 
-     GlobalOptimizer ::
+                _1517243165919133649 =
 
-       ParamSet _3005399798454910266 (
+                0, _3005399801165696099 =
 
-   debug ::
+                0;
 
-   Debug ::
-  getLevel ()
+        float
 
- >=
+                _175247759809 =
 
-    11 )
+                2.5;
 
-       ;
+        vector<
 
-     _3005399798454910266.markersOptWeight =
-       System ::
+                uint32_t>
+                _13928263410240979211 =
 
-         getParams ()
+                mpCurrentKeyFrame.getMapPoints();
 
-       .markersOptWeight ;
+        for (
 
-     _3005399798454910266.minMarkersForMaxWeight =
+            auto tkf: _8613511226855067609) {
 
-   System ::
-      getParams ()
+            Frame &keyframe =
 
-   .minMarkersForMaxWeight ;
+                    TheMap->
+                            keyframes[
 
-     _3005399798454910266.used_frames.insert (
+                            tkf];
 
-    _46082575804458778.begin ()
+            cv::
 
-    ,_46082575804458778.end ()
+            Point3f camCenter =
 
-    )
+                    keyframe.getCameraCenter();
 
-   ;
+            for (
+                auto MpId: _13928263410240979211) {
 
-    _3005399798454910266.fixFirstFrame =
-  true ;
+                if
 
-    _3005399798454910266.nIters =
+                        (
 
- _3005399802176474746 ;
+                        !
 
-    _3005399798454910266.InPlaneMarkers =
+                                TheMap->map_points.is(
 
-System ::
-  getParams ()
+                                        MpId)
+                        )
+                    continue;
 
-.inPlaneMarkers ;
+                MapPoint &MP =
 
-     if
+                        TheMap->
 
-  (
-     _3005399798454910266.fixed_frames.size ()
+                                map_points[
+                                MpId];
 
-   ==
+                if
 
-0 &&
+                        (
 
- TheMap ->
+                        MP.isBad()
 
-      map_markers.size ()
-       ==
-      0 &&
+                        )
 
-       !
+                    continue;
 
-   _16116701644373052209 )
+                if
 
-    {
+                        (
 
-         auto
+                        MP.frames.count(keyframe.idx)
 
-_175247760151 =
-  TheMap ->
+                        )
+                    continue;
 
-keyframes.begin ()
-   ;
+                cv::
+                Point2f p2d =
 
-        _3005399798454910266.fixed_frames.insert (
-   _175247760151 ->
+                        keyframe.project(
 
-        idx )
+                                MP.getCoordinates(), true, true);
 
-   ;
+                if (
 
-         ++
+                        isnan(
 
-  _175247760151 ;
+                                p2d.x)
 
-         if
+                        )
 
-      (
+                    continue;
 
-  _175247760151 !=
-TheMap ->
+                float
 
-     keyframes.end ()
-        )
+                        dist =
 
-   {
+                        cv::
 
-             if(
-     _3005399798454910266.used_frames.count (
+                        norm(
 
- _175247760151 ->
+                                camCenter - MP.getCoordinates()
 
-idx )
+                        );
+                if
 
-        )
+                        (
 
-                _3005399798454910266.fixed_frames.insert (
-    _175247760151 ->
+                        dist <
 
- idx )
+                        0.8f * MP.getMinDistanceInvariance()
 
- ;
+                        ||
 
-         }
+                        dist >
 
-     }
+                        1.2f * MP.getMaxDistanceInvariance()
 
-    _15944432432468226297 =
+                        )
 
-     GlobalOptimizer ::
+                    continue;
 
- create (
+                if (
 
-   System ::
+                        MP.getViewCos(
 
-        getParams ()
+                                camCenter)
 
-  .global_optimizer )
- ;
+                        <
 
-    _15944432432468226297 ->
+                        0.5)
 
-    setParams (
+                    continue;
 
- TheMap,_3005399798454910266 )
+                int
 
-     ;
+                        nPredictedLevel =
 
-     _15944432432468226297 ->
-     optimize (
+                        mpCurrentKeyFrame.predictScale(
 
-    &_hurryUp )
+                                dist, MP.getMaxDistanceInvariance()
+                        );
 
-        ;
+                float
+                        radius =
 
-  }
+                        _175247759809 * keyframe.scaleFactors[
 
- void
+                                nPredictedLevel];
 
-  MapManager ::
+                if
+                        (
 
-    toStream ( std ::
+                        MP.getViewCos(
+                                camCenter)
 
-   ostream &_11093822381060 )
+                        <
 
-  {
+                        0.98)
 
-    while (
+                    radius *=
+                            1.4f;
 
-      _curState ==
+                vector<
 
-      WORKING )
+                        uint32_t>
 
-    std ::
+                        vkpIdx =
+                        keyframe.getKeyPointsInRegion(
 
-   this_thread ::
+                                p2d, radius, nPredictedLevel - 1, nPredictedLevel);
 
-sleep_for ( std ::
+                pair<float, int>
 
-chrono ::
+                        best(
 
- milliseconds (
+                        System::
 
-10 )
+                        getParams()
 
-    )
+                                .maxDescDistance + 1e-3, -1);
 
-  ;
+                for (
 
-     mapUpdate ()
+                    auto kpidx: vkpIdx) {
 
-      ;
+                    float
 
-    uint64_t _11093822380353 =
+                            descDist =
 
-   1823312417 ;
+                            MP.getDescDistance(
 
-    _11093822381060.write (
+                                    keyframe.desc.row(
+                                            kpidx)
 
-  ( char* )
+                            );
 
-&_11093822380353,sizeof (
+                    if
 
-_11093822380353 )
+                            (
 
-   )
+                            descDist <
 
-     ;
+                            best.first)
 
-    _11093822381060.write (
-   (
+                        best =
 
-     char* )
+                                {
+                                        descDist, kpidx};
+                }
 
-    &_lastAddedKeyFrame,sizeof (
+                if
+                        (
 
-     _lastAddedKeyFrame )
-       )
+                        best.second !=
 
-    ;
+                        -1) {
 
-    _11093822381060.write ( (
+                    if
 
-char* )
+                            (
 
- &_9728777609121731073,sizeof (
+                            keyframe.ids[
 
-_9728777609121731073 )
+                                    best.second]
 
- )
+                            !=
+                            std::
 
- ;
+                            numeric_limits<
+                                    uint32_t>
+                            ::
 
-    _11093822381060.write (
+                            max()
+                            ) {
 
-     (
+                        TheMap->fuseMapPoints(
 
-   char* )
+                                keyframe.ids[
 
- &_4090819199315697352,sizeof (
-    _4090819199315697352 )
+                                        best.second], MP.id, false);
 
-      )
+                        _18198621160182713342.push_back(
 
- ;
+                                MP.id);
 
-     auto
+                        MP.setBad(
 
-     _11093821926013 =
+                                true);
 
- _curState.load ()
-    ;
+                        _3005399801165696099++;
 
-    _11093822381060.write (
+                    } else {
 
-        (
+                        TheMap->
 
-char* )
+                                addMapPointObservation(
 
- &_11093821926013,sizeof (
+                                MP.id, keyframe.idx, best.second);
 
-     _11093821926013 )
+                        _1517243165919133649++;
 
-       )
-      ;
+                    }
 
-    toStream__ (
+                }
 
- keyframesToAdd.buffer_,_11093822381060 )
+            }
 
-   ;
+        }
 
-    toStream__ (
+        std::
 
-  PointsToRemove,_11093822381060 )
+        vector<
 
-     ;
+                uint32_t>
 
-    toStream__ (
+                _16997228247169055403 = TheMap->
 
- KeyFramesToRemove,_11093822381060 )
+                getMapPointsInFrames(
+                _8613511226855067609.begin(), _8613511226855067609.end()
 
-   ;
+        );
 
-    toStream__kv (
+        float
 
-         youngKeyFrames,_11093822381060 )
+                _13976965695925359212 =
+                log(
 
-        ;
+                        mpCurrentKeyFrame.getScaleFactor()
+                );
 
-    _11093822381060.write (
-  (
+        cv::
 
-      char* )
+        Point3f _16987816518187263273 =
 
-     &_13990461397173511559,sizeof ( _13990461397173511559 )
+                mpCurrentKeyFrame.getCameraCenter();
+        for (
 
-  )
+            auto &mpid: _16997228247169055403) {
 
-  ;
+            auto
 
-    _13909239728712143806.toStream (
+                    &MP =
 
-         _11093822381060 )
+                    TheMap->
 
- ;
+                            map_points[
+                            mpid];
 
-    _11093822381060.write (
+            if
 
-        (
+                    (
 
-  char* )
+                    MP.isBad()
+                    )
 
-  &_1061304613240460439,sizeof (
+                continue;
+            if (
 
-_1061304613240460439 )
-      )
+                    MP.isObservingFrame(
 
- ;
+                            mpCurrentKeyFrame.idx)
 
-    _11093822381060.write (
+                    )
+                continue;
 
-   (
+            cv::
 
- char* )
+            Point2f p2d =
 
-   &_11028815416989897150,sizeof (
-  _11028815416989897150 )
-      )
+                    mpCurrentKeyFrame.project(
 
-   ;
+                            MP.getCoordinates(), true, true);
 
-    _11093822381060.write (
+            if (isnan(
 
- (
+                    p2d.x)
 
-   char* )
+                    )
+                continue;
 
-&_12303014364795142948,sizeof (
+            float dist =
 
-     _12303014364795142948 )
+                    cv::
+                    norm(
 
-         )
+                            _16987816518187263273 - MP.getCoordinates());
+            if
 
-    ;
+                    (
 
-    _11093822381060.write (
-       (
-     char* )
+                    dist <
+                    0.8f * MP.getMinDistanceInvariance()
 
-&_hurryUp,sizeof (
+                    ||
 
-        _hurryUp )
+                    dist >
 
-    )
+                    1.2f * MP.getMaxDistanceInvariance()
+                    )
+                continue;
 
-        ;
+            if (
 
-    _8346364136266015358.toStream (
+                    MP.getViewCos(_16987816518187263273)
 
-_11093822381060 )
+                    <
 
-    ;
+                    0.5)
 
- }
+                continue;
 
- void
+            int
+                    nPredictedLevel =
 
-     MapManager ::
+                    mpCurrentKeyFrame.predictScale(
 
-    fromStream (
+                            dist, MP.getMaxDistanceInvariance()
 
-  std ::
+                    );
 
-  istream &_11093822381060 )
- {
+            const float
 
-    stop ()
+                    radius =
 
- ;
+                    _175247759809 * mpCurrentKeyFrame.scaleFactors[
+                            nPredictedLevel];
 
-    uint64_t _11093822380353 ;
+            vector<
+                    uint32_t>
 
-    _11093822381060.read (
+                    vkpIdx =
 
-  (
+                    mpCurrentKeyFrame.getKeyPointsInRegion(
 
-   char* )
+                            p2d, radius, nPredictedLevel - 1, nPredictedLevel);
 
-&_11093822380353,sizeof (
+            pair<
 
-  _11093822380353 )
+                    float, int>
 
- )
+                    best(
+                    System::
 
-          ;
-     if(
- _11093822380353 != 1823312417 )
+                    getParams()
 
- throw std ::
-    runtime_error (
-  string (
-     __PRETTY_FUNCTION__ )
+                            .maxDescDistance + 1e-3, -1);
 
-    +"\x43\x6f\x75\x6c\x64\x20\x6e\x6f\x74\x20\x72\x65\x61\x64\x20\x73\x69\x67\x6e\x61\x74\x75\x72\x65\x20\x6f\x66\x20\x4d\x61\x70\x6d\x61\x6e\x61\x67\x65\x72\x20\x69\x6e\x20\x73\x74\x72\x65\x61\x6d" )
+            for (
 
- ;
+                auto kpidx: vkpIdx) {
 
-    _11093822381060.read (
+                float
 
- (
+                        descDist =
 
-char* )
+                        MP.getDescDistance(
 
-     &_lastAddedKeyFrame,sizeof (
+                                mpCurrentKeyFrame.desc.row(kpidx)
+                        );
+                if
+                        (
+                        descDist <
 
-  _lastAddedKeyFrame )
+                        best.first)
 
-      )
+                    best =
 
-      ;
-    _11093822381060.read (
-     (
+                            {descDist, kpidx};
 
-    char* )
+            }
 
- &_9728777609121731073,sizeof (
-  _9728777609121731073 )
+            if
 
-  ) ;
+                    (
+                    best.second !=
+                    -1) {
 
-    _11093822381060.read (
+                if
 
-    (
+                        (
 
-     char* )
+                        mpCurrentKeyFrame.ids[
+                                best.second]
 
-     &_4090819199315697352,sizeof (
+                        !=
 
-      _4090819199315697352 )
+                        std::
+                        numeric_limits<
+                                uint32_t>
 
-      )
+                        ::
+                        max()
 
-  ;
+                        ) {
 
-     auto
+                    TheMap->
 
- _16987968640077875288 =
+                            fuseMapPoints(
 
-    _curState.load ()
+                            mpCurrentKeyFrame.ids[
 
-         ;
+                                    best.second], MP.id, false);
 
-    _11093822381060.read (
-  (
+                    _18198621160182713342.push_back(
 
-  char* )
+                            MP.id);
+                    MP.setBad(
+                            true);
+                    _3005399801165696099++;
 
-    &_16987968640077875288,sizeof ( _16987968640077875288 )
+                } else {
 
- )
-       ;
+                    TheMap->
 
-    _curState =
+                            addMapPointObservation(
 
-_16987968640077875288 ;
+                            MP.id, mpCurrentKeyFrame.idx, best.second);
 
-    fromStream__ (
-       keyframesToAdd.buffer_,_11093822381060 )
+                    _1517243165919133649++;
 
-     ;
+                }
 
-    fromStream__ (
+            }
+        }
 
-         PointsToRemove,_11093822381060 )
+        return
 
-      ;
+                _18198621160182713342;
 
-    fromStream__ (
- KeyFramesToRemove,_11093822381060 )
+    }
 
-    ;
+    std::
 
-    fromStream__kv (
-    youngKeyFrames,_11093822381060 )
+    list<MapManager::
 
-  ;
+    NewPointInfo>
 
-    _11093822381060.read (
+    MapManager::
 
-    (
+    _8820655757626307961(
 
- char* )
+            Frame &NewFrame) {
 
-   &_13990461397173511559,sizeof (
+        if
 
-  _13990461397173511559 )
+                (
 
-  )
+                !
 
-   ;
+                        NewFrame.imageParams.isStereoCamera())
 
-    _13909239728712143806.fromStream (
+            return
 
-       _11093822381060 )
+                    {
 
-      ;
+                    };
 
-    _11093822381060.read (
+        struct
 
-   (
+        _14315452481299618814 {
 
-char* )
-   &_1061304613240460439,sizeof (
-   _1061304613240460439 )
+            float
 
-  )
+                    _4616368654387135743;
 
-      ;
+            size_t _5734006271547469041;
 
-    _11093822381060.read (
+            bool
 
-    (
-     char* ) &_11028815416989897150,sizeof (
+            operator<
 
-     _11028815416989897150 )
+                    (
+                            const _14315452481299618814 &_175247760080) const {
 
-         )
+                return _4616368654387135743 <
 
-    ;
+                       _175247760080._4616368654387135743;
 
-    _11093822381060.read (
-        (
+            }
 
- char* )
+            bool operator>
 
-     &_12303014364795142948,sizeof (
-      _12303014364795142948 )
-  )
+                    (
 
-      ;
+                            const _14315452481299618814 &_175247760080)
 
-    _11093822381060.read (
+            const {
+                return _4616368654387135743 >
 
-      (
+                       _175247760080._4616368654387135743;
 
-char* )
- &_hurryUp,sizeof (
+            }
 
-       _hurryUp )
+        };
 
-  )
+        if (
 
- ;
+                System::
 
-    _8346364136266015358.fromStream (
+                getParams()
 
-     _11093822381060 )
-    ;
+                        .KPNonMaximaSuppresion)
 
- }
+            NewFrame.nonMaximaSuppresion();
 
-uint64_t MapManager :: getSignature ()
-   {
+        vector<
 
-    Hash _11093822380353 ;
+                _14315452481299618814>
 
-    _11093822380353 +=
-      _lastAddedKeyFrame ;
+                _7619806436859450970;
 
-    _11093822380353 +=
+        _7619806436859450970.reserve(
 
-   _9728777609121731073 ;
+                NewFrame.ids.size()
 
-    _11093822380353 +=
-      _4090819199315697352 ;
+        );
 
-    _11093822380353 +=
+        for (
+                size_t i = 0; i < NewFrame.ids.size();
 
-    _curState.load ()
+                i++
 
- ;
+                )
 
-    _11093822380353 +=
+            if
+                    (
 
- keyframesToAdd.size ()
+                    NewFrame.ids[
 
- ;
+                            i]
 
-     for(
+                    ==
+                    std::
 
-   auto kv:PointsToRemove )
+                    numeric_limits<
 
-  _11093822380353 +=
+                            uint32_t>
 
-kv ;
+                    ::
 
-     for(
+                    max() &&
 
- auto kv:KeyFramesToRemove )
+                    !
+                            NewFrame.flags[
+
+                                    i]
+                                    .is(
+
+                                            Frame::
+
+                                            FLAG_NONMAXIMA)
+
+                    &&
+                    NewFrame.getDepth(
+
+                            i)
+
+                    >
+
+                    0 &&
+
+                    NewFrame.imageParams.isClosePoint(
+
+                            NewFrame.getDepth(
+
+                                    i)
+
+                    )
+
+                    )
+
+                _7619806436859450970.push_back(
+
+                        {
+                                NewFrame.getDepth(
+
+                                        i), i}
+
+                );
+
+        if (
+                _7619806436859450970.size()
+
+                >
+
+                ucoslam::
+
+                System::
+
+                getParams()
+                        .maxNewPoints) {
+
+            std::
+
+            random_shuffle(
+
+                    _7619806436859450970.begin(), _7619806436859450970.end()
+
+            );
+
+        }
+
+        _7619806436859450970.resize(
+
+                std::
+
+                min(
+
+                        _7619806436859450970.size(), size_t(
+
+                                ucoslam::
+
+                                System::
+
+                                getParams()
+
+                                        .maxNewPoints)
+
+                )
+
+        );
+        std::
+
+        list<
+
+                MapManager::
+                NewPointInfo>
+
+                _4622533121193472218;
+
+        auto
+
+                _16937226146608657651 =
+
+                NewFrame.pose_f2g.inv();
+
+        for (
+
+            auto &kpd: _7619806436859450970) {
+
+            MapManager::
+
+            NewPointInfo mapPoint;
+
+            mapPoint.pose =
+
+                    _16937226146608657651 * NewFrame.get3dStereoPoint(
+
+                            kpd._5734006271547469041);
+
+            mapPoint.frame_kpt.push_back(
+
+                    {
+
+                            NewFrame.idx, kpd._5734006271547469041}
+            );
+            mapPoint.isStereo =
+
+                    true;
+
+            _4622533121193472218.push_back(mapPoint);
+
+            ;
+        }
+
+        return
+
+                _4622533121193472218;
+
+    }
+
+    std::vector<
+
+            MapManager::
+
+            NewPointInfo>
+    MapManager::createNewPoints(
+
+            Frame &NewFrame, uint32_t
+
+    nn, uint32_t
+            maxPoints) {
+
+        if
+
+                (
+
+                NewFrame.ids.size()
+                ==
+
+                0)
+            return {
+
+            };
+
+        struct _3005401605294789533 {
+
+            _3005401605294789533(
+
+                    uint32_t _13388472731815556334, uint32_t _1513938270035531338, uint32_t
+            _7736357855027240696, cv::
+
+                    Point3f _11093821910177, float
+
+                    _16937031022796222526) {
+
+                _18030119007246525509 =
+                        _13388472731815556334;
+
+                _681165095198498101 =
+
+                        _1513938270035531338;
+
+                _10333569979786346575 =
+                        _7736357855027240696;
+
+                _16701867013855893038 =
+
+                        _11093821910177;
+
+                _11690406023733055431 =
+
+                        _16937031022796222526;
+
+            }
+
+            uint32_t _18030119007246525509;
+
+            uint32_t
+
+                    _681165095198498101;
+
+            uint32_t
+
+                    _10333569979786346575;
+
+            cv::
+            Point3f _16701867013855893038;
+
+            float
+
+                    _11690406023733055431;
+        };
+
+        Se3Transform _3005399792197371186 =
+
+                NewFrame.pose_f2g.inv();
+
+        vector<uint32_t>
+
+                _13920901643832806846 =
+
+                _489363023531416435(
+
+                        NewFrame, nn);
+
+        vector<
+                vector<
+                        _3005401605294789533>
+
+        >
+
+                FrameMatches(
+
+                _13920901643832806846.size());
+
+        FrameMatcher _16937386958649118140;
+
+        _16937386958649118140.setParams(
+                NewFrame, FrameMatcher::
+
+                MODE_UNASSIGNED, System::
+
+                                 getParams()
+                                         .maxDescDistance * 2, 0.6, true, std::
+
+                numeric_limits<
+                        int>
+
+                ::
+
+                max()
+
+        );
+
+#pragma omp parallel for
+        for (
+
+                int mf =
+
+                        0;
+
+                mf <
+                int(
+
+                        _13920901643832806846.size()
+
+                );
+
+                mf++
+
+                ) {
+
+            Frame &frame2 =
+
+                    TheMap->
+                            keyframes[
+
+                            _13920901643832806846[
+
+                                    mf]
+
+                    ];
+
+            cv::
+            Mat FQ2T =
+
+                    frame2.pose_f2g * (
+
+                            NewFrame.pose_f2g.inv()
+                    );
+
+            vector<
+
+                    cv::
+
+                    DMatch>
+                    matches =
+                    _16937386958649118140.matchEpipolar(
+
+                            frame2, FrameMatcher::
+
+                            MODE_UNASSIGNED, FQ2T);
+
+            vector<
+
+                    cv::
+                    Point3f> p3d =
+
+                    Triangulate(
+
+                            NewFrame, frame2, FQ2T, matches);
+
+            float
+
+                    ratioFactor =
+                    1.5f * System::
+
+                    getParams()
+
+                            .scaleFactor;
+
+            for (
+                    size_t i =
+
+                            0;
+
+                    i <
+
+                    matches.size(); i++
+
+                    )
+
+                if
+
+                        (
+
+                        !
+                                isnan(
+                                        p3d[
+
+                                                i]
+
+                                                .x)
+
+                        ) {
+
+                    cv::
+
+                    Point3f p3global =
+                            _3005399792197371186 * p3d[
+
+                                    i];
+
+                    float
+
+                            distNF =
+                            cv::norm(
+
+                                    p3global - NewFrame.getCameraCenter()
+                            );
+
+                    float
+
+                            distF2 = cv::
+                    norm(
+
+                            p3global - frame2.getCameraCenter()
+
+                    );
+
+                    if (
+
+                            distNF ==
+
+                            0 ||
+
+                            distF2 ==
+
+                            0)
+
+                        continue;
+
+                    const float
+
+                            ratioDist =
+                            distNF / distF2;
+
+                    int
+
+                            oct_NewFrame =
+
+                            NewFrame.und_kpts[
+                                    matches[
+
+                                            i]
+                                            .trainIdx]
+
+                                    .octave;
+
+                    int
+                            oct_frame2 =
+
+                            frame2.und_kpts[
+
+                                    matches[
+
+                                            i]
+                                            .queryIdx]
+
+                                    .octave;
+
+                    const float
+
+                            ratioOctave =
+
+                            NewFrame.scaleFactors[
+                                    oct_NewFrame]
+
+                            / frame2.scaleFactors[
+
+                                    oct_frame2];
+
+                    if (
+
+                            ratioDist * ratioFactor <
+
+                            ratioOctave || ratioDist >
+
+                                           ratioOctave * ratioFactor)
+
+                        continue;
+
+                    FrameMatches[mf]
+
+                            .push_back(
+                                    _3005401605294789533(
+
+                                            uint32_t(
+
+                                                    matches[
+
+                                                            i]
+
+                                                            .trainIdx), frame2.idx, uint32_t(
+                                                    matches[
+
+                                                            i]
+
+                                                            .queryIdx), p3global, matches[
+
+                                                    i]
+
+                                                    .distance)
+
+                            );
+
+                }
+
+        }
+
+        auto
+
+                _5829441678613027716 =
+                [
+
+                ]
+
+                        (
+
+                                const uint32_t &_11093821926013) {
+
+                    std::
+
+                    stringstream _706246330191125;
+                    _706246330191125 <<
+
+                                     _11093821926013;
+
+                    return
+
+                            _706246330191125.str();
+                };
+
+        std::
+        map<
+
+                uint32_t, vector<
+                        _3005401605294789533>
+
+        >
+
+                _11350249437170142625;
+
+        for (
+                size_t mf =
+
+                        0;
+
+                mf <
+                FrameMatches.size();
+
+                mf++)
+            for (const auto
+                        &match: FrameMatches[
+
+                    mf]
+
+                    )
+
+                _11350249437170142625[
+
+                        match._18030119007246525509]
+
+                        .push_back(
+                                match);
+
+        std::
+        vector<
+
+                MapManager::
+
+                NewPointInfo>
+                _4622533121193472218;
+
+        for (
+
+            auto &kp: _11350249437170142625) {
+
+            MapManager::
+
+            NewPointInfo mapPoint;
+
+            int
+
+                    bestDesc =
+
+                    -1;
+            int bestOctave =
+                    std::
+
+                    numeric_limits<
+
+                            int>
+
+                    ::
+
+                    max();
+            for (
+
+                    size_t di =
+
+                            0;
+
+                    di <
+
+                    kp.second.size();
+
+                    di++
+
+                    ) {
+
+                const auto
+
+                        &frame_kp =
+                        TheMap->
+
+                                keyframes[
+                                kp.second[
+
+                                        di]
+
+                                        ._681165095198498101]
+
+                                .und_kpts[kp.second[
+
+                                di]
+
+                                ._10333569979786346575];
+
+                if (
+
+                        frame_kp.octave < bestOctave) {
+                    bestDesc =
+
+                            di;
+                }
+
+            }
+
+            const auto
+
+                    &best_match =
+
+                    kp.second[
+                            bestDesc];
+
+            mapPoint.pose =
+
+                    best_match._16701867013855893038;
+
+            mapPoint.dist =
+                    best_match._11690406023733055431;
+
+            mapPoint.frame_kpt.push_back(
+
+                    {
+                            NewFrame.idx, kp.first}
+
+            );
+
+            for (
+
+                auto fma: kp.second)
+
+                mapPoint.frame_kpt.push_back(
+                        {TheMap->
+
+                                keyframes[
+                                 fma._681165095198498101]
+
+                                 .idx, fma._10333569979786346575}
+
+                );
+
+            _4622533121193472218.push_back(
+
+                    mapPoint);
+
+            ;
+
+        }
+
+        if (
+                _4622533121193472218.size()
+
+                >
+                maxPoints) {
+
+            std::
+
+            sort(
+                    _4622533121193472218.begin(), _4622533121193472218.end(), [
+
+                    ]
+
+                            (
+
+                                    const MapManager::
+
+                                    NewPointInfo &a, const MapManager::
+
+                            NewPointInfo &b) {
+                        return a.dist <
+
+                               b.dist;
+
+                    }
+
+            );
+
+            _4622533121193472218.resize(
+
+                    maxPoints);
+
+        }
+
+        return
+
+                _4622533121193472218;
+
+    }
+
+    void
+
+    MapManager::
+
+    _10758134674558762512(
+
+            int _3005399800582873013) {
+
+        GlobalOptimizer::
+
+        ParamSet _3005399798454910266(
+
+                debug::
+
+                Debug::
+
+                getLevel()
+                >=
+
+                11);
+
+        _3005399798454910266.fixFirstFrame =
+
+                true;
+
+        _3005399798454910266.nIters =
+                _3005399800582873013;
+
+        _3005399798454910266.markersOptWeight =
+                System::
+                getParams()
+
+                        .markersOptWeight;
+
+        _3005399798454910266.minMarkersForMaxWeight =
+
+                System::
+
+                getParams()
+                        .minMarkersForMaxWeight;
+
+        _3005399798454910266.InPlaneMarkers =
+                System::
+
+                getParams()
+
+                        .inPlaneMarkers;
+
+        if
+
+                (
+
+                _3005399798454910266.fixed_frames.size()
+
+                ==
+
+                0 &&
+                TheMap->
+
+                        map_markers.size()
+
+                ==
+
+                0) {
+
+            auto
+
+                    _175247760151 =
+                    TheMap->
+
+                            keyframes.begin();
+
+            _3005399798454910266.fixed_frames.insert(
+
+                    _175247760151->
+
+                            idx);
+
+            ++
+
+                    _175247760151;
+
+            if
+
+                    (
+
+                    _175247760151 !=
+
+                    TheMap->
+
+                            keyframes.end()
+
+                    ) {
+
+                if (
+                        _3005399798454910266.used_frames.count(
+
+                                _175247760151->
+                                        idx)
+
+                        ||
+
+                        _3005399798454910266.used_frames.size()
+
+                        ==
+
+                        0)
+
+                    _3005399798454910266.fixed_frames.insert(
+
+                            _175247760151->
+                                    idx);
+
+            }
+
+        }
+        _15944432432468226297 =
+
+                GlobalOptimizer::
+
+                create(
+
+                        System::
+
+                        getParams()
+
+                                .global_optimizer);
+
+        _15944432432468226297->
+
+                setParams(
+
+                TheMap, _3005399798454910266);
+
+        _15944432432468226297->
+
+                optimize();
+
+        _15944432432468226297->
+                getResults(
+                TheMap);
+        TheMap->
+                removeBadAssociations(
+
+                _15944432432468226297->
+
+                        getBadAssociations(), System::
+                getParams()
+                        .minNumProjPoints);
+
+        _15944432432468226297 =
+
+                nullptr;
+
+    }
+
+    void MapManager::
+
+    _11362629803814604768(
+
+            uint32_t _16937255065087280628, int
+    _3005399802176474746) {
+        bool
+                _16116701644373052209 =
+
+                false;
+        for (
+            auto _2654435871: TheMap->keyframes)
+
+            if
+                    (
+                    _2654435871.imageParams.isStereoCamera()
+
+                    ) {
+
+                _16116701644373052209 =
+
+                        true;
+
+                break;
+
+            }
+        std::
+
+        set<
+
+                uint32_t>
+
+                _46082575804458778 =
+
+                TheMap->
+                        TheKpGraph.getNeighbors(
+
+                        _16937255065087280628, true);
+
+        GlobalOptimizer::
+
+        ParamSet _3005399798454910266(
+
+                debug::
+
+                Debug::
+                getLevel()
+
+                >=
+
+                11);
+
+        _3005399798454910266.markersOptWeight =
+                System::
+
+                getParams()
+
+                        .markersOptWeight;
+
+        _3005399798454910266.minMarkersForMaxWeight =
+
+                System::
+                getParams()
+
+                        .minMarkersForMaxWeight;
+
+        _3005399798454910266.used_frames.insert(
+
+                _46082575804458778.begin(), _46082575804458778.end()
+
+        );
+
+        _3005399798454910266.fixFirstFrame =
+                true;
+
+        _3005399798454910266.nIters =
+
+                _3005399802176474746;
+
+        _3005399798454910266.InPlaneMarkers =
+
+                System::
+                getParams()
+
+                        .inPlaneMarkers;
+
+        if
+
+                (
+                _3005399798454910266.fixed_frames.size()
+
+                ==
+
+                0 &&
+
+                TheMap->
+
+                        map_markers.size()
+                ==
+                0 &&
+
+                !
+
+                        _16116701644373052209) {
+
+            auto
+
+                    _175247760151 =
+                    TheMap->
+
+                            keyframes.begin();
+
+            _3005399798454910266.fixed_frames.insert(
+                    _175247760151->
+
+                            idx);
+
+            ++
+
+                    _175247760151;
+
+            if
+
+                    (
+
+                    _175247760151 !=
+                    TheMap->
+
+                            keyframes.end()
+                    ) {
+
+                if (
+                        _3005399798454910266.used_frames.count(
+
+                                _175247760151->
+
+                                        idx)
+
+                        )
+
+                    _3005399798454910266.fixed_frames.insert(
+                            _175247760151->
+
+                                    idx);
+
+            }
+
+        }
+
+        _15944432432468226297 =
+
+                GlobalOptimizer::
+
+                create(
+
+                        System::
+
+                        getParams()
+
+                                .global_optimizer);
+
+        _15944432432468226297->
+
+                setParams(
+
+                TheMap, _3005399798454910266);
+
+        _15944432432468226297->
+                optimize(
+
+                &_hurryUp);
+
+    }
+
+    void
+
+    MapManager::
+
+    toStream(std::
+
+             ostream &_11093822381060) {
+
+        while (
+
+                _curState ==
+
+                WORKING)
+
+            std::
+
+            this_thread::
+
+            sleep_for(std::
+
+                      chrono::
+
+                      milliseconds(
+
+                    10)
+
+            );
+
+        mapUpdate();
+
+        uint64_t _11093822380353 =
+
+                1823312417;
+
+        _11093822381060.write(
+
+                (char *)
+
+                        &_11093822380353, sizeof(
+
+                        _11093822380353)
+
+        );
+
+        _11093822381060.write(
+                (
+
+                        char *)
+
+                        &_lastAddedKeyFrame, sizeof(
+
+                        _lastAddedKeyFrame)
+        );
+
+        _11093822381060.write((
+
+                                      char *)
+
+                                      &_9728777609121731073, sizeof(
+
+                                      _9728777609121731073)
+
+        );
+
+        _11093822381060.write(
+
+                (
+
+                        char *)
+
+                        &_4090819199315697352, sizeof(
+                        _4090819199315697352)
+
+        );
+
+        auto
+
+                _11093821926013 =
+
+                _curState.load();
+
+        _11093822381060.write(
+
+                (
+
+                        char *)
+
+                        &_11093821926013, sizeof(
+
+                        _11093821926013)
+
+        );
+
+        toStream__(
+
+                keyframesToAdd.buffer_, _11093822381060);
+
+        toStream__(
+
+                PointsToRemove, _11093822381060);
+
+        toStream__(
+
+                KeyFramesToRemove, _11093822381060);
+
+        toStream__kv(
+
+                youngKeyFrames, _11093822381060);
+
+        _11093822381060.write(
+                (
+
+                        char *)
+
+                        &_13990461397173511559, sizeof(_13990461397173511559)
+
+        );
+
+        _13909239728712143806.toStream(
+
+                _11093822381060);
+
+        _11093822381060.write(
+
+                (
+
+                        char *)
+
+                        &_1061304613240460439, sizeof(
+
+                        _1061304613240460439)
+        );
+
+        _11093822381060.write(
+
+                (
+
+                        char *)
+
+                        &_11028815416989897150, sizeof(
+                        _11028815416989897150)
+        );
+
+        _11093822381060.write(
+
+                (
+
+                        char *)
+
+                        &_12303014364795142948, sizeof(
+
+                        _12303014364795142948)
+
+        );
+
+        _11093822381060.write(
+                (
+                        char *)
+
+                        &_hurryUp, sizeof(
+
+                        _hurryUp)
+
+        );
+
+        _8346364136266015358.toStream(
+
+                _11093822381060);
+
+    }
+
+    void
+
+    MapManager::
+
+    fromStream(
+
+            std::
+
+            istream &_11093822381060) {
+
+        stop();
+
+        uint64_t _11093822380353;
+
+        _11093822381060.read(
+
+                (
+
+                        char *)
+
+                        &_11093822380353, sizeof(
+
+                        _11093822380353)
+
+        );
+        if (
+                _11093822380353 != 1823312417)
+
+            throw std::
+            runtime_error(
+                    string(
+                            __PRETTY_FUNCTION__)
+
+                    +
+                    "\x43\x6f\x75\x6c\x64\x20\x6e\x6f\x74\x20\x72\x65\x61\x64\x20\x73\x69\x67\x6e\x61\x74\x75\x72\x65\x20\x6f\x66\x20\x4d\x61\x70\x6d\x61\x6e\x61\x67\x65\x72\x20\x69\x6e\x20\x73\x74\x72\x65\x61\x6d");
+
+        _11093822381060.read(
+
+                (
+
+                        char *)
+
+                        &_lastAddedKeyFrame, sizeof(
+
+                        _lastAddedKeyFrame)
+
+        );
+        _11093822381060.read(
+                (
+
+                        char *)
+
+                        &_9728777609121731073, sizeof(
+                        _9728777609121731073)
+
+        );
+
+        _11093822381060.read(
+
+                (
+
+                        char *)
+
+                        &_4090819199315697352, sizeof(
+
+                        _4090819199315697352)
+
+        );
+
+        auto
+
+                _16987968640077875288 =
+
+                _curState.load();
+
+        _11093822381060.read(
+                (
+
+                        char *)
+
+                        &_16987968640077875288, sizeof(_16987968640077875288)
+
+        );
+
+        _curState =
+
+                _16987968640077875288;
+
+        fromStream__(
+                keyframesToAdd.buffer_, _11093822381060);
+
+        fromStream__(
+
+                PointsToRemove, _11093822381060);
+
+        fromStream__(
+                KeyFramesToRemove, _11093822381060);
+
+        fromStream__kv(
+                youngKeyFrames, _11093822381060);
+
+        _11093822381060.read(
+
+                (
+
+                        char *)
+
+                        &_13990461397173511559, sizeof(
+
+                        _13990461397173511559)
+
+        );
+
+        _13909239728712143806.fromStream(
+
+                _11093822381060);
+
+        _11093822381060.read(
+
+                (
+
+                        char *)
+                        &_1061304613240460439, sizeof(
+                        _1061304613240460439)
+
+        );
+
+        _11093822381060.read(
+
+                (
+                        char *) &_11028815416989897150, sizeof(
+
+                        _11028815416989897150)
+
+        );
+
+        _11093822381060.read(
+                (
+
+                        char *)
+
+                        &_12303014364795142948, sizeof(
+                        _12303014364795142948)
+        );
+
+        _11093822381060.read(
+
+                (
+
+                        char *)
+                        &_hurryUp, sizeof(
+
+                        _hurryUp)
+
+        );
+
+        _8346364136266015358.fromStream(
+
+                _11093822381060);
+
+    }
+
+    uint64_t MapManager::getSignature() {
+
+        Hash _11093822380353;
+
+        _11093822380353 +=
+                _lastAddedKeyFrame;
 
         _11093822380353 +=
 
-     kv ;
+                _9728777609121731073;
 
-     for(
+        _11093822380353 +=
+                _4090819199315697352;
 
-  auto kv:youngKeyFrames )
+        _11093822380353 +=
 
-     { _11093822380353 +=
-    kv.first ;
+                _curState.load();
 
- _11093822380353 +=
+        _11093822380353 +=
 
-   kv.second ;
+                keyframesToAdd.size();
 
-  }
+        for (
 
-    _11093822380353 +=
+            auto kv: PointsToRemove)
 
-  _13990461397173511559 ;
+            _11093822380353 +=
 
-    _11093822380353 +=
+                    kv;
 
-   _13909239728712143806 ;
+        for (
 
-    _11093822380353 +=
+            auto kv: KeyFramesToRemove)
 
-  _1061304613240460439 ;
+            _11093822380353 +=
 
-    _11093822380353 +=
+                    kv;
 
-     _11028815416989897150 ;
+        for (
 
-    _11093822380353 +=
-  _12303014364795142948 ;
+            auto kv: youngKeyFrames) {
+            _11093822380353 +=
+                    kv.first;
 
-    _11093822380353 +=
-     _8346364136266015358.getSignature ()
+            _11093822380353 +=
 
-  ;
+                    kv.second;
 
-     return
+        }
 
-_11093822380353 ;
+        _11093822380353 +=
 
- }
+                _13990461397173511559;
 
- void
+        _11093822380353 +=
 
-   MapManager ::
+                _13909239728712143806;
 
-_12244964123780599670 (
+        _11093822380353 +=
 
- Frame &_6807141023702418932, const LoopDetector ::
+                _1061304613240460439;
 
-LoopClosureInfo &_11093822343890 )
+        _11093822380353 +=
 
- {
+                _11028815416989897150;
 
-     auto
+        _11093822380353 +=
+                _12303014364795142948;
 
- _46082543279161383 =
+        _11093822380353 +=
+                _8346364136266015358.getSignature();
 
-  [ ]
+        return
 
-   (
-   const vector <
+                _11093822380353;
 
-    uint32_t >
+    }
 
-   &_2654435887 )
+    void
 
-   {
+    MapManager::
 
-        std ::
+    _12244964123780599670(
 
-set <
-       uint32_t >
+            Frame &_6807141023702418932, const LoopDetector::
 
-   _2654435884 ;
+    LoopClosureInfo &_11093822343890) {
 
-         for(
+        auto
 
-   auto e:_2654435887 )
+                _46082543279161383 =
 
-      _2654435884.insert (
+                []
 
-    e )
+                        (
+                                const vector<
 
-      ;
+                                        uint32_t>
 
-         return
-  _2654435884 ;
+                                &_2654435887) {
 
-     }
+                    std::
 
-  ;
+                    set<
+                            uint32_t>
 
-     auto
+                            _2654435884;
 
-         _5232059496476615978 =
+                    for (
 
-        TheMap ->
+                        auto e: _2654435887)
 
-TheKpGraph.getNeighborsV (
+                        _2654435884.insert(
 
- _11093822343890.matchingFrameIdx,true )
-  ;
+                                e);
 
-     auto
+                    return
+                            _2654435884;
 
-_5232059496475995487 =
+                };
 
-   TheMap ->
-      TheKpGraph.getNeighborsV (
+        auto
 
-    _11093822343890.curRefFrame,true )
+                _5232059496476615978 =
 
-     ;
-     auto
+                TheMap->
 
-       &_16935669825082873233 =
+                        TheKpGraph.getNeighborsV(
 
-    _6807141023702418932 ;
+                        _11093822343890.matchingFrameIdx, true);
 
-     if
+        auto
 
- (
+                _5232059496475995487 =
 
-  !
+                TheMap->
+                        TheKpGraph.getNeighborsV(
 
-    TheMap ->
- keyframes.is (
+                        _11093822343890.curRefFrame, true);
+        auto
 
-_6807141023702418932.idx )
-     )
+                &_16935669825082873233 =
 
-   {
+                _6807141023702418932;
+
+        if
+
+                (
+
+                !
+
+                        TheMap->
+                                keyframes.is(
+
+                                _6807141023702418932.idx)
+                ) {
 
             _16935669825082873233.pose_f2g =
 
-     _11093822343890.expectedPos ;
+                    _11093822343890.expectedPos;
 
-           _16935669825082873233 =
+            _16935669825082873233 =
 
-    addKeyFrame (
-   &_6807141023702418932 )
+                    addKeyFrame(
+                            &_6807141023702418932);
 
-   ;
+        }
 
-     }
+        int
 
-     int
+                _706246332364647 =
 
-       _706246332364647 =
+                0;
 
- 0 ;
+        for (
+            auto match: _11093822343890.map_matches) {
 
-     for(
-   auto match:_11093822343890.map_matches )
+            if (_16935669825082873233.ids[
 
-    {
+                        match.queryIdx]
+                ==
 
-         if ( _16935669825082873233.ids [
+                std::
+                numeric_limits<
 
-    match.queryIdx ]
- ==
+                        uint32_t>
 
-  std ::
- numeric_limits <
+                ::
 
-  uint32_t >
+                max()
 
-         ::
+                &&
 
-         max ()
+                !
 
-   &&
+                        TheMap->
 
-       !
+                                map_points[match.trainIdx]
 
- TheMap ->
+                                .isObservingFrame(
 
-   map_points [ match.trainIdx ]
+                                        _16935669825082873233.idx)
 
-  .isObservingFrame (
+                    ) {
 
- _16935669825082873233.idx )
+                TheMap->
 
- )
+                        addMapPointObservation(
 
-          {
+                        match.trainIdx, _16935669825082873233.idx, match.queryIdx);
 
-            TheMap ->
+                _706246332364647++;
 
-   addMapPointObservation (
+            }
 
-   match.trainIdx,_16935669825082873233.idx,match.queryIdx )
+        }
+        _10758134674558762512(
 
-  ;
+                20);
 
-             _706246332364647 ++
- ;
+        auto
+                _16937290651980367310 =
 
-         }
+                TheMap->
 
-     }
-    _10758134674558762512 (
+                        TheKpGraph.getNeighborsV(
 
-     20 )
+                        _16935669825082873233.idx, true);
 
-    ;
+        vector<
 
-     auto
-_16937290651980367310 =
+                float>
 
-    TheMap ->
+                _16988745808691518194 =
 
-  TheKpGraph.getNeighborsV (
+                {
 
-  _16935669825082873233.idx,true )
+                        4, 2.5};
 
-     ;
+        for (
 
-    vector <
+                size_t nt =
 
-  float >
+                        0;
+                nt <
 
-       _16988745808691518194 =
+                _16988745808691518194.size(); nt++
 
-      {
+                ) {
 
-      4,2.5 } ;
+            _706246332364647 =
 
-     for(
+                    0;
 
-  size_t nt =
+            int
 
-    0 ;
- nt <
+                    nFusions =
 
-        _16988745808691518194.size ()
+                    0;
 
-   ; nt ++
+            for (
 
- )
+                auto fidx: _16937290651980367310) {
 
-      {
+                auto
 
-        _706246332364647 =
+                        &CurFrame =
 
-  0 ;
+                        TheMap->
 
-         int
+                                keyframes[
 
-     nFusions =
+                                fidx];
 
- 0 ;
+                auto frameMapPoints =
 
-         for(
+                        _46082543279161383(
+                                CurFrame.getMapPoints()
 
-    auto fidx:_16937290651980367310 )
+                        );
 
-      {
+                auto
 
-             auto
+                        map_matches =
 
-      &CurFrame =
+                        TheMap->
 
-   TheMap ->
+                                matchFrameToMapPoints(
 
- keyframes [
+                                _16937290651980367310, CurFrame,
+                                CurFrame.pose_f2g, System::
 
-fidx ]
+                                                   getParams()
+                                                           .maxDescDistance * 2, _16988745808691518194[
 
-      ;
+                                        nt],
+                                false, true, frameMapPoints);
 
-                 auto frameMapPoints =
+                for (
 
-_46082543279161383 (
-      CurFrame.getMapPoints ()
+                    auto match: map_matches) {
 
-    )
+                    if (
 
-         ;
+                            CurFrame.ids[
 
-                 auto
+                                    match.queryIdx]
 
-map_matches =
+                            !=
 
-     TheMap ->
+                            std::numeric_limits<
 
-    matchFrameToMapPoints (
+                                    uint32_t>
+                            ::
+                            max()
 
- _16937290651980367310, CurFrame,
-                                                                 CurFrame.pose_f2g,System ::
+                            ) {
 
- getParams ()
-     .maxDescDistance*2, _16988745808691518194 [
+                        TheMap->
 
-         nt ]
- ,
-                                                                 false,true,frameMapPoints )
+                                fuseMapPoints(
 
-      ;
+                                match.trainIdx, CurFrame.ids[
 
-                 for(
+                                        match.queryIdx], true);
 
- auto match:map_matches )
-   {
+                        nFusions++;
 
-                     if(
+                    } else {
+                        TheMap->
 
-       CurFrame.ids [
+                                addMapPointObservation(
+                                match.trainIdx, CurFrame.idx, match.queryIdx);
 
-   match.queryIdx ]
+                        _706246332364647++;
 
-    !=
+                    }
 
-     std :: numeric_limits <
+                }
 
-  uint32_t >
-     ::
-  max ()
+            }
 
-          )
-    {
+            if (
 
-                        TheMap ->
+                    _706246332364647 >
 
-         fuseMapPoints (
+                    0 ||
+                    nFusions >
 
-   match.trainIdx,CurFrame.ids [
+                    0) {
 
-      match.queryIdx ]
- ,true )
+                _11362629803814604768(
+                        _16935669825082873233.idx, 20);
 
-   ;
+                TheMap->
 
-                        nFusions ++
+                        removeBadAssociations(
+                        _15944432432468226297->
 
-      ;
+                                getBadAssociations(), System::
 
-                     }
+                        getParams().minNumProjPoints);
 
-                    else {
-                        TheMap ->
+            }
 
- addMapPointObservation (
-match.trainIdx,CurFrame.idx,match.queryIdx )
+        }
 
-      ;
+        _6807141023702418932.pose_f2g =
 
-                        _706246332364647 ++ ;
+                _16935669825082873233.pose_f2g;
+        _6807141023702418932.ids = _16935669825082873233.ids;
 
-                     }
+    }
 
-             }
-
-         }
-
-          if (
-
-  _706246332364647 >
-
-    0 ||
-    nFusions >
-
-  0 )
-
-  {
-
-            _11362629803814604768 (
-    _16935669825082873233.idx,20 )
-
-     ;
-
-            TheMap ->
-
-removeBadAssociations (
- _15944432432468226297 ->
-
- getBadAssociations ()
-
-,System ::
-
- getParams () .minNumProjPoints )
-
-    ;
-
-         }
-
-     }
-
-    _6807141023702418932.pose_f2g =
-
-_16935669825082873233.pose_f2g ;
-    _6807141023702418932.ids = _16935669825082873233.ids ;
-
- }
-
- }
+}

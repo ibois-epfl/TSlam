@@ -13,6 +13,7 @@
 #include <type_traits>
 #include "cvprojectpoint.h"
 #include "ucoslam.h"
+#include "utils/mapmanager.h"
 #include "g2oba.h"
 class CmdLineParser{int argc; char **argv;
                 public: CmdLineParser(int _argc,char **_argv):argc(_argc),argv(_argv){}  bool operator[] ( string param ) {int idx=-1;  for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i;    return ( idx!=-1 ) ;    } string operator()(string param,string defvalue=""){int idx=-1;    for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i; if ( idx==-1 ) return defvalue;   else  return ( argv[  idx+1] ); }
@@ -33,24 +34,88 @@ struct DebugTest{
     }
 };
 }
+
 int main(int argc,char **argv){
-
     try {
-        if(argc<3)throw std::runtime_error("Usage: inmap outmap [iterations]");
+        if(argc<4)throw std::runtime_error("Usage: inmap_base inmap_B outmap [iterations]");
 
-        ucoslam::Map TheMap;
-        cout<<"reading map"<<endl;
-        TheMap.readFromFile(argv[1]);
+        std::shared_ptr<ucoslam::Map> TheMap, TheMapA, TheMapB;
+        TheMap = std::make_shared<ucoslam::Map>();
+        TheMapA = std::make_shared<ucoslam::Map>();
+        TheMapB = std::make_shared<ucoslam::Map>();
+
+        cout<<"reading map A"<<endl;
+        TheMapA->readFromFile(argv[1]);
+        cout<<"reading map B"<<endl;
+        TheMapB->readFromFile(argv[2]);
         cout<<"Done"<<endl;
+
         int niters=50;
-        if(argc>=4)niters=stoi(argv[3]);
+        if(argc>=5)niters=stoi(argv[4]);
+
+        TheMapB->projectTo(*TheMapA);
+
+        std::shared_ptr<ucoslam::MapManager> TheMapManager;
+        TheMapManager = std::make_shared<ucoslam::MapManager>();
+
+        TheMapManager->setParams(TheMap, true);
+
+        std::map<uint32_t, ucoslam::Frame*> frameMapA; // idx of TheMapA -> TheMap
+        std::map<uint32_t, ucoslam::Frame*> frameMapB; // idx of TheMapB -> TheMap
+        std::map<uint32_t, ucoslam::MapPoint*> pointMapA;
+        std::map<uint32_t, ucoslam::MapPoint*> pointMapB;
+
+        // Add point first
+        cout << "Total points in A: " << TheMapA->map_points.size() << "points." << endl;
+        cout << "Total points in B: " << TheMapB->map_points.size() << "points." << endl;
+
+        for(auto ptIter = TheMapA->map_points.begin(); ptIter != TheMapA->map_points.end(); ++ptIter){
+            if(pointMapA.count(ptIter->id) == 0){
+                pointMapA[ptIter->id] = &TheMap->addNewPoint(0);
+                pointMapA[ptIter->id]->setCoordinates(ptIter->getCoordinates());
+            }
+        }
+
+        for(auto ptIter = TheMapB->map_points.begin(); ptIter != TheMapB->map_points.end(); ++ptIter){
+            if(pointMapB.count(ptIter->id) == 0){
+                pointMapB[ptIter->id] = &TheMap->addNewPoint(0);
+                pointMapB[ptIter->id]->setCoordinates(ptIter->getCoordinates());
+            }
+        }
+
+        for(auto kfIter = TheMapA->keyframes.begin(); kfIter != TheMapA->keyframes.end(); ++kfIter){
+            for(int i = 0 ; i < kfIter->ids.size() ; i++){
+                if (kfIter->ids[i] != std::numeric_limits<uint32_t>::max()){
+                    kfIter->ids[i] = pointMapA[kfIter->ids[i]]->id;
+                }
+            }
+            TheMapManager->addKeyFrame(&(*kfIter));
+        }
+
+        for(auto kfIter = TheMapB->keyframes.begin(); kfIter != TheMapB->keyframes.end(); ++kfIter){
+            for(int i = 0 ; i < kfIter->ids.size() ; i++){
+                if (kfIter->ids[i] != std::numeric_limits<uint32_t>::max()){
+                    kfIter->ids[i] = pointMapB[kfIter->ids[i]]->id;
+                }
+            }
+            TheMapManager->addKeyFrame(&(*kfIter));
+        }
+
+        cout << "Markers: ";
+        for(auto markerIter = TheMap->map_markers.begin(); markerIter != TheMap->map_markers.end(); ++markerIter){
+            cout << markerIter->first << " ";
+        }
+        cout << endl;
+
+        string filename = argv[3];
+        filename = "no_opt_" + filename;
+        TheMap->saveToFile(filename);
 
         std::shared_ptr<g2o::SparseOptimizer> Optimizer;
 
         Optimizer=std::make_shared<g2o::SparseOptimizer>();
         std::unique_ptr<g2o::BlockSolverX::LinearSolverType> linearSolver=g2o::make_unique<g2o::LinearSolverEigen<g2o::BlockSolverX::PoseMatrixType>>();
         g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(g2o::make_unique<g2o::BlockSolverX>(std::move(linearSolver)));
-
 
         Optimizer->setAlgorithm(solver);
 
@@ -65,7 +130,7 @@ int main(int argc,char **argv){
         ///KEYFRAME POSES
         //////////////////////////////
         map<uint32_t, g2oba::SE3Pose * > kf_poses;
-        for(auto &kf:TheMap.keyframes){
+        for(auto &kf:TheMap->keyframes){
             if(!camera->isSet()){
                 camera->setParams(kf.imageParams.CameraMatrix,kf.imageParams.Distorsion);
                 Optimizer->addVertex(camera);
@@ -80,7 +145,7 @@ int main(int argc,char **argv){
         //////////////////////////////
         list<g2oba::ProjectionEdge *> projectionsInGraph;
         list<g2oba::MapPoint *> mapPoints;
-        for(auto &p:TheMap.map_points){
+        for(auto &p:TheMap->map_points){
             g2oba::MapPoint *point=new g2oba::MapPoint (p.id, p.getCoordinates());
             point->setId(id++);
             point->setMarginalized(true);
@@ -88,7 +153,7 @@ int main(int argc,char **argv){
             mapPoints.push_back(point);
 
             for(auto of:p.getObservingFrames()){
-                auto &kf=TheMap.keyframes[of.first];
+                auto &kf=TheMap->keyframes[of.first];
                 if ( kf.isBad() )continue;
 
                 auto Proj=new g2oba::ProjectionEdge(p.id,kf.idx, kf.kpts[of.second]);
@@ -112,7 +177,7 @@ int main(int argc,char **argv){
         //////////////////////////////
         map<uint32_t, g2oba::SE3Pose * > marker_poses;
         std::vector<g2oba::MarkerEdge * > marker_edges;
-        for(const auto &marker:TheMap.map_markers){
+        for(const auto &marker:TheMap->map_markers){
             if(!marker.second.pose_g2m.isValid()) continue;
             g2oba::SE3Pose * marker_pose= new g2oba::SE3Pose(marker.first,marker.second.pose_g2m.getRvec(),marker.second.pose_g2m.getTvec());
             marker_pose->setId(id++);
@@ -120,7 +185,7 @@ int main(int argc,char **argv){
             marker_poses.insert({marker.first,marker_pose});
 
             for(const auto &kfidx:marker.second.frames){
-                auto &kf=TheMap.keyframes[kfidx];
+                auto &kf=TheMap->keyframes[kfidx];
                 if ( kf.isBad() )continue;
                 if(  kf_poses.count(kfidx)==0)throw std::runtime_error("Key frame for marker not in the optimization:"+std::to_string(kfidx));
 
@@ -128,7 +193,7 @@ int main(int argc,char **argv){
                 Proj->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(marker_pose));
                 Proj->setVertex(1, dynamic_cast<g2o::OptimizableGraph::Vertex*>( kf_poses.at(kfidx)));
                 Proj->setVertex(2, dynamic_cast<g2o::OptimizableGraph::Vertex*>( camera));
-                auto mobs=TheMap.keyframes[kfidx].getMarker(marker.first);
+                auto mobs=TheMap->keyframes[kfidx].getMarker(marker.first);
                 Eigen::Matrix<double,8,1> obs;
                 obs<<mobs.corners[0].x,mobs.corners[0].y,
                         mobs.corners[1].x,mobs.corners[1].y,
@@ -169,18 +234,18 @@ int main(int argc,char **argv){
         //copy data back to the map
         //move data back to the map
         for(auto &mp: mapPoints ){
-            TheMap.map_points[ mp->getid()].setCoordinates(mp->getPoint3d());
+            TheMap->map_points[ mp->getid()].setCoordinates(mp->getPoint3d());
         }
 
         //now, the keyframes
         for(auto pose:kf_poses){
-            TheMap.keyframes[pose.first].pose_f2g=ucoslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
-            TheMap.keyframes[pose.first].imageParams.CameraMatrix.at<float>(0,0)=camera->fx();
-            TheMap.keyframes[pose.first].imageParams.CameraMatrix.at<float>(1,1)=camera->fy();
-            TheMap.keyframes[pose.first].imageParams.CameraMatrix.at<float>(0,2)=camera->cx();
-            TheMap.keyframes[pose.first].imageParams.CameraMatrix.at<float>(1,2)=camera->cy();
+            TheMap->keyframes[pose.first].pose_f2g=ucoslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
+            TheMap->keyframes[pose.first].imageParams.CameraMatrix.at<float>(0,0)=camera->fx();
+            TheMap->keyframes[pose.first].imageParams.CameraMatrix.at<float>(1,1)=camera->fy();
+            TheMap->keyframes[pose.first].imageParams.CameraMatrix.at<float>(0,2)=camera->cx();
+            TheMap->keyframes[pose.first].imageParams.CameraMatrix.at<float>(1,2)=camera->cy();
             for(int p=0;p<5;p++)
-                TheMap.keyframes[pose.first].imageParams.Distorsion.ptr<float>(0)[p]=camera->dist()[p];
+                TheMap->keyframes[pose.first].imageParams.Distorsion.ptr<float>(0)[p]=camera->dist()[p];
         }
 //        //remove weak links
 //        for(auto &p:projectionsInGraph){
@@ -189,14 +254,14 @@ int main(int argc,char **argv){
 
         //finally, markers
         for(auto pose:marker_poses)
-            TheMap.map_markers[pose.first].pose_g2m=ucoslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
+            TheMap->map_markers[pose.first].pose_g2m=ucoslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
 
 
         cout<<"Final Camera Params "<<endl;
-        cout<<TheMap.keyframes.begin()->imageParams.CameraMatrix<<endl;
-        cout<<TheMap.keyframes.begin()->imageParams.Distorsion<<endl;
+        cout<<TheMap->keyframes.begin()->imageParams.CameraMatrix<<endl;
+        cout<<TheMap->keyframes.begin()->imageParams.Distorsion<<endl;
 
-        TheMap.saveToFile(argv[2]);
+        TheMap->saveToFile(argv[3]);
 
     } catch (const std::exception &ex) {
         std::cerr<<ex.what()<<std::endl;

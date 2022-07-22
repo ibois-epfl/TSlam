@@ -315,7 +315,7 @@ set <
 
      uint32_t
 
-  _1513765969352381626 (
+  getRefKeyFrameId (
 
       const Frame &_10614055813325501077, const se3 &_10706799483371532009 )
 
@@ -395,7 +395,7 @@ _4500031049790251086 )
 
  _1320287184975591154 ;
 
-    Frame frame_149385,_4913157516830781457 ;
+    Frame frame_149385, _4913157516830781457 ;
 
     std ::
 
@@ -415,7 +415,7 @@ shared_ptr <
 
   -1 ;
 
-    STATE _3857178690860967008 = STATE_LOST ;
+    STATE trackingState = STATE_LOST ;
 
     MODES _17450466964482625197 =
 
@@ -424,7 +424,7 @@ shared_ptr <
     std ::
 
 shared_ptr <
-  MapManager > _2869602498954317713 ;
+  MapManager > TheMapManager_286960 ;
 
     cv ::
 

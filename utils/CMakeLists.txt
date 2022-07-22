@@ -13,7 +13,7 @@ ADD_EXECUTABLE(ucoslam_map_export ucoslam_map_export.cpp  )
 ADD_EXECUTABLE(ucoslam_pmvs2 ucoslam_pmvs2.cpp  )
 
 ADD_EXECUTABLE(ucoslam_fullba ucoslam_fullba.cpp g2oba.h cvprojectpoint.h)
-
+ADD_EXECUTABLE(ucoslam_combine_map ucoslam_combine_map.cpp g2oba.h cvprojectpoint.h)
 
 INSTALL(TARGETS ucoslam_monocular ucoslam_mapviewer  ucoslam_stereo ucoslam_stereocalibrate ucoslam_pmvs2  ucoslam_fullba RUNTIME DESTINATION bin)
 

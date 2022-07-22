@@ -74,9 +74,26 @@ if (currNode.idx[i] >= container.size()) continue;
 - vector::_M_range_check: __n (which is 1488514608) >= this->size() (which is 0)
 
 ## Bug #4 [Testing]
-- In `src/utils/system.cpp:3385`, a check is performed beforehand.
+- In `src/utils/system.cpp:3385`, a check is performed beforehand. (This is probably not the case)
+- In `src/utils/system.cpp:3350:_11166622111371682966()`, we need to check if `convertedSe3` is empty.
+```cpp
+cv::Mat convertedSe3_576955 = se3_576955.convert();
+if(!_14463320619150402643.empty() && !convertedSe3_576955.empty())
+    se3_576955 = _14463320619150402643 * convertedSe3_576955; // probably this line
+```
+- In `src/map.cpp:817:matchFrameToMapPoints()`, a type conversion is performed to ensure the data type is `CV_32F`. **This is probably not the best way to workaround.**
+```cpp
+cv::Mat tmp;
+if(pose_f2g_.type()!=CV_32F){
+    pose_f2g_.convertTo(tmp, CV_32F);
+} else {
+    tmp = pose_f2g_;
+}
+Se3Transform pose_f2g; pose_f2g=tmp;
+```
 
 #### Original Error Message
+##### The 1st one
 ```cpp
 KMeanIndex::knnsearch Index is not of the same size than features
 ucoslam_monocular: /home/tpp/UCOSlam-IBOIS/src/basictypes/reusablecontainer.h:245: T& ucoslam::ReusableContainer<T>::at(uint32_t) [with T = ucoslam::Frame; uint32_t = unsigned int]: Assertion 'index<_data.size()' failed.
@@ -107,8 +124,44 @@ __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:50
     at /home/tpp/UCOSlam-IBOIS/utils/monocular_slam.cpp:505
 ```
 
+##### The 2nd one
+```cpp
+#2  0x00007ffff4dad810 in cv::operator*(cv::Mat const&, cv::Mat const&) [clone .cold] () at /usr/local/lib/libopencv_core.so.405
+#3  0x00007ffff7f1e125 in ucoslam::System::_11166622111371682966(ucoslam::Frame&, ucoslam::se3)Python Exception <class 'gdb.MemoryError'> Cannot access memory at address 0x8: 
+
+    (this=<optimized out>, frame_169403=..., se3_143874=#4  0x00007fffffffb890 in  ()
+```
+
+##### The 3rd one
+```cpp
+#0  __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:50
+#1  0x00007ffff47fa859 in __GI_abort () at abort.c:79
+#2  0x00007ffff47fa729 in __assert_fail_base
+    (fmt=0x7ffff4990588 "%s%s%s:%u: %s%sAssertion `%s' failed.\n%n", assertion=0x7ffff7f8266f "m.type()==CV_32F", file=0x7ffff7f836a8 "/home/tpp/UCOSlam-IBOIS/src/basictypes/se3transform.h", line=63, function=<optimized out>) at assert.c:92
+#3  0x00007ffff480bfd6 in __GI___assert_fail
+    (assertion=assertion@entry=0x7ffff7f8266f "m.type()==CV_32F", file=file@entry=0x7ffff7f836a8 "/home/tpp/UCOSlam-IBOIS/src/basictypes/se3transform.h", line=line@entry=63, function=function@entry=0x7ffff7f83660 "ucoslam::Se3Transform ucoslam::Se3Transform::operator=(const cv::Mat&)") at assert.c:101
+#4  0x00007ffff7e81ad7 in ucoslam::Se3Transform::operator=(cv::Mat const&) (m=..., this=0x7fffffffb560) at /usr/include/c++/9/bits/stl_iterator.h:803
+#5  ucoslam::Map::matchFrameToMapPoints(std::vector<unsigned int, std::allocator<unsigned int> > const&, ucoslam::Frame&, cv::Mat const&, float, float, bool, bool, std::set<unsigned int, std::less<unsigned int>, std::allocator<unsigned int> >)
+    (this=this@entry=0x55555563bbd0, used_frames=std::vector of length 222, capacity 222 = {...}, curframe=..., pose_f2g_=..., minDescDist=minDescDist@entry=100, maxRepjDist=maxRepjDist@entry=15, markMapPointsAsVisible=markMapPointsAsVisible@entry=true, useAllPoints=false, excludedPoints=std::set with 0 elements)
+    at /home/tpp/UCOSlam-IBOIS/src/map.cpp:820
+#6  0x00007ffff7f1e4c3 in ucoslam::System::_11166622111371682966(ucoslam::Frame&, ucoslam::se3)Python Exception <class 'gdb.MemoryError'> Cannot access memory at address 0x8: 
+
+    (this=0x555555634d30, frame_169403=..., se3_143874=#7  0x00007ffff7f20986 in ucoslam::System::process(ucoslam::Frame const&) (this=0x555555634d30, inputFrame=...)
+    at /home/tpp/UCOSlam-IBOIS/src/utils/system.cpp:426
+#8  0x00007ffff7f215b8 in ucoslam::System::process(cv::Mat&, ucoslam::ImageParams const&, unsigned int, cv::Mat const&, cv::Mat const&)
+    (this=this@entry=0x555555634d30, _6441194614667703750=..., _18212413899834346676=..., _9933887380370137445=_9933887380370137445@entry=48961, _46082575014988268=..., _1705635550657133790=...) at /home/tpp/UCOSlam-IBOIS/src/utils/system.cpp:746
+#9  0x00007ffff7e8f372 in ucoslam::UcoSlam::process(cv::Mat&, ucoslam::ImageParams const&, unsigned int) (this=<optimized out>, in_image=..., ip=..., frameseq_idx=48961)
+    at /home/tpp/UCOSlam-IBOIS/src/ucoslam.cpp:23
+```
+
+
 ## Bug #5 [Not Traced]
-- Caused by camera?
+- This happens when tring to do operation on an uninitialized OpenCV data, for example:
+```
+cv::Mat matrix;
+matrix = matrix * 5;
+```
+
 ```cpp
 OpenCV(4.5.5-dev) /home/tpp/opencv/modules/core/src/matrix_expressions.cpp:32: error: (-5:Bad argument) One or more matrix operands are empty. in function 'checkOperandsExist'
 

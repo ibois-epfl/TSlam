@@ -60,7 +60,9 @@ public:
     //cleans the unused keypoints from the frames. This will reduce a lot of space
     void removeUnUsedKeyPoints();
     //merge with another map
-    void merge(Map mapB);
+    //void mergeWith(Map &mapB);
+    //project to another map
+    void projectTo(Map &refMap);
 
     //returns a unique hash value that identify the current status
     uint64_t getSignature(bool print=false)const;
@@ -88,7 +90,7 @@ public:
    //A database of keyframes employed for relocalization. It uses bag of words technique
    KeyFrameDataBase TheKFDataBase;
 
-private:
+//private:
 
     friend class LoopDetector;
     friend class MapManager;

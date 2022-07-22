@@ -137,11 +137,11 @@ private:
     struct block_node_info{
         uint32_t id_or_childblock; //if id ,msb is 1.
         float weight;
-        inline bool isleaf()const{return ( id_or_childblock& 0x80000000);}
+        inline bool isleaf()const{return ( id_or_childblock & 0x80000000);}
 
         //if not leaf, returns the block where the children are
         //if leaf, returns the index of the feature it represents. In case of bagofwords it must be a invalid value
-        inline uint32_t getId()const{return ( id_or_childblock&0x7FFFFFFF);}
+        inline uint32_t getId()const{return ( id_or_childblock & 0x7FFFFFFF);}
 
         //sets as leaf, and sets the index of the feature it represents and its weight
         inline void setLeaf(uint32_t id,float Weight){
@@ -183,7 +183,7 @@ private:
         inline void setParentId(uint32_t pid){*(((uint32_t*)(_blockstart))+1)=pid;}
         inline uint32_t  getParentId(){ return *(((uint32_t*)(_blockstart))+1);}
 
-        inline  block_node_info * getBlockNodeInfo(int i){  return (block_node_info *)(_blockstart+_child_off_start+i*sizeof(block_node_info)); }
+        inline  block_node_info* getBlockNodeInfo(int i){  return (block_node_info *)(_blockstart + _child_off_start + i * sizeof(block_node_info)); }
         inline  void setFeature(int i,const cv::Mat &feature){memcpy( _blockstart+_feature_off_start+i*_desc_size_bytes_wp,feature.ptr<char>(0),feature.elemSize1()*feature.cols); }
         inline  void getFeature(int i,cv::Mat  feature){    memcpy( feature.ptr<char>(0), _blockstart+_feature_off_start+i*_desc_size_bytes,_desc_size_bytes ); }
         template<typename T> inline  T*getFeature(int i){return (T*) (_blockstart+_feature_off_start+i*_desc_size_bytes_wp);}
@@ -420,7 +420,7 @@ private:
                   do{
                       //given the current block, finds the node with minimum distance
                       best_dist_idx.first=std::numeric_limits<uint32_t>::max();
-                      for(int cur_node=0;cur_node<c_block.getN();cur_node++)
+                      for(int cur_node=0;cur_node<c_block.getN();cur_node++) // VALGRIND-TRACE: getN() return wrong value (?)
                       {
                           DType d= comp.computeDist(c_block.getFeature<TData>(cur_node));
                           if (d<best_dist_idx.first) best_dist_idx=std::make_pair(d,cur_node);
@@ -428,9 +428,9 @@ private:
                       if( level==storeLevel)//if reached level,save
                           r2[curNode].push_back( cur_feature);
 
-                      bn_info=c_block.getBlockNodeInfo(best_dist_idx.second);
+                      bn_info=c_block.getBlockNodeInfo(best_dist_idx.second); // VALGRIND-TRACE: best_dist_idx.second is wrong (?)
                       //if the node is leaf get weight,else go to its children
-                      if ( bn_info->isleaf()){
+                      if ( bn_info->isleaf()){ // VALGRIND: invalid read of size 4
                           r1[bn_info->getId()]+=bn_info->weight;
                           if( level<storeLevel)//store level not reached, save now
                               r2[curNode].push_back( cur_feature);

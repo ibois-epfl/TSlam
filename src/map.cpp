@@ -321,7 +321,7 @@ void Map::scale(double scaleFactor){
 
 void Map::applyTransform(cv::Mat m4x4){
     if(!(m4x4.cols==m4x4.rows && m4x4.cols==4))
-        throw std::runtime_error(string(__PRETTY_FUNCTION__)+" invlida inut  matrix. Must be homogeneous 4x4 matrix");
+        throw std::runtime_error(string(__PRETTY_FUNCTION__)+" invlida inut matrix. Must be homogeneous 4x4 matrix, but got (" + to_string(m4x4.cols) + ", " + to_string(m4x4.rows) + ")");
     cv::Mat m44_32f,m44_32f_rot;
     m4x4.convertTo(m44_32f,CV_32F);
     m4x4.convertTo(m44_32f_rot,CV_32F);
@@ -354,45 +354,129 @@ bool Map::centerRefSystemInMarker(uint32_t markerId){
     return true;
 }
 
-void Map::merge(Map mapB){
-    // Look for overlap markers
+void Map::projectTo(Map &refMap){
     std::vector<uint32_t> overlapMarkerIds;
-    for(auto markerId: map_markers){
-        if(mapB.map_markers.find(markerId)){
-            overlapMarkerIds.push_back(markerId);
+    for(auto markerId: map_markers){ // SafeMap<uint32_t,Marker> map_markers;
+        if(refMap.map_markers.count(markerId.first) >= 1){ 
+            overlapMarkerIds.push_back(markerId.first);
         }
     }
 
     // Estimate the transformation matrix (B -> A)
     std::vector<cv::Point3f> srcPoints, dstPoints;
-    for(id: overlapMarkerIds){
-        if ( map_markers[id].pose_g2m.isValid() && mapB.map_markers[id].pose_g2m.isValid() ){
+    for(auto id: overlapMarkerIds){
+        if ( map_markers[id].pose_g2m.isValid() && refMap.map_markers[id].pose_g2m.isValid() ){
             // Marker points of this map
             auto p3d = map_markers[id].get3DPoints();
             for(auto p: p3d) {
-                dstPoints.push_back(p);
+                srcPoints.push_back(p);
             }
 
             // Marker points of another map
-            p3d = mapB.map_markers[id].get3DPoints();
+            p3d = refMap.map_markers[id].get3DPoints();
             for(auto p: p3d) {
-                srcPoints.push_back(p);
+                dstPoints.push_back(p);
             }
-         }
+        }
     }
-    cv::Mat transformationMatrix;
-    cv::estimateAffine3D(srcPoints, dstPoints, transformationMatrix);
-    
-    // Expend the last row (0, 0, 0, 1)
-    transformationMatrix.push_back(cv::Mat::zeros(1, 4, CV_64F));
-    transformationMatrix[3][3] = 1;
-    
-    // Reproject mapB to mapA
-    mapB.applyTransform(transformationMatrix);
 
-    // TODO: Merge the maps
+    cv::Mat transformationMatrix;
+    transformationMatrix = cv::estimateAffine3D(srcPoints, dstPoints);
+
+    // Expend the last row (0, 0, 0, 1)
+    transformationMatrix.push_back(cv::Mat(1, 4, CV_64F, {0, 0, 0, 1}));
     
+    // Reproject to refMap
+    applyTransform(transformationMatrix);
+
+    cout << "Transformed result comparsion:" << endl;
+    for(auto id: overlapMarkerIds){
+        if ( map_markers[id].pose_g2m.isValid() && refMap.map_markers[id].pose_g2m.isValid() ){
+            cout << id << endl;
+            // Marker points of this map
+            auto p3d = map_markers[id].get3DPoints();
+            for(auto p: p3d) {
+                cout << p << " ";
+            }
+            cout << endl;
+            p3d = refMap.map_markers[id].get3DPoints();
+            for(auto p: p3d) {
+                cout << p << " ";
+            }
+            cout << endl;
+        }
+    }
 }
+
+// void Map::mergeWith(Map &mapB){
+//     // for(auto markerId: map_markers){ // SafeMap<uint32_t,Marker> map_markers;
+//     //     cout << markerId.first << " ";
+//     // }
+//     // cout << endl;
+
+//     // for(auto markerId: mapB.map_markers){ // SafeMap<uint32_t,Marker> map_markers;
+//     //     cout << markerId.first << " ";
+//     // }
+//     // cout << endl;
+
+//     // Look for overlap markers
+//     std::vector<uint32_t> overlapMarkerIds;
+//     for(auto markerId: map_markers){ // SafeMap<uint32_t,Marker> map_markers;
+//         if(mapB.map_markers.count(markerId.first) >= 1){ 
+//             overlapMarkerIds.push_back(markerId.first);
+//         }
+//     }
+
+//     // Estimate the transformation matrix (B -> A)
+//     std::vector<cv::Point3f> srcPoints, dstPoints;
+//     for(auto id: overlapMarkerIds){
+//         if ( map_markers[id].pose_g2m.isValid() && mapB.map_markers[id].pose_g2m.isValid() ){
+//             // Marker points of this map
+//             auto p3d = map_markers[id].get3DPoints();
+//             for(auto p: p3d) {
+//                 dstPoints.push_back(p);
+//             }
+
+//             // Marker points of another map
+//             p3d = mapB.map_markers[id].get3DPoints();
+//             for(auto p: p3d) {
+//                 srcPoints.push_back(p);
+//             }
+//         }
+//     }
+
+//     cout << "Estimate Transformation Matrix...";
+//     cv::Mat transformationMatrix;
+//     transformationMatrix = cv::estimateAffine3D(srcPoints, dstPoints);
+//     cout << "Done!" << endl;
+
+//     // Expend the last row (0, 0, 0, 1)
+//     transformationMatrix.push_back(cv::Mat(1, 4, CV_64F, {0, 0, 0, 1}));
+    
+//     // Reproject mapB to mapA
+//     mapB.applyTransform(transformationMatrix);
+
+//     cout << "Transformed result comparsion:" << endl;
+//     for(auto id: overlapMarkerIds){
+//         cout << id << endl;
+//         if ( map_markers[id].pose_g2m.isValid() && mapB.map_markers[id].pose_g2m.isValid() ){
+//             // Marker points of this map
+//             auto p3d = map_markers[id].get3DPoints();
+//             for(auto p: p3d) {
+//                 cout << p << " ";
+//             }
+//             cout << " -- " << endl;
+//             p3d = mapB.map_markers[id].get3DPoints();
+//             for(auto p: p3d) {
+//                 cout << p << " ";
+//             }
+//         }
+//         cout << "---------------------------" << endl;
+//     }
+    
+//     // Merge the maps
+    
+// }
 
 
 void Map::toStream(iostream &str)  {
@@ -732,8 +816,13 @@ vector<uint32_t> Map::relocalizationCandidates(Frame &frame,const std::set<uint3
 
 std::vector<cv::DMatch> Map::matchFrameToMapPoints( const std::vector<uint32_t > &  used_frames, Frame & curframe, const cv::Mat & pose_f2g_, float minDescDist, float maxRepjDist,bool markMapPointsAsVisible,bool useAllPoints,std::set<uint32_t> excludedPoints)
 {
-
-    Se3Transform pose_f2g;pose_f2g=pose_f2g_;
+    cv::Mat tmp;
+    if(pose_f2g_.type()!=CV_32F){
+        pose_f2g_.convertTo(tmp, CV_32F);
+    } else {
+        tmp = pose_f2g_;
+    }
+    Se3Transform pose_f2g; pose_f2g=tmp;
     __UCOSLAM_ADDTIMER__
     //remove this already seen that have been marked with the lastSeqFrameIdx in the map point
     std::vector<uint32_t>  smap_ids=getMapPointsInFrames(used_frames.begin(),used_frames.end(),excludedPoints);
@@ -1250,20 +1339,20 @@ int64_t Map::getReferenceKeyFrame(const Frame &frame, float minDist) {
     for(auto id:frame.ids){
         if (id!=std::numeric_limits<uint32_t>::max()){
             //take the keypoint and add the frames it appears in
-            if ( map_points.is(id)){
-                if  ( !map_points[id].isBad())
-                    for(auto f_id:map_points[id].frames){
-                        frame_counter[f_id.first]++;
-                    }
+            if ( map_points.is(id) && !map_points[id].isBad()){
+                for(auto f_id:map_points[id].frames){
+                    frame_counter[f_id.first]++;
+                }
             }
         }
     }
+
     //no matches found,
     if  (frame_counter.size()==0)   return  -1;
 
     pair<int64_t,int> BestOne(-1,0);
     for(auto fc:frame_counter)
-        if (fc.second >  BestOne.second) BestOne=std::make_pair(fc.first,fc.second);
+        if (fc.second > BestOne.second) BestOne = std::make_pair(fc.first,fc.second);
 
     return BestOne.first;
 
@@ -1369,34 +1458,6 @@ void Map::saveToMarkerMap(std::string filepath)const {
 }
 
 void Map::removeUnUsedKeyPoints(){
-    for(auto &kf:keyframes){
-        kf.removeUnUsedKeyPoints();//returns the indices
-        //must change in the mappoint references
-        for(int i=0;i <kf.ids.size();i++){
-            auto &mp=map_points[ kf.ids[i]];
-            mp.frames[kf.idx]=i;
-        }
-    }
-}
-
-int kfRemoved = -1;
-void Map::removeOldKeyPoints(){
-    // int keepAmount = 5;
-    // std::cout << "keyframes size: " << keyframes.size() << std::endl;
-    // if(keyframes.size() < keepAmount || kfRemoved == keyframes.size() - keepAmount - 1) return;
-
-    // int kfToRemove = keyframes.size() - keepAmount - 1;
-    // kfRemoved = kfToRemove;
-    // auto &kf = keyframes[kfToRemove];
-    // for(auto &kf:keyframes){
-    //     kf.removeOldKeyPoints();
-    //     // must change in the mappoint references
-    //     std::cout << kf.ids.size() << std::endl;
-    //     for(int i=0;i<kf.ids.size();i++){
-    //         auto &mp=map_points[ kf.ids[i]];
-    //         mp.frames[kf.idx]=i;
-    //     }
-    // }
     for(auto &kf:keyframes){
         kf.removeUnUsedKeyPoints();//returns the indices
         //must change in the mappoint references

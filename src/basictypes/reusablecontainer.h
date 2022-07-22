@@ -89,6 +89,7 @@ public:
             }while(true);
             return *this;
         }
+        
         inline T&  operator*() const
         {
             assert(current<_container._data.size());
@@ -242,12 +243,18 @@ ReusableContainer<T> & ReusableContainer<T>::operator =(const ReusableContainer<
 
 template<typename T>
 inline T& ReusableContainer<T>::at(uint32_t index){
+    // if(index>=_data.size() || _data[ index ].first==false ){
+    //     throw std::invalid_argument("Try to access invalid object in ResuableContainer!");
+    // }
     assert(index<_data.size());
     assert(_data[ index ].first==true);
     return _data[ index ].second ;
 }
 template<typename T>
 inline const T& ReusableContainer<T>::at(uint32_t index)const{
+    // if(index>=_data.size() || _data[ index ].first==false ){
+    //     throw std::invalid_argument("Try to access invalid object in ResuableContainer!");
+    // }
     assert(index<_data.size());
     assert(_data[ index ].first==true);
     return _data[ index ].second ;

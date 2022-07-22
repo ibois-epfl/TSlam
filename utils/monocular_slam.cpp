@@ -97,7 +97,7 @@ void overwriteParamsByCommandLine(CmdLineParser &cml,ucoslam::Params &params){
     if (cml["-sequential"]) params.runSequential=true;
     if (cml["-maxFeatures"])    params.maxFeatures = stoi(cml("-maxFeatures","4000"));
     if (cml["-nOct"])       params.nOctaveLevels = stoi(cml("-nOct","8"));
-    if (cml["-fdt"])        params.nthreads_feature_detector = stoi(cml("-fdt", "2"));
+    if (cml["-fdt"])        params.nthreads_feature_detector = stoi(cml("-fdt", "1"));
      if (cml["-desc"])       params.kpDescriptorType = ucoslam::DescriptorTypes::fromString(cml("-desc", "orb"));
     if (cml["-dict"])       params.aruco_Dictionary = cml("-dict");
     if (cml["-tfocus"])  params.targetFocus =stof(cml("-tfocus","-1"));
@@ -312,273 +312,282 @@ void enhanceImageBGR(const cv::Mat &imgIn, cv::Mat &imgOut){
 }
 
 int main(int argc,char **argv){
+    std::ios_base::sync_with_stdio(false);
+
     bool errorFlag = false;
-	// try {
+    CmdLineParser cml(argc, argv);
+    if (argc < 3 || cml["-h"]) {
+        cerr << "Usage: (video|live[:cameraIndex(0,1...)])  camera_params.yml [-params ucoslam_params.yml] [-map world]  [-out name] [-scale <float>:video resize factor]"
+                "[-loc_only do not update map, only do localization. Requires -in]"
+                "\n"
+                "[-desc descriptor orb,akaze,brisk,freak] "
+                "[-aruco-markerSize markers_size] [-dict <dictionary>:. By default ARUCO_MIP_36h12]  "
+                "[-nomarkers]  [-debug level] [-voc bow_volcabulary_file] "
+                "[-t_fe n:number of threads of the feature detector] [-st starts the processing stopped ] "
+                "[-nokeypoints] [-marker_minsize <val_[0,1]>] [-em . Uses enclosed markers] [-nFoX disabled windows] "
+                "[-fps X: set video sequence frames per second] [-outvideo filename]"
+                "[-featDensity <float>:features density]"
+                "[-nOct <int>:number of octave layers]"
+                "[-noMapUpdate]"
+                "[-tfocus <float>: target focus employed to create the map. Replaces the one of the camera] "
+                "[-undistort] will undistort image before processing it"
+                "[-extra_params \"param1=value1 param2=value2...\"]"
+                "[-vspeed <int:def 1> video analysis speed ]"
+                "[-liveImageSize w:h]"
+                << endl;        
+        return -1;
+    }
 
-		CmdLineParser cml(argc, argv);
-        if (argc < 3 || cml["-h"]) {
-            cerr << "Usage: (video|live[:cameraIndex(0,1...)])  camera_params.yml [-params ucoslam_params.yml] [-map world]  [-out name] [-scale <float>:video resize factor]"
-                    "[-loc_only do not update map, only do localization. Requires -in]"
-                    "\n"
-                    "[-desc descriptor orb,akaze,brisk,freak] "
-                    "[-aruco-markerSize markers_size] [-dict <dictionary>:. By default ARUCO_MIP_36h12]  "
-                    "[-nomarkers]  [-debug level] [-voc bow_volcabulary_file] "
-                    "[-t_fe n:number of threads of the feature detector] [-st starts the processing stopped ] "
-                    "[-nokeypoints] [-marker_minsize <val_[0,1]>] [-em . Uses enclosed markers] [-nFoX disabled windows] "
-                    "[-fps X: set video sequence frames per second] [-outvideo filename]"
-                    "[-featDensity <float>:features density]"
-                    "[-nOct <int>:number of octave layers]"
-                    "[-noMapUpdate]"
-                    "[-tfocus <float>: target focus employed to create the map. Replaces the one of the camera] "
-                    "[-undistort] will undistort image before processing it"
-                    "[-extra_params \"param1=value1 param2=value2...\"]"
-                    "[-vspeed <int:def 1> video analysis speed ]"
-                    "[-liveImageSize w:h]"
-
-                 << endl; return -1;
-		}
-
-        
-
-		bool liveVideo = false;
-        InputReader vcap;
-        cv::VideoWriter videoout;
-		string TheInputVideo = string(argv[1]);
-        string TheOutputVideo=cml("-outvideo");
-		if (TheInputVideo.find("live") != std::string::npos)
-		{
-			int vIdx = 0;
-			// check if the :idx is here
-            char cad[100];
-			if (TheInputVideo.find(":") != string::npos)
-			{
-				std::replace(TheInputVideo.begin(), TheInputVideo.end(), ':', ' ');
-				sscanf(TheInputVideo.c_str(), "%s %d", cad, &vIdx);
-			}
-			cout << "Opening camera index " << vIdx << endl;
-			vcap.open(vIdx);
-            //vcap.set(CV_CAP_PROP_AUTOFOCUS, 0);
-            liveVideo = true;
-
-		}
-        else vcap.open(argv[1],!cml["-sequential"]);
-
-		if (!vcap.isOpened())
-			throw std::runtime_error("Video not opened");
-
-        ucoslam::UcoSlam Slam;
-		int debugLevel = stoi(cml("-debug", "0"));
-        Slam.setDebugLevel(debugLevel);
-        Slam.showTimers(true);
-        ucoslam::ImageParams image_params;
-        ucoslam::Params params;
-        cv::Mat in_image;
-
-        image_params.readFromXMLFile(argv[2]);
-
-        if( cml["-params"])        params.readFromYMLFile(cml("-params"));
-        overwriteParamsByCommandLine(cml,params);
-
-        auto TheMap=std::make_shared<ucoslam::Map>();
-        //read the map from file?
-        if ( cml["-map"]) TheMap->readFromFile(cml("-map"));
-        
-        ///////////////////////////////////////////
-        // Read from the text file
-        // ifstream yamlFile("/home/tpp/UCOSlam-IBOIS/build/utils/merged_map.yml");
-        // string yamlString;
-        // string tmpStr;
-        // while (getline(yamlFile, tmpStr)) {
-        //     yamlString += tmpStr;
-        // }
-
-        // map<int, vector<vector<double> > > markers;
-
-        // int index = yamlString.find("corners");
-        // int markerAmount = 95;
-        // for(int mi = 0; mi < markerAmount; mi++) {
-        //     vector<vector<double> > markerCorners;
-        //     for(int ci = 0; ci < 4; ci++){
-        //         vector<double> markerCorner(3);
-        //         for(int vi = 0; vi < 3; vi++){
-        //             markerCorner[vi] = getDouble(yamlString, index);
-        //         }
-        //         markerCorners.push_back(markerCorner);
-        //     }
-        //     int id = getInt(yamlString, index);
-        //     markers[id] = markerCorners;
-        // }
-        ////////////////////////////////////////////////
-
-
-
-        Slam.setParams(TheMap, params,cml("-voc"));
-
-        if(!cml["-voc"]  && !cml["-map"])
+    bool liveVideo = false;
+    InputReader vcap;
+    cv::VideoWriter videoout;
+    string TheInputVideo = string(argv[1]);
+    string TheOutputVideo = cml("-outvideo");
+    if (TheInputVideo.find("live") != std::string::npos)
+    {
+        int vIdx = 0;
+        // check if the :idx is here
+        char cad[100];
+        if (TheInputVideo.find(":") != string::npos)
         {
-            cerr<<"Warning!! No VOCABULARY INDICATED. KEYPOINT RELOCALIZATION IMPOSSIBLE WITHOUT A VOCABULARY FILE!!!!!"<<endl;
+            std::replace(TheInputVideo.begin(), TheInputVideo.end(), ':', ' ');
+            sscanf(TheInputVideo.c_str(), "%s %d", cad, &vIdx);
         }
+        cout << "Opening camera index " << vIdx << endl;
+        vcap.open(vIdx);
+        //vcap.set(CV_CAP_PROP_AUTOFOCUS, 0);
+        liveVideo = true;
+
+    }
+    else vcap.open(argv[1],!cml["-sequential"]);
+
+    if (!vcap.isOpened())
+        throw std::runtime_error("Video not opened");
+
+    ucoslam::UcoSlam Slam;
+    int debugLevel = stoi(cml("-debug", "0"));
+    Slam.setDebugLevel(debugLevel);
+    Slam.showTimers(true);
+    ucoslam::ImageParams image_params;
+    ucoslam::Params params;
+    cv::Mat in_image;
+
+    image_params.readFromXMLFile(argv[2]);
+
+    if( cml["-params"]) params.readFromYMLFile(cml("-params"));
+    overwriteParamsByCommandLine(cml,params);
+
+    auto TheMap=std::make_shared<ucoslam::Map>();
+    //read the map from file?
+    if (cml["-map"]) TheMap->readFromFile(cml("-map"));
+    
+    ///////////////////////////////////////////
+    // Read from the text file
+    // ifstream yamlFile("/home/tpp/UCOSlam-IBOIS/build/utils/merged_map.yml");
+    // string yamlString;
+    // string tmpStr;
+    // while (getline(yamlFile, tmpStr)) {
+    //     yamlString += tmpStr;
+    // }
+
+    // map<int, vector<vector<double> > > markers;
+
+    // int index = yamlString.find("corners");
+    // int markerAmount = 95;
+    // for(int mi = 0; mi < markerAmount; mi++) {
+    //     vector<vector<double> > markerCorners;
+    //     for(int ci = 0; ci < 4; ci++){
+    //         vector<double> markerCorner(3);
+    //         for(int vi = 0; vi < 3; vi++){
+    //             markerCorner[vi] = getDouble(yamlString, index);
+    //         }
+    //         markerCorners.push_back(markerCorner);
+    //     }
+    //     int id = getInt(yamlString, index);
+    //     markers[id] = markerCorners;
+    // }
+    ////////////////////////////////////////////////
 
 
-        if (cml["-loc_only"]) Slam.setMode(ucoslam::MODE_LOCALIZATION);
 
-        //need to skip frames?
-        if (cml["-skip"]) {
-            int n=stoi(cml("-skip","0"));
-            vcap.set(CV_CAP_PROP_POS_FRAMES,n);
-            cerr<<endl;
+    Slam.setParams(TheMap, params, cml("-voc"));
+
+    if(!cml["-voc"]  && !cml["-map"])
+    {
+        cerr<<"Warning!! No VOCABULARY INDICATED. KEYPOINT RELOCALIZATION IMPOSSIBLE WITHOUT A VOCABULARY FILE!!!!!"<<endl;
+    }
+
+
+//    if (cml["-loc_only"]) Slam.setMode(ucoslam::MODE_LOCALIZATION);
+
+    //need to skip frames?
+    if (cml["-skip"]) {
+        int n=stoi(cml("-skip","0"));
+        vcap.set(CV_CAP_PROP_POS_FRAMES,n);
+        cerr<<endl;
+    }
+    if(cml["-liveImageSize"]){
+        vcap.set(CV_CAP_PROP_FOURCC ,CV_FOURCC('M', 'J', 'P', 'G') );
+
+        auto cameraSize=  getSplit( cml("-liveImageSize","-1:-1") );
+        if(cameraSize.first!="-1")
+            vcap.set(cv::CAP_PROP_FRAME_WIDTH,stoi(cameraSize.first));
+        if(cameraSize.second!="-1")
+            vcap.set(cv::CAP_PROP_FRAME_HEIGHT,stoi(cameraSize.second));
+    }
+
+    //read the first frame if not yet
+    while (in_image.empty())
+        vcap >> in_image;
+    //need to resize input image?
+    cv::Size vsize(0,0);
+    //need undistortion
+
+    bool undistort=cml["-undistort"];
+    vector<cv::Mat > undistMap;
+    if(undistort ){
+        if( undistMap.size()==0){
+            undistMap.resize(2);
+            cv::initUndistortRectifyMap(image_params.CameraMatrix,image_params.Distorsion,cv::Mat(),cv::Mat(),image_params.CamSize,CV_32FC1,undistMap[0],undistMap[1]);
         }
-        if(cml["-liveImageSize"]){
-            vcap.set(CV_CAP_PROP_FOURCC ,CV_FOURCC('M', 'J', 'P', 'G') );
+        image_params.Distorsion.setTo(cv::Scalar::all(0));
+    }
+    //Create the viewer to see the images and the 3D
+    ucoslam::MapViewer TheViewer;
 
-            auto cameraSize=  getSplit( cml("-liveImageSize","-1:-1") );
-            if(cameraSize.first!="-1")
-                vcap.set(cv::CAP_PROP_FRAME_WIDTH,stoi(cameraSize.first));
-            if(cameraSize.second!="-1")
-                vcap.set(cv::CAP_PROP_FRAME_HEIGHT,stoi(cameraSize.second));
-        }
+//    if (cml["-slam"]){
+//        Slam.readFromFile(cml("-slam"));
+//            vcap.set(CV_CAP_PROP_POS_FRAMES,Slam.getLastProcessedFrame());
+//        vcap.retrieve(in_image);
+//        vcap.set(CV_CAP_PROP_POS_FRAMES,Slam.getLastProcessedFrame());
+//        vcap.retrieve(in_image);
+//        TheMap=Slam.getMap();
+//        overwriteParamsByCommandLine(cml,params);
+//        Slam.updateParams(params);
+//
+//    }
+//
+//    if (cml["-noMapUpdate"])
+//        Slam.setMode(ucoslam::MODE_LOCALIZATION);
 
-        //read the first frame if not yet
-        while (in_image.empty())
-            vcap >> in_image;
-        //need to resize input image?
-        cv::Size vsize(0,0);
-        //need undistortion
 
-        bool undistort=cml["-undistort"];
-        vector<cv::Mat > undistMap;
-        if(undistort ){
-            if( undistMap.size()==0){
-                undistMap.resize(2);
-                cv::initUndistortRectifyMap(image_params.CameraMatrix,image_params.Distorsion,cv::Mat(),cv::Mat(),image_params.CamSize,CV_32FC1,undistMap[0],undistMap[1]);
+
+    cv::Mat auxImage;
+    //Ok, lets start
+    ucoslam::TimerAvrg Fps;
+    ucoslam::TimerAvrg FpsComplete;
+    ucoslam::TimerAvrg TimerDraw;
+    bool finish = false;
+    cv::Mat camPose_c2g;
+    int vspeed=stoi(cml("-vspeed","1"));
+    while (!finish && !in_image.empty()) {
+        try{
+            FpsComplete.start();
+
+            //image resize (if required)
+            in_image = resize(in_image, vsize);
+
+
+            //image undistortion (if required)
+            if(undistort ){               
+                cv::remap(in_image,auxImage,undistMap[0],undistMap[1],cv::INTER_CUBIC);
+                in_image=auxImage;
+                image_params.Distorsion.setTo(cv::Scalar::all(0));
             }
-            image_params.Distorsion.setTo(cv::Scalar::all(0));
-        }
-        //Create the viewer to see the images and the 3D
-        ucoslam::MapViewer TheViewer;
 
-        if (cml["-slam"]){
-            Slam.readFromFile(cml("-slam"));
-             vcap.set(CV_CAP_PROP_POS_FRAMES,Slam.getLastProcessedFrame());
-            vcap.retrieve(in_image);
-            vcap.set(CV_CAP_PROP_POS_FRAMES,Slam.getLastProcessedFrame());
-            vcap.retrieve(in_image);
-            TheMap=Slam.getMap();
-            overwriteParamsByCommandLine(cml,params);
-            Slam.updateParams(params);
+            enhanceImageBGR(in_image, in_image);
 
-        }
+            int currentFrameIndex = vcap.getNextFrameIndex()-1;
 
-        if (cml["-noMapUpdate"])
-            Slam.setMode(ucoslam::MODE_LOCALIZATION);
+            Fps.start();
+            camPose_c2g=Slam.process(in_image, image_params,currentFrameIndex);
+            Fps.stop();
 
 
+            TimerDraw.start();
+            //            Slam.drawMatches(in_image);
+            //    char k = TheViewer.show(&Slam, in_image,"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
+            char k =0;
+            if(!cml["-noX"]) k=TheViewer.show(TheMap, in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam.getCurrentKeyFrameIndex());
+            if (int(k) == 27 || k=='q')finish = true;//pressed ESC
+            TimerDraw.stop();
 
-        cv::Mat auxImage;
-        //Ok, lets start
-        ucoslam::TimerAvrg Fps;
-        ucoslam::TimerAvrg FpsComplete;
-        ucoslam::TimerAvrg TimerDraw;
-        bool finish = false;
-        cv::Mat camPose_c2g;
-        int vspeed=stoi(cml("-vspeed","1"));
-        while (!finish && !in_image.empty()) {
-            try{
-                FpsComplete.start();
+            //save to output video?
+            if (!TheOutputVideo.empty()){
+                auto image=TheViewer.getImage();
+                if(!videoout.isOpened())
+                    videoout.open(TheOutputVideo, CV_FOURCC('X', '2', '6', '4'), stof(cml("-fps","30")),image.size()  , image.channels()!=1);
+                if(videoout.isOpened())  videoout.write(image);
+            }
 
-                //image resize (if required)
-                in_image = resize(in_image, vsize);
-
-
-                //image undistortion (if required)
-                if(undistort ){               
-                    cv::remap(in_image,auxImage,undistMap[0],undistMap[1],cv::INTER_CUBIC);
-                    in_image=auxImage;
-                    image_params.Distorsion.setTo(cv::Scalar::all(0));
-                }
-
-                enhanceImageBGR(in_image, in_image);
-
-                int currentFrameIndex = vcap.getNextFrameIndex()-1;
-
-                Fps.start();
-                camPose_c2g=Slam.process(in_image, image_params,currentFrameIndex);
-                Fps.stop();
-
-
-                TimerDraw.start();
-                //            Slam.drawMatches(in_image);
-                //    char k = TheViewer.show(&Slam, in_image,"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
-                char k =0;
-                if(!cml["-noX"]) k=TheViewer.show(TheMap,   in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam.getCurrentKeyFrameIndex());
-                if (int(k) == 27 || k=='q')finish = true;//pressed ESC
-                TimerDraw.stop();
-
-                //save to output video?
-                if (!TheOutputVideo.empty()){
-                    auto image=TheViewer.getImage();
-                    if(!videoout.isOpened())
-                        videoout.open(TheOutputVideo, CV_FOURCC('X', '2', '6', '4'), stof(cml("-fps","30")),image.size()  , image.channels()!=1);
-                    if(videoout.isOpened())  videoout.write(image);
-                }
-
-                //reset?
-                if (k=='r') Slam.clear();
-                //write the current map
-                if (k=='e'){
-                    string number = std::to_string(currentFrameIndex);
-                    while (number.size() < 5) number = "0" + number;
-                    TheMap->saveToFile("world-"+number+".map");
-                }
-                if (k=='v'){
-                    Slam.saveToFile("slam.slm");
-                }
-                if(k=='s'){
-                    TheMap->saveToFile(cml("-out","world") +".map");
-                }
-                if(k=='o'){
-                    TheMap->saveToFile(cml("-out","world") +".map");
-                    fullbaOptimization(*TheMap);
-                    TheMap->saveToFile(cml("-out","world") +".map");
-                }
-                    
-                FpsComplete.stop();
-                if(currentFrameIndex % 100 == 0){
-                    // TheMap->removeUnUsedKeyPoints();
-                    // TheMap->removeOldFrames();
-
-                    cout << "Image " << currentFrameIndex << " fps=" << 1./Fps.getAvrg()<<" "<<1./FpsComplete.getAvrg();
-                    cout << " draw=" << 1./TimerDraw.getAvrg();
-                    cout << (camPose_c2g.empty()?" not tracked":" tracked") << endl;
-                }
+            //reset?
+            if (k=='r') Slam.clear();
+            //write the current map
+            if (k=='e'){
+                string number = std::to_string(currentFrameIndex);
+                while (number.size() < 5) number = "0" + number;
+                TheMap->saveToFile("world-"+number+".map");
+            }
+            if (k=='v'){
+                Slam.saveToFile("slam.slm");
+            }
+            if(k=='s'){
+                TheMap->saveToFile(cml("-out","world") +".map");
+            }
+            if(k=='o'){
+                TheMap->saveToFile(cml("-out","world") +".map");
+                fullbaOptimization(*TheMap);
+                TheMap->saveToFile(cml("-out","world") +".map");
+            }
                 
-                //read next
-                vcap>>in_image;
-                if(!camPose_c2g.empty()){
-                    for(int s=0;s<vspeed-1;s++)
-                        vcap >> in_image;
-                }
+            FpsComplete.stop();
+            if(currentFrameIndex % 10 == 0){
+                // TheMap->removeUnUsedKeyPoints();
+                // TheMap->removeOldFrames();
 
-            } catch (const std::exception &ex) {
-                errorFlag = true;
-                cerr << ex.what() << endl;
+                cout << "Image " << currentFrameIndex << " fps=" << 1./Fps.getAvrg()<<" "<<1./FpsComplete.getAvrg();
+                cout << " draw=" << 1./TimerDraw.getAvrg();
+                cout << (camPose_c2g.empty()?" not tracked":" tracked") << endl;
             }
+        } catch (const std::exception &ex) {
+            errorFlag = true;
+            cerr << ex.what() << endl;
+
+            TheMap->lock(__FUNCTION__,__FILE__,__LINE__);
+            if (cml["-map"]) {
+                auto TheMapReloader=std::make_shared<ucoslam::Map>();
+                if (cml["-map"]) TheMapReloader->readFromFile(cml("-map"));
+                TheMap = TheMapReloader;
+
+                Slam.clear();
+                Slam.resetTracker();
+                Slam.setParams(TheMap, params, cml("-voc"));
+            }
+            TheMap->unlock(__FUNCTION__,__FILE__,__LINE__);
+            cerr << "Recovered from error." << endl;
         }
-
-        //release the video output if required
-        if(videoout.isOpened()) videoout.release();
-
-        //optimize the map
-        // fullbaOptimization(*TheMap);
-
-        //save the output
-        TheMap->saveToFile(cml("-out","world") +".map");
-        //save also the parameters finally employed
-        params.saveToYMLFile("ucoslam_params_"+cml("-out","world") +".yml");
-        if (debugLevel >=10){
-            Slam.saveToFile("slam.slm");
+        //read next
+        vcap>>in_image;
+        if(!camPose_c2g.empty()){
+            for(int s=0;s<vspeed-1;s++)
+                vcap >> in_image;
         }
-        TheMap->saveToMarkerMap("markermap.yml");
+    }
+
+    //release the video output if required
+    if(videoout.isOpened()) videoout.release();
+
+    //optimize the map
+    // fullbaOptimization(*TheMap);
+
+    //save the output
+    TheMap->saveToFile(cml("-out","world") +".map");
+    //save also the parameters finally employed
+    params.saveToYMLFile("ucoslam_params_"+cml("-out","world") +".yml");
+    if (debugLevel >=10){
+        Slam.saveToFile("slam.slm");
+    }
+    TheMap->saveToMarkerMap("markermap.yml");
 
 
     // }
