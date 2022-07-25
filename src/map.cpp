@@ -329,18 +329,37 @@ void Map::applyTransform(cv::Mat m4x4){
     m44_32f_rot.at<float>(1,2)=0;
     m44_32f_rot.at<float>(2,2)=0;
 
+    cout << "Marker Pose" << endl;
 
-    for(auto &m:map_markers)
-        m.second.pose_g2m =   m44_32f*  m.second.pose_g2m;
-
-    for(auto &p:map_points){
-         p.pos3d =   m44_32f*  p.pos3d;
-        p.normal= m44_32f_rot*p.normal;
+    for(auto &m:map_markers){
+        cout << m.second.pose_g2m << "->";
+        m.second.pose_g2m = m44_32f * m.second.pose_g2m;
+        cout << m.second.pose_g2m << endl;
     }
 
-    for(auto &kf:keyframes)
-         kf.pose_f2g= (m44_32f*kf.pose_f2g.inv()).inv() ;
+    cout << "Point Pose" << endl;
 
+    for(auto &p:map_points){
+        cout << p.pos3d << "->";
+        p.pos3d = m44_32f     * p.pos3d;
+        p.normal= m44_32f_rot * p.normal;
+        cout << p.pos3d << endl;
+    }
+
+    
+    cout << "KF Pose" << endl;
+    cout << "m4x4" << m4x4 << endl;
+    cout << "m44_32f" << m44_32f << endl;
+    cout << "m44_32f_rot" << m44_32f_rot << endl;
+    
+    for(auto &kf:keyframes){
+        cout << "inv: " << kf.pose_f2g.inv() << endl;
+        cout << "times" << m44_32f * kf.pose_f2g.inv() << endl;
+        cout << kf.pose_f2g << "->";
+        kf.pose_f2g = (m44_32f * kf.pose_f2g.inv()).inv() ;
+        cout << kf.pose_f2g << endl;
+    }
+        
 
 }
 bool Map::centerRefSystemInMarker(uint32_t markerId){
@@ -384,28 +403,30 @@ void Map::projectTo(Map &refMap){
     transformationMatrix = cv::estimateAffine3D(srcPoints, dstPoints);
 
     // Expend the last row (0, 0, 0, 1)
-    transformationMatrix.push_back(cv::Mat(1, 4, CV_64F, {0, 0, 0, 1}));
+    transformationMatrix.push_back(cv::Mat(1, 4, CV_64F));
+    transformationMatrix.at<double>(3, 3) = 1;
     
     // Reproject to refMap
     applyTransform(transformationMatrix);
 
-    cout << "Transformed result comparsion:" << endl;
-    for(auto id: overlapMarkerIds){
-        if ( map_markers[id].pose_g2m.isValid() && refMap.map_markers[id].pose_g2m.isValid() ){
-            cout << id << endl;
-            // Marker points of this map
-            auto p3d = map_markers[id].get3DPoints();
-            for(auto p: p3d) {
-                cout << p << " ";
-            }
-            cout << endl;
-            p3d = refMap.map_markers[id].get3DPoints();
-            for(auto p: p3d) {
-                cout << p << " ";
-            }
-            cout << endl;
-        }
-    }
+    // cout << "Transformed result comparsion:" << endl;
+    // for(auto id: overlapMarkerIds){
+    //     if ( map_markers[id].pose_g2m.isValid() && refMap.map_markers[id].pose_g2m.isValid() ){
+    //         cout << id << endl;
+    //         // Marker points of this map
+    //         auto p3d = map_markers[id].get3DPoints();
+    //         for(auto p: p3d) {
+    //             cout << p << " ";
+    //         }
+    //         cout << endl;
+    //         p3d = refMap.map_markers[id].get3DPoints();
+    //         for(auto p: p3d) {
+    //             cout << p << " ";
+    //         }
+    //         cout << endl;
+    //     }
+    // }
+    
 }
 
 // void Map::mergeWith(Map &mapB){

@@ -37,18 +37,15 @@ struct DebugTest{
 
 int main(int argc,char **argv){
     try {
-        if(argc<4)throw std::runtime_error("Usage: inmap_base inmap_B outmap [iterations]");
+        if(argc<4)throw std::runtime_error("Usage: inmap_A inmap_B outmap [iterations]");
 
         std::shared_ptr<ucoslam::Map> TheMap, TheMapA, TheMapB;
         TheMap = std::make_shared<ucoslam::Map>();
         TheMapA = std::make_shared<ucoslam::Map>();
         TheMapB = std::make_shared<ucoslam::Map>();
 
-        cout<<"reading map A"<<endl;
         TheMapA->readFromFile(argv[1]);
-        cout<<"reading map B"<<endl;
         TheMapB->readFromFile(argv[2]);
-        cout<<"Done"<<endl;
 
         int niters=50;
         if(argc>=5)niters=stoi(argv[4]);
