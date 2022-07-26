@@ -206,7 +206,7 @@ _16940374161587532565 )
 
      void
 
-     _12244964123780599670 (
+     loopClosurePostProcessing (
 
  Frame &_46082543180066935, const LoopDetector ::
 
@@ -279,7 +279,7 @@ Frame* >
 
       uint32_t
 
- _11028815416989897150 =
+ _CurkeyFrame =
 std ::
 
     numeric_limits <
@@ -301,7 +301,7 @@ std ::
   set<uint32_t> KeyFramesToRemove;
 
     std :: shared_ptr < GlobalOptimizer >
-    _15944432432468226297 ;
+    Gopt ;
 
     std :: map <
 
@@ -311,10 +311,10 @@ std ::
 
    youngKeyFrames ;
 
-    Se3Transform _13909239728712143806 ;
+    Se3Transform _lastAddedKFPose ;
 
      bool
-    _1061304613240460439 =
+    bigChangeHasHappen =
 
  false ;
 
@@ -344,7 +344,7 @@ max ()
 
      bool
 
-   _13990461397173511559 =
+   _hasMapBeenScaled =
     false ;
 
      bool

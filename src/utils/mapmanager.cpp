@@ -81,13 +81,13 @@ namespace ucoslam {
 
             Frame &_175247760268, int32_t currentKeyFrameId) {
 
-        _11028815416989897150 =
+        _CurkeyFrame =
 
                 currentKeyFrameId;
 
         _9728777609121731073++;
 
-        _1061304613240460439 =
+        bigChangeHasHappen =
 
                 false;
 
@@ -122,10 +122,10 @@ namespace ucoslam {
                         correctMap(
                         _LoopClosureInfo);
 
-                _12244964123780599670(
+                loopClosurePostProcessing(
                         _175247760268, _LoopClosureInfo);
 
-                _1061304613240460439 =
+                bigChangeHasHappen =
 
                         true;
 
@@ -217,16 +217,16 @@ namespace ucoslam {
         TheMap->lock(__FUNCTION__, __FILE__, __LINE__);
         if (_LoopClosureInfo.foundLoop()) {
             _TheLoopDetector_141391->correctMap(_LoopClosureInfo);
-            _12244964123780599670(TheMap->keyframes[_lastAddedKeyFrame], _LoopClosureInfo);
-            _1061304613240460439 = true;
+            loopClosurePostProcessing(TheMap->keyframes[_lastAddedKeyFrame], _LoopClosureInfo);
+            bigChangeHasHappen = true;
         } else {
-            vector<std::pair<uint32_t, uint32_t> > _8817940606606562997;
-            if (_15944432432468226297) {
-                _15944432432468226297->getResults(TheMap);
-                _8817940606606562997 = _15944432432468226297->getBadAssociations();
-                _15944432432468226297 = nullptr;
+            vector<std::pair<uint32_t, uint32_t> > BadAssociations;
+            if (Gopt) { //if we just wake up, from a loadFromStream, this object is not created
+                Gopt->getResults(TheMap);
+                BadAssociations = Gopt->getBadAssociations();
+                Gopt = nullptr;
             }
-            TheMap->removeBadAssociations(_8817940606606562997, System::getParams().minNumProjPoints);
+            TheMap->removeBadAssociations(BadAssociations, System::getParams().minNumProjPoints);
         }
         for (auto p: PointsToRemove)
             if (TheMap->map_points.is(p))
@@ -234,39 +234,23 @@ namespace ucoslam {
 
         PointsToRemove.clear();
 
-        // if(System::getParams().isInstancing) {
-        //   if(newInsertedKeyFrames.size() > 20){
-        //     KeyFramesToRemove.insert(newInsertedKeyFrames.front());
-        //     // TheMap->removeKeyFrames(set<uint32_t>({newInsertedKeyFrames.front()}),System::getParams().minNumProjPoints);
-        //     newInsertedKeyFrames.pop();
-        //   }
-        // }
-
         TheMap->removeKeyFrames(KeyFramesToRemove, System::getParams().minNumProjPoints);
 
-
-        if (_13990461397173511559) {
-            _1061304613240460439 = true;
+        if (_hasMapBeenScaled) {
+            bigChangeHasHappen = true;
         }
 
-        _13909239728712143806 = TheMap->keyframes[_lastAddedKeyFrame].pose_f2g;
+        _lastAddedKFPose = TheMap->keyframes[_lastAddedKeyFrame].pose_f2g;
 
-        TheMap->removeWeakConnections(_11028815416989897150, 8);
+        TheMap->removeWeakConnections(_CurkeyFrame, 8);
 
-        TheMap->unlock(__FUNCTION__, "/app/example.cpp", 1525);
+        TheMap->unlock(__FUNCTION__, __FILE__,__LINE__);
 
         PointsToRemove.clear();
-
         KeyFramesToRemove.clear();
 
-        _curState =
-
-                IDLE;
-
-        return
-
-                true;
-
+        _curState = IDLE;
+        return true;
     }
 
     void
@@ -367,7 +351,7 @@ namespace ucoslam {
 
         TheMap.reset();
 
-        _11028815416989897150 =
+        _CurkeyFrame =
 
                 std::
                 numeric_limits<
@@ -378,7 +362,7 @@ namespace ucoslam {
 
                 max();
 
-        _15944432432468226297.reset();
+        Gopt.reset();
 
         PointsToRemove.clear();
 
@@ -417,7 +401,7 @@ namespace ucoslam {
 
                 max();
 
-        _13990461397173511559 =
+        _hasMapBeenScaled =
 
                 false;
 
@@ -460,7 +444,7 @@ namespace ucoslam {
             }
         }
 
-        _13990461397173511559 = false;
+        _hasMapBeenScaled = false;
 
         bool _14173211929012135714 = false;
 
@@ -913,7 +897,7 @@ namespace ucoslam {
 
                         10);
 
-                _13990461397173511559 =
+                _hasMapBeenScaled =
 
                         true;
 
@@ -943,7 +927,7 @@ namespace ucoslam {
 
         if (System::getParams().reLocalizationWithKeyPoints && !System::getParams().isInstancing)
             _LoopClosureInfo = _TheLoopDetector_141391->detectLoopFromKeyPoints(keyframe_169372,
-                                                                                    _11028815416989897150);
+                                                                                    _CurkeyFrame);
 
         TheMap->unlock(__FUNCTION__, __FILE__, __LINE__);
 
@@ -1013,11 +997,11 @@ namespace ucoslam {
     }
 
     Se3Transform MapManager::getLastAddedKFPose() {
-        return _13909239728712143806;
+        return _lastAddedKFPose;
     }
 
     bool MapManager::bigChange() const {
-        return _1061304613240460439;
+        return bigChangeHasHappen;
     }
 
     void
@@ -4393,7 +4377,7 @@ namespace ucoslam {
             }
 
         }
-        _15944432432468226297 =
+        Gopt =
 
                 GlobalOptimizer::
 
@@ -4405,29 +4389,29 @@ namespace ucoslam {
 
                                 .global_optimizer);
 
-        _15944432432468226297->
+        Gopt->
 
                 setParams(
 
                 TheMap, _3005399798454910266);
 
-        _15944432432468226297->
+        Gopt->
 
                 optimize();
 
-        _15944432432468226297->
+        Gopt->
                 getResults(
                 TheMap);
         TheMap->
                 removeBadAssociations(
 
-                _15944432432468226297->
+                Gopt->
 
                         getBadAssociations(), System::
                 getParams()
                         .minNumProjPoints);
 
-        _15944432432468226297 =
+        Gopt =
 
                 nullptr;
 
@@ -4582,7 +4566,7 @@ namespace ucoslam {
 
         }
 
-        _15944432432468226297 =
+        Gopt =
 
                 GlobalOptimizer::
 
@@ -4594,13 +4578,13 @@ namespace ucoslam {
 
                                 .global_optimizer);
 
-        _15944432432468226297->
+        Gopt->
 
                 setParams(
 
                 TheMap, _3005399798454910266);
 
-        _15944432432468226297->
+        Gopt->
                 optimize(
 
                 &_hurryUp);
@@ -4721,11 +4705,11 @@ namespace ucoslam {
 
                         char *)
 
-                        &_13990461397173511559, sizeof(_13990461397173511559)
+                        &_hasMapBeenScaled, sizeof(_hasMapBeenScaled)
 
         );
 
-        _13909239728712143806.toStream(
+        _lastAddedKFPose.toStream(
 
                 _11093822381060);
 
@@ -4735,9 +4719,9 @@ namespace ucoslam {
 
                         char *)
 
-                        &_1061304613240460439, sizeof(
+                        &bigChangeHasHappen, sizeof(
 
-                        _1061304613240460439)
+                        bigChangeHasHappen)
         );
 
         _11093822381060.write(
@@ -4746,8 +4730,8 @@ namespace ucoslam {
 
                         char *)
 
-                        &_11028815416989897150, sizeof(
-                        _11028815416989897150)
+                        &_CurkeyFrame, sizeof(
+                        _CurkeyFrame)
         );
 
         _11093822381060.write(
@@ -4885,13 +4869,13 @@ namespace ucoslam {
 
                         char *)
 
-                        &_13990461397173511559, sizeof(
+                        &_hasMapBeenScaled, sizeof(
 
-                        _13990461397173511559)
+                        _hasMapBeenScaled)
 
         );
 
-        _13909239728712143806.fromStream(
+        _lastAddedKFPose.fromStream(
 
                 _11093822381060);
 
@@ -4900,17 +4884,17 @@ namespace ucoslam {
                 (
 
                         char *)
-                        &_1061304613240460439, sizeof(
-                        _1061304613240460439)
+                        &bigChangeHasHappen, sizeof(
+                        bigChangeHasHappen)
 
         );
 
         _11093822381060.read(
 
                 (
-                        char *) &_11028815416989897150, sizeof(
+                        char *) &_CurkeyFrame, sizeof(
 
-                        _11028815416989897150)
+                        _CurkeyFrame)
 
         );
 
@@ -4992,19 +4976,19 @@ namespace ucoslam {
 
         _11093822380353 +=
 
-                _13990461397173511559;
+                _hasMapBeenScaled;
 
         _11093822380353 +=
 
-                _13909239728712143806;
+                _lastAddedKFPose;
 
         _11093822380353 +=
 
-                _1061304613240460439;
+                bigChangeHasHappen;
 
         _11093822380353 +=
 
-                _11028815416989897150;
+                _CurkeyFrame;
 
         _11093822380353 +=
                 _12303014364795142948;
@@ -5018,11 +5002,7 @@ namespace ucoslam {
 
     }
 
-    void
-
-    MapManager::
-
-    _12244964123780599670(
+void MapManager:: loopClosurePostProcessing(
 
             Frame &_6807141023702418932, const LoopDetector::
 
@@ -5297,7 +5277,7 @@ namespace ucoslam {
                 TheMap->
 
                         removeBadAssociations(
-                        _15944432432468226297->
+                        Gopt->
 
                                 getBadAssociations(), System::
 

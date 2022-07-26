@@ -24,99 +24,33 @@ namespace
 
 ucoslam {
 
-    Params System::_14938569619851839146;
+    Params System::sysParams;
 
-    Params &System::getParams() { return _14938569619851839146; }
+    Params &System::getParams() { return sysParams; }
 
     uint32_t System::getCurrentKeyFrameIndex() { return currentKeyFrameId_105767; }
 
     std::shared_ptr<Map> System::getMap() { return TheMap; }
 
     System::System() {
-        _3944249282595574931 = std::make_shared<FrameExtractor>();
-
-        _2044193291895307872 = std::make_shared<MapInitializer>();
-
-        TheMapManager_286960 = std::make_shared<MapManager>();
-
-        _1320287184975591154 =
-
-                std::
-
-                make_shared<
-
-                        ucoslam::
-
-                        STagDetector>
-
-                        ();
-
+        sysFrameExtractor = std::make_shared<FrameExtractor>();
+        sysMapIntializer = std::make_shared<MapInitializer>();
+        sysMapManager = std::make_shared<MapManager>();
+        _1320287184975591154 = std::make_shared<ucoslam::STagDetector>();
     }
 
-    System::
+    System::~System() { waitForFinished(); }
 
-    ~
+    void System::_14789688456123595594() {
+        sysParams.nthreads_feature_detector = max(1, sysParams.nthreads_feature_detector);
+        std::shared_ptr<Feature2DSerializable> feature2DSerializable = Feature2DSerializable:: create(sysParams.kpDescriptorType);
+        feature2DSerializable->setParams(sysParams.extraParams);
+        sysParams.maxDescDistance = feature2DSerializable->getMinDescDistance();
 
-    System() {
-
-        waitForFinished();
-
-    }
-
-    void
-
-    System::_14789688456123595594() {
-
-        _14938569619851839146.nthreads_feature_detector = max(
-
-                1, _14938569619851839146.nthreads_feature_detector);
-
-        std::
-        shared_ptr<
-
-                Feature2DSerializable>
-
-                _15583457929083796945 =
-
-                Feature2DSerializable::
-
-                create(
-
-                        _14938569619851839146.kpDescriptorType);
-
-        _15583457929083796945->setParams(
-
-                _14938569619851839146.extraParams);
-
-        _14938569619851839146.maxDescDistance =
-                _15583457929083796945->
-
-                        getMinDescDistance();
-
-        _3944249282595574931->
-
-                setParams(_15583457929083796945, _14938569619851839146, _1320287184975591154);
-
-        _3944249282595574931->
-                removeFromMarkers()
-
-                =
-
-                _14938569619851839146.removeKeyPointsIntoMarkers;
-
-        _3944249282595574931->
-
-                detectMarkers()
-
-                =
-                _14938569619851839146.detectMarkers;
-
-        _3944249282595574931->
-                detectKeyPoints()
-                =
-
-                _14938569619851839146.detectKeyPoints;
-
+        sysFrameExtractor->setParams(feature2DSerializable, sysParams, _1320287184975591154);
+        sysFrameExtractor->removeFromMarkers() = sysParams.removeKeyPointsIntoMarkers;
+        sysFrameExtractor->detectMarkers() = sysParams.detectMarkers;
+        sysFrameExtractor->detectKeyPoints() = sysParams.detectKeyPoints;
     }
 
     void System::setParams(std::shared_ptr<Map> _11093822290287, const Params &_2654435881,
@@ -134,7 +68,7 @@ ucoslam {
 
                 _11093822290287;
 
-        _14938569619851839146 =
+        sysParams =
 
                 _2654435881;
 
@@ -154,7 +88,7 @@ ucoslam {
                     make_shared<
                             STagDetector>
                             (
-                                    _14938569619851839146);
+                                    sysParams);
 
         _14789688456123595594();
 
@@ -191,7 +125,7 @@ ucoslam {
             if
 
                     (
-                    _14938569619851839146.forceInitializationFromMarkers)
+                    sysParams.forceInitializationFromMarkers)
 
                 _3005399798454910266.mode =
 
@@ -207,19 +141,19 @@ ucoslam {
 
             _3005399798454910266.minDistance =
 
-                    _14938569619851839146.minBaseLine;
+                    sysParams.minBaseLine;
 
             _3005399798454910266.markerSize =
 
-                    _14938569619851839146.aruco_markerSize;
+                    sysParams.aruco_markerSize;
 
             _3005399798454910266.aruco_minerrratio_valid =
 
-                    _14938569619851839146.aruco_minerrratio_valid;
+                    sysParams.aruco_minerrratio_valid;
 
             _3005399798454910266.allowArucoOneFrame =
 
-                    _14938569619851839146.aruco_allowOneFrameInitialization;
+                    sysParams.aruco_allowOneFrameInitialization;
 
             _3005399798454910266.max_makr_rep_err =
 
@@ -227,9 +161,9 @@ ucoslam {
 
             _3005399798454910266.minDescDistance =
 
-                    _14938569619851839146.maxDescDistance;
+                    sysParams.maxDescDistance;
 
-            _2044193291895307872->
+            sysMapIntializer->
 
                     setParams(
 
@@ -247,28 +181,28 @@ ucoslam {
 
     waitForFinished() {
 
-        TheMapManager_286960->
+        sysMapManager->
 
                 stop();
 
-        TheMapManager_286960->
+        sysMapManager->
                 mapUpdate();
 
         if (
 
-                TheMapManager_286960->bigChange()
+                sysMapManager->bigChange()
 
                 ) {
 
-            frame_149385.pose_f2g =
+            curFrame.pose_f2g =
 
-                    TheMapManager_286960->
+                    sysMapManager->
 
                             getLastAddedKFPose();
 
-            _17976495724303689842 =
+            curPose_ns =
 
-                    frame_149385.pose_f2g;
+                    curFrame.pose_f2g;
 
         }
 
@@ -277,30 +211,30 @@ ucoslam {
     void System::resetTracker() {
         waitForFinished();
         currentKeyFrameId_105767 = -1;
-        _17976495724303689842 = se3();
+        curPose_ns = se3();
         trackingState = STATE_LOST;
-        frame_149385.clear();
-        _4913157516830781457.clear();
+        curFrame.clear();
+        lastFrame.clear();
         _14463320619150402643 = cv::Mat();
         _10558050725520398793 = -1;
     }
 
     cv::Mat System::process(const Frame &inputFrame) {
 
-        se3 _16937225862434286412 = _17976495724303689842;
+        se3 _16937225862434286412 = curPose_ns;
 
-        if ((void *) &inputFrame != (void *) &frame_149385) {
-            swap(_4913157516830781457, frame_149385);
-            frame_149385 = inputFrame;
+        if ((void *) &inputFrame != (void *) &curFrame) {
+            swap(lastFrame, curFrame);
+            curFrame = inputFrame;
         }
 
-        if (_17450466964482625197 == MODE_SLAM && !TheMapManager_286960->hasMap())
-            TheMapManager_286960->setParams(TheMap, _14938569619851839146.enableLoopClosure);
+        if (sysMode == MODE_SLAM && !sysMapManager->hasMap())
+            sysMapManager->setParams(TheMap, sysParams.enableLoopClosure);
 
-        if (!_14938569619851839146.runSequential && _17450466964482625197 == MODE_SLAM)
-            TheMapManager_286960->start();
+        if (!sysParams.runSequential && sysMode == MODE_SLAM)
+            sysMapManager->start();
 
-        for (auto &_175247760135: _4913157516830781457.ids)
+        for (auto &_175247760135: lastFrame.ids)
             if (_175247760135 != std::numeric_limits<uint32_t>::max()) {
                 if (!TheMap->map_points.is(_175247760135))
                     _175247760135 = std::numeric_limits<uint32_t>::max();
@@ -308,102 +242,102 @@ ucoslam {
                     _175247760135 = std::numeric_limits<uint32_t>::max();
             }
 
-        if (TheMap->isEmpty() && _17450466964482625197 == MODE_SLAM) {
-            if (_2016327979059285019(frame_149385))
+        if (TheMap->isEmpty() && sysMode == MODE_SLAM) {
+            if (_2016327979059285019(curFrame))
                 trackingState = STATE_TRACKING;
         } else {
             if (trackingState == STATE_TRACKING) {
-                currentKeyFrameId_105767 = getRefKeyFrameId(_4913157516830781457, _17976495724303689842);
+                currentKeyFrameId_105767 = getRefKeyFrameId(lastFrame, curPose_ns);
                 cerr << "KFid:317 = " << currentKeyFrameId_105767 << " / ";
-                _17976495724303689842 = _11166622111371682966(frame_149385, _17976495724303689842); // bug here
+                curPose_ns = _11166622111371682966(curFrame, curPose_ns); // bug here
 
-                if (!_17976495724303689842.isValid())
+                if (!curPose_ns.isValid())
                     trackingState = STATE_LOST;
             }
 
             if (trackingState == STATE_LOST) {
                 se3 _5564636146947005941;
-                if (_16487919888509808279(frame_149385, _5564636146947005941)) {
+                if (_16487919888509808279(curFrame, _5564636146947005941)) {
                     trackingState = STATE_TRACKING;
-                    _17976495724303689842 = _5564636146947005941;
-                    currentKeyFrameId_105767 = getRefKeyFrameId(frame_149385, _17976495724303689842);
-                    _10558050725520398793 = frame_149385.fseq_idx;
+                    curPose_ns = _5564636146947005941;
+                    currentKeyFrameId_105767 = getRefKeyFrameId(curFrame, curPose_ns);
+                    _10558050725520398793 = curFrame.fseq_idx;
                 }
             }
 
             if (trackingState == STATE_TRACKING) {
-                frame_149385.pose_f2g = _17976495724303689842;
-                if (_17450466964482625197 == MODE_SLAM &&
-                    ((frame_149385.fseq_idx >= _10558050725520398793 + 5) || (_10558050725520398793 == -1)))
-                    TheMapManager_286960->newFrame(frame_149385, currentKeyFrameId_105767);
+                curFrame.pose_f2g = curPose_ns;
+                if (sysMode == MODE_SLAM &&
+                    ((curFrame.fseq_idx >= _10558050725520398793 + 5) || (_10558050725520398793 == -1)))
+                    sysMapManager->newFrame(curFrame, currentKeyFrameId_105767);
             }
         }
 
-        if (trackingState == STATE_LOST && _17450466964482625197 == MODE_SLAM && TheMap->keyframes.size() <= 5 &&
+        if (trackingState == STATE_LOST && sysMode == MODE_SLAM && TheMap->keyframes.size() <= 5 &&
             TheMap->keyframes.size() != 0) {
-            TheMapManager_286960->reset();
+            sysMapManager->reset();
             TheMap->clear();
-            _2044193291895307872->reset();
-            TheMapManager_286960->setParams(TheMap, _14938569619851839146.enableLoopClosure);
+            sysMapIntializer->reset();
+            sysMapManager->setParams(TheMap, sysParams.enableLoopClosure);
         }
 
         if (trackingState == STATE_TRACKING) {
             _14463320619150402643 = cv::Mat::eye(4, 4, CV_32F);
             if (_16937225862434286412.isValid()) {
-                _14463320619150402643 = _17976495724303689842.convert() * _16937225862434286412.convert().inv();
+                _14463320619150402643 = curPose_ns.convert() * _16937225862434286412.convert().inv();
             }
         } else {
             _14463320619150402643 = cv::Mat();
         }
-        frame_149385.pose_f2g = _17976495724303689842;
+        curFrame.pose_f2g = curPose_ns;
 
-        if (++_13033649816026327368 > (10 * 4 * 12 * 34 * 6) / 2) _17976495724303689842 = cv::Mat();
+        if (++_13033649816026327368 > (10 * 4 * 12 * 34 * 6) / 2) curPose_ns = cv::Mat();
 
         if (trackingState == STATE_LOST) return cv::Mat();
-        else return _17976495724303689842;
+        else return curPose_ns;
     }
 
-cv::Mat System::process(cv::Mat &_6441194614667703750, const ImageParams &_18212413899834346676,
+cv::Mat System::process(cv::Mat &in_image, const ImageParams &imgParams,
                         uint32_t _9933887380370137445, const cv::Mat &_46082575014988268,
                         const cv::Mat &_1705635550657133790) {
-    swap(_4913157516830781457, frame_149385);
+    swap(lastFrame, curFrame);
     // std::thread _1403653089436386197;
-    if (_17450466964482625197 == MODE_SLAM) {
+    if (sysMode == MODE_SLAM) {
     //     _1403653089436386197 = std::thread([&]() {
-        if (TheMapManager_286960->mapUpdate()) {
-            if (TheMapManager_286960->bigChange()) {
-                frame_149385.pose_f2g = TheMapManager_286960->getLastAddedKFPose();
-                _17976495724303689842 = TheMapManager_286960->getLastAddedKFPose();
+        if (sysMapManager->mapUpdate()) {
+            if (sysMapManager->bigChange()) {
+                curFrame.pose_f2g = sysMapManager->getLastAddedKFPose();
+                curPose_ns = sysMapManager->getLastAddedKFPose();
             }
         };
         //     });
     }
 
     if (_46082575014988268.empty() && _1705635550657133790.empty())
-        _3944249282595574931->process(_6441194614667703750, _18212413899834346676, frame_149385, _9933887380370137445);
+        sysFrameExtractor->process(in_image, imgParams, curFrame, _9933887380370137445);
     else if (_1705635550657133790.empty())
-        _3944249282595574931->process_rgbd(_6441194614667703750, _46082575014988268, _18212413899834346676,frame_149385, _9933887380370137445);
+        sysFrameExtractor->process_rgbd(in_image, _46082575014988268, imgParams,curFrame, _9933887380370137445);
     else
-        _3944249282595574931->processStereo(_6441194614667703750, _1705635550657133790, _18212413899834346676,frame_149385, _9933887380370137445);
+        sysFrameExtractor->processStereo(in_image, _1705635550657133790, imgParams,curFrame, _9933887380370137445);
 
-    if (_14938569619851839146.autoAdjustKpSensitivity) {
-        int _1699599737904718822 = _14938569619851839146.maxFeatures - frame_149385.und_kpts.size();
+    if (sysParams.autoAdjustKpSensitivity) {
+        int _1699599737904718822 = sysParams.maxFeatures - curFrame.und_kpts.size();
         if (_1699599737904718822 > 0) {
-            float _46082575832048655 = 1.0f - (float(_1699599737904718822) / float(frame_149385.und_kpts.size()));
-            float _6148074839757474704 = _3944249282595574931->getSensitivity() + _46082575832048655;
+            float _46082575832048655 = 1.0f - (float(_1699599737904718822) / float(curFrame.und_kpts.size()));
+            float _6148074839757474704 = sysFrameExtractor->getSensitivity() + _46082575832048655;
             _6148074839757474704 = std::max(_6148074839757474704, 1.0f);
-            _3944249282595574931->setSensitivity(_6148074839757474704);
+            sysFrameExtractor->setSensitivity(_6148074839757474704);
         } else {
-            _3944249282595574931->setSensitivity(_3944249282595574931->getSensitivity()* 0.95);
+            sysFrameExtractor->setSensitivity(sysFrameExtractor->getSensitivity()* 0.95);
         }
     }
 
-    // if(_17450466964482625197 == MODE_SLAM) _1403653089436386197.join();
-    cv::Mat _3005399805025936106 = process(frame_149385);
+    // if(sysMode == MODE_SLAM) _1403653089436386197.join();
+    cv::Mat _3005399805025936106 = process(curFrame);
 
-    float _6154865401824487276 = sqrt(float(frame_149385.imageParams.CamSize.area())/ float(_6441194614667703750.size().area()));
+    float _6154865401824487276 = sqrt(float(curFrame.imageParams.CamSize.area())/ float(in_image.size().area()));
 
-    _14031550457846423181(_6441194614667703750, 1. / _6154865401824487276);
+    _14031550457846423181(in_image, 1. / _6154865401824487276);
 
     auto _5829441678613027716 = [](const uint32_t &_11093821926013) {
         std::stringstream _706246330191125;
@@ -412,38 +346,38 @@ cv::Mat System::process(cv::Mat &_6441194614667703750, const ImageParams &_18212
     };
 
     _14938529070154896274(
-            _6441194614667703750,
+            in_image,
             "\x4d\x61\x70\x20\x50\x6f\x69\x6e\x74\x73\x3a" + _5829441678613027716(TheMap->map_points.size()),
-            cv::Point(20, _6441194614667703750.rows - 20));
+            cv::Point(20, in_image.rows - 20));
 
     _14938529070154896274(
-            _6441194614667703750,
+            in_image,
             "\x4d\x61\x70\x20\x4d\x61\x72\x6b\x65\x72\x73\x3a" + _5829441678613027716(TheMap->map_markers.size()),
-            cv::Point(20, _6441194614667703750.rows - 40));
+            cv::Point(20, in_image.rows - 40));
 
     _14938529070154896274(
-            _6441194614667703750,
+            in_image,
             "\x4b\x65\x79\x46\x72\x61\x6d\x65\x73\x3a" + _5829441678613027716(TheMap->keyframes.size()),
-            cv::Point(20, _6441194614667703750.rows - 60));
+            cv::Point(20, in_image.rows - 60));
 
     int _16937201858692939798 = 0;
 
-    for (auto _175247760135: frame_149385.ids)
+    for (auto _175247760135: curFrame.ids)
         if (_175247760135 != std::numeric_limits<uint32_t>::max())
             _16937201858692939798++;
 
     _14938529070154896274(
-            _6441194614667703750,
+            in_image,
             "\x4d\x61\x74\x63\x68\x65\x73\x3a" + _5829441678613027716(_16937201858692939798),
-            cv::Point(20, _6441194614667703750.rows - 80));
+            cv::Point(20, in_image.rows - 80));
 
     if (fabs(_6154865401824487276 - 1) > 1e-3)
         _14938529070154896274(
-                _6441194614667703750,
+                in_image,
                 "\x49\x6d\x67\x2e\x53\x69\x7a\x65\x3a" +
-                    _5829441678613027716(frame_149385.imageParams.CamSize.width) +
-                    "\x78" + _5829441678613027716(frame_149385.imageParams.CamSize.height),
-                cv::Point(20, _6441194614667703750.rows - 100));
+                    _5829441678613027716(curFrame.imageParams.CamSize.width) +
+                    "\x78" + _5829441678613027716(curFrame.imageParams.CamSize.height),
+                cv::Point(20, in_image.rows - 100));
 
     return _3005399805025936106;
 
@@ -458,32 +392,32 @@ cv::Mat System::process(vector<cv::
             _9933887380370137445) {
 
         swap(
-                _4913157516830781457, frame_149385);
+                lastFrame, curFrame);
 
 //        std::thread _1403653089436386197;
 
         if
 
-                (_17450466964482625197 ==
+                (sysMode ==
 
                  MODE_SLAM)
 
 //            _1403653089436386197 = std::thread([&]() {
-                if (TheMapManager_286960->mapUpdate()) {
+                if (sysMapManager->mapUpdate()) {
                     if (
 
-                                            TheMapManager_286960->
+                                            sysMapManager->
 
                                                     bigChange()
 
                                             ) {
 
-                                        frame_149385.pose_f2g = TheMapManager_286960->
+                                        curFrame.pose_f2g = sysMapManager->
 
                                                 getLastAddedKFPose();
-                                        _17976495724303689842 =
+                                        curPose_ns =
 
-                                                TheMapManager_286960->
+                                                sysMapManager->
                                                         getLastAddedKFPose();
 
                                     }
@@ -494,19 +428,19 @@ cv::Mat System::process(vector<cv::
 
 //                            });
 
-        _3944249282595574931->
+        sysFrameExtractor->
 
                 processArray(
-                _3005401535270843804, _4702029808027735906, frame_149385, _9933887380370137445, _2044193291895307872);
+                _3005401535270843804, _4702029808027735906, curFrame, _9933887380370137445, sysMapIntializer);
 
         if (
 
-                _14938569619851839146.autoAdjustKpSensitivity) {
+                sysParams.autoAdjustKpSensitivity) {
 
             int
                     _1699599737904718822 =
 
-                    _14938569619851839146.maxFeatures - frame_149385.und_kpts.size();
+                    sysParams.maxFeatures - curFrame.und_kpts.size();
 
             if (
                     _1699599737904718822 >
@@ -523,7 +457,7 @@ cv::Mat System::process(vector<cv::
 
                                         _1699599737904718822)
                                 / float(
-                                        frame_149385.und_kpts.size()
+                                        curFrame.und_kpts.size()
 
                                 )
 
@@ -531,7 +465,7 @@ cv::Mat System::process(vector<cv::
 
                 float
                         _6148074839757474704 =
-                        _3944249282595574931->
+                        sysFrameExtractor->
 
                                 getSensitivity()
 
@@ -543,7 +477,7 @@ cv::Mat System::process(vector<cv::
 
                         max(_6148074839757474704, 1.0f);
 
-                _3944249282595574931->
+                sysFrameExtractor->
 
                         setSensitivity(
 
@@ -551,11 +485,11 @@ cv::Mat System::process(vector<cv::
 
             } else {
 
-                _3944249282595574931->
+                sysFrameExtractor->
 
                         setSensitivity(
 
-                        _3944249282595574931->
+                        sysFrameExtractor->
 
                                 getSensitivity()
 
@@ -565,13 +499,13 @@ cv::Mat System::process(vector<cv::
 
         }
 
-//        if (_17450466964482625197 == MODE_SLAM) _1403653089436386197.join();
+//        if (sysMode == MODE_SLAM) _1403653089436386197.join();
 
         cv::
 
         Mat _3005399805025936106 = process(
 
-                frame_149385);
+                curFrame);
 
         float
 
@@ -581,7 +515,7 @@ cv::Mat System::process(vector<cv::
 
                         float(
 
-                                frame_149385.imageParams.CamSize.area()
+                                curFrame.imageParams.CamSize.area()
 
                         ) / float(
                                 _3005401535270843804[0]
@@ -686,7 +620,7 @@ cv::Mat System::process(vector<cv::
                 0;
         for (
 
-            auto _175247760135: frame_149385.ids)
+            auto _175247760135: curFrame.ids)
 
             if (
                     _175247760135 !=
@@ -730,11 +664,11 @@ cv::Mat System::process(vector<cv::
             _14938529070154896274(
 
                     _3005401535270843804[0], "\x49\x6d\x67\x2e\x53\x69\x7a\x65\x3a" + _5829441678613027716(
-                            frame_149385.imageParams.CamSize.width)
+                            curFrame.imageParams.CamSize.width)
 
                                              + "\x78" + _5829441678613027716(
 
-                            frame_149385.imageParams.CamSize.height), cv::
+                            curFrame.imageParams.CamSize.height), cv::
 
                     Point(
 
@@ -835,7 +769,7 @@ cv::Mat System::process(vector<cv::
 
         _11093822380353 +=
 
-                _14938569619851839146.getSignature();
+                sysParams.getSignature();
 
         if (
                 _46082575779493229)
@@ -857,7 +791,7 @@ cv::Mat System::process(vector<cv::
                 )
             _11093822380353 +=
 
-                    _17976495724303689842[
+                    curPose_ns[
 
                             _2654435874];
 
@@ -885,7 +819,7 @@ cv::Mat System::process(vector<cv::
 
                  endl;
 
-        _11093822380353 += frame_149385.getSignature();
+        _11093822380353 += curFrame.getSignature();
 
         if (
 
@@ -927,7 +861,7 @@ cv::Mat System::process(vector<cv::
 
         _11093822380353 +=
 
-                _17450466964482625197;
+                sysMode;
 
         if (
 
@@ -941,7 +875,7 @@ cv::Mat System::process(vector<cv::
                  endl;
 
         _11093822380353 +=
-                _4913157516830781457.getSignature();
+                lastFrame.getSignature();
 
         if (
 
@@ -955,7 +889,7 @@ cv::Mat System::process(vector<cv::
 
         _11093822380353 +=
 
-                TheMapManager_286960->
+                sysMapManager->
 
                         getSignature();
 
@@ -1081,7 +1015,7 @@ cv::Mat System::process(vector<cv::
                         IPPE::
                         solvePnP(
 
-                                _14938569619851839146.aruco_markerSize, _2654435878.und_corners,
+                                sysParams.aruco_markerSize, _2654435878.und_corners,
                                 inputFrame.imageParams.CameraMatrix, inputFrame.imageParams.Distorsion);
 
                 for (
@@ -1235,7 +1169,7 @@ cv::Mat System::process(vector<cv::
 
         if (!_11093822302335) return _11093822302335;
 
-        _17976495724303689842 = TheMap->keyframes.back().pose_f2g;
+        curPose_ns = TheMap->keyframes.back().pose_f2g;
         cout << "cKfId:1434 " << currentKeyFrameId_105767 ;
         currentKeyFrameId_105767 = TheMap->keyframes.back().idx;
         cout << "cKfId:1436 " << currentKeyFrameId_105767 << "##" << "##" ;;
@@ -1257,7 +1191,7 @@ cv::Mat System::process(vector<cv::
         if (
                 !
 
-                        _2044193291895307872->
+                        sysMapIntializer->
 
                                 process(
 
@@ -1386,7 +1320,7 @@ cv::Mat System::process(vector<cv::
 
         }
 
-        _17976495724303689842 =
+        curPose_ns =
 
                 TheMap->
 
@@ -1401,7 +1335,7 @@ cv::Mat System::process(vector<cv::
     }
 
     bool System::_15186594243873234013(Frame &inputFrame) {
-        if (_14938569619851839146.KPNonMaximaSuppresion)
+        if (sysParams.KPNonMaximaSuppresion)
             inputFrame.nonMaximaSuppresion();
         int _8065948040949117953 = 0;
         for (size_t _2654435874 = 0; _2654435874 < inputFrame.und_kpts.size(); _2654435874++) {
@@ -1538,7 +1472,7 @@ cv::Mat System::process(vector<cv::
     uint32_t System::getRefKeyFrameId(const Frame &frame_106140, const se3 &se3_107067) {
         int64_t refKeyFrameId = -1;
 
-        if (_14938569619851839146.detectKeyPoints)
+        if (sysParams.detectKeyPoints)
             refKeyFrameId = TheMap->getReferenceKeyFrame(frame_106140, 1);
 
         if (refKeyFrameId != -1){
@@ -1632,7 +1566,7 @@ cv::Mat System::process(vector<cv::
 
         _16937386958649118140.setParams(_16940374161494853219, FrameMatcher::
 
-        MODE_ALL, _14938569619851839146.maxDescDistance * 2);
+        MODE_ALL, sysParams.maxDescDistance * 2);
 
 #pragma omp parallel for
         for (
@@ -1820,7 +1754,7 @@ cv::Mat System::process(vector<cv::
 
                                     _175247762874]
 
-                                    ._3885067248075476027, _14938569619851839146.maxDescDistance * 2, 2.5, true);
+                                    ._3885067248075476027, sysParams.maxDescDistance * 2, 2.5, true);
 
             if
 
@@ -2064,7 +1998,7 @@ cv::Mat System::process(vector<cv::
 
                         getBestPoseFromValidMarkers(
 
-                        inputFrame, _7895328205142007059, _14938569619851839146.aruco_minerrratio_valid);
+                        inputFrame, _7895328205142007059, sysParams.aruco_minerrratio_valid);
 
         return
 
@@ -2085,7 +2019,7 @@ cv::Mat System::process(vector<cv::
 
         if (
 
-                _14938569619851839146.reLocalizationWithMarkers) {
+                sysParams.reLocalizationWithMarkers) {
 
             if
 
@@ -2104,7 +2038,7 @@ cv::Mat System::process(vector<cv::
 
         if (
 
-                _14938569619851839146.reLocalizationWithKeyPoints) {
+                sysParams.reLocalizationWithKeyPoints) {
 
             if
                     (
@@ -2365,9 +2299,9 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
 
             cerr << "KFid:2651 = " << currentKeyFrameId_105767 << " / ";
             frame_169403.pose_f2g = se3_576955;
-            DMatchVector_637068 = _11946837405316294395(frame_169403, _4913157516830781457,
-                                                        _14938569619851839146.maxDescDistance * 1.5,
-                                                        _14938569619851839146.projDistThr);
+            DMatchVector_637068 = _11946837405316294395(frame_169403, lastFrame,
+                                                        sysParams.maxDescDistance * 1.5,
+                                                        sysParams.projDistThr);
             cerr << "KFid:2656 = " << currentKeyFrameId_105767 << " / ";
 
             int _9870110657242862171 = 0;
@@ -2393,7 +2327,7 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
                 FrameMatcher _16997326787393468537(FrameMatcher::TYPE_FLANN);
                 cerr << "KFid:2679 = " << currentKeyFrameId_105767 << " / ";
                 _16997326787393468537.setParams(TheMap->keyframes[currentKeyFrameId_105767], // Invalid access here
-                                                FrameMatcher::MODE_ASSIGNED, _14938569619851839146.maxDescDistance * 2,
+                                                FrameMatcher::MODE_ASSIGNED, sysParams.maxDescDistance * 2,
                                                 0.6, true, 3);
                 DMatchVector_637068 = _16997326787393468537.match(frame_169403, FrameMatcher::MODE_ALL);
 
@@ -2420,14 +2354,14 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
                 }
             } else {
                 DMatchVector_637068.clear();
-                _3763415994652820314 = _14938569619851839146.projDistThr;
+                _3763415994652820314 = sysParams.projDistThr;
             }
             // bug here
             auto _3521005873836563963 = TheMap->matchFrameToMapPoints(
                     TheMap->TheKpGraph.getNeighborsVLevel2(currentKeyFrameId_105767, true),
                     frame_169403,
                     se3_576955,
-                    _14938569619851839146.maxDescDistance * 2,
+                    sysParams.maxDescDistance * 2,
                     _3763415994652820314, true);
 
             DMatchVector_637068.insert(DMatchVector_637068.end(), _3521005873836563963.begin(),
@@ -2453,7 +2387,7 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
 
                 validMarkerCount++;
 
-                if (frame_169403.markers[_2654435874].poses.err_ratio < _14938569619851839146.aruco_minerrratio_valid)
+                if (frame_169403.markers[_2654435874].poses.err_ratio < sysParams.aruco_minerrratio_valid)
                     continue;
 
                 foundPosition = true;
@@ -2489,9 +2423,9 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
         bool _16987668682974831349 = false;
 
         if(trackingState == STATE_TRACKING) {
-            for (size_t _2654435874 = 0; _2654435874 < frame_149385.ids.size(); _2654435874++)
-                if(frame_149385.ids[_2654435874]!=std::numeric_limits<uint32_t>::max()) {
-                    if(!TheMap->map_points.is(frame_149385.ids[_2654435874]))
+            for (size_t _2654435874 = 0; _2654435874 < curFrame.ids.size(); _2654435874++)
+                if(curFrame.ids[_2654435874]!=std::numeric_limits<uint32_t>::max()) {
+                    if(!TheMap->map_points.is(curFrame.ids[_2654435874]))
                         continue;
 
                     cv::
@@ -2506,7 +2440,7 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
                             !
                                     TheMap->
 
-                                            map_points[frame_149385.ids[
+                                            map_points[curFrame.ids[
 
                                             _2654435874]
 
@@ -2529,11 +2463,11 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
                     rectangle(
 
                             _46082544231248938, _9971115036363993554 * (
-                                    frame_149385.kpts[_2654435874]
+                                    curFrame.kpts[_2654435874]
 
                                     - _46082575822903876), _9971115036363993554 * (
 
-                                    frame_149385.kpts[
+                                    curFrame.kpts[
                                             _2654435874]
 
                                     + _46082575822903876), _46082574599890393, _706246330297760);
@@ -2553,11 +2487,11 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
 
                             _46082544231248938, _9971115036363993554 * (
 
-                                    frame_149385.kpts[
+                                    curFrame.kpts[
 
                                             _2654435874]
 
-                                    - _46082575822903876), _9971115036363993554 * (frame_149385.kpts[
+                                    - _46082575822903876), _9971115036363993554 * (curFrame.kpts[
                                                                                            _2654435874]
 
                                                                                    + _46082575822903876),
@@ -2576,7 +2510,7 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
 
                 auto
 
-                        _2654435881: frame_149385.kpts)
+                        _2654435881: curFrame.kpts)
 
                 cv::
 
@@ -2593,7 +2527,7 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
 
         for (
 
-            auto _5221496220235804833: frame_149385.markers) {
+            auto _5221496220235804833: curFrame.markers) {
 
             cv::
 
@@ -2675,7 +2609,7 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
                 GlobalOptimizer::
                 create(
 
-                        _14938569619851839146.global_optimizer);
+                        sysParams.global_optimizer);
 
         GlobalOptimizer::
 
@@ -2737,7 +2671,7 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
 
     const {
 
-        return frame_149385.fseq_idx;
+        return curFrame.fseq_idx;
 
     }
 
@@ -2747,20 +2681,20 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
 
             MODES _706246332824366) {
 
-        _17450466964482625197 =
+        sysMode =
 
                 _706246332824366;
 
     }
 
     void System::clear() {
-        TheMapManager_286960 = std::make_shared<MapManager>();
+        sysMapManager = std::make_shared<MapManager>();
         _13028158409047949416 = false;
 
         trackingState = STATE_LOST;
         TheMap.reset();
 
-        _2044193291895307872 = std::make_shared<MapInitializer>();
+        sysMapIntializer = std::make_shared<MapInitializer>();
         _14463320619150402643 = cv::Mat();
         _10558050725520398793 = -1;
     }
@@ -2780,8 +2714,8 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
 
         TheMap->toStream(_706246330143775);
 
-        _14938569619851839146.toStream(_706246330143775);
-        _706246330143775.write((char *) &_17976495724303689842, sizeof(_17976495724303689842));
+        sysParams.toStream(_706246330143775);
+        _706246330143775.write((char *) &curPose_ns, sizeof(curPose_ns));
 
         _706246330143775.write((char *) &currentKeyFrameId_105767, sizeof(currentKeyFrameId_105767));
 
@@ -2812,26 +2746,26 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
 
                         char *)
 
-                        &_17450466964482625197, sizeof(
+                        &sysMode, sizeof(
 
-                        _17450466964482625197)
+                        sysMode)
 
         );
 
-        frame_149385.toStream(
+        curFrame.toStream(
 
                 _706246330143775);
 
-        _4913157516830781457.toStream(
+        lastFrame.toStream(
 
                 _706246330143775);
-        _3944249282595574931->
+        sysFrameExtractor->
 
                 toStream(
 
                 _706246330143775);
 
-        TheMapManager_286960->
+        sysMapManager->
 
                 toStream(
                 _706246330143775);
@@ -2883,17 +2817,17 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
         TheMap = std::make_shared<Map>();
         TheMap->fromStream(_706246330143775);
 
-        _14938569619851839146.fromStream(_706246330143775);
-        _706246330143775.read((char *) &_17976495724303689842, sizeof(_17976495724303689842));
+        sysParams.fromStream(_706246330143775);
+        _706246330143775.read((char *) &curPose_ns, sizeof(curPose_ns));
         _706246330143775.read((char *) &currentKeyFrameId_105767, sizeof(currentKeyFrameId_105767));
         _706246330143775.read((char *) &_13028158409047949416, sizeof(_13028158409047949416));
         _706246330143775.read((char *) &trackingState, sizeof(trackingState));
-        _706246330143775.read((char *) &_17450466964482625197, sizeof(_17450466964482625197));
-        frame_149385.fromStream(_706246330143775);
-        _4913157516830781457.fromStream(_706246330143775);
-        _3944249282595574931->fromStream(_706246330143775);
+        _706246330143775.read((char *) &sysMode, sizeof(sysMode));
+        curFrame.fromStream(_706246330143775);
+        lastFrame.fromStream(_706246330143775);
+        sysFrameExtractor->fromStream(_706246330143775);
 
-        TheMapManager_286960->fromStream(_706246330143775);
+        sysMapManager->fromStream(_706246330143775);
         _1320287184975591154->fromStream(_706246330143775);
         fromStream__(_14463320619150402643, _706246330143775);
 

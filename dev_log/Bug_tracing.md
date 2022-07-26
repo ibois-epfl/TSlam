@@ -117,7 +117,7 @@ __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:50
 #6  ucoslam::System::_11166622111371682966(ucoslam::Frame&, ucoslam::se3)
    Python Exception <class 'gdb.MemoryError'> Cannot access memory at address 0x8: 
  (this=<optimized out>, _16940374161810747371=..., _14387478432460351890=#7  0x00007ffff7f20b36 in ucoslam::System::process(ucoslam::Frame const&) (this=<optimized out>, inputFrame=...) at /home/tpp/UCOSlam-IBOIS/src/utils/system.cpp:442
-#8  0x00007ffff7f21768 in ucoslam::System::process(cv::Mat&, ucoslam::ImageParams const&, unsigned int, cv::Mat const&, cv::Mat const&) (this=<optimized out>, _6441194614667703750=<error reading variable: Unhandled dwarf expression opcode 0x0>, _18212413899834346676=<error reading variable: Unhandled dwarf expression opcode 0x0>, _9933887380370137445=<error reading variable: Unhandled dwarf expression opcode 0x0>, _46082575014988268=..., _1705635550657133790=...) at /home/tpp/UCOSlam-IBOIS/src/utils/system.cpp:764
+#8  0x00007ffff7f21768 in ucoslam::System::process(cv::Mat&, ucoslam::ImageParams const&, unsigned int, cv::Mat const&, cv::Mat const&) (this=<optimized out>, in_image=<error reading variable: Unhandled dwarf expression opcode 0x0>, _18212413899834346676=<error reading variable: Unhandled dwarf expression opcode 0x0>, _9933887380370137445=<error reading variable: Unhandled dwarf expression opcode 0x0>, _46082575014988268=..., _1705635550657133790=...) at /home/tpp/UCOSlam-IBOIS/src/utils/system.cpp:764
 #9  0x00007ffff7e8f8f2 in ucoslam::UcoSlam::process(cv::Mat&, ucoslam::ImageParams const&, unsigned int)
     (this=<optimized out>, in_image=..., ip=..., frameseq_idx=<optimized out>) at /home/tpp/UCOSlam-IBOIS/src/ucoslam.cpp:23
 #10 0x0000555555569f26 in main(int, char**) (argc=<optimized out>, argv=<optimized out>)
@@ -149,7 +149,7 @@ __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:50
     (this=0x555555634d30, frame_169403=..., se3_143874=#7  0x00007ffff7f20986 in ucoslam::System::process(ucoslam::Frame const&) (this=0x555555634d30, inputFrame=...)
     at /home/tpp/UCOSlam-IBOIS/src/utils/system.cpp:426
 #8  0x00007ffff7f215b8 in ucoslam::System::process(cv::Mat&, ucoslam::ImageParams const&, unsigned int, cv::Mat const&, cv::Mat const&)
-    (this=this@entry=0x555555634d30, _6441194614667703750=..., _18212413899834346676=..., _9933887380370137445=_9933887380370137445@entry=48961, _46082575014988268=..., _1705635550657133790=...) at /home/tpp/UCOSlam-IBOIS/src/utils/system.cpp:746
+    (this=this@entry=0x555555634d30, in_image=..., _18212413899834346676=..., _9933887380370137445=_9933887380370137445@entry=48961, _46082575014988268=..., _1705635550657133790=...) at /home/tpp/UCOSlam-IBOIS/src/utils/system.cpp:746
 #9  0x00007ffff7e8f372 in ucoslam::UcoSlam::process(cv::Mat&, ucoslam::ImageParams const&, unsigned int) (this=<optimized out>, in_image=..., ip=..., frameseq_idx=48961)
     at /home/tpp/UCOSlam-IBOIS/src/ucoslam.cpp:23
 ```
@@ -187,7 +187,9 @@ Thread 1 "ucoslam_monocul" received signal SIGINT, Interrupt.
 
 ## GDB commands
 ```
-watch *(int64_t *) 0x55555561f510 if *(int64_t *) 0x55555561f510 == 4294967295
+watch *(int64_t *) 0x555555628518 if *(int64_t *) 0x555555628518 == 4294967295
 ```
 
 [Thread _1403653089436386197] changed the value!
+
+live /home/tpp/Downloads/ucoslam/test_result/calibration.yml -voc /home/tpp/UCOSlam-IBOIS/orb.fbow -out test_1 -map /home/tpp/UCOSlam-IBOIS/build/utils/sticker_6_oneshot.map -isInstancing

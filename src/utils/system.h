@@ -376,7 +376,7 @@ _4500031049790251086 )
 
      ;
 
-    static Params _14938569619851839146 ;
+    static Params sysParams ;
 
     std::shared_ptr<Map> TheMap;
 
@@ -385,7 +385,7 @@ _4500031049790251086 )
   shared_ptr <
 
       FrameExtractor >
-   _3944249282595574931 ;
+   sysFrameExtractor ;
 
     std ::
 
@@ -395,21 +395,21 @@ _4500031049790251086 )
 
  _1320287184975591154 ;
 
-    Frame frame_149385, _4913157516830781457 ;
+    Frame curFrame, lastFrame ;
 
     std ::
 
 shared_ptr <
 
  MapInitializer >
-   _2044193291895307872 ;
+   sysMapIntializer ;
 
      bool
       _13028158409047949416 =
 
   false ;
 
-    se3 _17976495724303689842 ;
+    se3 curPose_ns ;
 
     int64_t currentKeyFrameId_105767 =
 
@@ -417,14 +417,14 @@ shared_ptr <
 
     STATE trackingState = STATE_LOST ;
 
-    MODES _17450466964482625197 =
+    MODES sysMode =
 
  MODE_SLAM ;
 
     std ::
 
 shared_ptr <
-  MapManager > TheMapManager_286960 ;
+  MapManager > sysMapManager ;
 
     cv ::
 

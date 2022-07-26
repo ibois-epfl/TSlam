@@ -47,4 +47,3 @@ unzip ./example/STag23mm_smallCube/example.zip -d ./example/STag23mm_smallCube
 - `/post_processing/cluster.py`: Taking the tag map (the one exported by `reslam_map_export`) as input and perform 3d plane fitting.
 - `/stag_util/sticker_generator.py`: Script for generating the STag sticker.
 
-live /home/tpp/Downloads/ucoslam/test_result/calibration.yml -voc /home/tpp/UCOSlam-IBOIS/orb.fbow -out test_1 -map /home/tpp/UCOSlam-IBOIS/build/utils/sticker_6_oneshot.map -isInstancing
