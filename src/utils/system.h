@@ -71,7 +71,7 @@ public:
  nullptr )
 
   ;
-
+bool breakFlag = false;
      void
 
     clear ()

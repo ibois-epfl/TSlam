@@ -51,9 +51,9 @@ struct EDLines {
 
   /// Destructor
   ~EDLines() {
-    delete lines;
-    delete x;
-    delete y;
+    delete[] lines;
+    delete[] x;
+    delete[] y;
   }  // end-EDLines
 
   /// clear

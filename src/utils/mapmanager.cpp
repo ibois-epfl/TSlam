@@ -109,21 +109,21 @@ namespace ucoslam {
 
 #pragma message "warning : in non-sequential mode detected markers in loop closure are not proceesed properly?"
             if (System::getParams().reLocalizationWithMarkers && !System::getParams().isInstancing) {
-                _8346364136266015358 = _TheLoopDetector_141391->detectLoopFromMarkers(_175247760268, currentKeyFrameId);
+                _LoopClosureInfo = _TheLoopDetector_141391->detectLoopFromMarkers(_175247760268, currentKeyFrameId);
             }
 
 
             if
 
                     (
-                    _8346364136266015358.foundLoop()
+                    _LoopClosureInfo.foundLoop()
                     ) {
                 _TheLoopDetector_141391->
                         correctMap(
-                        _8346364136266015358);
+                        _LoopClosureInfo);
 
                 _12244964123780599670(
-                        _175247760268, _8346364136266015358);
+                        _175247760268, _LoopClosureInfo);
 
                 _1061304613240460439 =
 
@@ -193,12 +193,12 @@ namespace ucoslam {
 
                             .reLocalizationWithMarkers && !System::getParams().isInstancing) {
 
-                _8346364136266015358 = _TheLoopDetector_141391->detectLoopFromMarkers(_175247760268, currentKeyFrameId);
+                _LoopClosureInfo = _TheLoopDetector_141391->detectLoopFromMarkers(_175247760268, currentKeyFrameId);
             }
 
             if (
 
-                    _8346364136266015358.foundLoop()) {
+                    _LoopClosureInfo.foundLoop()) {
 
             }
 
@@ -215,9 +215,9 @@ namespace ucoslam {
 
         _curState = WORKING;
         TheMap->lock(__FUNCTION__, __FILE__, __LINE__);
-        if (_8346364136266015358.foundLoop()) {
-            _TheLoopDetector_141391->correctMap(_8346364136266015358);
-            _12244964123780599670(TheMap->keyframes[_lastAddedKeyFrame], _8346364136266015358);
+        if (_LoopClosureInfo.foundLoop()) {
+            _TheLoopDetector_141391->correctMap(_LoopClosureInfo);
+            _12244964123780599670(TheMap->keyframes[_lastAddedKeyFrame], _LoopClosureInfo);
             _1061304613240460439 = true;
         } else {
             vector<std::pair<uint32_t, uint32_t> > _8817940606606562997;
@@ -399,7 +399,7 @@ namespace ucoslam {
 
                         _loopClosureEnabled_100469);
 
-        _8346364136266015358 =
+        _LoopClosureInfo =
 
                 LoopDetector::
 
@@ -942,7 +942,7 @@ namespace ucoslam {
         delete newPtrFrame;
 
         if (System::getParams().reLocalizationWithKeyPoints && !System::getParams().isInstancing)
-            _8346364136266015358 = _TheLoopDetector_141391->detectLoopFromKeyPoints(keyframe_169372,
+            _LoopClosureInfo = _TheLoopDetector_141391->detectLoopFromKeyPoints(keyframe_169372,
                                                                                     _11028815416989897150);
 
         TheMap->unlock(__FUNCTION__, __FILE__, __LINE__);
@@ -4772,7 +4772,7 @@ namespace ucoslam {
 
         );
 
-        _8346364136266015358.toStream(
+        _LoopClosureInfo.toStream(
 
                 _11093822381060);
 
@@ -4934,7 +4934,7 @@ namespace ucoslam {
 
         );
 
-        _8346364136266015358.fromStream(
+        _LoopClosureInfo.fromStream(
 
                 _11093822381060);
 
@@ -5010,7 +5010,7 @@ namespace ucoslam {
                 _12303014364795142948;
 
         _11093822380353 +=
-                _8346364136266015358.getSignature();
+                _LoopClosureInfo.getSignature();
 
         return
 

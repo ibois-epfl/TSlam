@@ -327,7 +327,7 @@ std ::
 
     LoopDetector ::
 
-        LoopClosureInfo _8346364136266015358 ;
+        LoopClosureInfo _LoopClosureInfo ;
 
      uint32_t
   _lastAddedKeyFrame =

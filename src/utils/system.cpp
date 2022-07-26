@@ -314,6 +314,7 @@ ucoslam {
         } else {
             if (trackingState == STATE_TRACKING) {
                 currentKeyFrameId_105767 = getRefKeyFrameId(_4913157516830781457, _17976495724303689842);
+                cerr << "KFid:317 = " << currentKeyFrameId_105767 << " / ";
                 _17976495724303689842 = _11166622111371682966(frame_149385, _17976495724303689842); // bug here
 
                 if (!_17976495724303689842.isValid())
@@ -362,266 +363,93 @@ ucoslam {
         else return _17976495724303689842;
     }
 
-    cv::Mat System::process(cv::Mat &_6441194614667703750, const ImageParams &_18212413899834346676,
-                            uint32_t _9933887380370137445, const cv::Mat &_46082575014988268,
-                            const cv::Mat &_1705635550657133790) {
-        swap(_4913157516830781457, frame_149385);
-        std::thread _1403653089436386197;
-        if (_17450466964482625197 == MODE_SLAM)
-            _1403653089436386197 = std::thread([&]() {
-                if (TheMapManager_286960->mapUpdate()) {
-                    if (TheMapManager_286960->bigChange()) {
-                        frame_149385.pose_f2g = TheMapManager_286960->getLastAddedKFPose();
-                        _17976495724303689842 = TheMapManager_286960->getLastAddedKFPose();
-                    }
-                };
-            });
-        if (_46082575014988268.empty() && _1705635550657133790.empty())
-            _3944249282595574931->process(_6441194614667703750, _18212413899834346676, frame_149385,
-                                          _9933887380370137445);
-        else if (_1705635550657133790.empty())
-            _3944249282595574931->process_rgbd(_6441194614667703750, _46082575014988268, _18212413899834346676,
-                                               frame_149385, _9933887380370137445);
-        else
-            _3944249282595574931->processStereo(_6441194614667703750, _1705635550657133790, _18212413899834346676,
-                                                frame_149385, _9933887380370137445);
-
-        if (_14938569619851839146.autoAdjustKpSensitivity) {
-            int
-
-                    _1699599737904718822 =
-
-                    _14938569619851839146.maxFeatures - frame_149385.und_kpts.size();
-
-            if (
-                    _1699599737904718822 >
-
-                    0) {
-                float
-
-                        _46082575832048655 = 1.0f - (float(
-
-                        _1699599737904718822)
-
-                                                     / float(
-
-                        frame_149385.und_kpts.size()
-
-                )
-
-                );
-
-                float
-
-                        _6148074839757474704 =
-
-                        _3944249282595574931->
-
-                                getSensitivity()
-
-                        + _46082575832048655;
-
-                _6148074839757474704 = std::
-
-                max(
-
-                        _6148074839757474704, 1.0f);
-
-                _3944249282595574931->
-
-                        setSensitivity(
-                        _6148074839757474704);
-            } else {
-
-                _3944249282595574931->setSensitivity(
-
-                        _3944249282595574931->
-
-                                getSensitivity()
-                        * 0.95);
-
+cv::Mat System::process(cv::Mat &_6441194614667703750, const ImageParams &_18212413899834346676,
+                        uint32_t _9933887380370137445, const cv::Mat &_46082575014988268,
+                        const cv::Mat &_1705635550657133790) {
+    swap(_4913157516830781457, frame_149385);
+    // std::thread _1403653089436386197;
+    if (_17450466964482625197 == MODE_SLAM) {
+    //     _1403653089436386197 = std::thread([&]() {
+        if (TheMapManager_286960->mapUpdate()) {
+            if (TheMapManager_286960->bigChange()) {
+                frame_149385.pose_f2g = TheMapManager_286960->getLastAddedKFPose();
+                _17976495724303689842 = TheMapManager_286960->getLastAddedKFPose();
             }
+        };
+        //     });
+    }
+
+    if (_46082575014988268.empty() && _1705635550657133790.empty())
+        _3944249282595574931->process(_6441194614667703750, _18212413899834346676, frame_149385, _9933887380370137445);
+    else if (_1705635550657133790.empty())
+        _3944249282595574931->process_rgbd(_6441194614667703750, _46082575014988268, _18212413899834346676,frame_149385, _9933887380370137445);
+    else
+        _3944249282595574931->processStereo(_6441194614667703750, _1705635550657133790, _18212413899834346676,frame_149385, _9933887380370137445);
+
+    if (_14938569619851839146.autoAdjustKpSensitivity) {
+        int _1699599737904718822 = _14938569619851839146.maxFeatures - frame_149385.und_kpts.size();
+        if (_1699599737904718822 > 0) {
+            float _46082575832048655 = 1.0f - (float(_1699599737904718822) / float(frame_149385.und_kpts.size()));
+            float _6148074839757474704 = _3944249282595574931->getSensitivity() + _46082575832048655;
+            _6148074839757474704 = std::max(_6148074839757474704, 1.0f);
+            _3944249282595574931->setSensitivity(_6148074839757474704);
+        } else {
+            _3944249282595574931->setSensitivity(_3944249282595574931->getSensitivity()* 0.95);
         }
+    }
 
-        if
-                (
+    // if(_17450466964482625197 == MODE_SLAM) _1403653089436386197.join();
+    cv::Mat _3005399805025936106 = process(frame_149385);
 
-                _17450466964482625197 ==
+    float _6154865401824487276 = sqrt(float(frame_149385.imageParams.CamSize.area())/ float(_6441194614667703750.size().area()));
 
-                MODE_SLAM)
+    _14031550457846423181(_6441194614667703750, 1. / _6154865401824487276);
 
-            _1403653089436386197.join();
+    auto _5829441678613027716 = [](const uint32_t &_11093821926013) {
+        std::stringstream _706246330191125;
+        _706246330191125 <<_11093821926013;
+        return _706246330191125.str();
+    };
 
-        cv::
+    _14938529070154896274(
+            _6441194614667703750,
+            "\x4d\x61\x70\x20\x50\x6f\x69\x6e\x74\x73\x3a" + _5829441678613027716(TheMap->map_points.size()),
+            cv::Point(20, _6441194614667703750.rows - 20));
 
-        Mat _3005399805025936106 =
+    _14938529070154896274(
+            _6441194614667703750,
+            "\x4d\x61\x70\x20\x4d\x61\x72\x6b\x65\x72\x73\x3a" + _5829441678613027716(TheMap->map_markers.size()),
+            cv::Point(20, _6441194614667703750.rows - 40));
 
-                process(
+    _14938529070154896274(
+            _6441194614667703750,
+            "\x4b\x65\x79\x46\x72\x61\x6d\x65\x73\x3a" + _5829441678613027716(TheMap->keyframes.size()),
+            cv::Point(20, _6441194614667703750.rows - 60));
 
-                        frame_149385);
+    int _16937201858692939798 = 0;
 
-        float
+    for (auto _175247760135: frame_149385.ids)
+        if (_175247760135 != std::numeric_limits<uint32_t>::max())
+            _16937201858692939798++;
 
-                _6154865401824487276 =
-                sqrt(float(
-                             frame_149385.imageParams.CamSize.area()
+    _14938529070154896274(
+            _6441194614667703750,
+            "\x4d\x61\x74\x63\x68\x65\x73\x3a" + _5829441678613027716(_16937201858692939798),
+            cv::Point(20, _6441194614667703750.rows - 80));
 
-                     )
-
-                     / float(
-
-                             _6441194614667703750.size()
-
-                                     .area()
-
-                     )
-
-                );
-
-        _14031550457846423181(
-
-                _6441194614667703750, 1. / _6154865401824487276);
-        auto _5829441678613027716 =
-
-                [
-
-                ]
-
-                        (
-
-                                const uint32_t &_11093821926013) {
-
-                    std::
-
-                    stringstream _706246330191125;
-
-                    _706246330191125 <<
-
-                                     _11093821926013;
-                    return
-
-                            _706246330191125.str();
-                };
-
+    if (fabs(_6154865401824487276 - 1) > 1e-3)
         _14938529070154896274(
+                _6441194614667703750,
+                "\x49\x6d\x67\x2e\x53\x69\x7a\x65\x3a" +
+                    _5829441678613027716(frame_149385.imageParams.CamSize.width) +
+                    "\x78" + _5829441678613027716(frame_149385.imageParams.CamSize.height),
+                cv::Point(20, _6441194614667703750.rows - 100));
 
-                _6441194614667703750, "\x4d\x61\x70\x20\x50\x6f\x69\x6e\x74\x73\x3a" + _5829441678613027716(
-
-                        TheMap->
-
-                                map_points.size()
-
-                ), cv::
-
-                Point(
-
-                        20, _6441194614667703750.rows - 20)
-        );
-
-        _14938529070154896274(
-
-                _6441194614667703750, "\x4d\x61\x70\x20\x4d\x61\x72\x6b\x65\x72\x73\x3a" + _5829441678613027716(
-
-                        TheMap->
-
-                                map_markers.size()
-
-                ), cv::
-
-                Point(
-
-                        20, _6441194614667703750.rows - 40)
-
-        );
-
-        _14938529070154896274(
-
-                _6441194614667703750, "\x4b\x65\x79\x46\x72\x61\x6d\x65\x73\x3a" + _5829441678613027716(
-
-                        TheMap->
-
-                                keyframes.size()
-
-                ), cv::
-
-                Point(
-
-                        20, _6441194614667703750.rows - 60)
-
-        );
-
-        int
-
-                _16937201858692939798 =
-                0;
-
-        for (
-            auto _175247760135: frame_149385.ids)
-
-            if (
-
-                    _175247760135 !=
-                    std::
-
-                    numeric_limits<
-
-                            uint32_t>
-
-                    ::
-                    max()
-
-                    )
-
-                _16937201858692939798++;
-
-        _14938529070154896274(
-                _6441194614667703750, "\x4d\x61\x74\x63\x68\x65\x73\x3a" + _5829441678613027716(
-
-                        _16937201858692939798), cv::
-
-                Point(
-
-                        20, _6441194614667703750.rows - 80)
-
-        );
-
-        if (
-
-                fabs(
-
-                        _6154865401824487276 - 1)
-
-                >
-
-                1e-3)
-
-            _14938529070154896274(
-
-                    _6441194614667703750, "\x49\x6d\x67\x2e\x53\x69\x7a\x65\x3a" + _5829441678613027716(
-
-                            frame_149385.imageParams.CamSize.width)
-                                          + "\x78" + _5829441678613027716(
-
-                            frame_149385.imageParams.CamSize.height), cv::
-                    Point(
-
-                            20, _6441194614667703750.rows - 100)
-
-            );
-
-        return
-                _3005399805025936106;
+    return _3005399805025936106;
 
     }
 
-    cv::
-
-    Mat System::
-    process(
-
-            vector<
-
-                    cv::
+cv::Mat System::process(vector<cv::
 
                     Mat>
 
@@ -632,9 +460,7 @@ ucoslam {
         swap(
                 _4913157516830781457, frame_149385);
 
-        std::
-
-        thread _1403653089436386197;
+//        std::thread _1403653089436386197;
 
         if
 
@@ -642,24 +468,9 @@ ucoslam {
 
                  MODE_SLAM)
 
-            _1403653089436386197 =
-
-                    std::
-
-                    thread(
-
-                            [
-
-                                    &]() {
-
-                                if (
-
-                                        TheMapManager_286960->
-
-                                                mapUpdate()
-                                        ) {
-
-                                    if (
+//            _1403653089436386197 = std::thread([&]() {
+                if (TheMapManager_286960->mapUpdate()) {
+                    if (
 
                                             TheMapManager_286960->
 
@@ -681,9 +492,7 @@ ucoslam {
 
                                 ;
 
-                            }
-
-                    );
+//                            });
 
         _3944249282595574931->
 
@@ -756,10 +565,7 @@ ucoslam {
 
         }
 
-        if
-                (_17450466964482625197 == MODE_SLAM)
-
-            _1403653089436386197.join();
+//        if (_17450466964482625197 == MODE_SLAM) _1403653089436386197.join();
 
         cv::
 
@@ -1430,7 +1236,9 @@ ucoslam {
         if (!_11093822302335) return _11093822302335;
 
         _17976495724303689842 = TheMap->keyframes.back().pose_f2g;
+        cout << "cKfId:1434 " << currentKeyFrameId_105767 ;
         currentKeyFrameId_105767 = TheMap->keyframes.back().idx;
+        cout << "cKfId:1436 " << currentKeyFrameId_105767 << "##" << "##" ;;
 
         _13028158409047949416 = true;
 
@@ -1592,126 +1400,28 @@ ucoslam {
 
     }
 
-    bool
-
-    System::
-
-    _15186594243873234013(
-
-            Frame &inputFrame) {
-
-        if (
-                _14938569619851839146.KPNonMaximaSuppresion)
-
+    bool System::_15186594243873234013(Frame &inputFrame) {
+        if (_14938569619851839146.KPNonMaximaSuppresion)
             inputFrame.nonMaximaSuppresion();
-
-        int
-
-                _8065948040949117953 =
-
-                0;
-
-        for (
-
-                size_t _2654435874 =
-
-                        0;
-
-                _2654435874 <
-
-                inputFrame.und_kpts.size();
-                _2654435874++
-                ) {
-
-            if
-                    (inputFrame.getDepth(
-                    _2654435874)
-
-                     >
-
-                     0 &&
-
-                     inputFrame.imageParams.isClosePoint(
-                             inputFrame.getDepth(
-
-                                     _2654435874)
-
-                     )
-
-                     &&
-
-                     !
-                             inputFrame.flags[_2654435874]
-                                     .is(Frame::
-
-                                         FLAG_NONMAXIMA)
-
-                    )
-
+        int _8065948040949117953 = 0;
+        for (size_t _2654435874 = 0; _2654435874 < inputFrame.und_kpts.size(); _2654435874++) {
+            if (inputFrame.getDepth(_2654435874) > 0 &&
+                inputFrame.imageParams.isClosePoint(inputFrame.getDepth(_2654435874)) &&
+                !inputFrame.flags[_2654435874].is(Frame::FLAG_NONMAXIMA))
                 _8065948040949117953++;
-
         }
 
-        if (
-
-                _8065948040949117953 <
-
-                100)
-            return
-
-                    false;
+        if (_8065948040949117953 < 100) return false;
 
         inputFrame.pose_f2g.setUnity();
+        Frame &_16997199184281837438 = TheMap->addKeyFrame(inputFrame);
 
-        Frame &_16997199184281837438 =
-                TheMap->
+        for (size_t _2654435874 = 0; _2654435874 < inputFrame.und_kpts.size(); _2654435874++) {
+            cv::Point3f _2654435881;
 
-                        addKeyFrame(
-
-                        inputFrame);
-
-        for (
-
-                size_t _2654435874 =
-
-                        0;
-
-                _2654435874 <
-
-                inputFrame.und_kpts.size();
-
-                _2654435874++
-
-                ) {
-
-            cv::
-            Point3f _2654435881;
-
-            if (
-
-                    inputFrame.getDepth(
-                            _2654435874)
-
-                    > 0 &&
-
-                    inputFrame.imageParams.isClosePoint(
-
-                            inputFrame.getDepth(
-
-                                    _2654435874)
-
-                    )
-
-                    &&
-
-                    !
-
-                            inputFrame.flags[
-                                    _2654435874]
-
-                                    .is(
-
-                                            Frame::
+            if (inputFrame.getDepth(_2654435874) > 0 &&
+                inputFrame.imageParams.isClosePoint(inputFrame.getDepth(_2654435874)) && !inputFrame.flags[_2654435874].is(
+                        Frame::
 
                                             FLAG_NONMAXIMA)) {
 
@@ -1831,10 +1541,13 @@ ucoslam {
         if (_14938569619851839146.detectKeyPoints)
             refKeyFrameId = TheMap->getReferenceKeyFrame(frame_106140, 1);
 
-        if (refKeyFrameId != -1)
+        if (refKeyFrameId != -1){
+            cerr << "Update refKeyFrameID: " << currentKeyFrameId_105767 << " -> " << refKeyFrameId << " / ";
             return refKeyFrameId;
+        }
 
         if (TheMap->map_markers.size() == 0) {
+
             return currentKeyFrameId_105767;
         }
 
@@ -2410,52 +2123,12 @@ ucoslam {
                 false;
 
     }
-
-    std::
-    vector<
-
-            cv::
-
-            DMatch>
-
-    System::
-
-    _11946837405316294395(
-
-            Frame &frame_169403, Frame &_5918541169384278026, float
-
-    _1686565542397313973, float
-            _4500031049790251086) {
-
-        std::vector<
-
-                cv::
-
-                DMatch>
-
-                _6807036698572949990;
-
-        for (
-
-                size_t _2654435874 =
-
-                        0;
-
-                _2654435874 < _5918541169384278026.ids.size();
-
-                _2654435874++
-
-                ) {
-
-            uint32_t
-                    _11093822294347 =
-
-                    _5918541169384278026.ids[
-                            _2654435874];
-
-            if
-                    (
-
+std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame &_5918541169384278026, float _1686565542397313973, float _4500031049790251086) {
+    std::vector<cv::DMatch> _6807036698572949990;
+    for (size_t _2654435874 =0; _2654435874 < _5918541169384278026.ids.size(); _2654435874++) {
+        uint32_t _11093822294347 = _5918541169384278026.ids[_2654435874];
+        if (
+            
                     _11093822294347 != std::
 
                     numeric_limits<
@@ -2521,7 +2194,7 @@ ucoslam {
                                     _2654435874]
                                     .octave;
 
-                    std::
+                    std::                                          // above
 
                     vector<
 
@@ -2676,19 +2349,26 @@ ucoslam {
 //   if(value_ms % 50 == 0){
 //     throw std::invalid_argument("This is a test error");
 //   }
+        cerr << "1: " << se3_576955 << ", KFid = " << currentKeyFrameId_105767 << " / ";
 
+        if(!se3_576955.isValid()){
+            breakFlag = true;
+        }
         if (TheMap->map_points.size() > 0) {
             cv::Mat convertedSe3_576955 = se3_576955.convert();
             if (!_14463320619150402643.empty() && !convertedSe3_576955.empty()) {
                 se3_576955 = _14463320619150402643 * convertedSe3_576955; // probably this line
+                cerr << "2: " << se3_576955 << "/ ";
             } else {
                 throw std::invalid_argument("se3 is empty!");
             }
 
+            cerr << "KFid:2651 = " << currentKeyFrameId_105767 << " / ";
             frame_169403.pose_f2g = se3_576955;
             DMatchVector_637068 = _11946837405316294395(frame_169403, _4913157516830781457,
                                                         _14938569619851839146.maxDescDistance * 1.5,
                                                         _14938569619851839146.projDistThr);
+            cerr << "KFid:2656 = " << currentKeyFrameId_105767 << " / ";
 
             int _9870110657242862171 = 0;
 
@@ -2697,15 +2377,22 @@ ucoslam {
                 _9870110657242862171 = PnPSolver::solvePnp(frame_169403, TheMap, DMatchVector_637068,
                                                            _14671559813105454070, currentKeyFrameId_105767);
 
-                if (_9870110657242862171 > 30) se3_576955 = _14671559813105454070;
+                cerr << "KFid:2665 = " << currentKeyFrameId_105767 << " / ";
+
+                if (_9870110657242862171 > 30){
+                    se3_576955 = _14671559813105454070;
+                    cerr << "3: " << se3_576955 << ", KFid = " << currentKeyFrameId_105767 << " / ";
+                }
 
             } else {
                 // Deal with Bug #4
 //                if (!TheMap->keyframes.is(currentKeyFrameId_105767)) {
 //                    throw std::invalid_argument("se3 is empty!");
 //                }
+                cerr << "KFid:2677 = " << currentKeyFrameId_105767 << " / ";
                 FrameMatcher _16997326787393468537(FrameMatcher::TYPE_FLANN);
-                _16997326787393468537.setParams(TheMap->keyframes[currentKeyFrameId_105767],
+                cerr << "KFid:2679 = " << currentKeyFrameId_105767 << " / ";
+                _16997326787393468537.setParams(TheMap->keyframes[currentKeyFrameId_105767], // Invalid access here
                                                 FrameMatcher::MODE_ASSIGNED, _14938569619851839146.maxDescDistance * 2,
                                                 0.6, true, 3);
                 DMatchVector_637068 = _16997326787393468537.match(frame_169403, FrameMatcher::MODE_ALL);
@@ -2717,7 +2404,10 @@ ucoslam {
                     auto _14671559813105454070 = se3_576955;
                     _9870110657242862171 = PnPSolver::solvePnp(frame_169403, TheMap, DMatchVector_637068,
                                                                _14671559813105454070, currentKeyFrameId_105767);
-                    if (_9870110657242862171 > 30) se3_576955 = _14671559813105454070;
+                    if (_9870110657242862171 > 30){
+                        se3_576955 = _14671559813105454070;
+                        cerr << "4: " << se3_576955 << ", KFid = " << currentKeyFrameId_105767 << " / ";
+                    }
                 } else _9870110657242862171 = 0;
             }
 
@@ -2777,6 +2467,7 @@ ucoslam {
         }
 
         if (matchNumber < 30 && !foundPosition) {
+            cerr << "return: " << "empty se3" << endl;
             return se3();
         }
 
@@ -2786,95 +2477,21 @@ ucoslam {
             frame_169403.ids[DMatchVector_637068[_2654435874].queryIdx] = DMatchVector_637068[_2654435874].trainIdx;
 
             if (DMatchVector_637068[_2654435874].imgIdx == -1)
-                frame_169403.flags[DMatchVector_637068[_2654435874].queryIdx].set(Frame::FLAG_OUTLIER, true);
+                frame_169403.flags[DMatchVector_637068[_2654435874].queryIdx].set(Frame::FLAG_OUTLIER, true); // set
         }
+        cerr << "return: " << se3_576955 << endl;
         return se3_576955;
     }
 
-    void System::_14031550457846423181(cv::Mat &_46082544231248938, float
+    void System::_14031550457846423181(cv::Mat &_46082544231248938, float _9971115036363993554) const {
+        int _706246330297760 = float(_46082544231248938.cols) / 640.f;
+        cv::Point2f _46082575822903876(_706246330297760, _706246330297760);
+        bool _16987668682974831349 = false;
 
-    _9971115036363993554)
-
-    const {
-
-        int
-
-                _706246330297760 =
-
-                float(
-
-                        _46082544231248938.cols)
-
-                / 640.f;
-
-        cv::
-
-        Point2f _46082575822903876(
-                _706246330297760, _706246330297760);
-
-        bool
-
-                _16987668682974831349 =
-
-                false;
-
-        if
-                (
-
-                trackingState ==
-                STATE_TRACKING) {
-
-            for (
-
-                    size_t _2654435874 =
-
-                            0;
-
-                    _2654435874 <
-
-                    frame_149385.ids.size();
-
-                    _2654435874++
-
-                    )
-
-                if
-
-                        (
-
-                        frame_149385.ids[
-
-                                _2654435874]
-
-                        !=
-
-                        std::
-
-                        numeric_limits<
-
-                                uint32_t>
-                        ::
-
-                        max()
-
-                        ) {
-
-                    if
-
-                            (
-
-                            !
-
-                                    TheMap->
-                                            map_points.is(
-
-                                            frame_149385.ids[
-
-                                                    _2654435874]
-
-                                    )
-
-                            )
+        if(trackingState == STATE_TRACKING) {
+            for (size_t _2654435874 = 0; _2654435874 < frame_149385.ids.size(); _2654435874++)
+                if(frame_149385.ids[_2654435874]!=std::numeric_limits<uint32_t>::max()) {
+                    if(!TheMap->map_points.is(frame_149385.ids[_2654435874]))
                         continue;
 
                     cv::
@@ -3079,7 +2696,7 @@ ucoslam {
 
         _3005399798454910266.nIters =
 
-                10;
+                20;
 
         _3005399798454910266.markersOptWeight =
 

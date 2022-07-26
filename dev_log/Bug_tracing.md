@@ -184,3 +184,10 @@ Thread 1 "ucoslam_monocul" received signal SIGINT, Interrupt.
 #8  0x000055555556a3e7 in main(int, char**) (argc=<optimized out>, argv=<optimized out>)
     at /home/tpp/UCOSlam-IBOIS/utils/monocular_slam.cpp:560
 ```
+
+## GDB commands
+```
+watch *(int64_t *) 0x55555561f510 if *(int64_t *) 0x55555561f510 == 4294967295
+```
+
+[Thread _1403653089436386197] changed the value!

@@ -30,7 +30,7 @@ namespace ucoslam{
 class PnPSolver{
 public:
     //returns the number of inlier matches
-    static int solvePnp( const Frame &frame, std::shared_ptr<Map> map, std::vector<cv::DMatch> &matches_io, se3 &pose_io ,int64_t currentKeyFrame=-1);
+    static int solvePnp( const Frame &frame, std::shared_ptr<Map> map, std::vector<cv::DMatch> &matches_io, se3 &pose_io ,const int64_t currentKeyFrame=-1);
 
     static  bool solvePnPRansac(const Frame &frame, std::shared_ptr<Map> map, std::vector<cv::DMatch> &matches_io, se3 &posef2g_io,int maxIters=50);
 

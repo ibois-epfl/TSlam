@@ -188,7 +188,7 @@ static int *SortAnchorsByGradValue(short *gradImg, EdgeMap *map,
     }                            // end-for
   }                              // end-for
 
-  delete C;
+  delete[] C;
 
   *pNoAnchors = noAnchors;
   return A;
@@ -857,9 +857,9 @@ void JoinAnchorPointsUsingSortedAnchors(short *gradImg, unsigned char *dirImg,
   unsigned char *edgeImg = map->edgeImg;
   int *chainNos = new int[(width + height) * 8];
 
-  Pixel *pixels = new Pixel[width * height];
-  StackNode *stack = new StackNode[width * height];
-  Chain *chains = new Chain[width * height];
+  auto *pixels = new Pixel[width * height];
+  auto *stack = new StackNode[width * height];
+  auto *chains = new Chain[width * height];
 
   // First Sort the anchors
   int noAnchors;
@@ -1276,9 +1276,9 @@ void JoinAnchorPointsUsingSortedAnchors(short *gradImg, unsigned char *dirImg,
             fc = chains[chainNo].pixels[chains[chainNo].len - 2].c;
 
             int dr = abs(
-                fr - map->segments[noSegments].pixels[noSegmentPixels - 1].r);
+                fr - map->segments[noSegments].pixels[noSegmentPixels - 1].r); // VALGRIND: invalid read of size 4
             int dc = abs(
-                fc - map->segments[noSegments].pixels[noSegmentPixels - 1].c);
+                fc - map->segments[noSegments].pixels[noSegmentPixels - 1].c); // VALGRIND: invalid read of size 4
 
             if (dr <= 1 && dc <= 1) chains[chainNo].len--;
           }  // end-if
@@ -1449,11 +1449,11 @@ void JoinAnchorPointsUsingSortedAnchors(short *gradImg, unsigned char *dirImg,
 
   map->noSegments = noSegments;
 
-  delete A;
-  delete chains;
-  delete stack;
-  delete pixels;
-  delete chainNos;
+  delete[] A;
+  delete[] chains;
+  delete[] stack;
+  delete[] pixels;
+  delete[] chainNos;
 }  // end-JoinAnchorPointsUsingSortedAnchors
 
 ///-----------------------------------------------------------------------------------

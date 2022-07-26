@@ -114,7 +114,7 @@ bool PnPSolver::solvePnPRansac( const Frame &frame, std::shared_ptr<Map> map, st
     return true;
 }
 
-int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::vector<cv::DMatch> &map_matches, se3 &estimatedPose, int64_t currentKeyFrame){
+int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::vector<cv::DMatch> &map_matches, se3 &estimatedPose, const int64_t currentKeyFrame){
     cv::Mat pose_io=estimatedPose.convert();
 
     //useful functions

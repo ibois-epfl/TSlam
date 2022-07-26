@@ -126,3 +126,9 @@ std::string info;
     Image 33900 fps=40.427  22.5163 draw=55.1343 tracked
     Image 34000 fps=41.9248 22.2568 draw=51.4437 tracked
     ```
+
+## Merge map in CPP
+- Usage: `build/utils/ucoslam_conbine_map 1.map 2.map combined.map`
+- In `map.h/map.cpp`, a new instance `Map::projectTo(Map anotherMap)` is added, which estimates the transformation matrix based on the duplicated tags and perform the transformation.
+- Result
+  ![](./merge_cpp.png)

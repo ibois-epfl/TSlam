@@ -31,7 +31,7 @@ public:
 
     }
     ~FastMat(){
-        delete data;
+        delete[] data;
     }
     inline void setTo(const T &val){
         for(int i=0;i<size;i++)

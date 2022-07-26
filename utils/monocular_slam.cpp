@@ -380,35 +380,6 @@ int main(int argc,char **argv){
     auto TheMap=std::make_shared<ucoslam::Map>();
     //read the map from file?
     if (cml["-map"]) TheMap->readFromFile(cml("-map"));
-    
-    ///////////////////////////////////////////
-    // Read from the text file
-    // ifstream yamlFile("/home/tpp/UCOSlam-IBOIS/build/utils/merged_map.yml");
-    // string yamlString;
-    // string tmpStr;
-    // while (getline(yamlFile, tmpStr)) {
-    //     yamlString += tmpStr;
-    // }
-
-    // map<int, vector<vector<double> > > markers;
-
-    // int index = yamlString.find("corners");
-    // int markerAmount = 95;
-    // for(int mi = 0; mi < markerAmount; mi++) {
-    //     vector<vector<double> > markerCorners;
-    //     for(int ci = 0; ci < 4; ci++){
-    //         vector<double> markerCorner(3);
-    //         for(int vi = 0; vi < 3; vi++){
-    //             markerCorner[vi] = getDouble(yamlString, index);
-    //         }
-    //         markerCorners.push_back(markerCorner);
-    //     }
-    //     int id = getInt(yamlString, index);
-    //     markers[id] = markerCorners;
-    // }
-    ////////////////////////////////////////////////
-
-
 
     Slam.setParams(TheMap, params, cml("-voc"));
 
@@ -464,9 +435,9 @@ int main(int argc,char **argv){
 //        TheMap=Slam.getMap();
 //        overwriteParamsByCommandLine(cml,params);
 //        Slam.updateParams(params);
-//
+
 //    }
-//
+
 //    if (cml["-noMapUpdate"])
 //        Slam.setMode(ucoslam::MODE_LOCALIZATION);
 

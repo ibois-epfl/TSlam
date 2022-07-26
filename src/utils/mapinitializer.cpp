@@ -371,7 +371,7 @@ _3005399809980531318 ;
 
  __PRETTY_FUNCTION__ )
 
- +"\x20\x69\x6e\x76\x61\x6c\x69\x64\x20\x72\x65\x66\x65\x72\x65\x6e\x63\x65\x20\x66\x72\x61\x6d\x65" )
+ +R"( invalid reference frame)" )
 
   ;
 
@@ -392,14 +392,9 @@ _3005399809980531318 ;
 
         _9860761537440310106 =
 
- fmatcher.match (
-_3005401603918369727,FrameMatcher ::
+ fmatcher.match (_3005401603918369727,FrameMatcher ::MODE_ALL );
 
- MODE_ALL )
-
-  ;
-
-     }
+       }
 
      auto
 
@@ -433,8 +428,7 @@ _6807034019352783248 =
 
     Frame & _16997199184281837438 =
 
- _11093822290287 -> addKeyFrame (
-    _refFrame )
+ _11093822290287 -> addKeyFrame (_refFrame )
 
   ;
 

@@ -407,7 +407,7 @@ private:
 
               r1.clear();
               r2.clear();
-              std::pair<DType,uint32_t> best_dist_idx(std::numeric_limits<uint32_t>::max(),0);//minimum distance found
+              std::pair<DType,uint32_t> best_dist_idx(std::numeric_limits<uint32_t>::max(), 0);//minimum distance found
               block_node_info *bn_info;
               int nbits=ceil(log2(_params._m_k));
               for(int cur_feature=0;cur_feature<features.rows;cur_feature++){
@@ -440,7 +440,7 @@ private:
                       curNode= curNode<<nbits;
                       curNode|=best_dist_idx.second;
                       level++;
-                  }while( !bn_info->isleaf() && bn_info->getId()!=0);
+                  }while( !bn_info->isleaf() && bn_info->getId()!=0); // VALGRIND: Invalid read of size 4
               }
       }
 

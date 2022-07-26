@@ -39,8 +39,7 @@ int main(int argc,char **argv){
     try {
         if(argc<4)throw std::runtime_error("Usage: inmap_A inmap_B outmap [iterations]");
 
-        std::shared_ptr<ucoslam::Map> TheMap, TheMapA, TheMapB;
-        TheMap = std::make_shared<ucoslam::Map>();
+        std::shared_ptr<ucoslam::Map> TheMapA, TheMapB;
         TheMapA = std::make_shared<ucoslam::Map>();
         TheMapB = std::make_shared<ucoslam::Map>();
 
@@ -54,39 +53,20 @@ int main(int argc,char **argv){
 
         std::shared_ptr<ucoslam::MapManager> TheMapManager;
         TheMapManager = std::make_shared<ucoslam::MapManager>();
+        TheMapManager->setParams(TheMapA, true);
 
-        TheMapManager->setParams(TheMap, true);
-
-        std::map<uint32_t, ucoslam::Frame*> frameMapA; // idx of TheMapA -> TheMap
-        std::map<uint32_t, ucoslam::Frame*> frameMapB; // idx of TheMapB -> TheMap
-        std::map<uint32_t, ucoslam::MapPoint*> pointMapA;
+        std::map<uint32_t, ucoslam::Frame*> frameMapB; // idx of TheMapB -> TheMapA
         std::map<uint32_t, ucoslam::MapPoint*> pointMapB;
 
         // Add point first
         cout << "Total points in A: " << TheMapA->map_points.size() << "points." << endl;
         cout << "Total points in B: " << TheMapB->map_points.size() << "points." << endl;
 
-        for(auto ptIter = TheMapA->map_points.begin(); ptIter != TheMapA->map_points.end(); ++ptIter){
-            if(pointMapA.count(ptIter->id) == 0){
-                pointMapA[ptIter->id] = &TheMap->addNewPoint(0);
-                pointMapA[ptIter->id]->setCoordinates(ptIter->getCoordinates());
-            }
-        }
-
         for(auto ptIter = TheMapB->map_points.begin(); ptIter != TheMapB->map_points.end(); ++ptIter){
             if(pointMapB.count(ptIter->id) == 0){
-                pointMapB[ptIter->id] = &TheMap->addNewPoint(0);
+                pointMapB[ptIter->id] = &TheMapA->addNewPoint(0);
                 pointMapB[ptIter->id]->setCoordinates(ptIter->getCoordinates());
             }
-        }
-
-        for(auto kfIter = TheMapA->keyframes.begin(); kfIter != TheMapA->keyframes.end(); ++kfIter){
-            for(int i = 0 ; i < kfIter->ids.size() ; i++){
-                if (kfIter->ids[i] != std::numeric_limits<uint32_t>::max()){
-                    kfIter->ids[i] = pointMapA[kfIter->ids[i]]->id;
-                }
-            }
-            TheMapManager->addKeyFrame(&(*kfIter));
         }
 
         for(auto kfIter = TheMapB->keyframes.begin(); kfIter != TheMapB->keyframes.end(); ++kfIter){
@@ -99,14 +79,14 @@ int main(int argc,char **argv){
         }
 
         cout << "Markers: ";
-        for(auto markerIter = TheMap->map_markers.begin(); markerIter != TheMap->map_markers.end(); ++markerIter){
+        for(auto markerIter = TheMapA->map_markers.begin(); markerIter != TheMapA->map_markers.end(); ++markerIter){
             cout << markerIter->first << " ";
         }
         cout << endl;
 
         string filename = argv[3];
         filename = "no_opt_" + filename;
-        TheMap->saveToFile(filename);
+        TheMapA->saveToFile(filename);
 
         std::shared_ptr<g2o::SparseOptimizer> Optimizer;
 
@@ -127,7 +107,7 @@ int main(int argc,char **argv){
         ///KEYFRAME POSES
         //////////////////////////////
         map<uint32_t, g2oba::SE3Pose * > kf_poses;
-        for(auto &kf:TheMap->keyframes){
+        for(auto &kf:TheMapA->keyframes){
             if(!camera->isSet()){
                 camera->setParams(kf.imageParams.CameraMatrix,kf.imageParams.Distorsion);
                 Optimizer->addVertex(camera);
@@ -142,7 +122,7 @@ int main(int argc,char **argv){
         //////////////////////////////
         list<g2oba::ProjectionEdge *> projectionsInGraph;
         list<g2oba::MapPoint *> mapPoints;
-        for(auto &p:TheMap->map_points){
+        for(auto &p:TheMapA->map_points){
             g2oba::MapPoint *point=new g2oba::MapPoint (p.id, p.getCoordinates());
             point->setId(id++);
             point->setMarginalized(true);
@@ -150,7 +130,7 @@ int main(int argc,char **argv){
             mapPoints.push_back(point);
 
             for(auto of:p.getObservingFrames()){
-                auto &kf=TheMap->keyframes[of.first];
+                auto &kf=TheMapA->keyframes[of.first];
                 if ( kf.isBad() )continue;
 
                 auto Proj=new g2oba::ProjectionEdge(p.id,kf.idx, kf.kpts[of.second]);
@@ -174,7 +154,7 @@ int main(int argc,char **argv){
         //////////////////////////////
         map<uint32_t, g2oba::SE3Pose * > marker_poses;
         std::vector<g2oba::MarkerEdge * > marker_edges;
-        for(const auto &marker:TheMap->map_markers){
+        for(const auto &marker:TheMapA->map_markers){
             if(!marker.second.pose_g2m.isValid()) continue;
             g2oba::SE3Pose * marker_pose= new g2oba::SE3Pose(marker.first,marker.second.pose_g2m.getRvec(),marker.second.pose_g2m.getTvec());
             marker_pose->setId(id++);
@@ -182,7 +162,7 @@ int main(int argc,char **argv){
             marker_poses.insert({marker.first,marker_pose});
 
             for(const auto &kfidx:marker.second.frames){
-                auto &kf=TheMap->keyframes[kfidx];
+                auto &kf=TheMapA->keyframes[kfidx];
                 if ( kf.isBad() )continue;
                 if(  kf_poses.count(kfidx)==0)throw std::runtime_error("Key frame for marker not in the optimization:"+std::to_string(kfidx));
 
@@ -190,7 +170,7 @@ int main(int argc,char **argv){
                 Proj->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(marker_pose));
                 Proj->setVertex(1, dynamic_cast<g2o::OptimizableGraph::Vertex*>( kf_poses.at(kfidx)));
                 Proj->setVertex(2, dynamic_cast<g2o::OptimizableGraph::Vertex*>( camera));
-                auto mobs=TheMap->keyframes[kfidx].getMarker(marker.first);
+                auto mobs=TheMapA->keyframes[kfidx].getMarker(marker.first);
                 Eigen::Matrix<double,8,1> obs;
                 obs<<mobs.corners[0].x,mobs.corners[0].y,
                         mobs.corners[1].x,mobs.corners[1].y,
@@ -231,34 +211,34 @@ int main(int argc,char **argv){
         //copy data back to the map
         //move data back to the map
         for(auto &mp: mapPoints ){
-            TheMap->map_points[ mp->getid()].setCoordinates(mp->getPoint3d());
+            TheMapA->map_points[ mp->getid()].setCoordinates(mp->getPoint3d());
         }
 
         //now, the keyframes
         for(auto pose:kf_poses){
-            TheMap->keyframes[pose.first].pose_f2g=ucoslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
-            TheMap->keyframes[pose.first].imageParams.CameraMatrix.at<float>(0,0)=camera->fx();
-            TheMap->keyframes[pose.first].imageParams.CameraMatrix.at<float>(1,1)=camera->fy();
-            TheMap->keyframes[pose.first].imageParams.CameraMatrix.at<float>(0,2)=camera->cx();
-            TheMap->keyframes[pose.first].imageParams.CameraMatrix.at<float>(1,2)=camera->cy();
+            TheMapA->keyframes[pose.first].pose_f2g=ucoslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
+            TheMapA->keyframes[pose.first].imageParams.CameraMatrix.at<float>(0,0)=camera->fx();
+            TheMapA->keyframes[pose.first].imageParams.CameraMatrix.at<float>(1,1)=camera->fy();
+            TheMapA->keyframes[pose.first].imageParams.CameraMatrix.at<float>(0,2)=camera->cx();
+            TheMapA->keyframes[pose.first].imageParams.CameraMatrix.at<float>(1,2)=camera->cy();
             for(int p=0;p<5;p++)
-                TheMap->keyframes[pose.first].imageParams.Distorsion.ptr<float>(0)[p]=camera->dist()[p];
+                TheMapA->keyframes[pose.first].imageParams.Distorsion.ptr<float>(0)[p]=camera->dist()[p];
         }
 //        //remove weak links
 //        for(auto &p:projectionsInGraph){
-//            if(p->chi2()>5.99) ucoslam::DebugTest::removeMapPointObservation(TheMap,p->point_id,p->frame_id);
+//            if(p->chi2()>5.99) ucoslam::DebugTest::removeMapPointObservation(TheMapA,p->point_id,p->frame_id);
 //        }
 
         //finally, markers
         for(auto pose:marker_poses)
-            TheMap->map_markers[pose.first].pose_g2m=ucoslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
+            TheMapA->map_markers[pose.first].pose_g2m=ucoslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
 
 
         cout<<"Final Camera Params "<<endl;
-        cout<<TheMap->keyframes.begin()->imageParams.CameraMatrix<<endl;
-        cout<<TheMap->keyframes.begin()->imageParams.Distorsion<<endl;
+        cout<<TheMapA->keyframes.begin()->imageParams.CameraMatrix<<endl;
+        cout<<TheMapA->keyframes.begin()->imageParams.Distorsion<<endl;
 
-        TheMap->saveToFile(argv[3]);
+        TheMapA->saveToFile(argv[3]);
 
     } catch (const std::exception &ex) {
         std::cerr<<ex.what()<<std::endl;

@@ -9,6 +9,7 @@ cmake-build-debug
 
 # temp file
 test.*
+core-dump*
 
 # misc
 test_result
