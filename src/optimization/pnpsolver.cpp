@@ -155,8 +155,8 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
         if( nvalidmarkers==0) return 0; //no
     }
 
-    //Create the solvers
-   // vBadMatches.resize( p3d.size());
+    // Create the solvers
+    // vBadMatches.resize( p3d.size());
 
     g2o::SparseOptimizer optimizer;
 

@@ -248,7 +248,6 @@ ucoslam {
         } else {
             if (trackingState == STATE_TRACKING) {
                 currentKeyFrameId_105767 = getRefKeyFrameId(lastFrame, curPose_ns);
-                cerr << "KFid:317 = " << currentKeyFrameId_105767 << " / ";
                 curPose_ns = _11166622111371682966(curFrame, curPose_ns); // bug here
 
                 if (!curPose_ns.isValid())
@@ -301,16 +300,16 @@ cv::Mat System::process(cv::Mat &in_image, const ImageParams &imgParams,
                         uint32_t _9933887380370137445, const cv::Mat &_46082575014988268,
                         const cv::Mat &_1705635550657133790) {
     swap(lastFrame, curFrame);
-    // std::thread _1403653089436386197;
+     std::thread mapUpdateThread;
     if (sysMode == MODE_SLAM) {
-    //     _1403653089436386197 = std::thread([&]() {
-        if (sysMapManager->mapUpdate()) {
-            if (sysMapManager->bigChange()) {
-                curFrame.pose_f2g = sysMapManager->getLastAddedKFPose();
-                curPose_ns = sysMapManager->getLastAddedKFPose();
-            }
-        };
-        //     });
+         mapUpdateThread = std::thread([&]() {
+            if (sysMapManager->mapUpdate()) {
+                if (sysMapManager->bigChange()) {
+                    curFrame.pose_f2g = sysMapManager->getLastAddedKFPose();
+                    curPose_ns = sysMapManager->getLastAddedKFPose();
+                }
+            };
+         });
     }
 
     if (_46082575014988268.empty() && _1705635550657133790.empty())
@@ -332,7 +331,7 @@ cv::Mat System::process(cv::Mat &in_image, const ImageParams &imgParams,
         }
     }
 
-    // if(sysMode == MODE_SLAM) _1403653089436386197.join();
+    if(sysMode == MODE_SLAM) mapUpdateThread.join();
     cv::Mat _3005399805025936106 = process(curFrame);
 
     float _6154865401824487276 = sqrt(float(curFrame.imageParams.CamSize.area())/ float(in_image.size().area()));
@@ -394,7 +393,7 @@ cv::Mat System::process(vector<cv::
         swap(
                 lastFrame, curFrame);
 
-//        std::thread _1403653089436386197;
+        std::thread mapUpdateThread;
 
         if
 
@@ -402,7 +401,7 @@ cv::Mat System::process(vector<cv::
 
                  MODE_SLAM)
 
-//            _1403653089436386197 = std::thread([&]() {
+            mapUpdateThread = std::thread([&]() {
                 if (sysMapManager->mapUpdate()) {
                     if (
 
@@ -426,7 +425,7 @@ cv::Mat System::process(vector<cv::
 
                                 ;
 
-//                            });
+                            });
 
         sysFrameExtractor->
 
@@ -499,7 +498,7 @@ cv::Mat System::process(vector<cv::
 
         }
 
-//        if (sysMode == MODE_SLAM) _1403653089436386197.join();
+        if (sysMode == MODE_SLAM) mapUpdateThread.join();
 
         cv::
 
@@ -761,7 +760,7 @@ cv::Mat System::process(vector<cv::
 
                 _46082575779493229)
             cerr <<
-                 "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x31\x2e\x20\x73\x69\x67\x3d" <<
+                 R"(\tSystem 1. sig=)" <<
 
                  _11093822380353 <<
 
@@ -774,7 +773,7 @@ cv::Mat System::process(vector<cv::
         if (
                 _46082575779493229)
 
-            cerr << "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x32\x2e\x20\x73\x69\x67\x3d" <<
+            cerr << R"(\tSystem 2. sig=)" <<
                  _11093822380353 <<
                  endl;
 
@@ -800,7 +799,7 @@ cv::Mat System::process(vector<cv::
 
             cerr <<
 
-                 "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x33\x2e\x20\x73\x69\x67\x3d" << _11093822380353 <<
+                 R"(\tSystem 3. sig=)" << _11093822380353 <<
 
                  endl;
 
@@ -814,7 +813,7 @@ cv::Mat System::process(vector<cv::
 
             cerr <<
 
-                 "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x34\x2e\x20\x73\x69\x67\x3d" <<
+                 R"(\tSystem 4. sig=)" <<
                  _11093822380353 <<
 
                  endl;
@@ -827,7 +826,7 @@ cv::Mat System::process(vector<cv::
 
             cerr <<
 
-                 "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x35\x2e\x20\x73\x69\x67\x3d" <<
+                 R"(\tSystem 5. sig=)" <<
 
                  _11093822380353 <<
 
@@ -964,13 +963,13 @@ cv::Mat System::process(vector<cv::
 
         for (
 
-            auto _2654435878: inputFrame.markers) {
+            auto _markerObservation: inputFrame.markers) {
 
             if
 
                     (TheMap->
 
-                    map_markers.find(_2654435878.id)
+                    map_markers.find(_markerObservation.id)
 
                      !=
 
@@ -986,7 +985,7 @@ cv::Mat System::process(vector<cv::
 
                                 map_markers[
 
-                                _2654435878.id];
+                                _markerObservation.id];
 
                 cv::
                 Mat _9983235290341257781 =
@@ -1005,7 +1004,7 @@ cv::Mat System::process(vector<cv::
 
                 _7045032207766252456.insert(
 
-                        _7045032207766252456.end(), _2654435878.und_corners.begin(), _2654435878.und_corners.end()
+                        _7045032207766252456.end(), _markerObservation.und_corners.begin(), _markerObservation.und_corners.end()
 
                 );
 
@@ -1015,7 +1014,7 @@ cv::Mat System::process(vector<cv::
                         IPPE::
                         solvePnP(
 
-                                sysParams.aruco_markerSize, _2654435878.und_corners,
+                                sysParams.aruco_markerSize, _markerObservation.und_corners,
                                 inputFrame.imageParams.CameraMatrix, inputFrame.imageParams.Distorsion);
 
                 for (
@@ -1397,12 +1396,12 @@ cv::Mat System::process(vector<cv::
 
         for (const auto
 
-                    &_2654435878: inputFrame.markers) {
+                    &_markerObservation: inputFrame.markers) {
 
             TheMap->
                     addMarker(
 
-                    _2654435878);
+                    _markerObservation);
         }
 
         return
@@ -1476,38 +1475,40 @@ cv::Mat System::process(vector<cv::
             refKeyFrameId = TheMap->getReferenceKeyFrame(frame_106140, 1);
 
         if (refKeyFrameId != -1){
-            cerr << "Update refKeyFrameID: " << currentKeyFrameId_105767 << " -> " << refKeyFrameId << " / ";
             return refKeyFrameId;
         }
 
         if (TheMap->map_markers.size() == 0) {
-
             return currentKeyFrameId_105767;
         }
 
-        vector<uint32_t> _4240713669852012646;
+        vector<uint32_t> overlappedMarkers;
 
-        for (auto _2654435878: frame_106140.markers) {
-            auto _3005399795337363304 = TheMap->map_markers.find(_2654435878.id);
+        for (auto _markerObservation: frame_106140.markers) {
+            auto marker = TheMap->map_markers.find(_markerObservation.id);
 
-            if (_3005399795337363304 != TheMap->map_markers.end()) {
-                if (_3005399795337363304->second.pose_g2m.isValid())
-                    _4240713669852012646.push_back(_2654435878.id);
+            if (marker != TheMap->map_markers.end()) {
+                if (marker->second.pose_g2m.isValid())
+                    overlappedMarkers.push_back(_markerObservation.id);
             }
         }
 
-        pair<uint32_t, float> _18337238202410394478(std::numeric_limits<uint32_t>::max(),
-                                                    std::numeric_limits<float>::max());
+        pair<uint32_t, float> result(std::numeric_limits<uint32_t>::max(), std::numeric_limits<float>::max());
 
-        for (auto _3005399795337363304: _4240713669852012646)
-            for (const auto &inputFrame: TheMap->map_markers[_3005399795337363304].frames) {
+        for (auto marker: overlappedMarkers)
+            for (const auto &inputFrame: TheMap->map_markers[marker].frames) {
                 auto _2654435869 = se3_107067.t_dist(TheMap->keyframes[inputFrame].pose_f2g);
-                if (_18337238202410394478.second > _2654435869) _18337238202410394478 = {inputFrame, _2654435869};
+                if (result.second > _2654435869) result = {inputFrame, _2654435869};
             }
 
-        return _18337238202410394478.first;
+        if(result.first != std::numeric_limits<uint32_t>::max()){
+            return result.first;
+        } else {
+            return currentKeyFrameId_105767;
+        }
 
     }
+
     std::vector<System::_4118122444908280734> System::_3473802998844434099(Frame &_16940374161494853219, se3 &_13011065492167565582, const std::
     set<uint32_t> &_16997249117545452056) {
         if(
@@ -1609,18 +1610,18 @@ cv::Mat System::process(vector<cv::
 
             for (
 
-                auto &_2654435878: _1524129789187101628[_175247762874]
+                auto &_markerObservation: _1524129789187101628[_175247762874]
 
                     ._6116114700730085677) {
 
                 std::
                 swap(
-                        _2654435878.queryIdx, _2654435878.trainIdx);
+                        _markerObservation.queryIdx, _markerObservation.trainIdx);
 
-                _2654435878.trainIdx =
+                _markerObservation.trainIdx =
                         _3005399814901981436.ids[
 
-                                _2654435878.trainIdx];
+                                _markerObservation.trainIdx];
 
             }
 
@@ -1952,7 +1953,7 @@ cv::Mat System::process(vector<cv::
 
         for (auto
 
-                    &_2654435878: inputFrame.markers) {
+                    &_markerObservation: inputFrame.markers) {
 
             auto
 
@@ -1961,7 +1962,7 @@ cv::Mat System::process(vector<cv::
                     TheMap->
                             map_markers.find(
 
-                            _2654435878.id);
+                            _markerObservation.id);
 
             if (
                     _8332348524113911167 !=
@@ -1980,7 +1981,7 @@ cv::Mat System::process(vector<cv::
                         )
 
                     _7895328205142007059.push_back(
-                            _2654435878.id);
+                            _markerObservation.id);
 
         }
 
@@ -2057,7 +2058,7 @@ cv::Mat System::process(vector<cv::
                 false;
 
     }
-std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame &_5918541169384278026, float _1686565542397313973, float _4500031049790251086) {
+std::vector<cv::DMatch>System::_11946837405316294395(Frame &curFrame, Frame &_5918541169384278026, float _1686565542397313973, float _4500031049790251086) {
     std::vector<cv::DMatch> _6807036698572949990;
     for (size_t _2654435874 =0; _2654435874 < _5918541169384278026.ids.size(); _2654435874++) {
         uint32_t _11093822294347 = _5918541169384278026.ids[_2654435874];
@@ -2096,7 +2097,7 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
                     auto
 
                             _11093822300120 =
-                            frame_169403.project(
+                            curFrame.project(
 
                                     _3005399799907669332.getCoordinates(), true, true);
 
@@ -2113,7 +2114,7 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
                     float
                             _175247759755 =
 
-                            frame_169403.scaleFactors[_5918541169384278026.und_kpts[
+                            curFrame.scaleFactors[_5918541169384278026.und_kpts[
 
                                     _2654435874]
 
@@ -2135,7 +2136,7 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
                             uint32_t>
 
                             _10924592426265627429 =
-                            frame_169403.getKeyPointsInRegion(
+                            curFrame.getKeyPointsInRegion(
                                     _11093822300120, _4500031049790251086 * _175247759755, _3005399801676750422,
                                     _3005399801676750422);
 
@@ -2170,7 +2171,7 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
                         if
 
                                 (
-                                frame_169403.und_kpts[
+                                curFrame.und_kpts[
 
                                         _175247760278]
 
@@ -2184,7 +2185,7 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
 
                                     _16940392174182767813 = MapPoint::
                             getDescDistance(
-                                    _5918541169384278026.desc, _2654435874, frame_169403.desc, _175247760278);
+                                    _5918541169384278026.desc, _2654435874, curFrame.desc, _175247760278);
 
                             if
 
@@ -2275,72 +2276,61 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
 
     }
 
-    se3 System::_11166622111371682966(Frame &frame_169403, se3 se3_143874) {
+    se3 System::_11166622111371682966(Frame &curFrame, se3 se3_143874) {
         std::vector<cv::DMatch> DMatchVector_637068;
-        se3 se3_576955 = se3_143874;
+        se3 curPoseF2g = se3_143874;
 
-//   long value_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch()).count();
-//   if(value_ms % 50 == 0){
-//     throw std::invalid_argument("This is a test error");
-//   }
-        cerr << "1: " << se3_576955 << ", KFid = " << currentKeyFrameId_105767 << " / ";
+//       long value_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch()).count();
+//       if(value_ms % 20 == 0){
+//           cerr << "Evoke a test error" << endl;
+//           curPoseF2g = se3();
+//           throw std::invalid_argument("This is a test error");
+//       }
+//        cerr << "1: " << curPoseF2g << ", KFid = " << currentKeyFrameId_105767 << " / ";
 
-        if(!se3_576955.isValid()){
+        if(!curPoseF2g.isValid()){
             breakFlag = true;
+            throw std::invalid_argument("se3 is empty, reinitialize");
         }
         if (TheMap->map_points.size() > 0) {
-            cv::Mat convertedSe3_576955 = se3_576955.convert();
-            if (!_14463320619150402643.empty() && !convertedSe3_576955.empty()) {
-                se3_576955 = _14463320619150402643 * convertedSe3_576955; // probably this line
-                cerr << "2: " << se3_576955 << "/ ";
+            cv::Mat convertedcurPoseF2g = curPoseF2g.convert();
+            if (!_14463320619150402643.empty() && !convertedcurPoseF2g.empty()) {
+                curPoseF2g = _14463320619150402643 * convertedcurPoseF2g; // probably this line
             } else {
                 throw std::invalid_argument("se3 is empty!");
             }
 
-            cerr << "KFid:2651 = " << currentKeyFrameId_105767 << " / ";
-            frame_169403.pose_f2g = se3_576955;
-            DMatchVector_637068 = _11946837405316294395(frame_169403, lastFrame,
+            curFrame.pose_f2g = curPoseF2g;
+            DMatchVector_637068 = _11946837405316294395(curFrame, lastFrame,
                                                         sysParams.maxDescDistance * 1.5,
                                                         sysParams.projDistThr);
-            cerr << "KFid:2656 = " << currentKeyFrameId_105767 << " / ";
-
             int _9870110657242862171 = 0;
 
             if (DMatchVector_637068.size() > 30) {
-                auto _14671559813105454070 = se3_576955;
-                _9870110657242862171 = PnPSolver::solvePnp(frame_169403, TheMap, DMatchVector_637068,
+                auto _14671559813105454070 = curPoseF2g;
+                _9870110657242862171 = PnPSolver::solvePnp(curFrame, TheMap, DMatchVector_637068,
                                                            _14671559813105454070, currentKeyFrameId_105767);
 
-                cerr << "KFid:2665 = " << currentKeyFrameId_105767 << " / ";
-
                 if (_9870110657242862171 > 30){
-                    se3_576955 = _14671559813105454070;
-                    cerr << "3: " << se3_576955 << ", KFid = " << currentKeyFrameId_105767 << " / ";
+                    curPoseF2g = _14671559813105454070;
                 }
 
             } else {
-                // Deal with Bug #4
-//                if (!TheMap->keyframes.is(currentKeyFrameId_105767)) {
-//                    throw std::invalid_argument("se3 is empty!");
-//                }
-                cerr << "KFid:2677 = " << currentKeyFrameId_105767 << " / ";
                 FrameMatcher _16997326787393468537(FrameMatcher::TYPE_FLANN);
-                cerr << "KFid:2679 = " << currentKeyFrameId_105767 << " / ";
-                _16997326787393468537.setParams(TheMap->keyframes[currentKeyFrameId_105767], // Invalid access here
+                _16997326787393468537.setParams(TheMap->keyframes[currentKeyFrameId_105767],
                                                 FrameMatcher::MODE_ASSIGNED, sysParams.maxDescDistance * 2,
                                                 0.6, true, 3);
-                DMatchVector_637068 = _16997326787393468537.match(frame_169403, FrameMatcher::MODE_ALL);
+                DMatchVector_637068 = _16997326787393468537.match(curFrame, FrameMatcher::MODE_ALL);
 
                 if (DMatchVector_637068.size() > 30) {
-                    for (auto &_2654435878: DMatchVector_637068)
-                        _2654435878.trainIdx = TheMap->keyframes[currentKeyFrameId_105767].ids[_2654435878.trainIdx];
+                    for (auto &_markerObservation: DMatchVector_637068)
+                        _markerObservation.trainIdx = TheMap->keyframes[currentKeyFrameId_105767].ids[_markerObservation.trainIdx];
 
-                    auto _14671559813105454070 = se3_576955;
-                    _9870110657242862171 = PnPSolver::solvePnp(frame_169403, TheMap, DMatchVector_637068,
+                    auto _14671559813105454070 = curPoseF2g;
+                    _9870110657242862171 = PnPSolver::solvePnp(curFrame, TheMap, DMatchVector_637068,
                                                                _14671559813105454070, currentKeyFrameId_105767);
                     if (_9870110657242862171 > 30){
-                        se3_576955 = _14671559813105454070;
-                        cerr << "4: " << se3_576955 << ", KFid = " << currentKeyFrameId_105767 << " / ";
+                        curPoseF2g = _14671559813105454070;;
                     }
                 } else _9870110657242862171 = 0;
             }
@@ -2348,19 +2338,20 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
             float _3763415994652820314;
             if (_9870110657242862171 > 30) {
                 _3763415994652820314 = 4;
-                for (auto _2654435878: DMatchVector_637068) {
-                    TheMap->map_points[_2654435878.trainIdx].lastFIdxSeen = frame_169403.fseq_idx;
-                    TheMap->map_points[_2654435878.trainIdx].setVisible();
+                for (auto _markerObservation: DMatchVector_637068) {
+                    TheMap->map_points[_markerObservation.trainIdx].lastFIdxSeen = curFrame.fseq_idx;
+                    TheMap->map_points[_markerObservation.trainIdx].setVisible();
                 }
             } else {
                 DMatchVector_637068.clear();
                 _3763415994652820314 = sysParams.projDistThr;
             }
+
             // bug here
             auto _3521005873836563963 = TheMap->matchFrameToMapPoints(
                     TheMap->TheKpGraph.getNeighborsVLevel2(currentKeyFrameId_105767, true),
-                    frame_169403,
-                    se3_576955,
+                    curFrame,
+                    curPoseF2g,
                     sysParams.maxDescDistance * 2,
                     _3763415994652820314, true);
 
@@ -2369,15 +2360,16 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
 
             filter_ambiguous_query(DMatchVector_637068);
         }
+
         // bug here
-        int matchNumber = PnPSolver::solvePnp(frame_169403, TheMap, DMatchVector_637068, se3_576955,
+        int matchNumber = PnPSolver::solvePnp(curFrame, TheMap, DMatchVector_637068, curPoseF2g,
                                               currentKeyFrameId_105767);
         bool foundPosition = false;
-        if (frame_169403.markers.size() > 0) {
+        if (curFrame.markers.size() > 0) {
             int validMarkerCount = 0;
 
-            for (size_t _2654435874 = 0; _2654435874 < frame_169403.markers.size(); _2654435874++) {
-                auto marker_1109 = TheMap->map_markers.find(frame_169403.markers[_2654435874].id);
+            for (size_t _2654435874 = 0; _2654435874 < curFrame.markers.size(); _2654435874++) {
+                auto marker_1109 = TheMap->map_markers.find(curFrame.markers[_2654435874].id);
 
                 if (marker_1109 == TheMap->map_markers.end())
                     continue;
@@ -2387,7 +2379,7 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
 
                 validMarkerCount++;
 
-                if (frame_169403.markers[_2654435874].poses.err_ratio < sysParams.aruco_minerrratio_valid)
+                if (curFrame.markers[_2654435874].poses.err_ratio < sysParams.aruco_minerrratio_valid)
                     continue;
 
                 foundPosition = true;
@@ -2401,20 +2393,18 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &frame_169403, Frame 
         }
 
         if (matchNumber < 30 && !foundPosition) {
-            cerr << "return: " << "empty se3" << endl;
             return se3();
         }
 
         for (size_t _2654435874 = 0; _2654435874 < DMatchVector_637068.size(); _2654435874++) {
             TheMap->map_points[DMatchVector_637068[_2654435874].trainIdx].setSeen();
 
-            frame_169403.ids[DMatchVector_637068[_2654435874].queryIdx] = DMatchVector_637068[_2654435874].trainIdx;
+            curFrame.ids[DMatchVector_637068[_2654435874].queryIdx] = DMatchVector_637068[_2654435874].trainIdx;
 
             if (DMatchVector_637068[_2654435874].imgIdx == -1)
-                frame_169403.flags[DMatchVector_637068[_2654435874].queryIdx].set(Frame::FLAG_OUTLIER, true); // set
+                curFrame.flags[DMatchVector_637068[_2654435874].queryIdx].set(Frame::FLAG_OUTLIER, true); // set
         }
-        cerr << "return: " << se3_576955 << endl;
-        return se3_576955;
+        return curPoseF2g;
     }
 
     void System::_14031550457846423181(cv::Mat &_46082544231248938, float _9971115036363993554) const {

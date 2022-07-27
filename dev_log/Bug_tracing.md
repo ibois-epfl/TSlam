@@ -190,6 +190,6 @@ Thread 1 "ucoslam_monocul" received signal SIGINT, Interrupt.
 watch *(int64_t *) 0x555555628518 if *(int64_t *) 0x555555628518 == 4294967295
 ```
 
-[Thread _1403653089436386197] changed the value!
+[Thread mapUpdateThread] changed the value!
 
 live /home/tpp/Downloads/ucoslam/test_result/calibration.yml -voc /home/tpp/UCOSlam-IBOIS/orb.fbow -out test_1 -map /home/tpp/UCOSlam-IBOIS/build/utils/sticker_6_oneshot.map -isInstancing

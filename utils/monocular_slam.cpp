@@ -14,7 +14,7 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with UCOSlam-> If not, see <http://wwmap->gnu.org/licenses/>.
 */
 
 // header for fullba
@@ -311,6 +311,8 @@ void enhanceImageBGR(const cv::Mat &imgIn, cv::Mat &imgOut){
     cv::cvtColor(Lab_image, imgOut, cv::COLOR_Lab2BGR);
 }
 
+int currentFrameIndex;
+
 int main(int argc,char **argv){
     std::ios_base::sync_with_stdio(false);
 
@@ -364,10 +366,10 @@ int main(int argc,char **argv){
     if (!vcap.isOpened())
         throw std::runtime_error("Video not opened");
 
-    ucoslam::UcoSlam Slam;
+    ucoslam::UcoSlam *Slam = new ucoslam::UcoSlam;
     int debugLevel = stoi(cml("-debug", "0"));
-    Slam.setDebugLevel(debugLevel);
-    Slam.showTimers(true);
+    Slam->setDebugLevel(debugLevel);
+    Slam->showTimers(true);
     ucoslam::ImageParams image_params;
     ucoslam::Params params;
     cv::Mat in_image;
@@ -377,11 +379,11 @@ int main(int argc,char **argv){
     if( cml["-params"]) params.readFromYMLFile(cml("-params"));
     overwriteParamsByCommandLine(cml,params);
 
-    auto TheMap=std::make_shared<ucoslam::Map>();
+    auto TheMap = std::make_shared<ucoslam::Map>();
     //read the map from file?
     if (cml["-map"]) TheMap->readFromFile(cml("-map"));
 
-    Slam.setParams(TheMap, params, cml("-voc"));
+    Slam->setParams(TheMap, params, cml("-voc"));
 
     if(!cml["-voc"]  && !cml["-map"])
     {
@@ -389,7 +391,7 @@ int main(int argc,char **argv){
     }
 
 
-//    if (cml["-loc_only"]) Slam.setMode(ucoslam::MODE_LOCALIZATION);
+//    if (cml["-loc_only"]) Slam->setMode(ucoslam::MODE_LOCALIZATION);
 
     //need to skip frames?
     if (cml["-skip"]) {
@@ -427,19 +429,19 @@ int main(int argc,char **argv){
     ucoslam::MapViewer TheViewer;
 
 //    if (cml["-slam"]){
-//        Slam.readFromFile(cml("-slam"));
-//            vcap.set(CV_CAP_PROP_POS_FRAMES,Slam.getLastProcessedFrame());
+//        Slam->readFromFile(cml("-slam"));
+//            vcap.set(CV_CAP_PROP_POS_FRAMES,Slam->getLastProcessedFrame());
 //        vcap.retrieve(in_image);
-//        vcap.set(CV_CAP_PROP_POS_FRAMES,Slam.getLastProcessedFrame());
+//        vcap.set(CV_CAP_PROP_POS_FRAMES,Slam->getLastProcessedFrame());
 //        vcap.retrieve(in_image);
-//        TheMap=Slam.getMap();
+//        TheMap=Slam->getMap();
 //        overwriteParamsByCommandLine(cml,params);
-//        Slam.updateParams(params);
+//        Slam->updateParams(params);
 
 //    }
 
 //    if (cml["-noMapUpdate"])
-//        Slam.setMode(ucoslam::MODE_LOCALIZATION);
+//        Slam->setMode(ucoslam::MODE_LOCALIZATION);
 
 
 
@@ -468,18 +470,18 @@ int main(int argc,char **argv){
 
             enhanceImageBGR(in_image, in_image);
 
-            int currentFrameIndex = vcap.getNextFrameIndex()-1;
+            currentFrameIndex = vcap.getNextFrameIndex() - 1;
 
             Fps.start();
-            camPose_c2g=Slam.process(in_image, image_params,currentFrameIndex);
+            camPose_c2g=Slam->process(in_image, image_params, currentFrameIndex);
             Fps.stop();
 
 
             TimerDraw.start();
-            //            Slam.drawMatches(in_image);
+            //            Slam->drawMatches(in_image);
             //    char k = TheViewer.show(&Slam, in_image,"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
             char k =0;
-            if(!cml["-noX"]) k=TheViewer.show(TheMap, in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam.getCurrentKeyFrameIndex());
+            if(!cml["-noX"]) k=TheViewer.show(TheMap, in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam->getCurrentKeyFrameIndex());
             if (int(k) == 27 || k=='q')finish = true;//pressed ESC
             TimerDraw.stop();
 
@@ -492,7 +494,7 @@ int main(int argc,char **argv){
             }
 
             //reset?
-            if (k=='r') Slam.clear();
+            if (k=='r') Slam->clear();
             //write the current map
             if (k=='e'){
                 string number = std::to_string(currentFrameIndex);
@@ -500,7 +502,7 @@ int main(int argc,char **argv){
                 TheMap->saveToFile("world-"+number+".map");
             }
             if (k=='v'){
-                Slam.saveToFile("slam.slm");
+                Slam->saveToFile("Slam->slm");
             }
             if(k=='s'){
                 TheMap->saveToFile(cml("-out","world") +".map");
@@ -520,22 +522,21 @@ int main(int argc,char **argv){
                 cout << " draw=" << 1./TimerDraw.getAvrg();
                 cout << (camPose_c2g.empty()?" not tracked":" tracked") << endl;
             }
-        } catch (const std::exception &ex) {
+        } catch (...) { //const std::exception &ex) {
             errorFlag = true;
-            cerr << ex.what() << endl;
+            cerr << "an error occurs" << endl;
 
-            TheMap->lock(__FUNCTION__,__FILE__,__LINE__);
-            if (cml["-map"]) {
-                auto TheMapReloader=std::make_shared<ucoslam::Map>();
-                if (cml["-map"]) TheMapReloader->readFromFile(cml("-map"));
-                TheMap = TheMapReloader;
 
-                Slam.clear();
-                Slam.resetTracker();
-                Slam.setParams(TheMap, params, cml("-voc"));
+
+            if (cml["-isInstancing"]){
+                delete Slam;
+                Slam = new ucoslam::UcoSlam;
+                TheMap = std::make_shared<ucoslam::Map>();
+                if (cml["-map"]) TheMap->readFromFile(cml("-map"));
+
+                Slam->setParams(TheMap, params, cml("-voc"));
             }
-            TheMap->unlock(__FUNCTION__,__FILE__,__LINE__);
-            cerr << "Recovered from error." << endl;
+
         }
         //read next
         vcap>>in_image;
@@ -556,7 +557,7 @@ int main(int argc,char **argv){
     //save also the parameters finally employed
     params.saveToYMLFile("ucoslam_params_"+cml("-out","world") +".yml");
     if (debugLevel >=10){
-        Slam.saveToFile("slam.slm");
+        Slam->saveToFile("Slam->slm");
     }
     TheMap->saveToMarkerMap("markermap.yml");
 

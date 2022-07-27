@@ -145,14 +145,14 @@ _46082543180066935, _11093822290287 )
     0 ;
 
              for(
-auto _2654435878:_46082543180066935.markers )
+auto _markerObservation:_46082543180066935.markers )
 
                  if
       (
 
       _refFrame.getMarkerIndex (
 
-_2654435878.id )
+_markerObservation.id )
 
     !=
 
@@ -544,25 +544,25 @@ MODE_ALL,_6807034019352783248.first )
 
      for(
 
-   auto _2654435878:_4498230092506100729 )
+   auto _markerObservation:_4498230092506100729 )
 
  {
 
         cout <<
       "\x6d\x6d\x20\x3a" <<
 
-_2654435878.first <<
+_markerObservation.first <<
 "\x20" <<
-_2654435878.second <<
+_markerObservation.second <<
 
     endl ;
         _11093822290287 -> map_markers [
 
- _2654435878.first ]
+ _markerObservation.first ]
 
 .pose_g2m =
 
-    _2654435878.second ;
+    _markerObservation.second ;
 
      }
 
@@ -1063,11 +1063,11 @@ const cv ::
 
      for(
 
-      auto _2654435878:_5507076421631549640 )
+      auto _markerObservation:_5507076421631549640 )
 
         _7917477704619030428.push_back ( make_pair (
 
-    _2654435878.trainIdx,_2654435878.queryIdx )
+    _markerObservation.trainIdx,_markerObservation.queryIdx )
 
    )
 
@@ -1302,7 +1302,7 @@ _14433965424915739327,_2654435839,_8168161081211572021,_11093821901461,_11093822
 
   {
 
-         for( auto &_2654435878:_5507076421631549640 )
+         for( auto &_markerObservation:_5507076421631549640 )
 
              if
     (
@@ -1311,10 +1311,10 @@ _14433965424915739327,_2654435839,_8168161081211572021,_11093821901461,_11093822
 
   _1883142761634074017 [
 
- _2654435878.trainIdx ]
+ _markerObservation.trainIdx ]
     )
-                _2654435878.queryIdx =
-      _2654435878.trainIdx =
+                _markerObservation.queryIdx =
+      _markerObservation.trainIdx =
 
       -1 ;
 
@@ -1334,13 +1334,13 @@ _14433965424915739327,_2654435839,_8168161081211572021,_11093821901461,_11093822
 
          for(
 
-      auto &_2654435878:_5507076421631549640 )
+      auto &_markerObservation:_5507076421631549640 )
 
             _11999208601973379867.push_back (
 
  _706246337618936 [
 
- _2654435878.trainIdx ]
+ _markerObservation.trainIdx ]
 
  )
     ;
@@ -5641,17 +5641,17 @@ const Frame &_46082543180066935, std ::
 
      for(
 
-   size_t _2654435878 =
+   size_t _markerObservation =
 
   0 ;
 
-     _2654435878 <
+     _markerObservation <
 
 _46082543180066935.markers.size ()
 
      ;
 
-       _2654435878 ++
+       _markerObservation ++
 
         )
      {
@@ -5660,7 +5660,7 @@ _46082543180066935.markers.size ()
 
    ( _46082543180066935.markers [
 
-  _2654435878 ]
+  _markerObservation ]
 
   .poses.err_ratio >
 
@@ -5697,14 +5697,14 @@ _46082543180066935.markers.size ()
 
      for(
 
-    size_t _2654435878 =
+    size_t _markerObservation =
 
-        0 ; _2654435878 <
+        0 ; _markerObservation <
 
    _46082543180066935.markers.size ()
      ;
 
-  _2654435878 ++
+  _markerObservation ++
 
    )
 
@@ -5719,7 +5719,7 @@ _46082543180066935.markers.size ()
        addMarker (
 
      _46082543180066935.markers [
-    _2654435878 ]
+    _markerObservation ]
 
   )
 
@@ -5737,7 +5737,7 @@ _46082543180066935.markers.size ()
 
         _46082543180066935.markers [
 
-_2654435878 ]
+_markerObservation ]
 
   .poses.err_ratio >
 
@@ -5745,7 +5745,7 @@ _2654435878 ]
 
             _1681469518277799077.pose_g2m =
 
- _46082543180066935.markers [ _2654435878 ]
+ _46082543180066935.markers [ _markerObservation ]
 
     .poses.sols [
 

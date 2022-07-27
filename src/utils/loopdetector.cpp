@@ -325,14 +325,14 @@ set <
 
          for(
 
-   auto _2654435878:TheMap -> keyframes [
+   auto _markerObservation:TheMap -> keyframes [
    _2654435879 ]
 
 .markers )
 
             _2244535309377015454.insert (
 
- _2654435878.id )
+ _markerObservation.id )
 
      ;
 
@@ -458,7 +458,7 @@ _46082543180066935,_2655203937566607062,4 )
 
          for(
 
-auto _2654435878:_2655203937566607062 )
+auto _markerObservation:_2655203937566607062 )
 
  {
 
@@ -482,7 +482,7 @@ std :: find_if (
    {
 
  return _175247759383.id ==
-       _2654435878 ;
+       _markerObservation ;
 
   }
 
@@ -662,7 +662,7 @@ uint32_t >
 
       for(
 
-   auto _2654435878:_2655203937566607062 )
+   auto _markerObservation:_2655203937566607062 )
 
       {
 
@@ -672,7 +672,7 @@ uint32_t >
 
     map_markers [
 
-    _2654435878 ]
+    _markerObservation ]
 
     .frames )
 
@@ -1251,16 +1251,16 @@ Point3f > _2772135658178669155 ;
   _11822840474894279984 ;
      for(
 
-     auto _2654435878:TheMap ->
+     auto _markerObservation:TheMap ->
 
    map_markers )
 
         _16750267944735343466 [
 
-     _2654435878.first ]
+     _markerObservation.first ]
      =
 
-  _2654435878.second.pose_g2m ;
+  _markerObservation.second.pose_g2m ;
 
      for(
        auto _2654435881:TheMap ->
@@ -1327,15 +1327,15 @@ _2654435871.idx ]
 
      for(
 
- auto &_2654435878:TheMap ->
+ auto &_markerObservation:TheMap ->
 
     map_markers )
 
-        _2654435878.second.pose_g2m =
+        _markerObservation.second.pose_g2m =
 
   _16750267944735343466 [
 
-    _2654435878.first ]
+    _markerObservation.first ]
 
       ;
 
@@ -1968,7 +1968,7 @@ true ;
 
              for(
 
-auto _2654435878:_6807036698572949990 )
+auto _markerObservation:_6807036698572949990 )
 
    {
 
@@ -1976,7 +1976,7 @@ auto _2654435878:_6807036698572949990 )
 
      _46082543180066935.und_kpts [
 
-    _2654435878.trainIdx ]
+    _markerObservation.trainIdx ]
 
     .pt )
 
@@ -1988,7 +1988,7 @@ auto _2654435878:_6807036698572949990 )
     map_points [
        _3005399814901981436.ids [
 
-      _2654435878.queryIdx ]
+      _markerObservation.queryIdx ]
 
         ]
 

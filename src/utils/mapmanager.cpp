@@ -451,16 +451,16 @@ namespace ucoslam {
         if (_17591916323427771156() == 0 && TheMap->map_points.size() != 0)
             _14173211929012135714 = true;
 
-        for (size_t _2654435878 = 0; _2654435878 < keyframe_169372.markers.size(); _2654435878++) {
-            auto &markerAdded = TheMap->addMarker(keyframe_169372.markers[_2654435878]);
+        for (size_t _markerObservation = 0; _markerObservation < keyframe_169372.markers.size(); _markerObservation++) {
+            auto &markerAdded = TheMap->addMarker(keyframe_169372.markers[_markerObservation]);
             TheMap->addMarkerObservation(markerAdded.id, keyframe_169372.idx);
 
             if (!markerAdded.pose_g2m.isValid()) {
                 if (!_14173211929012135714 && System::getParams().aruco_allowOneFrameInitialization) {
-                    if (keyframe_169372.markers[_2654435878].poses.err_ratio >
+                    if (keyframe_169372.markers[_markerObservation].poses.err_ratio >
                         System::getParams().aruco_minerrratio_valid)
                         markerAdded.pose_g2m =
-                                keyframe_169372.pose_f2g.inv() * keyframe_169372.markers[_2654435878].poses.sols[0];
+                                keyframe_169372.pose_f2g.inv() * keyframe_169372.markers[_markerObservation].poses.sols[0];
 
                 }
             }
@@ -1024,19 +1024,6 @@ namespace ucoslam {
 
         // keep deleting the new frame during instancing
         if (System::getParams().isInstancing) {
-
-            // cout << "newInsertedKeyFrames: ";
-
-            // queue<uint32_t> q = newInsertedKeyFrames;
-            // while(!q.empty()){
-            //   cout << q.front() << " ";
-            //   q.pop();
-            // }
-
-            // for(auto i: newInsertedKeyFrames){
-            //   cout << i << " ";
-            // }
-            // cout << endl;
 
             // if there're > the specified number of new added frame, remove them
             while (newInsertedKeyFrames.size() > 20) {

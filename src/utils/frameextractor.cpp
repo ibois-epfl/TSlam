@@ -470,13 +470,13 @@ _12800511165451773841 [
       _3005401586147246007 ;
 
      for( 
- size_t _2654435878 = 0 ;
-    _2654435878 <
+ size_t _markerObservation = 0 ;
+    _markerObservation <
 
        _6807036698572949990.size ()
           ;
 
- _2654435878 ++
+ _markerObservation ++
       )
      {
 
@@ -484,7 +484,7 @@ _12800511165451773841 [
  frame_460825.und_kpts [
       _6807036698572949990 [
 
-  _2654435878 ]
+  _markerObservation ]
 
   .queryIdx ]
 
@@ -493,7 +493,7 @@ _12800511165451773841 [
         _3005399818393709360.push_back ( 
 _988585933247351277 [ _6807036698572949990 [
 
-  _2654435878 ]
+  _markerObservation ]
 
  .trainIdx ]
    )
@@ -2211,14 +2211,14 @@ void FrameExtractor :: extractFrame ( const ImgInfo &Iinfo, Frame &frame_460825,
     if ( _3566717627060593117 ){
       auto _6807036698426592110 = _8000946946827829134->detect ( Iinfo._15530082771795719302 );
 
-      for( const auto&_2654435878:_6807036698426592110 ) {
+      for( const auto&_markerObservation:_6807036698426592110 ) {
         ucoslam ::MarkerObservation _8214686538440707422 ;
-        _8214686538440707422.id =  _2654435878.id ;
-        _8214686538440707422.points3d = _2654435878.points3d ;
-        _8214686538440707422.corners =    _2654435878.corners ;
-        _8214686538440707422.dict_info = _2654435878.info ;
+        _8214686538440707422.id =  _markerObservation.id ;
+        _8214686538440707422.points3d = _markerObservation.points3d ;
+        _8214686538440707422.corners =    _markerObservation.corners ;
+        _8214686538440707422.dict_info = _markerObservation.info ;
 
-        auto _706246330434227 = IPPE::solvePnP_ (_2654435878.points3d ,_2654435878.corners, Iinfo._15530082765074651952.CameraMatrix,Iinfo._15530082765074651952.Distorsion );
+        auto _706246330434227 = IPPE::solvePnP_ (_markerObservation.points3d ,_markerObservation.corners, Iinfo._15530082765074651952.CameraMatrix,Iinfo._15530082765074651952.Distorsion );
 
         for( int _2654435866 = 0 ; _2654435866 < 2 ;  _2654435866 ++) {
           _8214686538440707422.poses.errs [ _2654435866 ] = _706246330434227 [_2654435866 ].second ;
@@ -2361,16 +2361,16 @@ _9811310495564694013.size ()
      }
 
      for( 
-    auto &_2654435878:frame_460825.markers )     {
+    auto &_markerObservation:frame_460825.markers )     {
 
-        _2654435878.und_corners =    _2654435878.corners ;
+        _markerObservation.und_corners =    _markerObservation.corners ;
 
         _12800511165451773841 [
 
    0 ]
 
     ._5505640830793117477.undistortPoints ( 
-  _2654435878.und_corners )      ;
+  _markerObservation.und_corners )      ;
 
      }
 
