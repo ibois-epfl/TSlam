@@ -249,7 +249,7 @@ Mat >
  &_3005401535270843804, const ImageParams &_175247760147 )
        ;
 
-  void extractFrame (const ImgInfo& Iinfo, Frame &_46082543180066935, uint32_t frameseq_idx =
+  void extractFrame (const ImgInfo& Iinfo, Frame &frame, uint32_t frameseq_idx =
 
  std ::
 numeric_limits <

@@ -34,7 +34,7 @@ LoopDetector ::
 
 LoopClosureInfo LoopDetector :: detectLoopFromMarkers (
 
-      Frame &_46082543180066935, int32_t _16940374156599401875 )
+      Frame &frame, int32_t _16940374156599401875 )
     {
 
     vector <
@@ -53,7 +53,7 @@ LoopClosureInfo LoopDetector :: detectLoopFromMarkers (
 
      0 &&
 
-     _46082543180066935.markers.size ()
+     frame.markers.size ()
 
         !=
   0 )
@@ -61,7 +61,7 @@ LoopClosureInfo LoopDetector :: detectLoopFromMarkers (
 
         _16706088932759058680 =
     _15750007572696103223 (
-       _46082543180066935,_16940374156599401875 )
+       frame,_16940374156599401875 )
         ;
 
      }
@@ -86,7 +86,7 @@ LoopClosureInfo LoopDetector :: detectLoopFromMarkers (
 
       _6767859416531794787 (
 
-    _46082543180066935,_175247760320 )
+    frame,_175247760320 )
 
           ;
 
@@ -162,7 +162,7 @@ LoopClosureInfo LoopDetector :: detectLoopFromMarkers (
 _11461848853397085657.matchingFrameIdx,true )
 
      ,
-                                                               _46082543180066935, _11461848853397085657.expectedPos ,System ::
+                                                               frame, _11461848853397085657.expectedPos ,System ::
 
    getParams ()
 
@@ -177,13 +177,8 @@ _11461848853397085657.matchingFrameIdx,true )
 
 LoopDetector ::
 
- LoopClosureInfo LoopDetector ::
-
-detectLoopFromKeyPoints (
-
-   Frame &_46082543180066935, int32_t _16940374156599401875 ) {
-
-        vector <
+ LoopClosureInfo LoopDetector ::detectLoopFromKeyPoints (Frame &frame, int32_t _16940374156599401875 ) {
+     vector <
 
   LoopClosureInfo >
 
@@ -193,7 +188,7 @@ detectLoopFromKeyPoints (
 
  (
 
-     _46082543180066935.ids.size ()
+     frame.ids.size ()
 
    !=
 
@@ -201,9 +196,7 @@ detectLoopFromKeyPoints (
 
         _16706088932759058680 =
 
- _8671179296205241382 ( _46082543180066935,_16940374156599401875 )
-  ;
-
+ _8671179296205241382 ( frame,_16940374156599401875 );
      }
 
      if
@@ -226,7 +219,7 @@ detectLoopFromKeyPoints (
     else {
 
         _6767859416531794787 (
-_46082543180066935,_16706088932759058680 [
+frame,_16706088932759058680 [
 
  0 ]
 
@@ -251,7 +244,7 @@ vector <
    LoopDetector ::
        _15750007572696103223 (
 
- Frame & _46082543180066935,int64_t _10707402390114315114 )
+ Frame & frame,int64_t _10707402390114315114 )
 
   {
 
@@ -348,7 +341,7 @@ size_t _175247759373 = 0 ;
 
   _175247759373 <
 
-      _46082543180066935.markers.size ()
+      frame.markers.size ()
 
   ;
 
@@ -361,7 +354,7 @@ size_t _175247759373 = 0 ;
          auto
    &_3005399795337363304 =
 
-     _46082543180066935.markers [
+     frame.markers [
 
     _175247759373 ]
 
@@ -435,7 +428,7 @@ _11093822290813 !=
 
         getBestPoseFromValidMarkers (
 
-_46082543180066935,_2655203937566607062,4 )
+frame,_2655203937566607062,4 )
 
     ;
 
@@ -468,7 +461,7 @@ auto _markerObservation:_2655203937566607062 )
 
 std :: find_if (
 
-     _46082543180066935.markers.begin () ,_46082543180066935.markers.end ()
+     frame.markers.begin () ,frame.markers.end ()
 
 , [
 
@@ -492,11 +485,11 @@ std :: find_if (
 
  _175247760151 !=
 
-  _46082543180066935.markers.end ()
+  frame.markers.end ()
 
     )
 
-                _46082543180066935.markers.erase (
+                frame.markers.erase (
 
 _175247760151 )
 
@@ -551,7 +544,7 @@ _175247760151 )
 
              if (
 
-      _46082543180066935.getMarkerPoseIPPE (
+      frame.getMarkerPoseIPPE (
     _2655203937566607062 [
 
  _2654435874 ]
@@ -560,7 +553,7 @@ _175247760151 )
 
     .err_ratio >
 
-  _46082543180066935.getMarkerPoseIPPE (
+  frame.getMarkerPoseIPPE (
 
    _2655203937566607062 [
 
@@ -597,7 +590,7 @@ _175247760151 )
 
        se3 (
 
- _46082543180066935.getMarkerPoseIPPE (
+ frame.getMarkerPoseIPPE (
 
  _6806984971934914252 )
 
@@ -612,7 +605,7 @@ _175247760151 )
 
         se3 (
 
-      _46082543180066935.getMarkerPoseIPPE (
+      frame.getMarkerPoseIPPE (
 
         _6806984971934914252 )
 
@@ -757,7 +750,7 @@ vector <
 
         _6767859416531794787 (
 
-  Frame &_46082543180066935, LoopClosureInfo &_10148777732430291359 )
+  Frame &frame, LoopClosureInfo &_10148777732430291359 )
 
      {
 
@@ -771,7 +764,7 @@ vector <
 
         (
 
-     _46082543180066935.idx ==
+     frame.idx ==
 
 std ::
 
@@ -783,7 +776,7 @@ std ::
  max ()
    )
 
-        _46082543180066935.idx = TheMap ->
+        frame.idx = TheMap ->
 
     getNextFrameIndex ()
 
@@ -810,7 +803,7 @@ pair <
 
         _16937374370235587530.isEdge (
 
-    _10148777732430291359.curRefFrame,_46082543180066935.idx )
+    _10148777732430291359.curRefFrame,frame.idx )
 
      )
 
@@ -819,7 +812,7 @@ pair <
     _46082543208105790.push_back (
   {
 
-  _10148777732430291359.curRefFrame,_46082543180066935.idx }
+  _10148777732430291359.curRefFrame,frame.idx }
 
    )
 
@@ -905,15 +898,15 @@ TheMap ->
       _4835184743873567059 [ CovisGraph :: join ( _2654435870.first,_2654435870.second ) ] = _6807153911819033284 ; 
     }
 
-    if ( !_16937374370235587530.isEdge ( _46082543180066935.idx,_10148777732430291359.matchingFrameIdx ) )
+    if ( !_16937374370235587530.isEdge ( frame.idx,_10148777732430291359.matchingFrameIdx ) )
     {
-      _46082543208105790.push_back ( { _46082543180066935.idx,_10148777732430291359.matchingFrameIdx } ) ;
-      _4835184743873567059 [ CovisGraph :: join ( _46082543180066935.idx,_10148777732430291359.matchingFrameIdx ) ] = _1522768810319552178 ;
+      _46082543208105790.push_back ( { frame.idx,_10148777732430291359.matchingFrameIdx } ) ;
+      _4835184743873567059 [ CovisGraph :: join ( frame.idx,_10148777732430291359.matchingFrameIdx ) ] = _1522768810319552178 ;
     }
 
-    _5606711953216325711 [ _46082543180066935.idx ] = _46082543180066935.pose_f2g ;
+    _5606711953216325711 [ frame.idx ] = frame.pose_f2g ;
 
-    loopClosurePathOptimizationg2o ( _46082543208105790,_46082543180066935.idx,_10148777732430291359.matchingFrameIdx,_10148777732430291359.expectedPos, _5606711953216325711,false );
+    loopClosurePathOptimizationg2o ( _46082543208105790,frame.idx,_10148777732430291359.matchingFrameIdx,_10148777732430291359.expectedPos, _5606711953216325711,false );
 
  }
 
@@ -1029,7 +1022,7 @@ Mat _175247761732 = _706246338866931 ;
 
 continue ;
 
-            const Frame &_46082543180066935 =
+            const Frame &frame =
    TheMap ->
 
     keyframes [
@@ -1040,7 +1033,7 @@ continue ;
             cv ::
 
     Mat _11093822386652 =
-       _46082543180066935.pose_f2g* _3005399795337363304.pose_g2m ;
+       frame.pose_f2g* _3005399795337363304.pose_g2m ;
 
              auto _3005399769884158829 =
 
@@ -1684,112 +1677,28 @@ _14756094128870157179 * float ( _16988745808691518194.at <
 
 
 std::vector<LoopDetector::LoopClosureInfo> LoopDetector::_8671179296205241382 (
-     Frame &_46082543180066935, int32_t _16940374156599401875 ) {
+        Frame &frame, int32_t _16940374156599401875 ) {
+     return {};
+    auto _5829441678613027716 = [](const uint32_t&_11093821926013){
+       std ::stringstream _706246330191125 ;
+       _706246330191125 << _11093821926013 ;
+       return _706246330191125.str ();
+    };
 
-     auto
+    if(!System ::getParams ().detectKeyPoints ) return{};
 
-   _5829441678613027716 =
- [ ]
+    if(TheMap ->TheKFDataBase.isEmpty ()) return {};
 
-       (
+    auto _1702552708676489766 = TheMap -> TheKpGraph.getNeighbors (_16940374156599401875,true );
 
- const uint32_t&_11093821926013 )
+    if(_1702552708676489766.size ()== TheMap ->keyframes.size ()) return {};
 
-  {
+    float _16937373706612713730 = 1;
 
-  std ::
+    for(auto _46082575804458778:_1702552708676489766 )
+        _16937373706612713730 = std::min (_16937373706612713730, TheMap ->
 
-stringstream _706246330191125 ;
-
-       _706246330191125 <<
-
- _11093821926013 ;
-
- return _706246330191125.str ()
-
-    ;
- }
-
-      ;
-
-             if
- (
-
- !
-
-        System ::
-
- getParams ()
-
-  .detectKeyPoints )
-
-    return
-
- {
-
-         }
-
-       ;
-
-     if
-    (
-
-     TheMap ->
-
-     TheKFDataBase.isEmpty ()
-
-   )
-
- return {
-
- }
-       ;
-
-     auto
-
-       _1702552708676489766 =
-
-    TheMap ->
-
-      TheKpGraph.getNeighbors (
-
-_16940374156599401875,true )
-
-    ;
-
-     if
-
-      (
-
-_1702552708676489766.size ()
-
-    == TheMap ->
-
-    keyframes.size ()
-
-    )
-
-   return { }
-
-  ;
-
-     float
-
-_16937373706612713730 =
-
-    1 ;
-
-     for(
-
-    auto _46082575804458778:_1702552708676489766 )
-
-        _16937373706612713730 =
-  std ::
-
-    min (
-  _16937373706612713730, TheMap ->
-
-     TheKFDataBase.score ( _46082543180066935,TheMap -> keyframes [
+     TheKFDataBase.score ( frame,TheMap -> keyframes [
 
    _46082575804458778 ]
 
@@ -1804,7 +1713,7 @@ _13899933296976059300 = TheMap ->
 
   TheKFDataBase.relocalizationCandidates (
 
- _46082543180066935,TheMap ->
+ frame,TheMap ->
 
  keyframes,TheMap ->
      TheKpGraph,true,_16937373706612713730/2.,_1702552708676489766 )
@@ -1891,7 +1800,7 @@ Mat ()
 
     _16937386958649118140.setParams (
 
-  _46082543180066935,FrameMatcher ::
+  frame,FrameMatcher ::
 
     MODE_ALL,System ::
 
@@ -1974,7 +1883,7 @@ auto _markerObservation:_6807036698572949990 )
 
                 _16937225740828189009.push_back (
 
-     _46082543180066935.und_kpts [
+     frame.und_kpts [
 
     _markerObservation.trainIdx ]
 
@@ -2003,20 +1912,14 @@ auto _markerObservation:_6807036698572949990 )
         cv ::
 
      Mat _175247759698,_175247759831 ;
-        vector <
-    int >
+        vector <int> _6807141016080266659 ;
 
-     _6807141016080266659 ;
-
-        cout <<
-   "\x50\x4e\x50\x52\x3d" <<
-
- _16937225740828192533.size () <<
+        cout <<"PNPR=" << _16937225740828192533.size () <<
 
       endl ;
       
       cv :: solvePnPRansac (
-          _16937225740828192533,_16937225740828189009, _46082543180066935.imageParams.CameraMatrix,cv ::
+          _16937225740828192533,_16937225740828189009, frame.imageParams.CameraMatrix,cv ::
 
     Mat :: zeros ( 1,5,CV_32F ) ,_175247759698,_175247759831,false,100,2.5,0.99,_6807141016080266659, cv::USAC_MAGSAC )
 
@@ -2171,7 +2074,7 @@ auto _markerObservation:_6807036698572949990 )
    0 ]
    ._17013904265820854,true )
 
-, _46082543180066935, _7244985490283130860 [
+, frame, _7244985490283130860 [
     0 ]
     ._9332970625915525982 ,System ::
 
@@ -2197,7 +2100,7 @@ auto _markerObservation:_6807036698572949990 )
 
   solvePnp (
 
-        _46082543180066935, TheMap,_16119892890339758111._6744006314306065854, _6807035026667062616,_16940374156599401875 )
+        frame, TheMap,_16119892890339758111._6744006314306065854, _6807035026667062616,_16940374156599401875 )
 
  ;
 

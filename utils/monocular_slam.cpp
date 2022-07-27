@@ -462,13 +462,14 @@ int main(int argc,char **argv){
 
 
             //image undistortion (if required)
-            if(undistort ){               
-                cv::remap(in_image,auxImage,undistMap[0],undistMap[1],cv::INTER_CUBIC);
-                in_image=auxImage;
-                image_params.Distorsion.setTo(cv::Scalar::all(0));
-            }
+//            if(undistort ){
+//                cv::remap(in_image,auxImage,undistMap[0],undistMap[1],cv::INTER_CUBIC);
+//                in_image=auxImage;
+//                image_params.Distorsion.setTo(cv::Scalar::all(0));
+//            }
 
-            enhanceImageBGR(in_image, in_image);
+            // enhanceImage (more contrast)
+//            enhanceImageBGR(in_image, in_image);
 
             currentFrameIndex = vcap.getNextFrameIndex() - 1;
 

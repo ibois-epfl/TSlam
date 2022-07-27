@@ -59,7 +59,7 @@ ucoslam
 
      process (
 
- const Frame &_46082543180066935, std ::
+ const Frame &frame, std ::
 
  shared_ptr <
 
@@ -69,7 +69,7 @@ ucoslam
 
      if(
 
-_46082543180066935.und_kpts.size ()
+frame.und_kpts.size ()
         <
    10 &&
      _params.mode ==
@@ -88,7 +88,7 @@ KEYPOINTS ) return
 
      _7274126694617365277 (
 
-_46082543180066935,_11093822290287 )
+frame,_11093822290287 )
 
   )
         {
@@ -111,7 +111,7 @@ true ;
 
         setReferenceFrame (
 
-    _46082543180066935 )
+    frame )
 
          ;
          return
@@ -126,7 +126,7 @@ true ;
      _11093822302335 =
      initialize_ (
 
-_46082543180066935, _11093822290287 )
+frame, _11093822290287 )
 
           ;
 
@@ -145,7 +145,7 @@ _46082543180066935, _11093822290287 )
     0 ;
 
              for(
-auto _markerObservation:_46082543180066935.markers )
+auto _markerObservation:frame.markers )
 
                  if
       (
@@ -172,7 +172,7 @@ _markerObservation.id )
 
                 setReferenceFrame (
 
- _46082543180066935 )
+ frame )
 
      ;
              }
@@ -190,14 +190,14 @@ _markerObservation.id )
  void
 
     MapInitializer :: setReferenceFrame (
-   const Frame &_46082543180066935 )
+   const Frame &frame )
 
   {
 
     _9860761537440310106.clear ()
    ;
 
-    _46082543180066935.copyTo (
+    frame.copyTo (
 
      _refFrame )
 
@@ -210,7 +210,7 @@ _markerObservation.id )
 
  ARUCO &&
 
- _46082543180066935.ids.size ()
+ frame.ids.size ()
 
      !=
 
@@ -220,7 +220,7 @@ _markerObservation.id )
 
          fmatcher.setParams (
 
- _46082543180066935,FrameMatcher ::
+ frame,FrameMatcher ::
 
    MODE_ALL,_params.minDescDistance,_params.nn_match_ratio,true )
       ;
@@ -5625,7 +5625,7 @@ cv ::
  bool
 
 MapInitializer :: _7274126694617365277 (
-const Frame &_46082543180066935, std ::
+const Frame &frame, std ::
 
  shared_ptr <
 
@@ -5647,7 +5647,7 @@ const Frame &_46082543180066935, std ::
 
      _markerObservation <
 
-_46082543180066935.markers.size ()
+frame.markers.size ()
 
      ;
 
@@ -5658,7 +5658,7 @@ _46082543180066935.markers.size ()
 
          if
 
-   ( _46082543180066935.markers [
+   ( frame.markers [
 
   _markerObservation ]
 
@@ -5686,7 +5686,7 @@ _46082543180066935.markers.size ()
 
  _11093822290287 ->
 
-     addKeyFrame ( _46082543180066935 ) ;
+     addKeyFrame ( frame ) ;
 
     _18139480568557707913.pose_f2g =
        se3 (
@@ -5701,7 +5701,7 @@ _46082543180066935.markers.size ()
 
         0 ; _markerObservation <
 
-   _46082543180066935.markers.size ()
+   frame.markers.size ()
      ;
 
   _markerObservation ++
@@ -5718,7 +5718,7 @@ _46082543180066935.markers.size ()
 
        addMarker (
 
-     _46082543180066935.markers [
+     frame.markers [
     _markerObservation ]
 
   )
@@ -5735,7 +5735,7 @@ _46082543180066935.markers.size ()
 
     (
 
-        _46082543180066935.markers [
+        frame.markers [
 
 _markerObservation ]
 
@@ -5745,7 +5745,7 @@ _markerObservation ]
 
             _1681469518277799077.pose_g2m =
 
- _46082543180066935.markers [ _markerObservation ]
+ frame.markers [ _markerObservation ]
 
     .poses.sols [
 

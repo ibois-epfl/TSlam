@@ -293,7 +293,7 @@ private:
     vector <
   LoopClosureInfo > _15750007572696103223 (
 
-         Frame & _46082543180066935,int64_t _10707402390114315114 )
+         Frame & frame,int64_t _10707402390114315114 )
 
    ;
 
@@ -301,14 +301,14 @@ private:
   LoopClosureInfo >
 
      _8671179296205241382 (
-       Frame &_46082543180066935, int32_t _16940374156599401875 )
+       Frame &frame, int32_t _16940374156599401875 )
        ;
 
      void
 
    _6767859416531794787 (
 
- Frame &_46082543180066935, LoopClosureInfo &_10148777732430291359 )
+ Frame &frame, LoopClosureInfo &_10148777732430291359 )
 
    ;
 
@@ -322,7 +322,7 @@ private:
 
 _16786277844087146768 (
 
-     Frame &_46082543180066935,const LoopClosureInfo &_46082543426142246 )
+     Frame &frame,const LoopClosureInfo &_46082543426142246 )
 
      ;
 

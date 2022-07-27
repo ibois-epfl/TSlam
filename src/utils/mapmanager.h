@@ -208,7 +208,7 @@ _16940374161587532565 )
 
      loopClosurePostProcessing (
 
- Frame &_46082543180066935, const LoopDetector ::
+ Frame &frame, const LoopDetector ::
 
 LoopClosureInfo &_11093822343890 )
 
