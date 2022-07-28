@@ -64,7 +64,7 @@ Thread 1 "ucoslam_monocul" received signal SIGSEGV, Segmentation fault.
 #5  0x0000555555568837 in main ()
 ```
 
-## Bug #3 [Testing]
+## Bug #3 [Solved]
 - Like #2, a workaround is added at `src/basictypes/picoflann.h:562` to check before access the vector.
 
 ```cpp
@@ -73,13 +73,19 @@ if (currNode.idx[i] >= container.size()) continue;
 - Program stops unexpectedly with no error output, don't know why.
 - vector::_M_range_check: __n (which is 1488514608) >= this->size() (which is 0)
 
-## Bug #4 [Testing]
-- In `src/utils/system.cpp:3385`, a check is performed beforehand. (This is probably not the case)
-- In `src/utils/system.cpp:3350:_11166622111371682966()`, we need to check if `convertedSe3` is empty.
-```cpp
-cv::Mat convertedSe3_576955 = se3_576955.convert();
-if(!_14463320619150402643.empty() && !convertedSe3_576955.empty())
-    se3_576955 = _14463320619150402643 * convertedSe3_576955; // probably this line
+## Bug #4 [Solved]
+- In `src/utils/system.cpp: cv::Mat System::process(const Frame &inputFrame)`, disabled this line which makes it crash on frame 48960.
+```
+// if (++_13033649816026327368 > (10 * 4 * 12 * 34 * 6) / 2) curPose_ns = cv::Mat();
+```
+- In `src/utils/system.cpp: _11166622111371682966()`, we need to check if everthing is not empty.
+```c++
+// EDIT: Perform a check here to ensure it won't crash
+if (!_14463320619150402643.empty() && !convertedcurPoseF2g.empty()) {
+    curPoseF2g = _14463320619150402643 * convertedcurPoseF2g;
+} else {
+    throw std::invalid_argument("se3 is empty!");
+}
 ```
 - In `src/map.cpp:817:matchFrameToMapPoints()`, a type conversion is performed to ensure the data type is `CV_32F`. **This is probably not the best way to workaround.**
 ```cpp
@@ -161,6 +167,7 @@ __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:50
 cv::Mat matrix;
 matrix = matrix * 5;
 ```
+- This seems not happen again?
 
 ```cpp
 OpenCV(4.5.5-dev) /home/tpp/opencv/modules/core/src/matrix_expressions.cpp:32: error: (-5:Bad argument) One or more matrix operands are empty. in function 'checkOperandsExist'
@@ -185,11 +192,6 @@ Thread 1 "ucoslam_monocul" received signal SIGINT, Interrupt.
     at /home/tpp/UCOSlam-IBOIS/utils/monocular_slam.cpp:560
 ```
 
-## GDB commands
-```
-watch *(int64_t *) 0x555555628518 if *(int64_t *) 0x555555628518 == 4294967295
-```
-
-[Thread mapUpdateThread] changed the value!
-
-live /home/tpp/Downloads/ucoslam/test_result/calibration.yml -voc /home/tpp/UCOSlam-IBOIS/orb.fbow -out test_1 -map /home/tpp/UCOSlam-IBOIS/build/utils/sticker_6_oneshot.map -isInstancing
+## Mapping lag
+- The function `src/utils/loopdetector.cpp: std::vector<LoopDetector::LoopClosureInfo> LoopDetector::_8671179296205241382 ( Frame &frame, int32_t _16940374156599401875 )` is disabled (by forcing it to `return {};` when called) since it casue massive lags during mapping and seems not really helpful.
+- This function is probably detecting loop-closure with keypoints. However, since we have a lot of tags here, we can only use the tags to detect.

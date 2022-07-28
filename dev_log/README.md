@@ -127,8 +127,46 @@ std::string info;
     Image 34000 fps=41.9248 22.2568 draw=51.4437 tracked
     ```
 
+`Jul 25`
 ## Merge map in CPP
 - Usage: `build/utils/ucoslam_conbine_map 1.map 2.map combined.map`
 - In `map.h/map.cpp`, a new instance `Map::projectTo(Map anotherMap)` is added, which estimates the transformation matrix based on the duplicated tags and perform the transformation.
 - Result
   ![](./merge_cpp.png)
+
+### The long beam
+#### Webcam
+- The beam is curved, both the original map and the combined result.
+- Scanned Map
+
+| Map 1 | Map 2 |
+| :---: | :---: |
+| ![](./long_beam_1_webcam_1.png) | ![](./long_beam_1_webcam_2.png) |
+
+- Combined Map
+
+| Front | Up | Side |
+| :-------------: | :------------: | :------------: |
+| ![](./long_beam_1_webcam_f.png) | ![](./long_beam_1_webcam_u.png) | ![](./long_beam_1_webcam_s.png) |
+
+
+#### Pixel 3
+- The result is better
+- Scanned Map
+
+| Map 1 | Map 2 |
+| :---: | :---: |
+| ![](./long_beam_1_pixel_1.png) | ![](./long_beam_1_pixel_2.png) |
+
+- Combined Map
+
+| Front | Up | Side |
+| :-------------: | :------------: | :------------: |
+| ![](./long_beam_1_pixel_f.png) | ![](./long_beam_1_pixel_u.png) | ![](./long_beam_1_pixel_s.png) |
+
+
+### Potential Solution
+- Powerful Calibration: 
+  https://github.com/ethz-asl/kalibr/wiki/Rolling-Shutter-Camera-calibration
+
+<!-- ## Most bugs are resolved -->
