@@ -166,7 +166,10 @@ std::string info;
 
 
 ### Potential Solution
-- Powerful Calibration: 
+- Rolling-shutter Calibration: 
   https://github.com/ethz-asl/kalibr/wiki/Rolling-Shutter-Camera-calibration
 
-<!-- ## Most bugs are resolved -->
+## Most bugs are resolved
+- We hit 100k! (But last time it crashed in 106XXX with a segmentation fault in the 3rd party library fbow :P)
+
+![](./100k.gif)

@@ -1678,7 +1678,9 @@ _14756094128870157179 * float ( _16988745808691518194.at <
 
 std::vector<LoopDetector::LoopClosureInfo> LoopDetector::_8671179296205241382 (
         Frame &frame, int32_t _16940374156599401875 ) {
+          
      return {};
+     
     auto _5829441678613027716 = [](const uint32_t&_11093821926013){
        std ::stringstream _706246330191125 ;
        _706246330191125 << _11093821926013 ;

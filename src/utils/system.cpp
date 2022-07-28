@@ -290,7 +290,7 @@ ucoslam {
         }
         curFrame.pose_f2g = curPose_ns;
 
-        if (++_13033649816026327368 > (10 * 4 * 12 * 34 * 6) / 2) curPose_ns = cv::Mat();
+        // if (++_13033649816026327368 > (10 * 4 * 12 * 34 * 6) / 2) curPose_ns = cv::Mat();
 
         if (trackingState == STATE_LOST) return cv::Mat();
         else return curPose_ns;
@@ -2294,8 +2294,10 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &curFrame, Frame &_59
         }
         if (TheMap->map_points.size() > 0) {
             cv::Mat convertedcurPoseF2g = curPoseF2g.convert();
+
+            // EDIT: Perform a check here to ensure it won't crash
             if (!_14463320619150402643.empty() && !convertedcurPoseF2g.empty()) {
-                curPoseF2g = _14463320619150402643 * convertedcurPoseF2g; // probably this line
+                curPoseF2g = _14463320619150402643 * convertedcurPoseF2g;
             } else {
                 throw std::invalid_argument("se3 is empty!");
             }
@@ -2304,15 +2306,15 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &curFrame, Frame &_59
             DMatchVector_637068 = _11946837405316294395(curFrame, lastFrame,
                                                         sysParams.maxDescDistance * 1.5,
                                                         sysParams.projDistThr);
-            int _9870110657242862171 = 0;
+            int PnPResult = 0;
 
             if (DMatchVector_637068.size() > 30) {
-                auto _14671559813105454070 = curPoseF2g;
-                _9870110657242862171 = PnPSolver::solvePnp(curFrame, TheMap, DMatchVector_637068,
-                                                           _14671559813105454070, currentKeyFrameId_105767);
+                auto estimatedPose = curPoseF2g;
+                PnPResult = PnPSolver::solvePnp(curFrame, TheMap, DMatchVector_637068,
+                                                           estimatedPose, currentKeyFrameId_105767);
 
-                if (_9870110657242862171 > 30){
-                    curPoseF2g = _14671559813105454070;
+                if (PnPResult > 30){
+                    curPoseF2g = estimatedPose;
                 }
 
             } else {
@@ -2326,17 +2328,17 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &curFrame, Frame &_59
                     for (auto &_markerObservation: DMatchVector_637068)
                         _markerObservation.trainIdx = TheMap->keyframes[currentKeyFrameId_105767].ids[_markerObservation.trainIdx];
 
-                    auto _14671559813105454070 = curPoseF2g;
-                    _9870110657242862171 = PnPSolver::solvePnp(curFrame, TheMap, DMatchVector_637068,
-                                                               _14671559813105454070, currentKeyFrameId_105767);
-                    if (_9870110657242862171 > 30){
-                        curPoseF2g = _14671559813105454070;;
+                    auto estimatedPose = curPoseF2g;
+                    PnPResult = PnPSolver::solvePnp(curFrame, TheMap, DMatchVector_637068,
+                                                               estimatedPose, currentKeyFrameId_105767);
+                    if (PnPResult > 30){
+                        curPoseF2g = estimatedPose;;
                     }
-                } else _9870110657242862171 = 0;
+                } else PnPResult = 0;
             }
 
             float _3763415994652820314;
-            if (_9870110657242862171 > 30) {
+            if (PnPResult > 30) {
                 _3763415994652820314 = 4;
                 for (auto _markerObservation: DMatchVector_637068) {
                     TheMap->map_points[_markerObservation.trainIdx].lastFIdxSeen = curFrame.fseq_idx;
@@ -2347,7 +2349,6 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &curFrame, Frame &_59
                 _3763415994652820314 = sysParams.projDistThr;
             }
 
-            // bug here
             auto _3521005873836563963 = TheMap->matchFrameToMapPoints(
                     TheMap->TheKpGraph.getNeighborsVLevel2(currentKeyFrameId_105767, true),
                     curFrame,
@@ -2361,7 +2362,6 @@ std::vector<cv::DMatch>System::_11946837405316294395(Frame &curFrame, Frame &_59
             filter_ambiguous_query(DMatchVector_637068);
         }
 
-        // bug here
         int matchNumber = PnPSolver::solvePnp(curFrame, TheMap, DMatchVector_637068, curPoseF2g,
                                               currentKeyFrameId_105767);
         bool foundPosition = false;

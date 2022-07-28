@@ -42,7 +42,7 @@ int main(int argc,char **argv){
         cout<<"reading map"<<endl;
         TheMap.readFromFile(argv[1]);
         cout<<"Done"<<endl;
-        int niters=50;
+        int niters=100;
         if(argc>=4)niters=stoi(argv[3]);
 
         std::shared_ptr<g2o::SparseOptimizer> Optimizer;
@@ -157,7 +157,7 @@ int main(int argc,char **argv){
         Optimizer->initializeOptimization();
         //    Optimizer->setForceStopFlag( );
         Optimizer->setVerbose(true);
-        Optimizer->optimize(niters,1e-3);
+        Optimizer->optimize(niters,1e-5);
         //now remove outliers
         for(auto &p:projectionsInGraph)
             p->setLevel(p->chi2()>5.99);

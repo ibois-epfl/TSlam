@@ -9,7 +9,7 @@
  BaseLoopDetector {
 
 public:
-
+    int lastDetectedFrame = -1;
      struct
 
 LoopClosureInfo {
