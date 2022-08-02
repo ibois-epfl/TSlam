@@ -16,3 +16,4 @@ test_result
 *.map
 sticker.pdf
 webcam-calib-data
+log.*

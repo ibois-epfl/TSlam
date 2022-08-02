@@ -126,27 +126,26 @@ void Map::addMapPointObservation(uint32_t mapId,uint32_t frameId,uint32_t frame_
     updatePointInfo(mapId);
 }
 
- bool Map::removeMapPointObservation(uint32_t pointId,uint32_t frameId,uint32_t minNumProjPoints){
-     assert (map_points.is(pointId));
-     auto &TheMapPoint=map_points[pointId];
-     if (TheMapPoint.isStereo()) minNumProjPoints--;
+bool Map::removeMapPointObservation(uint32_t pointId,uint32_t frameId,uint32_t minNumProjPoints){
+    assert (map_points.is(pointId));
+    auto &TheMapPoint=map_points[pointId];
+    if (TheMapPoint.isStereo()) minNumProjPoints--;
 
-     if ( TheMapPoint.getNumOfObservingFrames()<=minNumProjPoints){
-         removePoint(pointId);
-         return true;
-     }
-     else{//otherwise, remove only its appearance in the frame
-         if (keyframes.is(frameId)){
-             keyframes[frameId].ids[ TheMapPoint.frames.at(frameId) ]=std::numeric_limits<uint32_t>::max();
-             TheMapPoint.frames.erase(frameId);
-             //need to update the covisgraph
-             for(auto f_i:TheMapPoint.frames)
-                 TheKpGraph.decreaseRemoveEdge(f_i.first,frameId);
-             updatePointInfo(pointId);
-         }
-     }
-     return false;
- }
+    if (TheMapPoint.getNumOfObservingFrames() <= minNumProjPoints){
+        removePoint(pointId);
+        return true;
+    } else { //otherwise, remove only its appearance in the frame
+        if (keyframes.is(frameId)){
+            keyframes[frameId].ids[ TheMapPoint.frames.at(frameId) ]=std::numeric_limits<uint32_t>::max();
+            TheMapPoint.frames.erase(frameId);
+            //need to update the covisgraph
+            for(auto f_i:TheMapPoint.frames)
+                TheKpGraph.decreaseRemoveEdge(f_i.first,frameId);
+            updatePointInfo(pointId);
+        }
+    }
+    return false;
+}
 
 
 
@@ -161,20 +160,22 @@ void Map::addMapPointObservation(uint32_t mapId,uint32_t frameId,uint32_t frame_
 
 void Map::removePoint(uint32_t pid_remove, bool fullRemoval){
     assert(map_points.is(pid_remove));
-
-    auto  &MP=map_points [pid_remove];
-    MP.setBad (true);
+    auto &MP = map_points[pid_remove];
+    MP.setBad(true);
     vector<uint32_t> frames; frames.reserve(MP.frames.size());
-    for(auto f_id:MP.frames){//remove each frame connection
+    for(auto f_id: MP.frames){//remove each frame connection
         frames.push_back(f_id.first);
-        if ( keyframes[f_id.first].ids[f_id.second]==pid_remove)
+        if (keyframes[f_id.first].ids[f_id.second]==pid_remove)
             keyframes[f_id.first].ids[f_id.second]=std::numeric_limits<uint32_t>::max();
     }
     if (fullRemoval){
         //now, remove all frame connections
         for(size_t i=0;i<frames.size();i++)
-            for(size_t j=i+1;j<frames.size();j++)
+            for(size_t j=i+1;j<frames.size();j++){
+
                 TheKpGraph.decreaseRemoveEdge(frames[i],frames[j]);
+            }
+                
         
         //finally, remove the point
         map_points.erase(pid_remove);
@@ -190,9 +191,10 @@ void Map::removeKeyFrames(const std::set<uint32_t> &keyFrames,int minNumProjPoin
         //first, remove from databse
         TheKFDataBase.del(frame);
         //remove its reference in the map points
-        for(auto ids: frame.ids)
+        for(auto ids: frame.ids){
             if (ids!=numeric_limits<uint32_t>::max())
-                removeMapPointObservation(ids,fidx,minNumProjPoints);
+                removeMapPointObservation(ids, fidx, minNumProjPoints);
+        }
 
         //remove its reference in the markers
         for(auto marker:frame.markers)

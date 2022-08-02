@@ -381,7 +381,13 @@ int main(int argc,char **argv){
 
     auto TheMap = std::make_shared<ucoslam::Map>();
     //read the map from file?
-    if (cml["-map"]) TheMap->readFromFile(cml("-map"));
+    if (cml["-map"]){
+        TheMap->readFromFile(cml("-map"));
+        for(auto kfIter = TheMap->keyframes.begin(); kfIter != TheMap->keyframes.end(); ++kfIter){
+            cout << kfIter->idx << " ";
+        }
+        cout << endl;
+    }
 
     Slam->setParams(TheMap, params, cml("-voc"));
 
@@ -454,7 +460,7 @@ int main(int argc,char **argv){
     bool finish = false;
     cv::Mat camPose_c2g;
     int vspeed=stoi(cml("-vspeed","1"));
-    while (!finish && !in_image.empty()) {
+    while (!finish && !in_image.empty())  {
         try{
             FpsComplete.start();
 
@@ -489,10 +495,17 @@ int main(int argc,char **argv){
 
             //save to output video?
             if (!TheOutputVideo.empty()){
+                cout << "meow";
                 auto image=TheViewer.getImage();
-                if(!videoout.isOpened())
+                if(!videoout.isOpened()){
                     videoout.open(TheOutputVideo, CV_FOURCC('X', '2', '6', '4'), stof(cml("-fps","30")),image.size()  , image.channels()!=1);
-                if(videoout.isOpened())  videoout.write(image);
+                    cout << "open!";
+                }
+
+                if(videoout.isOpened()) {
+                    videoout.write(image);
+                    cout << "write";
+                }
             }
 
             //reset?
@@ -534,7 +547,9 @@ int main(int argc,char **argv){
                 delete Slam;
                 Slam = new ucoslam::UcoSlam;
                 TheMap = std::make_shared<ucoslam::Map>();
-                if (cml["-map"]) TheMap->readFromFile(cml("-map"));
+                if (cml["-map"]){
+                    TheMap->readFromFile(cml("-map"));
+                }
 
                 Slam->setParams(TheMap, params, cml("-voc"));
             }
@@ -573,3 +588,5 @@ int main(int argc,char **argv){
         cout << "Program ends with an error." << endl;
     }
 }
+
+// /home/tpp/Downloads/long-beam-1-480p-2.mp4 /home/tpp/UCOSlam-IBOIS/test_result/calibration_pixel_480p.yml -voc /home/tpp/UCOSlam-IBOIS/orb.fbow -out test.map -map /home/tpp/UCOSlam-IBOIS/build/utils/long1-px-480p-combine-compressed.map -isInstancing

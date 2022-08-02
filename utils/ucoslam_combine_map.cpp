@@ -66,6 +66,10 @@ int main(int argc,char **argv){
             if(pointMapB.count(ptIter->id) == 0){
                 pointMapB[ptIter->id] = &TheMapA->addNewPoint(0);
                 pointMapB[ptIter->id]->setCoordinates(ptIter->getCoordinates());
+                pointMapB[ptIter->id]->setStable(true);
+                pointMapB[ptIter->id]->setBad(false);
+                pointMapB[ptIter->id]->setSeen();
+                pointMapB[ptIter->id]->setVisible();
             }
         }
 

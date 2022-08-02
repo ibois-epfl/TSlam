@@ -932,6 +932,7 @@ namespace ucoslam {
         TheMap->unlock(__FUNCTION__, __FILE__, __LINE__);
 
         PointsToRemove = _8352839093262355382();
+
         TheMap->removePoints(PointsToRemove.begin(), PointsToRemove.end(), false);
 
         TheMap->lock(__FUNCTION__, __FILE__, __LINE__);
@@ -1927,153 +1928,41 @@ namespace ucoslam {
 
     }
 
-    vector<
+    vector<uint32_t>MapManager::_8352839093262355382() {
+        std::vector<uint32_t> _11398643651601173081;
 
-            uint32_t>
+        for (auto &mp: TheMap->map_points) {
+            if(!mp.isStable() && !mp.isBad()) {
+                uint32_t obsths = std::min(uint32_t(3), TheMap->keyframes.size());
+                if(mp.isStereo())
+                    obsths = std::min(uint32_t(2), TheMap->keyframes.size());
+                if(mp.getVisibility() < 0.25){
+                    mp.setBad(true);
+                }
 
-    MapManager::
+                else if (mp.kfSinceAddition >=1 && mp.getNumOfObservingFrames()<obsths){
+                    mp.setBad(true);
+                }
 
-    _8352839093262355382(
+                else if (mp.kfSinceAddition >=3){
+                    mp.setStable(true);
+                }
 
-    ) {
-
-        std::
-
-        vector<
-
-                uint32_t> _11398643651601173081;
-
-        for (
-
-            auto &mp: TheMap->
-
-                map_points) {
-
-            if
-
-                    (
-
-                    !
-
-                            mp.isStable()
-
-                    &&
-
-                    !
-
-                            mp.isBad()
-                    ) {
-
-                uint32_t
-
-                        obsths =
-
-                        std::
-
-                        min(uint32_t(
-
-                                3), TheMap->
-
-                                keyframes.size()
-                        );
-
-                if
-
-                        (
-
-                        mp.isStereo()
-
-                        )
-
-                    obsths =
-
-                            std::
-
-                            min(
-
-                                    uint32_t(
-
-                                            2), TheMap->
-
-                                            keyframes.size()
-
-                            );
-
-                if
-
-                        (
-                        mp.getVisibility()
-
-                        < 0.25)
-                    mp.setBad(
-
-                            true);
-
-                else if (
-
-                        mp.kfSinceAddition >=
-
-                        1 &&
-
-                        mp.getNumOfObservingFrames()
-
-                        <
-
-                        obsths)
-
-                    mp.setBad(
-
-                            true);
-
-                else if (
-
-                        mp.kfSinceAddition >=
-
-                        3)
-
-                    mp.setStable(
-
-                            true);
-
-                if
-
-                        (
-
-                        mp.kfSinceAddition <
-
-                        5)
-
-                    mp.kfSinceAddition++;
-
+                if(mp.kfSinceAddition <5) mp.kfSinceAddition++;
             }
 
-            if (
-
-                    mp.isStable()
-
-                    )
-
-                if
-                        (
-
-                        mp.getVisibility()
-
-                        < 0.1)
-
+            if (mp.isStable()){
+                if(mp.getVisibility()< 0.1){
                     mp.setBad(true);
+                }
+            }
 
-            if (
 
-                    mp.isBad()
-                    )
-                _11398643651601173081.push_back(
-
-                        mp.id);
-
+            if (mp.isBad())
+                _11398643651601173081.push_back(mp.id);
         }
 
         return _11398643651601173081;
-
     }
 
     bool

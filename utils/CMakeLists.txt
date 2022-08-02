@@ -2,22 +2,24 @@
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src )
 LINK_LIBRARIES(${PROJECT_NAME} ${UCOSLAM_REQUIRED_LIBRARIES})
 
-ADD_EXECUTABLE(ucoslam_stereo stereo_slam.cpp)
+# ADD_EXECUTABLE(ucoslam_stereo stereo_slam.cpp)
+# ADD_EXECUTABLE(ucoslam_createinitialparamfile createinitialparamfile.cpp)
+# ADD_EXECUTABLE(ucoslam_stereocalibrate ucoslam_stereocalibrate.cpp  )
 ADD_EXECUTABLE(ucoslam_monocular monocular_slam.cpp   inputreader.cpp inputreader.h)
 ADD_EXECUTABLE(ucoslam_mapviewer mapviewer.cpp  )
-ADD_EXECUTABLE(ucoslam_createinitialparamfile createinitialparamfile.cpp)
 ADD_EXECUTABLE(ucoslam_map_removeunusedkeypoint ucoslam_map_removeunusedkeypoint.cpp  )
-ADD_EXECUTABLE(ucoslam_stereocalibrate ucoslam_stereocalibrate.cpp  )
 ADD_EXECUTABLE(ucoslam_map_export ucoslam_map_export.cpp  )
 
-ADD_EXECUTABLE(ucoslam_pmvs2 ucoslam_pmvs2.cpp  )
+# ADD_EXECUTABLE(ucoslam_pmvs2 ucoslam_pmvs2.cpp  )
 
 ADD_EXECUTABLE(ucoslam_fullba ucoslam_fullba.cpp g2oba.h cvprojectpoint.h)
+ADD_EXECUTABLE(ucoslam_reduce_kf ucoslam_reduce_kf.cpp g2oba.h cvprojectpoint.h)
 ADD_EXECUTABLE(ucoslam_combine_map ucoslam_combine_map.cpp g2oba.h cvprojectpoint.h)
 
 ADD_EXECUTABLE(test test.cpp)
 
-INSTALL(TARGETS ucoslam_monocular ucoslam_mapviewer  ucoslam_stereo ucoslam_stereocalibrate ucoslam_pmvs2  ucoslam_fullba RUNTIME DESTINATION bin)
+# INSTALL(TARGETS ucoslam_monocular ucoslam_mapviewer  ucoslam_stereo ucoslam_stereocalibrate ucoslam_pmvs2  ucoslam_fullba RUNTIME DESTINATION bin)
+INSTALL(TARGETS ucoslam_monocular ucoslam_mapviewer ucoslam_fullba RUNTIME DESTINATION bin)
 
 IF(${OPENNI2LIB_FOUND})
     ADD_EXECUTABLE(ucoslam_rgbd rgbd_slam.cpp cvni2.h )
