@@ -59,7 +59,7 @@ public:
     cv::Mat processArray(vector<cv::Mat> &images,  ImageParams &ArrayCamParams ,uint32_t frameseq_idx);
 
     //Reset the current frame pose. Use it to start tracking in a known map
-     void resetTracker();
+    void resetTracker();
 
     //sets the system mode
     void setMode(MODES mode);

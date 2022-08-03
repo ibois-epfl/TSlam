@@ -29,6 +29,11 @@ int main( int  argc , char**  argv )
         ucoslam::Map map;
         cerr<<"Reading map"<<endl;
         map.readFromFile(argv[1]);
+
+        // map.exportToFile("test.pcd");
+        // map.exportToFile("test.ply");
+        // map.saveToMarkerMap("test.yml");
+
         cerr<<"Exporting map"<<endl;
         if( std::string(argv[2]).find(".yml")==std::string::npos)
             map.exportToFile(argv[2],cv::Scalar(125,125,125),cv::Scalar(255,0,0),cv::Scalar(0,0,255),{1111,1195,1129,1196,1141},cv::Scalar(0,255,0));

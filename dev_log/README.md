@@ -173,3 +173,6 @@ std::string info;
 - We hit 100k! (But last time it crashed in 106XXX with a segmentation fault in the 3rd party library fbow :P)
 
 ![](./100k.gif)
+
+`Aug 01`
+- The map utilities (merge & optimization) is now a member function of Map.

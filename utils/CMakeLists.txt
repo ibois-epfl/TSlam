@@ -16,8 +16,6 @@ ADD_EXECUTABLE(ucoslam_fullba ucoslam_fullba.cpp g2oba.h cvprojectpoint.h)
 ADD_EXECUTABLE(ucoslam_reduce_kf ucoslam_reduce_kf.cpp g2oba.h cvprojectpoint.h)
 ADD_EXECUTABLE(ucoslam_combine_map ucoslam_combine_map.cpp g2oba.h cvprojectpoint.h)
 
-ADD_EXECUTABLE(test test.cpp)
-
 # INSTALL(TARGETS ucoslam_monocular ucoslam_mapviewer  ucoslam_stereo ucoslam_stereocalibrate ucoslam_pmvs2  ucoslam_fullba RUNTIME DESTINATION bin)
 INSTALL(TARGETS ucoslam_monocular ucoslam_mapviewer ucoslam_fullba RUNTIME DESTINATION bin)
 

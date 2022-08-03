@@ -51,19 +51,44 @@ public:
     inline bool isEmpty()const{return keyframes.size()==0;}
     //clears the map
     void clear();
-    //saves the map to a file
-    void saveToFile(string fpath);
-    //reads the map from a file
-    void readFromFile(std::string  fpath);
-    //saves the set of markers to a marker map file that can be used with aruco.
-    void saveToMarkerMap(std::string filepath)const ;
     //cleans the unused keypoints from the frames. This will reduce a lot of space
     void removeUnUsedKeyPoints();
-    //merge with another map
-    void merge(std::shared_ptr<Map> mapB);
     //project to another map
     void projectTo(Map &refMap);
-    // run fullba optimization
+    
+    /**
+     * Saves the (binary) map to a file
+     *
+     * @param fpath File path
+     */
+    void saveToFile(string fpath);
+
+    /**
+     * Reads the (binary) map from a file
+     *
+     * @param fpath File path
+     */
+    void readFromFile(std::string  fpath);
+
+    /**
+     * Saves the set of markers to a marker map file that can be used with aruco.
+     *
+     * @param filepath *.yml (should include the extension)
+     */
+    void saveToMarkerMap(std::string filepath)const;
+
+    /**
+     * Merge mapB into this.
+     *
+     * @param mapB Another map.
+     */
+    void merge(std::shared_ptr<Map> mapB);
+
+    /**
+     * Run fullba optimization.
+     *
+     * @param niters Number of iterations(default = 50).
+     */
     void optimize(int niters=50);
 
     //returns a unique hash value that identify the current status
