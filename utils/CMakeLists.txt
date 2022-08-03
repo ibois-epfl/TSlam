@@ -16,6 +16,8 @@ ADD_EXECUTABLE(tslam_fullba tslam_fullba.cpp g2oba.h cvprojectpoint.h)
 ADD_EXECUTABLE(tslam_reduce_kf tslam_reduce_kf.cpp g2oba.h cvprojectpoint.h)
 ADD_EXECUTABLE(tslam_combine_map tslam_combine_map.cpp g2oba.h cvprojectpoint.h)
 
+ADD_EXECUTABLE(tslam_minimal_example tslam_minimal_example.cpp)
+
 # INSTALL(TARGETS tslam_monocular tslam_mapviewer  tslam_stereo tslam_stereocalibrate tslam_pmvs2  tslam_fullba RUNTIME DESTINATION bin)
 INSTALL(TARGETS tslam_monocular tslam_mapviewer tslam_fullba RUNTIME DESTINATION bin)
 

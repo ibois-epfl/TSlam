@@ -1,7 +1,14 @@
-# UcoSLAM-IBOIS
+# TSlam
 ![](./example/tracking_demo.gif)
 
-The modified version of [UcoSLAM v1.1.0](http://www.uco.es/investiga/grupos/ava/node/62) for augmented carpentry project, which we intregrate [STag](https://github.com/bbenligiray/stag) and add [CLAHE](https://en.wikipedia.org/wiki/Adaptive_histogram_equalization) for preprocessing.
+This is a modified version of [UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62) for augmented carpentry project. The main features are:
+- Using [STag](https://github.com/bbenligiray/stag)
+- Can do map fusion (merging one map into another).
+- By indicating it's in instance mode, the system stop running global optimization and only keeps a fixed number of new added keyframes, which smooth the overall experience.
+- Add [CLAHE](https://en.wikipedia.org/wiki/Adaptive_histogram_equalization) for preprocessing.
+- Several [bugs are resolved](./dev_log/Bug_tracing.md).
+
+Here are some reference related to this project:
 - The official document of UcoSLAM:  [link](https://docs.google.com/document/d/12EGJ3cI-m8XMXgI5bYW1dLi5lBO-vxxr6Cf769wQzJc)
 - [STag ROS](https://github.com/usrl-uofsc/stag_ros): Code of STag is from this repo. This one upgrade the original STag from OpenCV 3 to OpenCV 4.
 - [Dev Log of this modification](./dev_log)
@@ -18,20 +25,39 @@ cmake ../ -DBUILD_GUI=ON
 make -j4
 ```
 
-## Run with example (monocular video):
-- Mapping
-```-
-./build/utils/reslam_monocular './example/STag23mm_smallCube/mapping.mp4' './example/calibration_pixel3.yml' -aurco-markerSize 0.023 -voc './orb.fbow' -out example_map -noX
+## Run with examples(monocular video):
+### Minimal example:
+```bash
+cd build/utils
+./tslam_minimal_example
 ```
+This runs `tslam_minimal_example.cpp`, which takes the `example.map` and `video.mp4` in `/example` as input to show a brief demo.
+
+### Mapping
+```bash
+./tslam_monocular ../../example/video.mp4 ../../example/calibration_webcam.yml -voc ../../orb.fbow -out test
+```
+This runs `monocular_slam.cpp`.
+- `2nd argument`: Input source, "live" indicates the camera[0].
+- `3rd argument`: Path to the camera parameter file.
+- `-voc`: Path to vocabulary file.
+- `-out`: Name of the output map, it will be saved with extension `.map` (in this case, `test.map`)
+Run without args to check all the avaliable ones.
+
+When the window pop-out, you can press `f` to enable the 3D tracking and `s` to start/stop the video.
+
 > [!] Vocabulary is not required, but it will not be able to relocalization with keypoints if not specified.
 
-- Tracking
+### Tracking
+```bash
+# first unzip the map
+unzip ../../example/example.map.zip -d ../../example/
+./tslam_monocular ../../example/video.mp4 ../../example/calibration_webcam.yml -map ../../example/example.map -isInstancing
 ```
-unzip ./example/STag23mm_smallCube/example.zip -d ./example/STag23mm_smallCube
-./build/utils/reslam_monocular './example/STag23mm_smallCube/tracking.mp4' './example/calibration_pixel3.yml' -aurco-markerSize 0.023 -map './example/STag23mm_smallCube/example.map'
-```
+- `map`: Path to the map.
+- `isInstancing`: Indicating it's not mapping, so we can skip some operations.
 
-- Run GUI:
+### Run GUI:
 ```
 ./build/gui/UcoSLAM_GUI
 ```
@@ -145,3 +171,5 @@ void optimization(int niters=50);
 - `/post_processing/cluster.py`: Taking the tag map (the one exported by `reslam_map_export`) as input and perform 3d plane fitting.
 - `/stag_util/sticker_generator.py`: Script for generating the STag sticker.
 
+## License
+GPLv3

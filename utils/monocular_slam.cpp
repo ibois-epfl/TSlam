@@ -112,7 +112,7 @@ std::pair<std::string,std::string> getSplit(std::string str){
 void enhanceImageBGR(const cv::Mat &imgIn, cv::Mat &imgOut){
     // Start CLAHE Contrast Limited and Adaptive Histogram Equalization
 
-    //Get Intesity image
+    //Get Intesity imagef
     cv::Mat Lab_image;
     cvtColor(imgIn, Lab_image, cv::COLOR_BGR2Lab);
     std::vector<cv::Mat> Lab_planes(3);
@@ -302,16 +302,14 @@ int main(int argc,char **argv){
             Fps.start();
             camPose_c2g=Slam->process(in_image, image_params, currentFrameIndex);
             Fps.stop();
-            cout << camPose_c2g << endl;
-
 
             TimerDraw.start();
             //            Slam->drawMatches(in_image);
             //    char k = TheViewer.show(&Slam, in_image,"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
             char k =0;
-            // if(!cml["-noX"]) k=TheViewer.show(TheMap, in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam->getCurrentKeyFrameIndex());
-            cv::imshow("Frame", in_image);
-            k = (char) cv::waitKey(25);
+            if(!cml["-noX"]) k=TheViewer.show(TheMap, in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam->getCurrentKeyFrameIndex());
+            // cv::imshow("Frame", in_image);
+            // k = (char) cv::waitKey(25);
             if (int(k) == 27 || k=='q')finish = true;//pressed ESC
             TimerDraw.stop();
 
