@@ -1,27 +1,27 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
 #include "frame.h"
 #include "basictypes/hash.h"
 #include "basictypes/io_utils.h"
 #include <fbow/fbow.h>
 #include <opencv2/highgui.hpp>
-namespace ucoslam {
+namespace tslam {
 Frame::Frame(){
     bowvector=std::make_shared<fbow::fBow>();
     bowvector_level=std::make_shared<fbow::fBow2>();
@@ -122,7 +122,7 @@ int Frame::getMarkerIndex(uint32_t id)const  {
 
 }
 
-ucoslam::MarkerObservation Frame::getMarker(uint32_t id) const{
+tslam::MarkerObservation Frame::getMarker(uint32_t id) const{
     for(const auto &m:markers)
         if (uint32_t(m.id)==id)return m;
     throw std::runtime_error("Frame::getMarker Could not find the required marker");
@@ -352,7 +352,7 @@ void FrameSet::toStream(ostream &str) const {
     //set magic
     int magic=88888;
     str.write((char*)&magic,sizeof(magic));
-     ReusableContainer<ucoslam::Frame>::toStream(str);
+     ReusableContainer<tslam::Frame>::toStream(str);
  }
 
 void FrameSet::fromStream(istream &str)
@@ -361,7 +361,7 @@ void FrameSet::fromStream(istream &str)
     str.read((char*)&magic,sizeof(magic));
     if (magic!=88888) throw std::runtime_error("FrameSet::fromStream error reading magic");
 
-    ReusableContainer<ucoslam::Frame>::fromStream(str);
+    ReusableContainer<tslam::Frame>::fromStream(str);
 
 }
 uint64_t FrameSet::getSignature()const{

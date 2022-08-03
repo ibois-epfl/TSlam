@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     //check if the settings file is not created and create it
     QApplication QApp(argc, argv);
     QCoreApplication::setOrganizationName("UCOAVA");
-    QCoreApplication::setApplicationName("UCOSLAM_GUI");
+    QCoreApplication::setApplicationName("TSLAM_GUI");
 
 
     if(cml["-clearsettings"]){

@@ -1,20 +1,20 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
 
 /**
@@ -68,7 +68,7 @@
 using namespace cv;
 using namespace std;
 
-namespace ucoslam
+namespace tslam
 {
 
 const int PATCH_SIZE = 31;
@@ -1153,7 +1153,7 @@ void print(cv::KeyPoint &kp){
     cout<<kp.angle<<" "<<kp.octave<<" "<<kp.pt<<" "<<kp.size<<" "<<kp.response<<endl;
 }
 void ORBextractor::processLevel(int level ){
-   // ucoslam::__ARUCO_ADDTIMER__; Timer("RBextractor::Process level :"+to_string(level)+" "+to_string(mvImagePyramid[level].cols)+"x"+to_string(mvImagePyramid[level].rows));
+   // tslam::__ARUCO_ADDTIMER__; Timer("RBextractor::Process level :"+to_string(level)+" "+to_string(mvImagePyramid[level].cols)+"x"+to_string(mvImagePyramid[level].rows));
    if (1)
     ComputeKeyPoints_thread(&_allKeypoints, {level});
    else
@@ -1167,7 +1167,7 @@ void ORBextractor::processLevel(int level ){
         kp.size = scaledPatchSize;
        }
     }
-  //  __UCOSLAM_TIMER_EVENT__("compute interesting locations");
+  //  __TSLAM_TIMER_EVENT__("compute interesting locations");
 
 
     vector<KeyPoint>& keypoints = _allKeypoints[level];
@@ -1221,7 +1221,7 @@ if(nonMaximaSuppression){
 
     computeDescriptors(mvImagePyramid[level], keypoints, _allDescriptors[level], pattern);
 
-   // __UCOSLAM_TIMER_EVENT__("compute descriptors");
+   // __TSLAM_TIMER_EVENT__("compute descriptors");
 
 
     // Scale keypoint coordinates if required
@@ -1239,7 +1239,7 @@ void ORBextractor::processLevel_thread(int id ){
 }
 template<typename T>
 void printHash(string label,const T &v){
-    ucoslam::Hash imgH;
+    tslam::Hash imgH;
     imgH+=v;
     cout<<label<<" "<<imgH<<endl;
 
@@ -1267,13 +1267,13 @@ void ORBextractor::compute( InputArray _image, InputArray _mask, vector<KeyPoint
 
     assert(in_image.type() == CV_8UC1 );
 
-    __UCOSLAM_ADDTIMER__
+    __TSLAM_ADDTIMER__
 if(_featParams.nthreads==1){
     ComputePyramid(in_image );//compute the pyramid levels
-    __UCOSLAM_TIMER_EVENT__("compute pyramid");
+    __TSLAM_TIMER_EVENT__("compute pyramid");
 
     for(int i=0;i<_featParams.nOctaveLevels;i++)  processLevel(i);
-    __UCOSLAM_TIMER_EVENT__("process levels");
+    __TSLAM_TIMER_EVENT__("process levels");
 
     //now, join all data to the output
     uint32_t nkpoints=0;
@@ -1299,7 +1299,7 @@ if(_featParams.nthreads==1){
         offset+=_allKeypoints[i].size();
         }
     }
-    __UCOSLAM_TIMER_EVENT__("joining descriptors");
+    __TSLAM_TIMER_EVENT__("joining descriptors");
 
 }
 
@@ -1320,7 +1320,7 @@ else{
 
     //wait for threads to finish
     for(auto &th:Threads)th.join();
-    __UCOSLAM_TIMER_EVENT__("compute pyramid+ processLevel");
+    __TSLAM_TIMER_EVENT__("compute pyramid+ processLevel");
     //now, join all data to the output
     uint32_t nkpoints=0;
     int desc_size=-1;
@@ -1346,7 +1346,7 @@ else{
         offset+=_allKeypoints[i].size();
         }
     }
-    __UCOSLAM_TIMER_EVENT__("joining descriptors");
+    __TSLAM_TIMER_EVENT__("joining descriptors");
 
 }
 

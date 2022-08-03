@@ -1,20 +1,20 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
 #include "framematcher.h"
 #include "basictypes/misc.h"
@@ -24,7 +24,7 @@
 #include "basictypes/io_utils.h"
 #include <xflann/xflann.h>
 #include <fbow/fbow.h>
-namespace ucoslam
+namespace tslam
 {
 namespace _impl {
 
@@ -64,7 +64,7 @@ cv::Mat FrameMatcher_impl::getFund12(const cv::Mat &TrainCamMatrix,const cv::Mat
 }
 
 
-void   ucoslam_FM___computeThreeMaxima(const vector<vector<int>> & histo,   int &ind1, int &ind2, int &ind3)
+void   tslam_FM___computeThreeMaxima(const vector<vector<int>> & histo,   int &ind1, int &ind2, int &ind3)
 {
     int max1=0;
     int max2=0;
@@ -226,7 +226,7 @@ return matchEpipolar(queryFrame,mode,cv::Mat());
 
 
 std::vector<cv::DMatch> FrameMatcher_Flann::matchEpipolar(const Frame &queryFrame,FrameMatcher::Mode mode,const cv::Mat &FQ2T  ){
-    __UCOSLAM_ADDTIMER__
+    __TSLAM_ADDTIMER__
 
     std::vector<uint32_t> map_idx_query;
     cv::Mat QueryDesc;
@@ -234,11 +234,11 @@ std::vector<cv::DMatch> FrameMatcher_Flann::matchEpipolar(const Frame &queryFram
     cv::Mat F12=getFund12(_trainImageParams.CameraMatrix,queryFrame.imageParams.CameraMatrix,FQ2T);
 
 
-    __UCOSLAM_TIMER_EVENT__("manage mode");
+    __TSLAM_TIMER_EVENT__("manage mode");
     cv::Mat indices,distances;
      if(!trainIndex.search(QueryDesc,nn,indices,distances ,xflann::KnnSearchParams(maxSearch,false)) )
         return{};
-    __UCOSLAM_TIMER_EVENT__("search");
+    __TSLAM_TIMER_EVENT__("search");
 
     vector<cv::DMatch> matches;
     if ( distances.type()==CV_32S)
@@ -305,7 +305,7 @@ std::vector<cv::DMatch> FrameMatcher_Flann::matchEpipolar(const Frame &queryFram
         }
 
         int ind1=-1,ind2=-1,ind3=-1;
-        ucoslam_FM___computeThreeMaxima(rotHist,ind1,ind2,ind3);
+        tslam_FM___computeThreeMaxima(rotHist,ind1,ind2,ind3);
         for(int i=0; i<int(rotHist.size()); i++)
         {
             if(i==ind1 || i==ind2 || i==ind3) continue;
@@ -525,7 +525,7 @@ std::vector<cv::DMatch> FrameMatcher_BoW::matchEpipolar(  const Frame &queryFram
             }
 
             int ind1=-1,ind2=-1,ind3=-1;
-            ucoslam_FM___computeThreeMaxima(rotHist,ind1,ind2,ind3);
+            tslam_FM___computeThreeMaxima(rotHist,ind1,ind2,ind3);
             for(int i=0; i<int(rotHist.size()); i++)
             {
                 if(i==ind1 || i==ind2 || i==ind3) continue;

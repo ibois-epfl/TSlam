@@ -30,7 +30,7 @@ std::string info;
 ```
 
 ## Now it works with STag
-![](./ucoslam_with_stag.png)
+![](./tslam_with_stag.png)
 ![](./demo.gif)
 - However, the tracking of feature points disappears at some point, not sure why.
     > This problem has been figured out. It's probably because the  vocabulary is no specified. Also, the unconsistency of the marker size may be the reason that cause the distortion.
@@ -45,7 +45,7 @@ std::string info;
 ![](./mapping_nokeypoints_good.png)
 
 - Debug command
-`gdb --args ./ucoslam_monocular '/home/tpp/UCOSlam-IBOIS/result/STag23mm_smallCube/use.mp4' '/home/tpp/UCOSlam-IBOIS/result/calibration_pixel3.yml' '-map' '/home/tpp/UCOSlam-IBOIS/result/STag23mm_smallCube/markers.map' "-aruco-markerSize" "0.023"`
+`gdb --args ./tslam_monocular '/home/tpp/UCOSlam-IBOIS/result/STag23mm_smallCube/use.mp4' '/home/tpp/UCOSlam-IBOIS/result/calibration_pixel3.yml' '-map' '/home/tpp/UCOSlam-IBOIS/result/STag23mm_smallCube/markers.map' "-aruco-markerSize" "0.023"`
 
 ## UcoSLAM 1.2.4 vs 1.1.0
 | Function              | 1.2.4 | 1.1.0 |
@@ -129,7 +129,7 @@ std::string info;
 
 `Jul 25`
 ## Merge map in CPP
-- Usage: `build/utils/ucoslam_conbine_map 1.map 2.map combined.map`
+- Usage: `build/utils/tslam_conbine_map 1.map 2.map combined.map`
 - In `map.h/map.cpp`, a new instance `Map::projectTo(Map anotherMap)` is added, which estimates the transformation matrix based on the duplicated tags and perform the transformation.
 - Result
   ![](./merge_cpp.png)

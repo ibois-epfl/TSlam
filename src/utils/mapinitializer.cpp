@@ -18,7 +18,7 @@
 
  namespace
 
-ucoslam
+tslam
  {
  void
 
@@ -529,7 +529,7 @@ MODE_ALL,_6807034019352783248.first )
     ;
 
             _11999208601973379867 =
-   ucoslam ::
+   tslam ::
 
     Triangulate (
      _refFrame,_3005401603918369727,_6807034019352783248.first,_9860761537440310106 )

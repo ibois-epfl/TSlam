@@ -81,7 +81,7 @@ cv::Mat ICP::exec(pair<double,double> radius_range, int num_iterations, bool poi
                     curr_transform.at<float>(j,k)=pcl_mat.coeff(j,k);
         }
         else if(!point_to_plane && dst_points.size()>0)
-            curr_transform=ucoslam::rigidBodyTransformation_Horn1987(src_points,dst_points,true);
+            curr_transform=tslam::rigidBodyTransformation_Horn1987(src_points,dst_points,true);
         source=source.transform(curr_transform);
         transform=curr_transform*transform;
     }

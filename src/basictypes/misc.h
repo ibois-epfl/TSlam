@@ -1,30 +1,30 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
-#ifndef _UCOSLAM_UTILS_H
-#define _UCOSLAM_UTILS_H
+#ifndef _TSLAM_UTILS_H
+#define _TSLAM_UTILS_H
 #include "map_types/frame.h"
 
 #include <opencv2/features2d/features2d.hpp>
 #include <vector>
 #include "debug.h"
 
-namespace ucoslam{
+namespace tslam{
 //Returns the matches between two frames. Basic method using first a brute force, and then computing ratio to second best match
 //[queryIdx=f1; train =f2]
 std::vector<cv::DMatch> match_frames(const Frame &f1, const Frame &f2, double nn_match_ratio=0.8f);
@@ -319,18 +319,18 @@ void savePointsToPCD(const std::vector<cv::Point3f> &points, std::string filenam
 
 //------------- aruco
 //given a set of markers in two views, returns the most likely location of the camera
-cv::Mat ARUCO_initialize(const std::vector<ucoslam::MarkerObservation> &markers1,
-                                      const std::vector<ucoslam::MarkerObservation> &markers2,
-                                      const ucoslam::ImageParams &cp, float markerSize,
+cv::Mat ARUCO_initialize(const std::vector<tslam::MarkerObservation> &markers1,
+                                      const std::vector<tslam::MarkerObservation> &markers2,
+                                      const tslam::ImageParams &cp, float markerSize,
                                       float  minCornerPixDist, float repj_err_Thres, float minDistance,
                                       std::map<uint32_t,se3> &_marker_poses);    //in the global reference system of each marker. Computed in  getRtFromMarkerSet
 
 //estimates the best marker pose when observed from multiple views
 //if can estimate a reliable pose returns the marker pose g2m
-cv::Mat ARUCO_bestMarkerPose(const vector<ucoslam::MarkerObservation> &marker_views, const vector<se3> &frameposes_f2g, const ucoslam::ImageParams &cp);
+cv::Mat ARUCO_bestMarkerPose(const vector<tslam::MarkerObservation> &marker_views, const vector<se3> &frameposes_f2g, const tslam::ImageParams &cp);
 //given a marker observed in multiple locations, returns the best pose in each view by analyzing pair
 //obtains the position that minimizes the reprojection errors
-//vector<cv::Mat> ARUCO_correctMarkerPoses(const vector<aruco::Marker> &marker_views, const ucoslam::ImageParams &cp,float markerSize);
+//vector<cv::Mat> ARUCO_correctMarkerPoses(const vector<aruco::Marker> &marker_views, const tslam::ImageParams &cp,float markerSize);
 
 
 

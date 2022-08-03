@@ -17,7 +17,7 @@
 #include <omp.h>
 #endif
 
-namespace ucoslam {
+namespace tslam {
 
     MapManager::MapManager() {
         _curState = IDLE;
@@ -644,7 +644,7 @@ namespace ucoslam {
                                         .aruco_minNumFramesRequired)
                         ) {
 
-                    vector<ucoslam::
+                    vector<tslam::
 
                     MarkerObservation>
 
@@ -3519,7 +3519,7 @@ namespace ucoslam {
 
                 >
 
-                ucoslam::
+                tslam::
 
                 System::
 
@@ -3544,7 +3544,7 @@ namespace ucoslam {
 
                         _7619806436859450970.size(), size_t(
 
-                                ucoslam::
+                                tslam::
 
                                 System::
 

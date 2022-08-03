@@ -1,20 +1,20 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
 #include "map.h"
 #include <opencv2/imgproc/imgproc.hpp>
@@ -45,10 +45,10 @@
 #include <opencv2/calib3d.hpp>
 #include <type_traits>
 #include "cvprojectpoint.h"
-#include "ucoslam.h"
+#include "tslam.h"
 #include "g2oba.h"
 
-namespace ucoslam{
+namespace tslam{
 
 //bool Map::operator==(const Map &m)const{
 //    return map_points==m.map_points;
@@ -72,7 +72,7 @@ MapPoint & Map::addNewPoint(uint32_t frameSeqId){
     return map_points[it_idx.second];
 }
 
- Marker &Map::addMarker(const ucoslam::MarkerObservation &m){
+ Marker &Map::addMarker(const tslam::MarkerObservation &m){
      if( !map_markers.is(m.id))
          map_markers.insert( {m.id,m});
      return map_markers[m.id];
@@ -95,7 +95,7 @@ MapPoint & Map::addNewPoint(uint32_t frameSeqId){
 
   Frame &Map::addKeyFrame(const Frame&f ){
 
-    __UCOSLAM_ADDTIMER__
+    __TSLAM_ADDTIMER__
     assert(getTargetFocus()<0 || fabs( getTargetFocus()-f.imageParams.fx())<10);//
 
     if (getTargetFocus()>0)
@@ -107,9 +107,9 @@ MapPoint & Map::addNewPoint(uint32_t frameSeqId){
     Frame &newFrame=keyframes[kf_id];
     newFrame.idx=kf_id;
     //add it to the database
-    __UCOSLAM_TIMER_EVENT__("addFrame");
+    __TSLAM_TIMER_EVENT__("addFrame");
     TheKFDataBase.add(newFrame);
-    __UCOSLAM_TIMER_EVENT__("Add to database");
+    __TSLAM_TIMER_EVENT__("Add to database");
     return newFrame;
 }
 
@@ -782,10 +782,10 @@ std::vector<cv::DMatch> Map::matchFrameToMapPoints( const std::vector<uint32_t >
         tmp = pose_f2g_;
     }
     Se3Transform pose_f2g; pose_f2g=tmp;
-    __UCOSLAM_ADDTIMER__
+    __TSLAM_ADDTIMER__
     //remove this already seen that have been marked with the lastSeqFrameIdx in the map point
     std::vector<uint32_t>  smap_ids=getMapPointsInFrames(used_frames.begin(),used_frames.end(),excludedPoints);
-    __UCOSLAM_TIMER_EVENT__("step1");
+    __TSLAM_TIMER_EVENT__("step1");
     if (!useAllPoints){
         for(size_t i=0;i< smap_ids.size();i++){
             if ( map_points.is ( smap_ids[i]))
@@ -796,7 +796,7 @@ std::vector<cv::DMatch> Map::matchFrameToMapPoints( const std::vector<uint32_t >
         smap_ids.erase(std::remove(smap_ids.begin(), smap_ids.end(),  std::numeric_limits<uint32_t>::max()),smap_ids.end());
     }
 
-    __UCOSLAM_TIMER_EVENT__("step2");
+    __TSLAM_TIMER_EVENT__("step2");
     if (smap_ids.size()==0) return {};
 
     //Condition 2. Compute angle between current viewing ray and the map point mean viewing direction
@@ -804,7 +804,7 @@ std::vector<cv::DMatch> Map::matchFrameToMapPoints( const std::vector<uint32_t >
 
     cv::Point3f camCenter= pose_f2g.inv()*cv::Point3f(0,0,0);  //obtain camera center in global reference system
     // Project points given pose
-    __UCOSLAM_TIMER_EVENT__("step3");
+    __TSLAM_TIMER_EVENT__("step3");
 
 
     std::vector<cv::DMatch> map_matchesLocalMap; // [query=kpts; train=map]
@@ -887,7 +887,7 @@ std::vector<cv::DMatch> Map::matchFrameToMapPoints( const std::vector<uint32_t >
             }
         }
     }
-    __UCOSLAM_TIMER_EVENT__("step4");
+    __TSLAM_TIMER_EVENT__("step4");
 
 
 
@@ -1405,7 +1405,7 @@ void Map::saveToMarkerMap(std::string filepath)const {
     Mmap.setDictionary(dict);
     Mmap.mInfoType=aruco::MarkerMap::METERS;
     for(const auto &mm:map_markers){
-        const ucoslam::Marker &marker=mm.second;
+        const tslam::Marker &marker=mm.second;
         if (!marker.pose_g2m.isValid()) continue;
         aruco::Marker3DInfo m3di;
         m3di.id=marker.id;
@@ -1466,8 +1466,8 @@ void Map::merge(std::shared_ptr<Map> mapB){
     
     // The architecture here is a little wired, where we have to rely on
     // the function in MapManager to add new keyframes.
-    std::shared_ptr<ucoslam::MapManager> mapManager;
-    mapManager = std::make_shared<ucoslam::MapManager>();
+    std::shared_ptr<tslam::MapManager> mapManager;
+    mapManager = std::make_shared<tslam::MapManager>();
     mapManager->setParams(shared_from_this(), true);
 
     // map point's index, from B(original) to A(merged)
@@ -1630,7 +1630,7 @@ void Map::optimize(int niters){
 
     //now, the keyframes
     for(auto pose:kf_poses){
-        keyframes[pose.first].pose_f2g=ucoslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
+        keyframes[pose.first].pose_f2g=tslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
         keyframes[pose.first].imageParams.CameraMatrix.at<float>(0,0)=camera->fx();
         keyframes[pose.first].imageParams.CameraMatrix.at<float>(1,1)=camera->fy();
         keyframes[pose.first].imageParams.CameraMatrix.at<float>(0,2)=camera->cx();
@@ -1640,12 +1640,12 @@ void Map::optimize(int niters){
     }
 //        //remove weak links
 //        for(auto &p:projectionsInGraph){
-//            if(p->chi2()>5.99) ucoslam::DebugTest::removeMapPointObservation(TheMapA,p->point_id,p->frame_id);
+//            if(p->chi2()>5.99) tslam::DebugTest::removeMapPointObservation(TheMapA,p->point_id,p->frame_id);
 //        }
 
     //finally, markers
     for(auto pose: marker_poses)
-        map_markers[pose.first].pose_g2m=ucoslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
+        map_markers[pose.first].pose_g2m=tslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
 
 }
 

@@ -1,5 +1,5 @@
-#include "ucoslamtypes.h"
-#include "ucoslam.h"
+#include "tslamtypes.h"
+#include "tslam.h"
 #include "basictypes/debug.h"
 #include "mapviewer.h"
 #include "basictypes/timers.h"

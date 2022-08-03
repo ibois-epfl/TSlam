@@ -12,7 +12,7 @@
 #include <opencv2/calib3d.hpp>
 #include <type_traits>
 #include "cvprojectpoint.h"
-#include "ucoslam.h"
+#include "tslam.h"
 #include "utils/mapmanager.h"
 #include "g2oba.h"
 class CmdLineParser{int argc; char **argv;
@@ -27,9 +27,9 @@ class CmdLineParser{int argc; char **argv;
                     }
                    };
 
-namespace ucoslam {
+namespace tslam {
 struct DebugTest{
-    static void removeMapPointObservation(ucoslam::Map &map,uint32_t point_idx,uint32_t frame_idx){
+    static void removeMapPointObservation(tslam::Map &map,uint32_t point_idx,uint32_t frame_idx){
         map.removeMapPointObservation(point_idx,frame_idx,3);
     }
 };
@@ -39,9 +39,9 @@ int main(int argc,char **argv){
     try {
         if(argc<4)throw std::runtime_error("Usage: inmap_A inmap_B outmap [iterations]");
 
-        std::shared_ptr<ucoslam::Map> TheMapA, TheMapB;
-        TheMapA = std::make_shared<ucoslam::Map>();
-        TheMapB = std::make_shared<ucoslam::Map>();
+        std::shared_ptr<tslam::Map> TheMapA, TheMapB;
+        TheMapA = std::make_shared<tslam::Map>();
+        TheMapB = std::make_shared<tslam::Map>();
 
         TheMapA->readFromFile(argv[1]);
         TheMapB->readFromFile(argv[2]);
@@ -53,12 +53,12 @@ int main(int argc,char **argv){
 
         // TheMapB->projectTo(*TheMapA);
 
-        // std::shared_ptr<ucoslam::MapManager> TheMapManager;
-        // TheMapManager = std::make_shared<ucoslam::MapManager>();
+        // std::shared_ptr<tslam::MapManager> TheMapManager;
+        // TheMapManager = std::make_shared<tslam::MapManager>();
         // TheMapManager->setParams(TheMapA, true);
 
-        // std::map<uint32_t, ucoslam::Frame*> frameMapB; // idx of TheMapB -> TheMapA
-        // std::map<uint32_t, ucoslam::MapPoint*> pointMapB;
+        // std::map<uint32_t, tslam::Frame*> frameMapB; // idx of TheMapB -> TheMapA
+        // std::map<uint32_t, tslam::MapPoint*> pointMapB;
 
         // // Add point first
         // cout << "Total points in A: " << TheMapA->map_points.size() << "points." << endl;

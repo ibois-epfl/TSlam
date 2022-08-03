@@ -1,23 +1,23 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
-#include "ucoslamtypes.h"
-#include "ucoslam.h"
+#include "tslamtypes.h"
+#include "tslam.h"
 #include "basictypes/debug.h"
 #include "mapviewer.h"
 #include "basictypes/timers.h"
@@ -43,15 +43,15 @@ cv::Mat resize(cv::Mat &in,cv::Size size){
 
 
 
-ucoslam::ImageParams getASUSImageParams() {
+tslam::ImageParams getASUSImageParams() {
 
-    ucoslam::ImageParams  IP;
+    tslam::ImageParams  IP;
     IP.CameraMatrix= (cv::Mat_<float>(3,3) <<  517.306408,0,318.643040,0,516.469215,255.313989,0,0,1);
     IP.Distorsion= (cv::Mat_<float>(1,5) <<  0.262383,-0.953104, -0.005358,0.002628,1.163314);
 //    IP.Distorsion= (cv::Mat_<float>(1,5) <<  0,0,0,0,0);
     IP.CamSize=cv::Size(640,480);
     IP.bl=0.07;//camera base line
-    //IP.cameraType=ucoslam::ImageParams::CAMTYPE_STEREO;
+    //IP.cameraType=tslam::ImageParams::CAMTYPE_STEREO;
     IP.rgb_depthscale=1e-3;//scale factor to convert into the desired scale
 
     return IP;
@@ -82,13 +82,13 @@ int main(int argc,char **argv){
         if (!vcap.isOpen())
             throw std::runtime_error("Video not opened");
 
-        ucoslam::UcoSlam Slam;
+        tslam::TSlam Slam;
         Slam.setDebugLevel(stoi(cml("-debug", "0")));
         cv::Mat in_image,in_depth;
 
 
-        ucoslam::ImageParams image_params=getASUSImageParams();
-        ucoslam::Params params;
+        tslam::ImageParams image_params=getASUSImageParams();
+        tslam::Params params;
 
          params.aruco_markerSize = stof(cml("-size", "1"));
         params.aruco_minMarkerSize= stod(cml("-marker_minsize", "0.025"));
@@ -96,7 +96,7 @@ int main(int argc,char **argv){
         params.detectKeyPoints = !cml["-nokeypoints"];
         params.runSequential = cml["-sequential"];
         params.nthreads_feature_detector = stoi(cml("-fdt", "2"));
-         params.kpDescriptorType = ucoslam::DescriptorTypes::fromString(cml("-d", "orb"));
+         params.kpDescriptorType = tslam::DescriptorTypes::fromString(cml("-d", "orb"));
          if(cml["-KFMinConfidence"])
              params.KFMinConfidence=stof(cml("-KFMinConfidence"));
 
@@ -104,7 +104,7 @@ int main(int argc,char **argv){
          cout<<"PPP="<<params.KFMinConfidence<<endl;
         //create an empty map and give it to the class
 
-        std::shared_ptr<ucoslam::Map> TheMap=std::make_shared<ucoslam::Map>();
+        std::shared_ptr<tslam::Map> TheMap=std::make_shared<tslam::Map>();
         if (cml["-in"])
             TheMap->readFromFile(cml("-in"));
 
@@ -130,15 +130,15 @@ int main(int argc,char **argv){
 
         }
 
-        if (cml["-loc_only"]) Slam.setMode(ucoslam::MODE_LOCALIZATION);
+        if (cml["-loc_only"]) Slam.setMode(tslam::MODE_LOCALIZATION);
 
 
         bool showWindows=!cml["-noX"];
 
-        ucoslam::TimerAvrg Fps;
+        tslam::TimerAvrg Fps;
         int waitTimeWindow = cml["-st"] ? 0 : 10;
         bool finish = false;
-        ucoslam::MapViewer TheViewer;
+        tslam::MapViewer TheViewer;
         char k=0;
         while (!finish && vcap.grab()) {
             vcap.retrieve(in_image,in_depth);

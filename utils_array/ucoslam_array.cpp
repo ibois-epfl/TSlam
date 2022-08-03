@@ -1,4 +1,4 @@
-#include "ucoslam.h"
+#include "tslam.h"
 #include "map.h"
 #include "mapviewer.h"
 #include <opencv2/highgui/highgui.hpp>
@@ -27,11 +27,11 @@ int main(int argc, char* argv[]){
 
     CmdLineParser cml(argc,argv);
     if(argc<4 || cml["-h"]){
-        cout<<"Usage: <stereo_calibration_file> <video1> <video2> [-voc path] [-params ucoslamparams.yml]"<<endl;
+        cout<<"Usage: <stereo_calibration_file> <video1> <video2> [-voc path] [-params tslamparams.yml]"<<endl;
         return -1;
     }
 
-    ucoslam::ImageParams imageParams;
+    tslam::ImageParams imageParams;
     imageParams.readArrayFromXMLFile(argv[1]);
 
     std::vector<cv::VideoCapture> video;
@@ -43,7 +43,7 @@ int main(int argc, char* argv[]){
             throw runtime_error(string("Cannot open video file at:")+argv[i+1]);
     }
 
-    ucoslam::Params sparams;
+    tslam::Params sparams;
     sparams.detectMarkers=false;
     sparams.KFMinConfidence=0.8;
     sparams.runSequential=cml["-sequential"];
@@ -51,9 +51,9 @@ int main(int argc, char* argv[]){
     if(cml["-params"])
         sparams.readFromYMLFile(cml("-params"));
 
-    auto smap=make_shared<ucoslam::Map>();
-    ucoslam::UcoSlam system;
-    ucoslam::MapViewer mv;
+    auto smap=make_shared<tslam::Map>();
+    tslam::TSlam system;
+    tslam::MapViewer mv;
     system.setParams(smap,sparams,cml("-voc",""));
 
     std::vector<cv::Mat> images;

@@ -1,14 +1,14 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
@@ -17,7 +17,7 @@
 * along with UCOSlam-> If not, see <http://wwmap->gnu.org/licenses/>.
 */
 
-#include "ucoslam.h"
+#include "tslam.h"
 #include "basictypes/debug.h"
 #include "mapviewer.h"
 #include "basictypes/timers.h"
@@ -27,7 +27,7 @@
 
 cv::Mat getImage(cv::VideoCapture &vcap,int frameIdx){
     cv::Mat im;
-    ucoslam::Frame frame;
+    tslam::Frame frame;
     vcap.set(CV_CAP_PROP_POS_FRAMES,frameIdx);
     vcap.grab();
     vcap.set(CV_CAP_PROP_POS_FRAMES,frameIdx);
@@ -71,7 +71,7 @@ int getCurrentFrameIndex(cv::VideoCapture &vcap,bool isLive){
 }
 
 
-void overwriteParamsByCommandLine(CmdLineParser &cml,ucoslam::Params &params){
+void overwriteParamsByCommandLine(CmdLineParser &cml,tslam::Params &params){
     if (cml["-aruco-markerSize"])      params.aruco_markerSize = stof(cml("-aruco-markerSize", "1"));
     if (cml["-marker_minsize"])    params.aruco_minMarkerSize= stod(cml("-marker_minsize", "0.025"));
     if (cml["-nokeypoints"])        params.detectKeyPoints=false;
@@ -80,7 +80,7 @@ void overwriteParamsByCommandLine(CmdLineParser &cml,ucoslam::Params &params){
     if (cml["-maxFeatures"])    params.maxFeatures = stoi(cml("-maxFeatures","4000"));
     if (cml["-nOct"])       params.nOctaveLevels = stoi(cml("-nOct","8"));
     if (cml["-fdt"])        params.nthreads_feature_detector = stoi(cml("-fdt", "1"));
-    if (cml["-desc"])       params.kpDescriptorType = ucoslam::DescriptorTypes::fromString(cml("-desc", "orb"));
+    if (cml["-desc"])       params.kpDescriptorType = tslam::DescriptorTypes::fromString(cml("-desc", "orb"));
     if (cml["-dict"])       params.aruco_Dictionary = cml("-dict");
     if (cml["-tfocus"])  params.targetFocus =stof(cml("-tfocus","-1"));
     if (cml["-KFMinConfidence"])  params.KFMinConfidence =stof(cml("-KFMinConfidence"));
@@ -97,7 +97,7 @@ void overwriteParamsByCommandLine(CmdLineParser &cml,ucoslam::Params &params){
     params.aruco_CornerRefimentMethod=cml("-aruco-cornerRefinementM","CORNER_SUBPIX");
 
     if (cml["-dbg_str"])
-        ucoslam::debug::Debug::addString(cml("-dbg_str"),"");
+        tslam::debug::Debug::addString(cml("-dbg_str"),"");
 }
 
 std::pair<std::string,std::string> getSplit(std::string str){
@@ -141,7 +141,7 @@ int main(int argc,char **argv){
     bool errorFlag = false;
     CmdLineParser cml(argc, argv);
     if (argc < 3 || cml["-h"]) {
-        cerr << "Usage: (video|live[:cameraIndex(0,1...)])  camera_params.yml [-params ucoslam_params.yml] [-map world]  [-out name] [-scale <float>:video resize factor]"
+        cerr << "Usage: (video|live[:cameraIndex(0,1...)])  camera_params.yml [-params tslam_params.yml] [-map world]  [-out name] [-scale <float>:video resize factor]"
                 "[-loc_only do not update map, only do localization. Requires -in]"
                 "\n"
                 "[-desc descriptor orb,akaze,brisk,freak] "
@@ -188,12 +188,12 @@ int main(int argc,char **argv){
     if (!vcap.isOpened())
         throw std::runtime_error("Video not opened");
 
-    ucoslam::UcoSlam *Slam = new ucoslam::UcoSlam;
+    tslam::TSlam *Slam = new tslam::TSlam;
     int debugLevel = stoi(cml("-debug", "0"));
     Slam->setDebugLevel(debugLevel);
     Slam->showTimers(true);
-    ucoslam::ImageParams image_params;
-    ucoslam::Params params;
+    tslam::ImageParams image_params;
+    tslam::Params params;
     cv::Mat in_image;
 
     image_params.readFromXMLFile(argv[2]);
@@ -201,7 +201,7 @@ int main(int argc,char **argv){
     if( cml["-params"]) params.readFromYMLFile(cml("-params"));
     overwriteParamsByCommandLine(cml,params);
 
-    auto TheMap = std::make_shared<ucoslam::Map>();
+    auto TheMap = std::make_shared<tslam::Map>();
     //read the map from file?
     if (cml["-map"]){
         TheMap->readFromFile(cml("-map"));
@@ -216,7 +216,7 @@ int main(int argc,char **argv){
     }
 
 
-//    if (cml["-loc_only"]) Slam->setMode(ucoslam::MODE_LOCALIZATION);
+//    if (cml["-loc_only"]) Slam->setMode(tslam::MODE_LOCALIZATION);
 
     //need to skip frames?
     if (cml["-skip"]) {
@@ -252,7 +252,7 @@ int main(int argc,char **argv){
         image_params.Distorsion.setTo(cv::Scalar::all(0));
     }
     //Create the viewer to see the images and the 3D
-    ucoslam::MapViewer TheViewer;
+    tslam::MapViewer TheViewer;
 
 //    if (cml["-slam"]){
 //        Slam->readFromFile(cml("-slam"));
@@ -267,15 +267,15 @@ int main(int argc,char **argv){
 //    }
 
 //    if (cml["-noMapUpdate"])
-//        Slam->setMode(ucoslam::MODE_LOCALIZATION);
+//        Slam->setMode(tslam::MODE_LOCALIZATION);
 
 
 
     cv::Mat auxImage;
     //Ok, lets start
-    ucoslam::TimerAvrg Fps;
-    ucoslam::TimerAvrg FpsComplete;
-    ucoslam::TimerAvrg TimerDraw;
+    tslam::TimerAvrg Fps;
+    tslam::TimerAvrg FpsComplete;
+    tslam::TimerAvrg TimerDraw;
     bool finish = false;
     cv::Mat camPose_c2g;
     int vspeed=stoi(cml("-vspeed","1"));
@@ -367,8 +367,8 @@ int main(int argc,char **argv){
 
             if (cml["-isInstancing"]){
                 delete Slam;
-                Slam = new ucoslam::UcoSlam;
-                TheMap = std::make_shared<ucoslam::Map>();
+                Slam = new tslam::TSlam;
+                TheMap = std::make_shared<tslam::Map>();
                 if (cml["-map"]){
                     TheMap->readFromFile(cml("-map"));
                 }
@@ -394,7 +394,7 @@ int main(int argc,char **argv){
     //save the output
     TheMap->saveToFile(cml("-out","world") +".map");
     //save also the parameters finally employed
-    params.saveToYMLFile("ucoslam_params_"+cml("-out","world") +".yml");
+    params.saveToYMLFile("tslam_params_"+cml("-out","world") +".yml");
     if (debugLevel >=10){
         Slam->saveToFile("Slam->slm");
     }

@@ -16,7 +16,7 @@ SET_TARGET_PROPERTIES(${MODULENAME} PROPERTIES 				# create *nix style library v
         CLEAN_DIRECT_OUTPUT 1 					# allow creating static and shared libs without conflicts
         OUTPUT_NAME "${MODULENAME}${PROJECT_DLLVERSION}" 	# avoid conflicts between library and binary target names
 )
-TARGET_LINK_LIBRARIES(${MODULENAME}  ${EXTRALIBNAME}moduletools ${OpenCV_LIBS} ${UCOSLAM_REQUIRED_LIBRARIES} UcoSLAMGUI_videoplayer)
+TARGET_LINK_LIBRARIES(${MODULENAME}  ${EXTRALIBNAME}moduletools ${OpenCV_LIBS} ${TSLAM_REQUIRED_LIBRARIES} UcoSLAMGUI_videoplayer)
 
 INSTALL(TARGETS ${MODULENAME}
         RUNTIME DESTINATION bin COMPONENT main			# Install the dll file in bin directory

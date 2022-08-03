@@ -1,20 +1,20 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
 
 #include "mapviewer.h"
@@ -24,14 +24,14 @@
 int main( int  argc , char**  argv )
 {
     if (argc<2){cerr<<"Usage: world [-system]"<<endl;return -1;}
-    std::shared_ptr<ucoslam::Map> map=std::make_shared<ucoslam::Map>();
+    std::shared_ptr<tslam::Map> map=std::make_shared<tslam::Map>();
     bool isSlam=false;
     if(argc>=3){
         if(string(argv[2])=="-system")
             isSlam=true;
     }
     if(isSlam){
-        ucoslam::UcoSlam SlamSystem;
+        tslam::TSlam SlamSystem;
         SlamSystem.readFromFile(argv[1]);
         map=SlamSystem.getMap();
     }
@@ -41,7 +41,7 @@ int main( int  argc , char**  argv )
 
     cout<<"Npoints="<<map->map_points.size()<<endl;
     cout<<"NFrames="<<map->keyframes.size()<<endl;
-    ucoslam::MapViewer Theviewer;
+    tslam::MapViewer Theviewer;
     Theviewer.set("mode","0");
     bool finish=false;
 

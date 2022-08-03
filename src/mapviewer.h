@@ -8,9 +8,9 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <string>
 #include <thread>
-#include "ucoslam.h"
+#include "tslam.h"
 #include "map.h"
-namespace ucoslam{
+namespace tslam{
 //Class using an opencv window to render and manipulate a sgl scene
 
 
@@ -113,7 +113,7 @@ protected:
 
 private:
     void  blending(const cv::Mat &a,float f,cv::Mat &io);
-    vector<sgl::Point3> getMarkerIdPcd(ucoslam::Marker &minfo , float perct);
+    vector<sgl::Point3> getMarkerIdPcd(tslam::Marker &minfo , float perct);
 };
 
 MapDrawer::MapDrawer( ){setParams(1  );}
@@ -195,7 +195,7 @@ void MapDrawer::drawScene(int ptSize ){
         _a_b_16[1]=a;
         return a_b;
     };
-    auto drawMarker=[](sgl::Scene &Scn, const ucoslam::Marker &m , int width=1){
+    auto drawMarker=[](sgl::Scene &Scn, const tslam::Marker &m , int width=1){
         Scn.setLineSize(width);
         auto points=m.get3DPoints();
         Scn.drawLine((sgl::Point3*)&points[0],(sgl::Point3*)&points[1],{0,0,255});
@@ -421,7 +421,7 @@ void MapDrawer::draw(cv::Mat &image ) {
 
 
 
-vector<sgl::Point3> MapDrawer::getMarkerIdPcd(ucoslam::Marker &minfo,float perct=1 )
+vector<sgl::Point3> MapDrawer::getMarkerIdPcd(tslam::Marker &minfo,float perct=1 )
 {
     auto  mult=[](const cv::Mat& m, cv::Point3f p)
     {
@@ -615,7 +615,7 @@ public:
                 update=true;
             }
             else if (key=='w'){
-                string name="ucoslam-"+std::to_string(snapShotIndex++)+".png";
+                string name="tslam-"+std::to_string(snapShotIndex++)+".png";
                 cv::imwrite(name,_imshow);
                 std::cerr<<"Image saved to "<<name<<endl;
 

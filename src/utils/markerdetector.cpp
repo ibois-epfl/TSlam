@@ -2,7 +2,7 @@
 #include "aruco/markerdetector.h"
 #include "optimization/ippe.h"
 
-namespace ucoslam {
+namespace tslam {
 
 
 ArucoMarkerDetector::ArucoMarkerDetector(){

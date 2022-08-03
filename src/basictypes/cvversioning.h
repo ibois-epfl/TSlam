@@ -1,5 +1,5 @@
-#ifndef UCOSLAM_CVVERSIONING_H
-#define UCOSLAM_CVVERSIONING_H
+#ifndef TSLAM_CVVERSIONING_H
+#define TSLAM_CVVERSIONING_H
 #include <opencv2/core/core.hpp>
 #if  CV_MAJOR_VERSION >= 4
 #include <opencv2/imgproc.hpp>

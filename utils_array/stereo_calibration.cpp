@@ -6,7 +6,7 @@
 double reprj_error( const std::vector<cv::Point3f> &objPoints, const std::vector<cv::Point2f>points2d, const aruco::CameraParameters &imp,const cv::Mat &rt44){
     std::vector<cv::Point2f> prepj;
      cv::Mat rv,tv;
-    ucoslam::getRTfromMatrix44(rt44,rv,tv);
+    tslam::getRTfromMatrix44(rt44,rv,tv);
     cv::projectPoints(objPoints,rv,tv,imp.CameraMatrix,imp.Distorsion,prepj);
     double sum=0;
     int nvalid=0;
@@ -126,7 +126,7 @@ double __stereo_solve(const std::vector<std::vector<std::vector<cv::Point3f>>>& 
 
         fromSol(sol, r, t, camParams);
 
-        cv::Mat X = ucoslam::getRTMatrix(r, t);
+        cv::Mat X = tslam::getRTMatrix(r, t);
 
         int el=0;
         for(uint imgId=0; imgId<cameraPose[0].size(); imgId++)
@@ -140,8 +140,8 @@ double __stereo_solve(const std::vector<std::vector<std::vector<cv::Point3f>>>& 
             std::vector<cv::Mat> vt;
             vr.resize(2);
             vt.resize(2);
-            ucoslam::getRTfromMatrix44(X*cameraPose[1][imgId], vr[0], vt[0]);
-            ucoslam::getRTfromMatrix44(X.inv()*cameraPose[0][imgId], vr[1], vt[1]);
+            tslam::getRTfromMatrix44(X*cameraPose[1][imgId], vr[0], vt[0]);
+            tslam::getRTfromMatrix44(X.inv()*cameraPose[0][imgId], vr[1], vt[1]);
 
 
             //cross error using extrinsic
@@ -160,7 +160,7 @@ double __stereo_solve(const std::vector<std::vector<std::vector<cv::Point3f>>>& 
             for(size_t c=0; c<camParams.size(); c++)
             {
                 cv::Mat r,t;
-                ucoslam::getRTfromMatrix44(cameraPose[c][imgId], r, t);
+                tslam::getRTfromMatrix44(cameraPose[c][imgId], r, t);
                 cv::projectPoints(calib3d[c][imgId], r, t, camParams[c].CameraMatrix, camParams[c].Distorsion, p2d_rej);
                 for (size_t i = 0; i < p2d_rej.size(); i++)
                 {
@@ -350,7 +350,7 @@ double StereoCalibration::stereo_solve(const std::vector<std::vector<std::vector
             err+=reprj_error( calib3d[k][i], calib2d[k][i], _camParams[k], cameraPose[k][i]);
         err/= ncameras;
 
-        ucoslam::getRTfromMatrix44(cameraPose[0][i]*cameraPose[1][i].inv(), r_io, t_io);
+        tslam::getRTfromMatrix44(cameraPose[0][i]*cameraPose[1][i].inv(), r_io, t_io);
 
         if(err < minErr)
         {
@@ -360,7 +360,7 @@ double StereoCalibration::stereo_solve(const std::vector<std::vector<std::vector
     }
 
     //initial rvec, tvec
-    ucoslam::getRTfromMatrix44(cameraPose[0][minErrId]*cameraPose[1][minErrId].inv(), r_io, t_io);
+    tslam::getRTfromMatrix44(cameraPose[0][minErrId]*cameraPose[1][minErrId].inv(), r_io, t_io);
     //stero calibration
     __stereo_solve<double>(calib3d, calib2d, cameraPose, _camParams, r_io, t_io);
 
@@ -377,8 +377,8 @@ double StereoCalibration::stereo_solve(const std::vector<std::vector<std::vector
         //Cross error
         std::vector<cv::Mat> Transf;
         Transf.resize(2);
-        Transf[0] = ucoslam::getRTMatrix(r_io, t_io)*cameraPose[1][i];
-        Transf[1] = ucoslam::getRTMatrix(r_io, t_io).inv()*cameraPose[0][i];
+        Transf[0] = tslam::getRTMatrix(r_io, t_io)*cameraPose[1][i];
+        Transf[1] = tslam::getRTMatrix(r_io, t_io).inv()*cameraPose[0][i];
         float err2=0.f;
         for(int k=0; k<ncameras; k++)
             err2+=reprj_error( calib3d[k][i], calib2d[k][i], _camParams[k], Transf[k]);

@@ -8,7 +8,7 @@
 #include <QDockWidget>
 #include <QMainWindow>
 #include <QMessageBox>
-#include "ucoslam.h"
+#include "tslam.h"
 #include <QInputDialog>
 #include <QFileInfo>
 #include <QTemporaryFile>
@@ -106,7 +106,7 @@ MappingModule::MappingModule(ModuleSetMainWindow *parent):AppModule(parent) {
 
 
 
-    _Map=std::make_shared<ucoslam::Map>();
+    _Map=std::make_shared<tslam::Map>();
 
 
     //register the elements created
@@ -130,7 +130,7 @@ void MappingModule::on_resetMap(){
     if(_Map->keyframes.size()!=0){
         if( QMessageBox::question( (QWidget*)parent(),tr ( "Reset Map" ),tr ( "Are you sure you want to reset the current map?" ),QMessageBox::Yes|QMessageBox::No)==QMessageBox::No ) return;
         _UcoSLAM.reset();
-        _Map=std::make_shared<ucoslam::Map>();
+        _Map=std::make_shared<tslam::Map>();
         videoPlayer->reset();
 //        _UcoSLAM->clear();
         _lastPose=cv::Mat();
@@ -204,7 +204,7 @@ void MappingModule::on_openExistingMap()
 
 
         try{
-            _Map=std::make_shared<ucoslam::Map>();
+            _Map=std::make_shared<tslam::Map>();
             _Map->readFromFile(file.toStdString());
             _UcoSLAM.reset();
             updateMapView();
@@ -226,7 +226,7 @@ QString MappingModule::getVocabularyPath(){
 #ifdef WIN32
       return QCoreApplication::applicationDirPath()+"/orb.fbow";
 #else
-      return "/usr/share/ucoslam/orb.fbow";
+      return "/usr/share/tslam/orb.fbow";
 #endif
 }
 
@@ -251,7 +251,7 @@ void MappingModule::on_new_fromvideo(){
             settings.setValue ( "currDir",QFileInfo (  params.find("Video file").asString().c_str() ).absolutePath() );
 
 
-            ucoslam::ImageParams imageParams;
+            tslam::ImageParams imageParams;
             try {
                 _imageParams.readFromXMLFile(params["Camera Parameters File"].asString());
             } catch (std::exception &ex) {
@@ -259,17 +259,17 @@ void MappingModule::on_new_fromvideo(){
                 return ;
             }
 
-            _UcoSLAM=std::make_shared<ucoslam::UcoSlam>();
-            ucoslam::Params ucoslamparams;
+            _UcoSLAM=std::make_shared<tslam::TSlam>();
+            tslam::Params tslamparams;
             UcoSlamGParamsRunTime rtp;
-            rtp.update(ucoslamparams);
+            rtp.update(tslamparams);
             rtp["Mode"]="Track Only";
-            _UcoSLAM->setMode(ucoslam::MODE_LOCALIZATION);
-            if(_Map->map_markers.size()==0) ucoslamparams.detectMarkers=false;
+            _UcoSLAM->setMode(tslam::MODE_LOCALIZATION);
+            if(_Map->map_markers.size()==0) tslamparams.detectMarkers=false;
             else
-                ucoslamparams.aruco_Dictionary= _Map->map_markers.begin()->second.dict_info;
+                tslamparams.aruco_Dictionary= _Map->map_markers.begin()->second.dict_info;
 
-            _UcoSLAM->setParams(_Map,ucoslamparams);
+            _UcoSLAM->setParams(_Map,tslamparams);
             auto videoFile=params["Video file"].asString();
             if(!videoPlayer->openVideoFilePath(videoFile.c_str())){
                 _UcoSLAM.reset();
@@ -325,7 +325,7 @@ void MappingModule::on_new_fromvideo(){
                 }
             }
 
-            auto Dialog=new DownloadVocabularyDialog(QUrl("http://rabinf24.uco.es/in1musar/ucoslam/vocabularies/orb.fbow"),fsave.absoluteFilePath());
+            auto Dialog=new DownloadVocabularyDialog(QUrl("http://rabinf24.uco.es/in1musar/tslam/vocabularies/orb.fbow"),fsave.absoluteFilePath());
             Dialog->setWindowTitle(tr("Download"));
             if(Dialog->exec()==QDialog::Accepted) {
                 if(Dialog->succeeded()){
@@ -339,7 +339,7 @@ void MappingModule::on_new_fromvideo(){
         }
     }
 
-    ucoslam::Params params;
+    tslam::Params params;
     mfp.update(params);
     load(mfp.find("Video file").asString(),mfp.find("Camera Parameters File").asString(),params,  voc_filepath.absoluteFilePath().toStdString() );
 
@@ -360,7 +360,7 @@ void MappingModule::onNewImage(cv::Mat &image){
     if(_UcoSLAM){
         if( fabs(_inputScaleFactor-1)>1e-3){
             cv::Mat resizedImage;
-            ucoslam::ImageParams imageParams=_imageParams;
+            tslam::ImageParams imageParams=_imageParams;
             cv::Size newSize=cv::Size(image.cols*_inputScaleFactor,image.rows*_inputScaleFactor);
             cv::resize(image,resizedImage,newSize);
             imageParams.resize(newSize);
@@ -374,8 +374,8 @@ void MappingModule::onNewImage(cv::Mat &image){
     }
 }
 
-bool MappingModule::load(const std::string &videoFile,const std::string &cameraFile,    const ucoslam::Params &params,const std::string &vocfile){
-    ucoslam::ImageParams imageParams;
+bool MappingModule::load(const std::string &videoFile,const std::string &cameraFile,    const tslam::Params &params,const std::string &vocfile){
+    tslam::ImageParams imageParams;
     try {
         _imageParams.readFromXMLFile(cameraFile);
     } catch (std::exception &ex) {
@@ -383,7 +383,7 @@ bool MappingModule::load(const std::string &videoFile,const std::string &cameraF
         return false;
     }
 
-    _UcoSLAM=std::make_shared<ucoslam::UcoSlam>();
+    _UcoSLAM=std::make_shared<tslam::TSlam>();
     _UcoSLAM->setParams(_Map,params,vocfile);
     if(!videoPlayer->openVideoFilePath(videoFile.c_str())){
         _UcoSLAM.reset();
@@ -401,16 +401,16 @@ void MappingModule::onParamsOkPressed(){
 }
 void MappingModule::on_ControlPanelParamsChanged(int idx){
     if(!_UcoSLAM)return;
-    ucoslam::Params ucoslamparams=_UcoSLAM->getParams();
+    tslam::Params tslamparams=_UcoSLAM->getParams();
     UcoSlamGParamsRunTime gparams( _SLAMParamWdgt->getParamSet());
-    gparams.update(ucoslamparams);
+    gparams.update(tslamparams);
 
-     _UcoSLAM->updateParams(ucoslamparams);
-     ucoslam::MODES SLAMMODE;
+     _UcoSLAM->updateParams(tslamparams);
+     tslam::MODES SLAMMODE;
      if(gparams["Mode"].asString()=="SLAM")
-         SLAMMODE=ucoslam::MODE_SLAM;
+         SLAMMODE=tslam::MODE_SLAM;
      else
-         SLAMMODE=ucoslam::MODE_LOCALIZATION;
+         SLAMMODE=tslam::MODE_LOCALIZATION;
      _UcoSLAM->setMode(SLAMMODE);
 
      videoPlayer->retrieveAndShow();

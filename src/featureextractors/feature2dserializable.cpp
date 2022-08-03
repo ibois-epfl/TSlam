@@ -1,20 +1,20 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
 #include "feature2dserializable.h"
 #include "basictypes/io_utils.h"
@@ -22,7 +22,7 @@
 #if  CV_MAJOR_VERSION >= 3
 #include "gridextractor.h"
 #endif
-namespace ucoslam{
+namespace tslam{
 
 void Feature2DSerializable::detectAndCompute(cv::InputArray image, cv::InputArray mask, std::vector<cv::KeyPoint>& keypoints,
                                               cv::OutputArray descriptors, FeatParams params  ){
@@ -34,7 +34,7 @@ std::shared_ptr<Feature2DSerializable> Feature2DSerializable::create(DescriptorT
     std::shared_ptr<Feature2DSerializable> fdetector;
 
     if(type==DescriptorTypes::DESC_ORB) {
-            auto orbmur= std::make_shared<ucoslam::ORBextractor>( );
+            auto orbmur= std::make_shared<tslam::ORBextractor>( );
             fdetector=orbmur;
     }
 #if  CV_MAJOR_VERSION >= 3

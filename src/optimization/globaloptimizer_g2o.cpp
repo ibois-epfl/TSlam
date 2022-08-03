@@ -1,20 +1,20 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
 #include "globaloptimizer_g2o.h"
 #include "typesg2o.h"
@@ -31,7 +31,7 @@
 #include <iostream>
 
 //#define ORIGINAL_G2O_SBA
-namespace ucoslam{
+namespace tslam{
 
 
 class  MarkerEdgeX: public  g2o::BaseBinaryEdge<4, Vector8D,  VertexSE3Expmap,  VertexSE3Expmap>
@@ -349,7 +349,7 @@ void GlobalOptimizerG2O::setParams(std::shared_ptr<Map> map, const ParamSet &xp 
 
 
     for(auto &m:marker_info){
-        ucoslam::Marker &marker= map->map_markers.at(m.first);
+        tslam::Marker &marker= map->map_markers.at(m.first);
         VertexSE3Expmap * vSE3 = new VertexSE3Expmap();
         vSE3->setEstimate(toSE3Quat( marker.pose_g2m));
         vSE3->setId(m.second.IdOptmz);
@@ -363,7 +363,7 @@ void GlobalOptimizerG2O::setParams(std::shared_ptr<Map> map, const ParamSet &xp 
     double totalMarkerWeight=0;
     for(const auto &m:marker_info){
         VertexSE3Expmap * vSE3 =  (VertexSE3Expmap *)m.second.vertex;
-        ucoslam::Marker &marker= map->map_markers.at(m.first);
+        tslam::Marker &marker= map->map_markers.at(m.first);
 
         //Now add the links between markers and frames
         for(auto fid:marker.frames){
@@ -445,13 +445,13 @@ void GlobalOptimizerG2O::setParams(std::shared_ptr<Map> map, const ParamSet &xp 
 }
 
 void GlobalOptimizerG2O::optimize(std::shared_ptr<Map> map, const ParamSet &p ) {
-    __UCOSLAM_ADDTIMER__
+    __TSLAM_ADDTIMER__
         setParams(map,p);
-    __UCOSLAM_TIMER_EVENT__("Setparams");
+    __TSLAM_TIMER_EVENT__("Setparams");
     optimize();
-    __UCOSLAM_TIMER_EVENT__("Optmize");
+    __TSLAM_TIMER_EVENT__("Optmize");
     getResults(map);
-    __UCOSLAM_TIMER_EVENT__("getResults");
+    __TSLAM_TIMER_EVENT__("getResults");
 }
 
 
@@ -460,7 +460,7 @@ void GlobalOptimizerG2O::optimize(std::shared_ptr<Map> map, const ParamSet &p ) 
 
 void GlobalOptimizerG2O::optimize(bool *stopASAP ){
     // cout << "GlobalOptimizerG2O::optimize(bool *stopASAP )" << endl;
-    __UCOSLAM_ADDTIMER__
+    __TSLAM_ADDTIMER__
         Optimizer->initializeOptimization();
     Optimizer->setForceStopFlag(stopASAP);
     Optimizer->setVerbose( _params.verbose);
@@ -509,7 +509,7 @@ void GlobalOptimizerG2O::optimize(bool *stopASAP ){
 }
 
 void GlobalOptimizerG2O::getResults(std::shared_ptr<Map>  map){
-__UCOSLAM_ADDTIMER__
+__TSLAM_ADDTIMER__
     auto toCvMat=[](const g2o::SE3Quat &SE3)
     {
         Eigen::Matrix<double,4,4> eigMat = SE3.to_homogeneous_matrix();
@@ -533,7 +533,7 @@ __UCOSLAM_ADDTIMER__
         g2o::SE3Quat SE3quat = vSE3->estimate();
         frame.pose_f2g= toCvMat(SE3quat);
     }
-    __UCOSLAM_TIMER_EVENT__("Frames updated");
+    __TSLAM_TIMER_EVENT__("Frames updated");
 
     _badAssociations.clear();
     _badAssociations.reserve(usedMapPoints.size());
@@ -565,18 +565,18 @@ __UCOSLAM_ADDTIMER__
                 _badAssociations.push_back(std::make_pair(mp.id,e_fix.second));
         }
     }
-    __UCOSLAM_TIMER_EVENT__("Detected bad points");
+    __TSLAM_TIMER_EVENT__("Detected bad points");
 
     for(const auto &marker_idop:marker_info)
         map->map_markers[marker_idop.first].pose_g2m= toCvMat(  static_cast<VertexSE3Expmap*>(marker_idop.second.vertex)->estimate());
 
-    __UCOSLAM_TIMER_EVENT__("Updated markers");
+    __TSLAM_TIMER_EVENT__("Updated markers");
 
     //now, update normals and other values of the mappoints
 
     for( auto &mp_id:usedMapPoints)
         map->updatePointNormalAndDistances(mp_id);
-    __UCOSLAM_TIMER_EVENT__("Updated points and normal distances");
+    __TSLAM_TIMER_EVENT__("Updated points and normal distances");
 }
 
 

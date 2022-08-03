@@ -1,38 +1,35 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
-#ifndef __UCOSLAM_H__
-#define __UCOSLAM_H__
+#ifndef __TSLAM_H__
+#define __TSLAM_H__
 #include <memory>
 #include <opencv2/core/core.hpp>
-#include "ucoslam_exports.h"
-#include "ucoslamtypes.h"
+#include "tslam_exports.h"
+#include "tslamtypes.h"
 #include "imageparams.h"
 #include "map.h"
-namespace ucoslam{
-class UCOSLAM_API UcoSlam{
+namespace tslam{
+class TSLAM_API TSlam{
 public:
 
-    //
-    UcoSlam();
-    //
-    ~UcoSlam();
-
+    TSlam();
+    ~TSlam();
 
     /**
      * @brief setParams set the required params before processing images
@@ -40,8 +37,7 @@ public:
      * @param params controlling the system behaviuor
      * @param vocabulary optional path to the dictionary BOW. Without it, relocalization is not yet possible.
      */
-
-    void setParams(std::shared_ptr<Map> map, const  ucoslam::Params &params, const std::string &vocabulary="");
+    void setParams(std::shared_ptr<Map> map, const  tslam::Params &params, const std::string &vocabulary="");
 
     //Clear this object setting it to intial state. It will remove all map data
     void clear();

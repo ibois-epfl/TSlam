@@ -1,36 +1,36 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
-#ifndef ucoslam_Marker_H
-#define ucoslam_Marker_H
+#ifndef tslam_Marker_H
+#define tslam_Marker_H
 
 #include <opencv2/core/core.hpp>
 #include <vector>
 #include <set>
-#include "ucoslam_exports.h"
+#include "tslam_exports.h"
 #include "basictypes/se3.h"
 #include "basictypes/se3transform.h"
-namespace ucoslam {
+namespace tslam {
 
 /**A marker in the 3D space.
  */
 
-class UCOSLAM_API Marker{
+class TSLAM_API Marker{
 public:
     Marker(){}
     Marker(uint32_t Id,Se3Transform g2m):id(Id),pose_g2m(g2m){}
@@ -86,7 +86,7 @@ struct MarkerPosesIPPE
 };
 /**The projection of a marker in an image
  */
-class UCOSLAM_API MarkerObservation:public Marker{
+class TSLAM_API MarkerObservation:public Marker{
 public:
     MarkerObservation(){}
     MarkerObservation(const Marker &m):Marker(m){}

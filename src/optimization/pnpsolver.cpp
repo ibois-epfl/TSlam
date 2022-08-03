@@ -1,20 +1,20 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
 #include "typesg2o.h"
 #include <g2o/core/block_solver.h>
@@ -30,7 +30,7 @@
 #include "map.h"
 #include "pnpsolver.h"
 #include "basictypes/cvversioning.h"
-namespace ucoslam{
+namespace tslam{
 int g2o_solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::vector<cv::DMatch> &map_matches, cv::Mat  &pose_io ,int64_t currentKeyFrame);
 
 //matches_io: trainIdx must be mappoints ids and queryIdx must be frame ids
@@ -94,7 +94,7 @@ bool PnPSolver::solvePnPRansac( const Frame &frame, std::shared_ptr<Map> map, st
             if(distX*distX+distY*distY<maxErr){
                 //check visual angle with camera centre
                 //take the point and see the angle
-                const ucoslam::MapPoint &mapPoint=map->map_points[ matches_io[j].trainIdx];
+                const tslam::MapPoint &mapPoint=map->map_points[ matches_io[j].trainIdx];
                 if (mapPoint.getViewCos(camCenter)<0.5) continue;
                 nInliers++;
                 inliers.push_back(j);
@@ -276,7 +276,7 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
 
     }
         //now, markers
-        std::vector<std::pair<ucoslam::Marker,ucoslam::MarkerObservation> > marker_poses;
+        std::vector<std::pair<tslam::Marker,tslam::MarkerObservation> > marker_poses;
         if ( frame.markers.size()!=0 && currentKeyFrame!=-1){
             //get all neighbors
             auto neigh=TheMap->getNeighborKeyFrames(currentKeyFrame,true);

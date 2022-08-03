@@ -1,23 +1,23 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
-#ifndef UCOSLAM_TIMERS_H
-#define UCOSLAM_TIMERS_H
+#ifndef TSLAM_TIMERS_H
+#define TSLAM_TIMERS_H
 
 
 #include <chrono>
@@ -25,7 +25,7 @@
 #include <vector>
 #include <iostream>
 #include "debug.h"
-namespace ucoslam{
+namespace tslam{
 
 //timer
 
@@ -91,11 +91,11 @@ inline std::string methodName(  std::string  prettyFunction)
 
 #ifdef USE_TIMERS
 
-#define __UCOSLAM_ADDTIMER__ ScopedTimerEvents XTIMER_X(methodName(__PRETTY_FUNCTION__));
-#define __UCOSLAM_TIMER_EVENT__(Y) XTIMER_X.add(Y);
+#define __TSLAM_ADDTIMER__ ScopedTimerEvents XTIMER_X(methodName(__PRETTY_FUNCTION__));
+#define __TSLAM_TIMER_EVENT__(Y) XTIMER_X.add(Y);
 #else
-#define __UCOSLAM_ADDTIMER__
-#define __UCOSLAM_TIMER_EVENT__(Y)
+#define __TSLAM_ADDTIMER__
+#define __TSLAM_TIMER_EVENT__(Y)
 #endif
 
 struct Timer{

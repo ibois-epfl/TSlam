@@ -12,7 +12,7 @@ namespace aruco {
   class MarkerDetector ;
 };
 
-namespace ucoslam {
+namespace tslam {
   class FrameExtractor {
 
 public:
@@ -29,13 +29,13 @@ public:
 
     Feature2DSerializable >
 
-       feature_detector, const ucoslam ::
+       feature_detector, const tslam ::
 
  Params &params, std ::
 
     shared_ptr <
 
-ucoslam ::
+tslam ::
 
  MarkerDetector > mdetector )
     ;
@@ -294,7 +294,7 @@ numeric_limits <
 
     std ::
   shared_ptr <
-    ucoslam ::
+    tslam ::
  MarkerDetector >
 
      _8000946946827829134 ;
@@ -310,7 +310,7 @@ numeric_limits <
 
   0 ;
 
-    ucoslam :: Params _13116459431724108758 ;
+    tslam :: Params _13116459431724108758 ;
 
  }
 

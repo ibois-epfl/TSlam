@@ -5,7 +5,7 @@
 #define MyAppVersion "1.1.0"
 #define MyAppPublisher "Ava group"
 #define MyAppURL "http://www.uco.es/grupos/ava/"
-#define MyAppExeName "ucoslam_gui.exe"
+#define MyAppExeName "tslam_gui.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.

@@ -1,44 +1,44 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
 #ifndef _StereoRectify_H
 #define _StereoRectify_H
 #include <string>
 #ifdef STANDALONE
-    #define UCOSLAM_API
+    #define TSLAM_API
 #else
     #include "imageparams.h"
-    #include "ucoslam_exports.h"
+    #include "tslam_exports.h"
 #endif
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <thread>
-namespace ucoslam{
+namespace tslam{
 
 /** Stereo image rectification
  *
  * Reads the stereo config from a YML and then rectifies the images so that they can be passed to UcoSLAM.
  *
- * The file must have been generated with with the  program in utils/ucoslam_stereocalibrate
+ * The file must have been generated with with the  program in utils/tslam_stereocalibrate
  *
  * The file must have the matrices for stereo rectification ( M1,M2,D1...) and image dimensions (image_width,image_height)
  */
-class UCOSLAM_API StereoRectify{
+class TSLAM_API StereoRectify{
 public:
 
 

@@ -1,5 +1,5 @@
-#include "ucoslamtypes.h"
-#include "ucoslam.h"
+#include "tslamtypes.h"
+#include "tslam.h"
 #include "basictypes/debug.h"
 #include "mapviewer.h"
 #include "basictypes/timers.h"
@@ -18,9 +18,9 @@ rs2::device device;
 bool getNextFrame(cv::Mat& in_depth, cv::Mat& in_image);
 float get_depth_scale(rs2::device dev);
 
-ucoslam::ImageParams getRealSenseImageParams(const std::shared_ptr<rs2::pipeline>& pipe){
+tslam::ImageParams getRealSenseImageParams(const std::shared_ptr<rs2::pipeline>& pipe){
 
-    ucoslam::ImageParams  IP;
+    tslam::ImageParams  IP;
 
     rs2_intrinsics intr = pipe->get_active_profile().get_stream(RS2_STREAM_COLOR).as<rs2::video_stream_profile>().get_intrinsics();
 
@@ -76,29 +76,29 @@ int main(int argc,char **argv){
             device = pipe->get_active_profile().get_device();
         }
 
-        ucoslam::UcoSlam Slam;
+        tslam::TSlam Slam;
 
 
-        ucoslam::ImageParams image_params = getRealSenseImageParams(pipe);
+        tslam::ImageParams image_params = getRealSenseImageParams(pipe);
 
-        ucoslam::Params params;
+        tslam::Params params;
         params.aruco_markerSize = stof(cml("-size", "1"));
         params.aruco_minMarkerSize= stod(cml("-marker_minsize", "0.025"));
         params.detectMarkers = !cml["-nomarkers"]; //work only with keypoints!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         params.detectKeyPoints = !cml["-nokeypoints"];
         params.runSequential = cml["-sequential"];
         params.nthreads_feature_detector = stoi(cml("-fdt", "2"));
-        params.kpDescriptorType = ucoslam::DescriptorTypes::fromString(cml("-d", "orb"));
+        params.kpDescriptorType = tslam::DescriptorTypes::fromString(cml("-d", "orb"));
         if(cml["-KFMinConfidence"])
              params.KFMinConfidence=stof(cml("-KFMinConfidence"));
 
-        std::shared_ptr<ucoslam::Map> TheMap=std::make_shared<ucoslam::Map>();
+        std::shared_ptr<tslam::Map> TheMap=std::make_shared<tslam::Map>();
         if (cml["-in"])
             TheMap->readFromFile(cml("-in"));
 
         Slam.setParams( TheMap,params,cml("-voc"));
 
-        if (cml["-loc_only"]) Slam.setMode(ucoslam::MODE_LOCALIZATION);
+        if (cml["-loc_only"]) Slam.setMode(tslam::MODE_LOCALIZATION);
 
         bool showWindows=!cml["-noX"];
 
@@ -106,8 +106,8 @@ int main(int argc,char **argv){
 
         char k=0;
         bool finish = false;
-        ucoslam::MapViewer TheViewer;
-        ucoslam::TimerAvrg Fps;
+        tslam::MapViewer TheViewer;
+        tslam::TimerAvrg Fps;
         cv::Mat in_image, in_depth;
         while(!finish && getNextFrame(in_depth, in_image)){
 

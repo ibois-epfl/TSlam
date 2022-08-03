@@ -2,7 +2,7 @@
 #include "mapviewer.h"
 #include "moduletools/appparams.h"
 #include <iostream>
-#include <ucoslam/map.h>
+#include <tslam/map.h>
 #include <QtGui/QOpenGLFunctions>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -52,7 +52,7 @@ MapViewer::MapViewer(ModuleSetMainWindow *parent ):AppModule (parent) {
     setToolBar(toolbar);
     //    setControlPanel(_tbox);
 
-    std::shared_ptr< ucoslam::Map > map=std::make_shared<ucoslam::Map>();
+    std::shared_ptr< tslam::Map > map=std::make_shared<tslam::Map>();
     mapdrawer= std::make_shared<MapDrawer>( );
     mapdrawer->set(map);
     _glWindow->insert(mapdrawer,"Map");
@@ -76,7 +76,7 @@ void MapViewer::on_openmap_action(){
 
 
         try{
-            std::shared_ptr< ucoslam::Map > map=std::make_shared<ucoslam::Map>();
+            std::shared_ptr< tslam::Map > map=std::make_shared<tslam::Map>();
             map->readFromFile(file.toStdString());
             mapdrawer->set(map);
             _glWindow->updateScene();

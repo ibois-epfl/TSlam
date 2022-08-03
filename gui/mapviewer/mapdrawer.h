@@ -25,7 +25,7 @@ public:
     void showGraph(bool v){_showCvGraph=v;}
     void showMarkers(bool v){_showMarkers=v;}
     void showPoints(bool v){_showPoints=v;}
-    void set(std::shared_ptr<ucoslam::Map> map,const cv::Mat &campose=cv::Mat()){
+    void set(std::shared_ptr<tslam::Map> map,const cv::Mat &campose=cv::Mat()){
         reset();
         if(!map)return;
         if(!campose.empty()){
@@ -114,7 +114,7 @@ public:
 
     }
 
-    void drawMarker(const ucoslam::Marker &marker){
+    void drawMarker(const tslam::Marker &marker){
             auto points=marker.get3DPoints();
             for(auto &p:points) p*=_scale;
             glBegin(GL_POLYGON);

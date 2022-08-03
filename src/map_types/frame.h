@@ -1,23 +1,23 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
-#ifndef ucoslam_Frame_H_
-#define ucoslam_Frame_H_
+#ifndef tslam_Frame_H_
+#define tslam_Frame_H_
 #include <cstdint>
 #include <limits>
 #include <vector>
@@ -30,8 +30,8 @@
 #include "basictypes/reusablecontainer.h"
 #include "basictypes/flag.h"
 #include "imageparams.h"
-#include "ucoslamtypes.h"
-#include "ucoslam_exports.h"
+#include "tslamtypes.h"
+#include "tslam_exports.h"
 #include "marker.h"
 using namespace  std;
 namespace fbow {
@@ -39,13 +39,13 @@ struct fBow;
 struct fBow2;
 }
 
-namespace ucoslam {
+namespace tslam {
 
 
 
 
 //A image frame
-class UCOSLAM_API Frame{
+class TSLAM_API Frame{
     friend class FrameExtractor;
     struct KdTreeKeyPoints{
         inline float operator()(const cv::KeyPoint&kp,int dim)const{
@@ -58,7 +58,7 @@ public:
 
     Frame();
     uint32_t idx=std::numeric_limits<uint32_t>::max();//frame identifier
-    std::vector<ucoslam::MarkerObservation> markers;//set of orginal markers detected with in the image
+    std::vector<tslam::MarkerObservation> markers;//set of orginal markers detected with in the image
     picoflann::KdTreeIndex<2,KdTreeKeyPoints> keypoint_kdtree;
     cv::Mat desc;//set of descriptors
     std::vector<uint32_t> ids;//for each keypoint, the MapPoint it belongs to (std::numeric_limits<uint32_t>::max() is used if not assigned)
@@ -208,7 +208,7 @@ cv::Point3f Frame::getCameraCenter()const{
 
 //! \class FrameSet
 //! \brief A set of image frames
-class FrameSet :public  ReusableContainer<ucoslam::Frame> {// std::map<uint32_t,ucoslam::Frame>{
+class FrameSet :public  ReusableContainer<tslam::Frame> {// std::map<uint32_t,tslam::Frame>{
 public:
     FrameSet(){ }
 
@@ -218,8 +218,8 @@ public:
     uint32_t getNextFrameIndex()const{return getNextPosition();}
 
     //! Adds new frame to set and returns its idx (if not set, a new one is assigned)
-    inline uint32_t addFrame(const ucoslam::Frame & frame){
-         auto  inserted=ReusableContainer<ucoslam::Frame>::insert(frame);
+    inline uint32_t addFrame(const tslam::Frame & frame){
+         auto  inserted=ReusableContainer<tslam::Frame>::insert(frame);
          inserted.first->idx=inserted.second;//set the idx to the inserted frame
          return inserted.first->idx;
     }

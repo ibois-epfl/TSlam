@@ -1,7 +1,7 @@
 set(WARNINGS_ARE_ERRORS 		OFF CACHE BOOL "Treat warnings as errors")
 set(WHOLE_PROGRAM_OPTIMIZATION 	OFF CACHE BOOL "Flags for whole program optimization.")
 
-set(EXTRA_CXX_FLAGS "-march=native -Wall")
+set(EXTRA_CXX_FLAGS "-shared -march=native -Wall")
 
  IF(USE_TIMERS)
  add_definitions(-DUSE_TIMERS)

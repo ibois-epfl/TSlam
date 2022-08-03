@@ -12,7 +12,7 @@
 
  namespace
 
-     ucoslam {
+     tslam {
 
  void
 LoopDetector ::
@@ -468,7 +468,7 @@ std :: find_if (
     & ]
 
  (
-  const ucoslam ::
+  const tslam ::
 
     MarkerObservation &_175247759383 )
 

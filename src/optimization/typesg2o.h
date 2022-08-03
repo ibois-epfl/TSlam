@@ -1,23 +1,23 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
-#ifndef UCOSLAM_TYPES_G2O_
-#define UCOSLAM_TYPES_G2O_
+#ifndef TSLAM_TYPES_G2O_
+#define TSLAM_TYPES_G2O_
 #include "g2o/core/base_binary_edge.h"
 #include "g2o/core/base_unary_edge.h"
 #include "g2o/core/robust_kernel_impl.h"
@@ -26,7 +26,7 @@
 #include  "g2o/types/sim3/sim3.h"
 #include "map_types/marker.h"
 
-namespace ucoslam{
+namespace tslam{
 
 typedef Eigen::Matrix<double,8,1,Eigen::ColMajor>    Vector8D;
 
@@ -116,12 +116,12 @@ public:
 
   double fx, fy, cx, cy;
 
-  MarkerEdge(const ucoslam::Marker &marker,uint32_t frameid){
+  MarkerEdge(const tslam::Marker &marker,uint32_t frameid){
       marker_id=marker.id;
       frame_id=frameid;
      _delta_der=1e-4;//set the delta increment to compute the partial derivative for Jacobians
       auto pointsA=marker.get3DPoints(false);
-//      ucoslam::Marker::get3DPointsLocalRefSystem(size);
+//      tslam::Marker::get3DPointsLocalRefSystem(size);
       for(int i=0;i<4;i++){
           auto &p=pointsA[i];
           points[i]=g2o::Vector3(p.x,p.y,p.z);
@@ -180,7 +180,7 @@ public:
 
   double fx, fy, cx, cy;
 
-  MarkerEdgePlanar(const ucoslam::Marker &marker,uint32_t frameid){
+  MarkerEdgePlanar(const tslam::Marker &marker,uint32_t frameid){
       marker_id=frameid;
       frame_id=frameid;
      _delta_der=1e-4;//set the delta increment to compute the partial derivative for Jacobians
@@ -541,7 +541,7 @@ public:
 
   double fx, fy, cx, cy;
 
-  MarkerEdgeOnlyProject(ucoslam::Marker &marker){
+  MarkerEdgeOnlyProject(tslam::Marker &marker){
      _delta_der=1e-4;//set the delta increment to compute the partial derivative for Jacobians
       auto pointsA=marker.get3DPoints(false);
       for(int i=0;i<pointsA.size();i++){

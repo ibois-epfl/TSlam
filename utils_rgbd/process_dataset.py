@@ -56,12 +56,12 @@ rigid_registration = True
 cloud_matching = True
 transform_finding = False
 
-#ucoslam tracking
+#tslam tracking
 if slam_tracking:
     for subdir in subdirs:
         command = "./rgbd_slam "+subdir+"cut.oni oni "+" -out "+subdir+"cut "+"-size "+marker_size+" --calib "+tracking_calib_str+" "+nokeypoints_str
         if monocular:
-            command = "../utils/ucoslam_monocular "+subdir+"cut.avi "+tracking_calib_str+" -out "+subdir+"cut "+"-aruco-markerSize "+marker_size+" "+nokeypoints_str+" -KFMinConfidence 0.1"
+            command = "../utils/tslam_monocular "+subdir+"cut.avi "+tracking_calib_str+" -out "+subdir+"cut "+"-aruco-markerSize "+marker_size+" "+nokeypoints_str+" -KFMinConfidence 0.1"
         if print_commands:
             print command
         else:

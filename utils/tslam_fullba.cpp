@@ -12,7 +12,7 @@
 #include <opencv2/calib3d.hpp>
 #include <type_traits>
 #include "cvprojectpoint.h"
-#include "ucoslam.h"
+#include "tslam.h"
 #include "g2oba.h"
 class CmdLineParser{int argc; char **argv;
                 public: CmdLineParser(int _argc,char **_argv):argc(_argc),argv(_argv){}  bool operator[] ( string param ) {int idx=-1;  for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i;    return ( idx!=-1 ) ;    } string operator()(string param,string defvalue=""){int idx=-1;    for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i; if ( idx==-1 ) return defvalue;   else  return ( argv[  idx+1] ); }
@@ -26,9 +26,9 @@ class CmdLineParser{int argc; char **argv;
                     }
                    };
 
-namespace ucoslam {
+namespace tslam {
 struct DebugTest{
-    static void removeMapPointObservation(ucoslam::Map &map,uint32_t point_idx,uint32_t frame_idx){
+    static void removeMapPointObservation(tslam::Map &map,uint32_t point_idx,uint32_t frame_idx){
         map.removeMapPointObservation(point_idx,frame_idx,3);
     }
 };
@@ -38,7 +38,7 @@ int main(int argc,char **argv){
     try {
         if(argc<3)throw std::runtime_error("Usage: inmap outmap [iterations]");
 
-        ucoslam::Map TheMap;
+        tslam::Map TheMap;
         cout<<"reading map"<<endl;
         TheMap.readFromFile(argv[1]);
         cout<<"Done"<<endl;
@@ -174,7 +174,7 @@ int main(int argc,char **argv){
 
         //now, the keyframes
         for(auto pose:kf_poses){
-            TheMap.keyframes[pose.first].pose_f2g=ucoslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
+            TheMap.keyframes[pose.first].pose_f2g=tslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
             TheMap.keyframes[pose.first].imageParams.CameraMatrix.at<float>(0,0)=camera->fx();
             TheMap.keyframes[pose.first].imageParams.CameraMatrix.at<float>(1,1)=camera->fy();
             TheMap.keyframes[pose.first].imageParams.CameraMatrix.at<float>(0,2)=camera->cx();
@@ -184,12 +184,12 @@ int main(int argc,char **argv){
         }
 //        //remove weak links
 //        for(auto &p:projectionsInGraph){
-//            if(p->chi2()>5.99) ucoslam::DebugTest::removeMapPointObservation(TheMap,p->point_id,p->frame_id);
+//            if(p->chi2()>5.99) tslam::DebugTest::removeMapPointObservation(TheMap,p->point_id,p->frame_id);
 //        }
 
         //finally, markers
         for(auto pose:marker_poses)
-            TheMap.map_markers[pose.first].pose_g2m=ucoslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
+            TheMap.map_markers[pose.first].pose_g2m=tslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
 
 
         cout<<"Final Camera Params "<<endl;

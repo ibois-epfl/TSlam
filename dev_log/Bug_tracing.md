@@ -35,11 +35,11 @@ enum { LMEDS  = 4,  //!< least-median of squares algorithm
 #12 0x00007ffff7c5d7d4 in cv::solvePnP(cv::_InputArray const&, cv::_InputArray const&, cv::_InputArray const&, cv::_InputArray const&, cv::_OutputArray const&, cv::_OutputArray const&, bool, int) () at /usr/local/lib/libopencv_calib3d.so.4.2
 #13 0x00007ffff7c5f615 in cv::solvePnPRansac(cv::_InputArray const&, cv::_InputArray const&, cv::_InputArray const&, cv::_InputArray const&, cv::_OutputArray const&, cv::_OutputArray const&, bool, int, float, double, cv::_OutputArray const&, int) ()
     at /usr/local/lib/libopencv_calib3d.so.4.2
-#14 0x00007ffff7ee0da1 in ucoslam::LoopDetector::_8671179296205241382(ucoslam::Frame&, int) ()
-#15 0x00007ffff7ee2280 in ucoslam::LoopDetector::detectLoopFromKeyPoints(ucoslam::Frame&, int) ()
-    at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libucoslam.so.1.1
-#16 0x00007ffff7f056d6 in ucoslam::MapManager::_12295639104386009589() () at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libucoslam.so.1.1
-#17 0x00007ffff7f06900 in ucoslam::MapManager::_8669746328630631075() () at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libucoslam.so.1.1
+#14 0x00007ffff7ee0da1 in tslam::LoopDetector::_8671179296205241382(tslam::Frame&, int) ()
+#15 0x00007ffff7ee2280 in tslam::LoopDetector::detectLoopFromKeyPoints(tslam::Frame&, int) ()
+    at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libtslam.so.1.1
+#16 0x00007ffff7f056d6 in tslam::MapManager::_12295639104386009589() () at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libtslam.so.1.1
+#17 0x00007ffff7f06900 in tslam::MapManager::_8669746328630631075() () at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libtslam.so.1.1
 ```
 
 ## Bug #2 [Solved]
@@ -52,15 +52,15 @@ if (map_matches[i].trainIdx >= TheMap->map_points.data_size()) return 0;
 
 #### Original Error Message
 ```cpp
-Thread 1 "ucoslam_monocul" received signal SIGSEGV, Segmentation fault.
-#0  0x00007ffff7f8c64e in ucoslam::PnPSolver::solvePnp(ucoslam::Frame const&, std::shared_ptr<ucoslam::Map>, std::vector<cv::DMatch, std::allocator<cv::DMatch> >&, ucoslam::se3&, long) () at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libucoslam.so.1.1
-#1  0x00007ffff7f16e06 in ucoslam::System::_11166622111371682966(ucoslam::Frame&, ucoslam::se3) ()
-    at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libucoslam.so.1.1
-#2  0x00007ffff7f1b996 in ucoslam::System::process(ucoslam::Frame const&) () at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libucoslam.so.1.1
-#3  0x00007ffff7f1bd45 in ucoslam::System::process(cv::Mat&, ucoslam::ImageParams const&, unsigned int, cv::Mat const&, cv::Mat const&) ()
-    at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libucoslam.so.1.1
-#4  0x00007ffff7e77960 in ucoslam::UcoSlam::process(cv::Mat&, ucoslam::ImageParams const&, unsigned int) ()
-    at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libucoslam.so.1.1
+Thread 1 "tslam_monocul" received signal SIGSEGV, Segmentation fault.
+#0  0x00007ffff7f8c64e in tslam::PnPSolver::solvePnp(tslam::Frame const&, std::shared_ptr<tslam::Map>, std::vector<cv::DMatch, std::allocator<cv::DMatch> >&, tslam::se3&, long) () at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libtslam.so.1.1
+#1  0x00007ffff7f16e06 in tslam::System::_11166622111371682966(tslam::Frame&, tslam::se3) ()
+    at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libtslam.so.1.1
+#2  0x00007ffff7f1b996 in tslam::System::process(tslam::Frame const&) () at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libtslam.so.1.1
+#3  0x00007ffff7f1bd45 in tslam::System::process(cv::Mat&, tslam::ImageParams const&, unsigned int, cv::Mat const&, cv::Mat const&) ()
+    at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libtslam.so.1.1
+#4  0x00007ffff7e77960 in tslam::TSlam::process(cv::Mat&, tslam::ImageParams const&, unsigned int) ()
+    at /home/tpp/UCOSlam-IBOIS-1.1.0/build/libs/libtslam.so.1.1
 #5  0x0000555555568837 in main ()
 ```
 
@@ -102,9 +102,9 @@ Se3Transform pose_f2g; pose_f2g=tmp;
 ##### The 1st one
 ```cpp
 KMeanIndex::knnsearch Index is not of the same size than features
-ucoslam_monocular: /home/tpp/UCOSlam-IBOIS/src/basictypes/reusablecontainer.h:245: T& ucoslam::ReusableContainer<T>::at(uint32_t) [with T = ucoslam::Frame; uint32_t = unsigned int]: Assertion 'index<_data.size()' failed.
+tslam_monocular: /home/tpp/UCOSlam-IBOIS/src/basictypes/reusablecontainer.h:245: T& tslam::ReusableContainer<T>::at(uint32_t) [with T = tslam::Frame; uint32_t = unsigned int]: Assertion 'index<_data.size()' failed.
 
-Thread 1 "ucoslam_monocul" received signal SIGABRT, Aborted.
+Thread 1 "tslam_monocul" received signal SIGABRT, Aborted.
 __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:50
 50      ../sysdeps/unix/sysv/linux/raise.c: No such file or directory.
 (gdb) backtrace
@@ -113,19 +113,19 @@ __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:50
 #2  0x00007ffff47e1729 in __assert_fail_base
     (fmt=0x7ffff4977588 "%s%s%s:%u: %s%sAssertion `%s' failed.\n%n", assertion=0x5555555cec4b "index<_data.size()", file=0x5555555cec10 "/home/tpp/UCOSlam-IBOIS/src/basictypes/reusablecontainer.h", line=245, function=<optimized out>) at assert.c:92
 #3  0x00007ffff47f2fd6 in __GI___assert_fail
-    (assertion=0x5555555cec4b "index<_data.size()", file=0x5555555cec10 "/home/tpp/UCOSlam-IBOIS/src/basictypes/reusablecontainer.h", line=245, function=0x5555555ceba8 "T& ucoslam::ReusableContainer<T>::at(uint32_t) [with T = ucoslam::Frame; uint32_t = unsigned int]")
+    (assertion=0x5555555cec4b "index<_data.size()", file=0x5555555cec10 "/home/tpp/UCOSlam-IBOIS/src/basictypes/reusablecontainer.h", line=245, function=0x5555555ceba8 "T& tslam::ReusableContainer<T>::at(uint32_t) [with T = tslam::Frame; uint32_t = unsigned int]")
     at assert.c:101
-#4  0x000055555558fa37 in ucoslam::ReusableContainer<ucoslam::Frame>::at(unsigned int) (this=<optimized out>, index=<optimized out>)
+#4  0x000055555558fa37 in tslam::ReusableContainer<tslam::Frame>::at(unsigned int) (this=<optimized out>, index=<optimized out>)
     at /usr/include/c++/9/bits/stl_vector.h:1040
-#5  0x00007ffff7f1eb62 in ucoslam::ReusableContainer<ucoslam::Frame>::operator[](unsigned int)
+#5  0x00007ffff7f1eb62 in tslam::ReusableContainer<tslam::Frame>::operator[](unsigned int)
     (index=<error reading variable: Unhandled dwarf expression opcode 0x0>, this=<optimized out>)
     at /home/tpp/UCOSlam-IBOIS/src/basictypes/reusablecontainer.h:134
-#6  ucoslam::System::_11166622111371682966(ucoslam::Frame&, ucoslam::se3)
+#6  tslam::System::_11166622111371682966(tslam::Frame&, tslam::se3)
    Python Exception <class 'gdb.MemoryError'> Cannot access memory at address 0x8: 
- (this=<optimized out>, _16940374161810747371=..., _14387478432460351890=#7  0x00007ffff7f20b36 in ucoslam::System::process(ucoslam::Frame const&) (this=<optimized out>, inputFrame=...) at /home/tpp/UCOSlam-IBOIS/src/utils/system.cpp:442
-#8  0x00007ffff7f21768 in ucoslam::System::process(cv::Mat&, ucoslam::ImageParams const&, unsigned int, cv::Mat const&, cv::Mat const&) (this=<optimized out>, in_image=<error reading variable: Unhandled dwarf expression opcode 0x0>, _18212413899834346676=<error reading variable: Unhandled dwarf expression opcode 0x0>, _9933887380370137445=<error reading variable: Unhandled dwarf expression opcode 0x0>, _46082575014988268=..., _1705635550657133790=...) at /home/tpp/UCOSlam-IBOIS/src/utils/system.cpp:764
-#9  0x00007ffff7e8f8f2 in ucoslam::UcoSlam::process(cv::Mat&, ucoslam::ImageParams const&, unsigned int)
-    (this=<optimized out>, in_image=..., ip=..., frameseq_idx=<optimized out>) at /home/tpp/UCOSlam-IBOIS/src/ucoslam.cpp:23
+ (this=<optimized out>, _16940374161810747371=..., _14387478432460351890=#7  0x00007ffff7f20b36 in tslam::System::process(tslam::Frame const&) (this=<optimized out>, inputFrame=...) at /home/tpp/UCOSlam-IBOIS/src/utils/system.cpp:442
+#8  0x00007ffff7f21768 in tslam::System::process(cv::Mat&, tslam::ImageParams const&, unsigned int, cv::Mat const&, cv::Mat const&) (this=<optimized out>, in_image=<error reading variable: Unhandled dwarf expression opcode 0x0>, _18212413899834346676=<error reading variable: Unhandled dwarf expression opcode 0x0>, _9933887380370137445=<error reading variable: Unhandled dwarf expression opcode 0x0>, _46082575014988268=..., _1705635550657133790=...) at /home/tpp/UCOSlam-IBOIS/src/utils/system.cpp:764
+#9  0x00007ffff7e8f8f2 in tslam::TSlam::process(cv::Mat&, tslam::ImageParams const&, unsigned int)
+    (this=<optimized out>, in_image=..., ip=..., frameseq_idx=<optimized out>) at /home/tpp/UCOSlam-IBOIS/src/tslam.cpp:23
 #10 0x0000555555569f26 in main(int, char**) (argc=<optimized out>, argv=<optimized out>)
     at /home/tpp/UCOSlam-IBOIS/utils/monocular_slam.cpp:505
 ```
@@ -133,7 +133,7 @@ __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:50
 ##### The 2nd one
 ```cpp
 #2  0x00007ffff4dad810 in cv::operator*(cv::Mat const&, cv::Mat const&) [clone .cold] () at /usr/local/lib/libopencv_core.so.405
-#3  0x00007ffff7f1e125 in ucoslam::System::_11166622111371682966(ucoslam::Frame&, ucoslam::se3)Python Exception <class 'gdb.MemoryError'> Cannot access memory at address 0x8: 
+#3  0x00007ffff7f1e125 in tslam::System::_11166622111371682966(tslam::Frame&, tslam::se3)Python Exception <class 'gdb.MemoryError'> Cannot access memory at address 0x8: 
 
     (this=<optimized out>, frame_169403=..., se3_143874=#4  0x00007fffffffb890 in  ()
 ```
@@ -145,19 +145,19 @@ __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:50
 #2  0x00007ffff47fa729 in __assert_fail_base
     (fmt=0x7ffff4990588 "%s%s%s:%u: %s%sAssertion `%s' failed.\n%n", assertion=0x7ffff7f8266f "m.type()==CV_32F", file=0x7ffff7f836a8 "/home/tpp/UCOSlam-IBOIS/src/basictypes/se3transform.h", line=63, function=<optimized out>) at assert.c:92
 #3  0x00007ffff480bfd6 in __GI___assert_fail
-    (assertion=assertion@entry=0x7ffff7f8266f "m.type()==CV_32F", file=file@entry=0x7ffff7f836a8 "/home/tpp/UCOSlam-IBOIS/src/basictypes/se3transform.h", line=line@entry=63, function=function@entry=0x7ffff7f83660 "ucoslam::Se3Transform ucoslam::Se3Transform::operator=(const cv::Mat&)") at assert.c:101
-#4  0x00007ffff7e81ad7 in ucoslam::Se3Transform::operator=(cv::Mat const&) (m=..., this=0x7fffffffb560) at /usr/include/c++/9/bits/stl_iterator.h:803
-#5  ucoslam::Map::matchFrameToMapPoints(std::vector<unsigned int, std::allocator<unsigned int> > const&, ucoslam::Frame&, cv::Mat const&, float, float, bool, bool, std::set<unsigned int, std::less<unsigned int>, std::allocator<unsigned int> >)
+    (assertion=assertion@entry=0x7ffff7f8266f "m.type()==CV_32F", file=file@entry=0x7ffff7f836a8 "/home/tpp/UCOSlam-IBOIS/src/basictypes/se3transform.h", line=line@entry=63, function=function@entry=0x7ffff7f83660 "tslam::Se3Transform tslam::Se3Transform::operator=(const cv::Mat&)") at assert.c:101
+#4  0x00007ffff7e81ad7 in tslam::Se3Transform::operator=(cv::Mat const&) (m=..., this=0x7fffffffb560) at /usr/include/c++/9/bits/stl_iterator.h:803
+#5  tslam::Map::matchFrameToMapPoints(std::vector<unsigned int, std::allocator<unsigned int> > const&, tslam::Frame&, cv::Mat const&, float, float, bool, bool, std::set<unsigned int, std::less<unsigned int>, std::allocator<unsigned int> >)
     (this=this@entry=0x55555563bbd0, used_frames=std::vector of length 222, capacity 222 = {...}, curframe=..., pose_f2g_=..., minDescDist=minDescDist@entry=100, maxRepjDist=maxRepjDist@entry=15, markMapPointsAsVisible=markMapPointsAsVisible@entry=true, useAllPoints=false, excludedPoints=std::set with 0 elements)
     at /home/tpp/UCOSlam-IBOIS/src/map.cpp:820
-#6  0x00007ffff7f1e4c3 in ucoslam::System::_11166622111371682966(ucoslam::Frame&, ucoslam::se3)Python Exception <class 'gdb.MemoryError'> Cannot access memory at address 0x8: 
+#6  0x00007ffff7f1e4c3 in tslam::System::_11166622111371682966(tslam::Frame&, tslam::se3)Python Exception <class 'gdb.MemoryError'> Cannot access memory at address 0x8: 
 
-    (this=0x555555634d30, frame_169403=..., se3_143874=#7  0x00007ffff7f20986 in ucoslam::System::process(ucoslam::Frame const&) (this=0x555555634d30, inputFrame=...)
+    (this=0x555555634d30, frame_169403=..., se3_143874=#7  0x00007ffff7f20986 in tslam::System::process(tslam::Frame const&) (this=0x555555634d30, inputFrame=...)
     at /home/tpp/UCOSlam-IBOIS/src/utils/system.cpp:426
-#8  0x00007ffff7f215b8 in ucoslam::System::process(cv::Mat&, ucoslam::ImageParams const&, unsigned int, cv::Mat const&, cv::Mat const&)
+#8  0x00007ffff7f215b8 in tslam::System::process(cv::Mat&, tslam::ImageParams const&, unsigned int, cv::Mat const&, cv::Mat const&)
     (this=this@entry=0x555555634d30, in_image=..., _18212413899834346676=..., _9933887380370137445=_9933887380370137445@entry=48961, _46082575014988268=..., _1705635550657133790=...) at /home/tpp/UCOSlam-IBOIS/src/utils/system.cpp:746
-#9  0x00007ffff7e8f372 in ucoslam::UcoSlam::process(cv::Mat&, ucoslam::ImageParams const&, unsigned int) (this=<optimized out>, in_image=..., ip=..., frameseq_idx=48961)
-    at /home/tpp/UCOSlam-IBOIS/src/ucoslam.cpp:23
+#9  0x00007ffff7e8f372 in tslam::TSlam::process(cv::Mat&, tslam::ImageParams const&, unsigned int) (this=<optimized out>, in_image=..., ip=..., frameseq_idx=48961)
+    at /home/tpp/UCOSlam-IBOIS/src/tslam.cpp:23
 ```
 
 
@@ -172,7 +172,7 @@ matrix = matrix * 5;
 ```cpp
 OpenCV(4.5.5-dev) /home/tpp/opencv/modules/core/src/matrix_expressions.cpp:32: error: (-5:Bad argument) One or more matrix operands are empty. in function 'checkOperandsExist'
 
-Thread 1 "ucoslam_monocul" received signal SIGINT, Interrupt.
+Thread 1 "tslam_monocul" received signal SIGINT, Interrupt.
 0x00007ffff48d6fcb in __GI___select (nfds=4, readfds=0x7fffffffbd60, writefds=0x0, exceptfds=0x0, timeout=0x7fffffffbd30)
     at ../sysdeps/unix/sysv/linux/select.c:41
 41      ../sysdeps/unix/sysv/linux/select.c: No such file or directory.

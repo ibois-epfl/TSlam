@@ -22,7 +22,7 @@
 
 namespace
 
-ucoslam {
+tslam {
 
     Params System::sysParams;
 
@@ -36,7 +36,7 @@ ucoslam {
         sysFrameExtractor = std::make_shared<FrameExtractor>();
         sysMapIntializer = std::make_shared<MapInitializer>();
         sysMapManager = std::make_shared<MapManager>();
-        _1320287184975591154 = std::make_shared<ucoslam::STagDetector>();
+        _1320287184975591154 = std::make_shared<tslam::STagDetector>();
     }
 
     System::~System() { waitForFinished(); }
@@ -58,7 +58,7 @@ ucoslam {
 
                            shared_ptr<
 
-            ucoslam::
+            tslam::
 
             MarkerDetector>
 
@@ -978,7 +978,7 @@ cv::Mat System::process(vector<cv::
                              map_markers.end()
                     ) {
 
-                ucoslam::
+                tslam::
                 Marker &_6807036686937475945 =
 
                         TheMap->

@@ -3,11 +3,11 @@
 # ----------------------------------------------------------------------------
 find_package(OpenCV 4.5.5 REQUIRED)
 INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
-SET(UCOSLAM_REQUIRED_LIBRARIES ${OpenCV_LIBS})
+SET(TSLAM_REQUIRED_LIBRARIES ${OpenCV_LIBS})
 
 find_package(OpenMP  )
 IF(OpenMP_FOUND)
-    SET (UCOSLAM_REQUIRED_LIBRARIES ${UCOSLAM_REQUIRED_LIBRARIES} ${OpenMP_CXX_LIBRARIES})
+    SET (TSLAM_REQUIRED_LIBRARIES ${TSLAM_REQUIRED_LIBRARIES} ${OpenMP_CXX_LIBRARIES})
     SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
     add_compile_options(-DUSE_OPENMP)
@@ -31,12 +31,12 @@ SET(EXTRALIBNAME "${PROJECT_NAME}_")
 add_definitions(-DXFLANN_OPENCV)
 IF(NOT BUILD_OWN_XFLANN)
     find_package(xflann   REQUIRED)
-    SET(UCOSLAM_XFLANN_LIBS ${xflann_LIBS})
+    SET(TSLAM_XFLANN_LIBS ${xflann_LIBS})
 ELSE ()
     OPTION(XFLANN_OPENCV "Set on/off" ON)
     ADD_SUBDIRECTORY(3rdparty/xflann/xflann)
     include_directories(3rdparty/xflann)
-    SET(UCOSLAM_XFLANN_LIBS ${EXTRALIBNAME}xflann)
+    SET(TSLAM_XFLANN_LIBS ${EXTRALIBNAME}xflann)
 ENDIF()
 
 
@@ -58,29 +58,29 @@ ENDIF()
 
 IF(NOT BUILD_OWN_FBOW)
     find_package(fbow   REQUIRED)
-    SET(UCOSLAM_FBOW_LIBS ${fbow_LIBS})
+    SET(TSLAM_FBOW_LIBS ${fbow_LIBS})
 ELSE ()
     ADD_SUBDIRECTORY(3rdparty/fbow/fbow)
     include_directories(3rdparty/fbow)
-    SET(UCOSLAM_FBOW_LIBS ${EXTRALIBNAME}fbow)
+    SET(TSLAM_FBOW_LIBS ${EXTRALIBNAME}fbow)
 ENDIF()
 
 IF(NOT BUILD_OWN_STAG)
     find_package(stag   REQUIRED)
-    SET(UCOSLAM_STAG_LIBS ${stag_LIBS})
+    SET(TSLAM_STAG_LIBS ${stag_LIBS})
 ELSE ()
     ADD_SUBDIRECTORY(3rdparty/stag/stag)
     include_directories(3rdparty/stag)
-    SET(UCOSLAM_STAG_LIBS ${EXTRALIBNAME}stag)
+    SET(TSLAM_STAG_LIBS ${EXTRALIBNAME}stag)
 ENDIF()
 
 IF(NOT BUILD_OWN_ARUCO)
     find_package(aruco   REQUIRED)
-    SET(UCOSLAM_ARUCO_LIBS ${aruco_LIBS})
+    SET(TSLAM_ARUCO_LIBS ${aruco_LIBS})
 ELSE ()
     ADD_SUBDIRECTORY(3rdparty/aruco/aruco)
     include_directories(3rdparty/aruco)
-    SET(UCOSLAM_ARUCO_LIBS ${EXTRALIBNAME}aruco)
+    SET(TSLAM_ARUCO_LIBS ${EXTRALIBNAME}aruco)
 ENDIF()
 
  
@@ -93,7 +93,7 @@ ENDIF()
 
 
 
-SET(UCOSLAM_REQUIRED_LIBRARIES ${UCOSLAM_REQUIRED_LIBRARIES}  ${UCOSLAM_FBOW_LIBS}  ${UCOSLAM_ARUCO_LIBS} ${UCOSLAM_STAG_LIBS} ${UCOSLAM_XFLANN_LIBS} ${G2O_LIBS})
+SET(TSLAM_REQUIRED_LIBRARIES ${TSLAM_REQUIRED_LIBRARIES}  ${TSLAM_FBOW_LIBS}  ${TSLAM_ARUCO_LIBS} ${TSLAM_STAG_LIBS} ${TSLAM_XFLANN_LIBS} ${G2O_LIBS})
 
 
 

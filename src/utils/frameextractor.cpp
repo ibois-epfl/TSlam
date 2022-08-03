@@ -15,7 +15,7 @@
 
  namespace
 
-ucoslam {
+tslam {
 
  void
 
@@ -193,7 +193,7 @@ setParams (
 
 shared_ptr <
 
-      ucoslam ::
+      tslam ::
 
    MarkerDetector > _1516358670470627782 )    {
 
@@ -2212,7 +2212,7 @@ void FrameExtractor :: extractFrame ( const ImgInfo &Iinfo, Frame &frame_460825,
       auto _6807036698426592110 = _8000946946827829134->detect ( Iinfo._15530082771795719302 );
 
       for( const auto&_markerObservation:_6807036698426592110 ) {
-        ucoslam ::MarkerObservation _8214686538440707422 ;
+        tslam ::MarkerObservation _8214686538440707422 ;
         _8214686538440707422.id =  _markerObservation.id ;
         _8214686538440707422.points3d = _markerObservation.points3d ;
         _8214686538440707422.corners =    _markerObservation.corners ;

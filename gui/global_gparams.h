@@ -3,7 +3,7 @@
 #include "gparam/gparam.h"
 #include "aruco/markerdetector.h"
 #include "aruco/dictionary.h"
-#include "ucoslamtypes.h"
+#include "tslamtypes.h"
 #include <iostream>
 class ArucoGParams: public gparam::ParamSet {
 public:
@@ -58,13 +58,13 @@ public:
     UcoSlamGParamsBasic(){
         create();
     }
-    UcoSlamGParamsBasic(const ucoslam::Params &params){
+    UcoSlamGParamsBasic(const tslam::Params &params){
         create();
         set(params);
     }
 
 
-    void set(const ucoslam::Params &params){
+    void set(const tslam::Params &params){
         find("Sequential")=bool(params.runSequential);
         if(!params.detectMarkers)
             find("Detect Markers")="No";
@@ -81,7 +81,7 @@ public:
         find("Marker MinMarkerSize")=float(params.aruco_minMarkerSize==-1)?0.0:params.aruco_minMarkerSize;
     }
 
-    void update(ucoslam::Params &params){
+    void update(tslam::Params &params){
         params.runSequential=find("Sequential").get<bool>();
         if(find("Detect Markers").asString()=="No")
             params.detectMarkers=false;
@@ -147,7 +147,7 @@ public:
         find("Marker Size").setDescription("Size of the markers");
 
     }
-    UcoSlamGParamsRunTime(const ucoslam::Params &params):UcoSlamGParamsBasic(params){
+    UcoSlamGParamsRunTime(const tslam::Params &params):UcoSlamGParamsBasic(params){
         std::vector<gparam::Param>::insert(begin(),gparam::Param("Mode", {"SLAM","Track Only"},0) );
         find("Marker Size").setDescription("Size of the markers");
 
@@ -172,14 +172,14 @@ public:
          insert(gparam::Param("Scale Factor",double(1.2),1.05,3.,0.1));
          back().setDescription("Scale Factor for KeyPoint Pyramid");
     }
-    void set(const ucoslam::Params &params){
+    void set(const tslam::Params &params){
         UcoSlamGParamsBasic::set(params);
         find("Marker Size")=double(params.aruco_markerSize);
         find("Num Octaves")=int(params.nOctaveLevels);
         find("Scale Factor")=double(params.scaleFactor);
     }
 
-    void update(  ucoslam::Params &params){
+    void update(  tslam::Params &params){
         UcoSlamGParamsBasic::update(params);
         params.aruco_markerSize=find("Marker Size").get<float>();
         params.nOctaveLevels=find("Num Octaves").get<int>();

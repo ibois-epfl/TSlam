@@ -1,20 +1,20 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
 #include "misc.h"
 #include <opencv2/imgproc/imgproc.hpp>
@@ -25,7 +25,7 @@
 #include "optimization/ippe.h"
 #include "cvversioning.h"
 using namespace std;
-namespace ucoslam{
+namespace tslam{
 
 /**
    * Given a Rotation and a Translation expressed both as a vector, returns the corresponding 4x4 matrix
@@ -641,14 +641,14 @@ cv::Point3f angular_error_minimization(cv::Point3f point, const vector<se3> &pos
 }
 
 
-cv::Mat  ARUCO_initialize(const std::vector<ucoslam::MarkerObservation> &markers1,
-                                      const std::vector<ucoslam::MarkerObservation> &markers2,
-                                      const ucoslam::ImageParams &cp, float markerSize,
+cv::Mat  ARUCO_initialize(const std::vector<tslam::MarkerObservation> &markers1,
+                                      const std::vector<tslam::MarkerObservation> &markers2,
+                                      const tslam::ImageParams &cp, float markerSize,
                                       float  minCornerPixDist,float repj_err_Thres, float minDistance,
                                       std::map<uint32_t,se3> &_marker_poses){
 
-    const std::vector<ucoslam::MarkerObservation> &ms1_in=markers1;
-    const std::vector<ucoslam::MarkerObservation> &ms2_in=markers2;
+    const std::vector<tslam::MarkerObservation> &ms1_in=markers1;
+    const std::vector<tslam::MarkerObservation> &ms2_in=markers2;
 
     //find matches of markers in both images
     vector< std::pair<uint32_t,uint32_t> > matches;
@@ -660,7 +660,7 @@ cv::Mat  ARUCO_initialize(const std::vector<ucoslam::MarkerObservation> &markers
     if (matches.size()==0)return cv::Mat();
 
     //create vectors with matched elements so that the elements are in order in both ms1 and ms2
-    std::vector<ucoslam::MarkerObservation> ms1,ms2;
+    std::vector<tslam::MarkerObservation> ms1,ms2;
     for(auto m:matches){
         ms1.push_back( ms1_in[m.first]);
         ms2.push_back( ms2_in[m.second]);
@@ -787,7 +787,7 @@ cv::Mat  ARUCO_initialize(const std::vector<ucoslam::MarkerObservation> &markers
      return   cv::Mat();
 }
 
-cv::Mat ARUCO_bestMarkerPose(const vector<ucoslam::MarkerObservation> &marker_views, const vector<se3> &frameposes_f2g, const ucoslam::ImageParams &cp ){
+cv::Mat ARUCO_bestMarkerPose(const vector<tslam::MarkerObservation> &marker_views, const vector<se3> &frameposes_f2g, const tslam::ImageParams &cp ){
     
     assert( marker_views.size()>=2);
     

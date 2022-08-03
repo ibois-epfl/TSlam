@@ -1,7 +1,7 @@
 # UcoSLAM-IBOIS
 ![](./example/tracking_demo.gif)
 
-The modified version of [UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62) for augmented carpentry project, which we intregrat [STag](https://github.com/bbenligiray/stag) and add [CLAHE](https://en.wikipedia.org/wiki/Adaptive_histogram_equalization) for preprocessing.
+The modified version of [UcoSLAM v1.1.0](http://www.uco.es/investiga/grupos/ava/node/62) for augmented carpentry project, which we intregrate [STag](https://github.com/bbenligiray/stag) and add [CLAHE](https://en.wikipedia.org/wiki/Adaptive_histogram_equalization) for preprocessing.
 - The official document of UcoSLAM:  [link](https://docs.google.com/document/d/12EGJ3cI-m8XMXgI5bYW1dLi5lBO-vxxr6Cf769wQzJc)
 - [STag ROS](https://github.com/usrl-uofsc/stag_ros): Code of STag is from this repo. This one upgrade the original STag from OpenCV 3 to OpenCV 4.
 - [Dev Log of this modification](./dev_log)
@@ -38,17 +38,17 @@ unzip ./example/STag23mm_smallCube/example.zip -d ./example/STag23mm_smallCube
 
 ## APIs
 ```cpp
-#include "ucoslam.h"
+#include "tslam.h"
 ```
-### Class `ucoslam::UcoSlam`
+### Class `tslam::TSlam`
 The main interface.
 ```c++
-void setParams(std::shared_ptr<Map> map, const ucoslam::Params &params, const std::string &vocabulary="");
+void setParams(std::shared_ptr<Map> map, const tslam::Params &params, const std::string &vocabulary="");
 ```
 - Initialize the UcoSLAM.
 - Params:
     - `std::shared_ptr<Map> map`: The map.
-    - `const ucoslam::Params &params`: The system parameter (not the camera parameter).
+    - `const tslam::Params &params`: The system parameter (not the camera parameter).
     - `const std::string &vocabulary`: Path to the `.fbow` file.
 
 ```cpp
@@ -71,7 +71,7 @@ cv::Mat process(cv::Mat &in_image, const ImageParams &ip, uint32_t frameseq_idx)
         - If not tracked: empty `cv::Mat`.
 
 
-### Class `ucoslam::ImageParams`
+### Class `tslam::ImageParams`
 Storing the [camera matrix and distortion coefficients](https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html)
 ```c++
 void readFromXMLFile(std::string filePath);
@@ -110,7 +110,7 @@ void saveToYMLFile(const std::string &path);
     - `aruco_markerSize`: `float`, size of the marker in the real-world.
     - `isInstancing`: `bool`, indicate if it's mapping/instancing.
 
-### Map
+### Class `Map`
 ```cpp
 void readFromFile(std::string fpath);
 void saveToFile(std::string fpath);

@@ -1,35 +1,35 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
-#ifndef UCOSLAM_FrameDataBase_H
-#define UCOSLAM_FrameDataBase_H
+#ifndef TSLAM_FrameDataBase_H
+#define TSLAM_FrameDataBase_H
 #include <iostream>
 #include <memory>
 #include <vector>
 #include <set>
-#include "ucoslam_exports.h"
-namespace ucoslam{
+#include "tslam_exports.h"
+namespace tslam{
 class KFDataBaseVirtual;
 class Frame;
 class FrameSet;
 class CovisGraph;
 
-class UCOSLAM_API KeyFrameDataBase{
+class TSLAM_API KeyFrameDataBase{
 public:
     KeyFrameDataBase();
     void loadFromFile(const std::string &filePathOrNothing);

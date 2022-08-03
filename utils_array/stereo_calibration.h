@@ -19,7 +19,7 @@ public:
                         const std::vector<std::vector<cv::Mat>>& cameraPose,
                         cv::Mat& r_io, cv::Mat& t_io);
 
-    cv::Mat getRTMatrix() const{return ucoslam::getRTMatrix(_rvec,_tvec);}
+    cv::Mat getRTMatrix() const{return tslam::getRTMatrix(_rvec,_tvec);}
     cv::Mat getRvec() const {return _rvec;}
     cv::Mat getTvec() const {return _tvec;}
     std::vector<aruco::CameraParameters> _camParams;

@@ -1,9 +1,9 @@
 files=            mapmanager.cpp mapinitializer.cpp loopdetector.cpp system.cpp  frameextractor.cpp 
 keepnames=        mapmanager.cpp mapinitializer.cpp loopdetector.cpp system.cpp  frameextractor.cpp
 files-explicit=   mapmanager.h   mapinitializer.h   loopdetector.h   system.h    frameextractor.h
-removeLinesWithCommands=__UCOSLAM_ADDTIMER__ __UCOSLAM_TIMER_EVENT__ _debug_msg assert _debug_exec
+removeLinesWithCommands=__TSLAM_ADDTIMER__ __TSLAM_TIMER_EVENT__ _debug_msg assert _debug_exec
 args=
--DUCOSLAM_DSO_EXPORTS -DUSE_AVX -DUSE_OMP -DUSE_SSE -DXFLANN_OPENCV
+-DTSLAM_DSO_EXPORTS -DUSE_AVX -DUSE_OMP -DUSE_SSE -DXFLANN_OPENCV
 -Wall -std=c++11 -mmmx -msse -msse2 -msse3 -fopenmp  -mavx   -O3 -g0  -DNDEBUG -fPIC   -std=gnu++11
 -I${OPENCV_INCLUDEDIR}
 -I${PROJECT_ROOT}/../3rdparty/g2o/g2o/stuff 

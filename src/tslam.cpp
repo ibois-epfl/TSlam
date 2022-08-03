@@ -1,77 +1,77 @@
-#include "ucoslam.h"
+#include "tslam.h"
 #include "utils/system.h"
 #include "basictypes/debug.h"
-namespace ucoslam{
-UcoSlam::UcoSlam(){
+namespace tslam{
+TSlam::TSlam(){
     impl=new System;
 }
-UcoSlam::~UcoSlam(){
+TSlam::~TSlam(){
     delete (System*)impl;
 }
-void UcoSlam::setParams(std::shared_ptr<Map> map, const  ucoslam::Params &params, const std::string &vocabulary){
+void TSlam::setParams(std::shared_ptr<Map> map, const  tslam::Params &params, const std::string &vocabulary){
     reinterpret_cast<System*>(impl)->setParams(map,params,vocabulary);
 }
-void UcoSlam::clear(){
+void TSlam::clear(){
     reinterpret_cast<System*>(impl)->clear();
 }
-Params  & UcoSlam::getParams() {
+Params  & TSlam::getParams() {
     return System::getParams();
 }
-cv::Mat UcoSlam::process(  cv::Mat &in_image,const ImageParams &ip,uint32_t frameseq_idx){
+cv::Mat TSlam::process(  cv::Mat &in_image,const ImageParams &ip,uint32_t frameseq_idx){
     if(in_image.size()!=ip.CamSize)
         throw  std::runtime_error("Input Image Size is Different from Image Params");
     return  reinterpret_cast<System*>(impl)->process(in_image,ip,frameseq_idx);
 }
-cv::Mat UcoSlam::processStereo( cv::Mat &in_image,const cv::Mat &R_image,const ImageParams &ip,uint32_t frameseq_idx){
+cv::Mat TSlam::processStereo( cv::Mat &in_image,const cv::Mat &R_image,const ImageParams &ip,uint32_t frameseq_idx){
     return  reinterpret_cast<System*>(impl)->process(in_image,ip,frameseq_idx,cv::Mat(),R_image);
 }
-cv::Mat UcoSlam::processRGBD( cv::Mat &in_image,const cv::Mat & depth,const ImageParams &ip,uint32_t frameseq_idx){
+cv::Mat TSlam::processRGBD( cv::Mat &in_image,const cv::Mat & depth,const ImageParams &ip,uint32_t frameseq_idx){
     return  reinterpret_cast<System*>(impl)->process(in_image,ip,frameseq_idx,depth);
 }
-cv::Mat UcoSlam::processArray(vector<cv::Mat> &images,  ImageParams &ArrayCamParams ,uint32_t frameseq_idx)
+cv::Mat TSlam::processArray(vector<cv::Mat> &images,  ImageParams &ArrayCamParams ,uint32_t frameseq_idx)
 {
     return  reinterpret_cast<System*>(impl)->process(images, ArrayCamParams, frameseq_idx);
 }
-void UcoSlam::resetTracker(){
+void TSlam::resetTracker(){
     reinterpret_cast<System*>(impl)->resetTracker();
 }
-void UcoSlam::setMode(MODES mode){
+void TSlam::setMode(MODES mode){
     reinterpret_cast<System*>(impl)->setMode(mode);
 }
-//void UcoSlam::resetCurrentPose(){
+//void TSlam::resetCurrentPose(){
 //    reinterpret_cast<System*>(impl)->resetCurrentPose();
 //}
-uint32_t UcoSlam::getLastProcessedFrame()const{
+uint32_t TSlam::getLastProcessedFrame()const{
     return  reinterpret_cast<System*>(impl)->getLastProcessedFrame();
 }
-void UcoSlam::saveToFile(std::string filepath){
+void TSlam::saveToFile(std::string filepath){
     reinterpret_cast<System*>(impl)->saveToFile(filepath);
 }
-void UcoSlam::readFromFile(std::string filepath){
+void TSlam::readFromFile(std::string filepath){
     reinterpret_cast<System*>(impl)->readFromFile(filepath);
 }
-void UcoSlam::globalOptimization(){
+void TSlam::globalOptimization(){
     reinterpret_cast<System*>(impl)->globalOptimization();
 }
 //waits for all threads to finish
-void UcoSlam::waitForFinished(){
+void TSlam::waitForFinished(){
     reinterpret_cast<System*>(impl)->waitForFinished();
 }
-uint32_t UcoSlam::getCurrentKeyFrameIndex(){
+uint32_t TSlam::getCurrentKeyFrameIndex(){
     return reinterpret_cast<System*>(impl)->getCurrentKeyFrameIndex();
 }
-std::shared_ptr<Map> UcoSlam::getMap(){
+std::shared_ptr<Map> TSlam::getMap(){
     return reinterpret_cast<System*>(impl)->getMap();
 }
-void UcoSlam::setDebugLevel(int level){
+void TSlam::setDebugLevel(int level){
     debug::Debug::setLevel(level);
 }
-void UcoSlam::showTimers(bool v){
+void TSlam::showTimers(bool v){
     debug::Debug::showTimer(v);
 }
-void UcoSlam::updateParams(const Params &p){
+void TSlam::updateParams(const Params &p){
 }
-std::string UcoSlam::getSignatureStr()const{
+std::string TSlam::getSignatureStr()const{
     return reinterpret_cast<System*>(impl)->getSignatureStr();
 }
 }

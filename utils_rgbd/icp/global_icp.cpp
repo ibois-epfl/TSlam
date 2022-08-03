@@ -200,7 +200,7 @@ void Global_ICP::execute(pair<double,double> radius_range, int num_iterations, b
                         transforms[c][i].at<float>(j,k)=pcl_mat.coeff(j,k);
             }
             else if(src.size()>0)// point2point
-                transforms[c][i]=ucoslam::rigidBodyTransformation_Horn1987(src,trg,true);
+                transforms[c][i]=tslam::rigidBodyTransformation_Horn1987(src,trg,true);
 
         }
         for(size_t c=0;c<curr_clouds.size();c++){//loop over clouds to apply the transforms

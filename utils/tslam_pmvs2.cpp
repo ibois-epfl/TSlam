@@ -1,20 +1,20 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
 
 /**Reads a map and the video sequence it was created with, and generates the required data for PMVS 3D reconstruction software
@@ -49,7 +49,7 @@ inline void operator()(const cv::Mat &in,cv::Mat &out)    {
     cv::remap(in,out,mapx,mapy,cv::INTER_LINEAR);
 
 }
-    void setParams(ucoslam::ImageParams &ip,const cv::Mat &im){
+    void setParams(tslam::ImageParams &ip,const cv::Mat &im){
         assert(ip.isValid());
         bool do_=false;
 
@@ -61,7 +61,7 @@ inline void operator()(const cv::Mat &in,cv::Mat &out)    {
     }
 private:
     cv::Mat mapx,mapy;
-    ucoslam::ImageParams imgP;
+    tslam::ImageParams imgP;
 
 };
 
@@ -107,7 +107,7 @@ int main(int argc,char **argv){
         CmdLineParser cml(argc,argv);
         float scale=stof(cml("-scale","1"));
         cout<<"Opening Map"<<endl;
-        ucoslam::Map Map;
+        tslam::Map Map;
         Map.readFromFile(argv[1]);
 
         cout<<"Opening Video"<<endl;

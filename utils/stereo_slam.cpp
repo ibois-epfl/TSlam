@@ -1,22 +1,22 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
-#include "ucoslam.h"
+#include "tslam.h"
 #include "map.h"
 #include "mapviewer.h"
 #include <opencv2/highgui/highgui.hpp>
@@ -49,11 +49,11 @@ cv::Mat composedStereo(cv::Mat left ,cv::Mat &right){
 int main(int argc, char* argv[]){
     CmdLineParser cml(argc,argv);
     if(argc<4 || cml["-h"]){
-        cout<<"Usage: <video1> <video2> <stereo_calibration_file> [-voc path] [-params ucoslamparams.yml]"<<endl;
+        cout<<"Usage: <video1> <video2> <stereo_calibration_file> [-voc path] [-params tslamparams.yml]"<<endl;
         return -1;
     }
-    ucoslam::StereoRectify Rectifier;
-    ucoslam::ImageParams imp;
+    tslam::StereoRectify Rectifier;
+    tslam::ImageParams imp;
      Rectifier.readFromXMLFile(argv[3]);
 
     cv::Mat inImage[2];
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]){
             throw runtime_error(string("Cannot open video file at:")+argv[i+1]);
     }
 
-    ucoslam::Params sparams;
+    tslam::Params sparams;
     sparams.detectMarkers=false;
     sparams.KFMinConfidence=0.8;
     sparams.runSequential=cml["-sequential"];
@@ -72,9 +72,9 @@ int main(int argc, char* argv[]){
     if(cml["-params"])
         sparams.readFromYMLFile(cml("-params"));
 
-    auto smap=make_shared<ucoslam::Map>();
-    ucoslam::UcoSlam system;
-    ucoslam::MapViewer mv;
+    auto smap=make_shared<tslam::Map>();
+    tslam::TSlam system;
+    tslam::MapViewer mv;
     system.setParams(smap,sparams,cml("-voc",""));
     char key=0;
     while( video[0].grab() && video[1].grab() && key!=27){

@@ -1,31 +1,31 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
-#ifndef __UCOSLAMTYPES_H
-#define __UCOSLAMTYPES_H
+#ifndef __TSLAMTYPES_H
+#define __TSLAMTYPES_H
 #include <vector>
 #include <cstdint>
 #include <string>
 #include <iostream>
 #include <limits>
-#include "ucoslam_exports.h"
+#include "tslam_exports.h"
 #include <opencv2/core/core.hpp>
-namespace ucoslam {
+namespace tslam {
 
 //states in which the system can be
 enum STATE{STATE_TRACKING,STATE_LOST};
@@ -36,7 +36,7 @@ enum MODES{MODE_SLAM,MODE_LOCALIZATION};
  * @brief The DescriptorTypes class defines types of descriptors that can be used for keypoints
  */
 
-class UCOSLAM_API DescriptorTypes  {
+class TSLAM_API DescriptorTypes  {
 public:
     //types of descriptors supported
     enum Type: std::int8_t {DESC_NONE=0, DESC_ORB=1,DESC_AKAZE=2,DESC_BRISK=3,DESC_FREAK=4,DESC_SURF=5};
@@ -73,10 +73,10 @@ public:
 
 /**
  * @brief The Params struct defines the main parameters for controlling the behaviour of the
- * UcoSlam library
+ * TSlam library
  */
 
-struct UCOSLAM_API Params{
+struct TSLAM_API Params{
 
     Params();
 

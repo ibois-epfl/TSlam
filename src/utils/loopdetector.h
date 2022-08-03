@@ -3,7 +3,7 @@
 
  namespace
 
-  ucoslam {
+  tslam {
 
  class
  BaseLoopDetector {

@@ -1,20 +1,20 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
 #include "keyframedatabase.h"
 #include <map>
@@ -26,7 +26,7 @@
 #include "map_types/frame.h"
 #include "map_types/covisgraph.h"
 
-namespace ucoslam{
+namespace tslam{
 
 
 class System;
@@ -194,10 +194,10 @@ uint64_t KPFrameDataBase::getSignature()const{
 
 vector<uint32_t> KPFrameDataBase::relocalizationCandidates(Frame &frame,FrameSet &fset,CovisGraph &covisgraph ,bool sorted,float minScore,const std::set<uint32_t> &excludedFrames){
 
-    __UCOSLAM_ADDTIMER__
+    __TSLAM_ADDTIMER__
     if(_voc.size()==0) throw std::runtime_error("no vocabulary");
     if (frame.bowvector->size()==0) computeBow (frame);
-    __UCOSLAM_TIMER_EVENT__("step0");
+    __TSLAM_TIMER_EVENT__("step0");
 //    for(auto e:excludedFrames)cout<<e<<endl;
     struct nobs{ uint32_t obs=0;};
     //number of times a word from f is seen in the other frames
@@ -217,7 +217,7 @@ vector<uint32_t> KPFrameDataBase::relocalizationCandidates(Frame &frame,FrameSet
     }
 
 
-    __UCOSLAM_TIMER_EVENT__("step1");
+    __TSLAM_TIMER_EVENT__("step1");
     if( frame_nobs.size()==0 )return {};
     uint32_t minCommonWords = maxCommonWords*0.8f;
     // Compute similarity score.
@@ -232,7 +232,7 @@ vector<uint32_t> KPFrameDataBase::relocalizationCandidates(Frame &frame,FrameSet
     }
 
 
-    __UCOSLAM_TIMER_EVENT__("step2");
+    __TSLAM_TIMER_EVENT__("step2");
     if (frame_score.size()==0)return {};
     if( frame_score.size()==1)return {frame_score.begin()->first};
     //     Lets now accumulate score by covisibility
@@ -256,7 +256,7 @@ vector<uint32_t> KPFrameDataBase::relocalizationCandidates(Frame &frame,FrameSet
         if (accScore>bestAccScore)bestAccScore=accScore;
     }
 
-    __UCOSLAM_TIMER_EVENT__("step3");
+    __TSLAM_TIMER_EVENT__("step3");
 
     //    // Return all those keyframes with a score higher than 0.75*bestScore
     double minScoreToRetain = 0.75f*bestAccScore;
@@ -267,7 +267,7 @@ vector<uint32_t> KPFrameDataBase::relocalizationCandidates(Frame &frame,FrameSet
         if (frame_scoreCovis.size()>=2)
             assert(frame_scoreCovis[0].second>=frame_scoreCovis[1].second );
     }
-    __UCOSLAM_TIMER_EVENT__("step4");
+    __TSLAM_TIMER_EVENT__("step4");
 
     //copy remaining to vector and return
     vector<uint32_t> candidates;candidates.reserve(frame_scoreCovis.size());
@@ -315,7 +315,7 @@ bool KPFrameDataBase::computeBow(Frame &f) {
     if (_voc.getDescType()!=uint32_t(f.desc.type()))
         throw std::runtime_error("FrameDataBase::computeBow Vocabulary and descriptor employed have different types. May be you are using a wrong descriptor type");
 
-    __UCOSLAM_ADDTIMER__;
+    __TSLAM_ADDTIMER__;
     _voc.transform(f.desc,3,*f.bowvector,*f.bowvector_level);
 
     return true;

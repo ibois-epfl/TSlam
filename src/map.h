@@ -1,22 +1,22 @@
 /**
-* This file is part of  UCOSLAM
+* This file is part of  TSLAM
 *
 * Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 *
-* UCOSLAM is free software: you can redistribute it and/or modify
+* TSLAM is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* UCOSLAM is distributed in the hope that it will be useful,
+* TSLAM is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
-*/#ifndef _UCOSLAM_MAP_H
-#define _UCOSLAM_MAP_H
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+*/#ifndef _TSLAM_MAP_H
+#define _TSLAM_MAP_H
 #include <mutex>
 
 #include "map_types/covisgraph.h"
@@ -25,15 +25,15 @@
 #include "map_types/frame.h"
 #include "map_types/marker.h"
 #include "basictypes/safemap.h"
-#include "ucoslam_exports.h"
-namespace ucoslam {
+#include "tslam_exports.h"
+namespace tslam {
 
 
 /**
  * @brief The Map class represents a map of the environment.
  *
  */
-class UCOSLAM_API Map : public std::enable_shared_from_this<Map> {
+class TSLAM_API Map : public std::enable_shared_from_this<Map> {
 
 
 
@@ -147,7 +147,7 @@ private:
     Frame &addKeyFrame(const Frame&f );
 
     //adds a marker too the map and returns a reference to it
-    Marker &addMarker(const ucoslam::MarkerObservation &m);
+    Marker &addMarker(const tslam::MarkerObservation &m);
 
     //Given a frame with assigned ids, returns the reference keyframe
     int64_t getReferenceKeyFrame(const Frame &frame,   float minDist=std::numeric_limits<float>::max());

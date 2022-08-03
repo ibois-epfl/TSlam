@@ -7,7 +7,7 @@
 #include "utils/loopdetector.h"
 #include <queue>
 
-namespace ucoslam {
+namespace tslam {
 
 class Map;
 class GlobalOptimizer ;

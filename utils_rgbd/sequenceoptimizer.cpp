@@ -30,18 +30,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using namespace std;
 
-SequenceOptimizer::SequenceOptimizer(ucoslam::Map &um/*,std::map<unsigned int,std::map<unsigned int,cv::Point3f>> &local_keypoint_positions*/){
-    ucoslam::Map& ucoslam_map=um;
+SequenceOptimizer::SequenceOptimizer(tslam::Map &um/*,std::map<unsigned int,std::map<unsigned int,cv::Point3f>> &local_keypoint_positions*/){
+    tslam::Map& tslam_map=um;
 
-    for(ucoslam::Frame &f: ucoslam_map.keyframes){
+    for(tslam::Frame &f: tslam_map.keyframes){
         frame_transforms[f.idx].setParams(f.pose_f2g.inv(), f.idx);
     }
     for(auto &f:frame_transforms){
         op_graph.add(&frame_transforms[f.first]);
     }
 
-    mappoint_errors.reserve(ucoslam_map.map_points.size());
-    for(ucoslam::MapPoint mp:ucoslam_map.map_points){
+    mappoint_errors.reserve(tslam_map.map_points.size());
+    for(tslam::MapPoint mp:tslam_map.map_points){
         if(mp.isBad())
             continue;
         std::vector<std::pair<uint32_t,uint32_t>> assosiated_frames=mp.getObservingFrames();
@@ -52,12 +52,12 @@ SequenceOptimizer::SequenceOptimizer(ucoslam::Map &um/*,std::map<unsigned int,st
             unsigned int frame_index=p.first;
 //            cout<<frame_index<<endl;
             unsigned int frame_keypoint_index=p.second;
-            if(ucoslam_map.keyframes[frame_index].getDepth(frame_keypoint_index)==0)
+            if(tslam_map.keyframes[frame_index].getDepth(frame_keypoint_index)==0)
                 continue;
 
             has_valid_keypoints=true;
-//            auto keypoint=ucoslam_map.keyframes[frame_index].und_kpts[frame_keypoint_index];
-            me.associateFrameTransform(&frame_transforms[frame_index],ucoslam_map.keyframes[frame_index].get3dStereoPoint(frame_keypoint_index)/*local_keypoint_positions[frame_index][frame_keypoint_index]*/);
+//            auto keypoint=tslam_map.keyframes[frame_index].und_kpts[frame_keypoint_index];
+            me.associateFrameTransform(&frame_transforms[frame_index],tslam_map.keyframes[frame_index].get3dStereoPoint(frame_keypoint_index)/*local_keypoint_positions[frame_index][frame_keypoint_index]*/);
         }
         if(has_valid_keypoints){
             mappoint_errors.push_back(me);

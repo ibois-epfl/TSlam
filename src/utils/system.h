@@ -2,7 +2,7 @@
 #include <iostream>
 #include <memory>
 #include <opencv2/core/core.hpp>
-#include "ucoslamtypes.h"
+#include "tslamtypes.h"
 #include "utils/markerdetector.h"
 #include "imageparams.h"
 #include "basictypes/se3.h"
@@ -10,7 +10,7 @@
 
  namespace
 
-    ucoslam {
+    tslam {
 
  class
 
@@ -32,7 +32,7 @@
 
     friend class
 
- ucoslam_Debugger ;
+ tslam_Debugger ;
 
 public:
 
@@ -55,7 +55,7 @@ public:
 
    Map >
 
-   map, const ucoslam ::
+   map, const tslam ::
 
     Params &params, const std ::
 

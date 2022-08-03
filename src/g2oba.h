@@ -258,7 +258,7 @@ public:
 
     double fx, fy, cx, cy;
 
-    MarkerEdge(const ucoslam::Marker &marker,uint32_t frameid){
+    MarkerEdge(const tslam::Marker &marker,uint32_t frameid){
         resize(3);
         marker_id=marker.id;
         frame_id=frameid;

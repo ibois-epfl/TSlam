@@ -1,7 +1,7 @@
 #include <iostream>
 #include <opencv2/core.hpp>
 #include <unordered_map>
-#include "ucoslam.h"
+#include "tslam.h"
 
 class CmdLineParser{int argc; char **argv;
                 public: CmdLineParser(int _argc,char **_argv):argc(_argc),argv(_argv){}  bool operator[] ( string param ) {int idx=-1;  for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i;    return ( idx!=-1 ) ;    } string operator()(string param,string defvalue=""){int idx=-1;    for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i; if ( idx==-1 ) return defvalue;   else  return ( argv[  idx+1] ); }
@@ -15,9 +15,9 @@ class CmdLineParser{int argc; char **argv;
                     }
                    };
 
-namespace ucoslam {
+namespace tslam {
 struct DebugTest{
-    static void removeMapPointObservation(ucoslam::Map &map,uint32_t point_idx,uint32_t frame_idx){
+    static void removeMapPointObservation(tslam::Map &map,uint32_t point_idx,uint32_t frame_idx){
         map.removeMapPointObservation(point_idx,frame_idx,3);
     }
 };
@@ -29,7 +29,7 @@ int main(int argc,char **argv){
     int minMarkerObservedTime = 5;
     int minNumProjPoints = 3;
 
-    ucoslam::Map theMap;
+    tslam::Map theMap;
     cout<<"reading map"<<endl;
     theMap.readFromFile(argv[1]);
     cout<<"Done"<<endl;
@@ -161,7 +161,7 @@ int main(int argc,char **argv){
 
 }
 
-// gdb --args ./ucoslam_monocular '/home/tpp/Downloads/long-beam-1-480p-2.mp4' '/home/tpp/UCOSlam-IBOIS/test_result/calibration_pixel_480p.yml' "-voc" '/home/tpp/UCOSlam-IBOIS/orb.fbow' "-out" "test.map" '-map' '/home/tpp/UCOSlam-IBOIS/build/utils/long1-px-480p-combine-compressed.map'
+// gdb --args ./tslam_monocular '/home/tpp/Downloads/long-beam-1-480p-2.mp4' '/home/tpp/UCOSlam-IBOIS/test_result/calibration_pixel_480p.yml' "-voc" '/home/tpp/UCOSlam-IBOIS/orb.fbow' "-out" "test.map" '-map' '/home/tpp/UCOSlam-IBOIS/build/utils/long1-px-480p-combine-compressed.map'
 // /home/tpp/Downloads/long-beam-1-480p-2.mp4 /home/tpp/UCOSlam-IBOIS/test_result/calibration_pixel_480p.yml -voc /home/tpp/UCOSlam-IBOIS/orb.fbow -out test.map -map /home/tpp/UCOSlam-IBOIS/build/utils/long1-px-480p-combine-compressed.map
 
 // live /home/tpp/UCOSlam-IBOIS/test_result/calibration_webcam_new.yml -voc /home/tpp/UCOSlam-IBOIS/orb.fbow -out test_1 -map /home/tpp/UCOSlam-IBOIS/build/utils/sticker_6_oneshot.map -isInstancing

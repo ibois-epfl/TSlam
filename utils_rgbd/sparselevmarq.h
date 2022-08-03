@@ -1,5 +1,5 @@
-#ifndef ucoslam_SparseLevMarq_H
-#define ucoslam_SparseLevMarq_H
+#ifndef tslam_SparseLevMarq_H
+#define tslam_SparseLevMarq_H
 #include <Eigen/Sparse>
 #include <functional>
 #include <iostream>
@@ -12,7 +12,7 @@
 #include <vector>
 #include <chrono>
 #include <iomanip>
-namespace ucoslam{
+namespace tslam{
 //Sparse Levenberg-Marquardt method for general problems
 //Inspired in
 //@MISC\{IMM2004-03215,
