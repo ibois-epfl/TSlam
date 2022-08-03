@@ -15,7 +15,8 @@
 *
 * You should have received a copy of the GNU General Public License
 * along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
-*/#include "map.h"
+*/
+#include "map.h"
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
 #include "basictypes/io_utils.h"
@@ -27,6 +28,26 @@
 #include "basictypes/hash.h"
 #include "basictypes/fastmat.h"
 #include "basictypes/osadapter.h"
+
+#include "utils/mapmanager.h"
+
+#include "g2o/core/base_binary_edge.h"
+#include "g2o/core/base_unary_edge.h"
+#include "g2o/core/base_multi_edge.h"
+#include "g2o/core/base_vertex.h"
+#include "g2o/solvers/eigen/linear_solver_eigen.h"
+#include "g2o/core/optimization_algorithm_levenberg.h"
+#include "g2o/core/block_solver.h"
+#include "g2o/core/robust_kernel_impl.h"
+#include <iostream>
+#include <exception>
+#include <opencv2/core.hpp>
+#include <opencv2/calib3d.hpp>
+#include <type_traits>
+#include "cvprojectpoint.h"
+#include "ucoslam.h"
+#include "g2oba.h"
+
 namespace ucoslam{
 
 //bool Map::operator==(const Map &m)const{
@@ -207,36 +228,36 @@ void Map::removeKeyFrames(const std::set<uint32_t> &keyFrames,int minNumProjPoin
     }
 }
 
-void Map::removeOldKeyFrames(const std::set<uint32_t> &keyFrames,int mapKFNumber,int keepAmount){
-    if(keyFrames.size() - mapKFNumber < keepAmount){
-        return;
-    }
-    uint32_t latestFrameIdx;
-    if(!keyFrames.empty()) latestFrameIdx = *keyFrames.rbegin();
-    else return;
+// void Map::removeOldKeyFrames(const std::set<uint32_t> &keyFrames,int mapKFNumber,int keepAmount){
+//     if(keyFrames.size() - mapKFNumber < keepAmount){
+//         return;
+//     }
+//     uint32_t latestFrameIdx;
+//     if(!keyFrames.empty()) latestFrameIdx = *keyFrames.rbegin();
+//     else return;
 
-    for(auto fidx:keyFrames){
-        if (fidx < mapKFNumber )  continue;
-        if (fidx + keepAmount > latestFrameIdx )  break;
+//     for(auto fidx:keyFrames){
+//         if (fidx < mapKFNumber )  continue;
+//         if (fidx + keepAmount > latestFrameIdx )  break;
         
-        const auto &frame=keyframes[fidx];
-        //first, remove from databse
-        TheKFDataBase.del(frame);
-        //remove its reference in the map points
-        for(auto ids: frame.ids)
-            if (ids!=numeric_limits<uint32_t>::max())
-                removeMapPointObservation(ids,fidx,3);
+//         const auto &frame=keyframes[fidx];
+//         //first, remove from databse
+//         TheKFDataBase.del(frame);
+//         //remove its reference in the map points
+//         for(auto ids: frame.ids)
+//             if (ids!=numeric_limits<uint32_t>::max())
+//                 removeMapPointObservation(ids,fidx,3);
 
-        //remove its reference in the markers
-        for(auto marker:frame.markers)
-            map_markers[marker.id].frames.erase(fidx);
-        //finally, remove
-        keyframes.erase(fidx);
-        //also from covis graph
-        TheKpGraph.removeNode(fidx);
-        _debug_msg_("Removing Frame "<<fidx);
-    }
-}
+//         //remove its reference in the markers
+//         for(auto marker:frame.markers)
+//             map_markers[marker.id].frames.erase(fidx);
+//         //finally, remove
+//         keyframes.erase(fidx);
+//         //also from covis graph
+//         TheKpGraph.removeNode(fidx);
+//         _debug_msg_("Removing Frame "<<fidx);
+//     }
+// }
 
 
  float Map::getFrameMedianDepth(uint32_t frame_idx){
@@ -307,7 +328,8 @@ void Map::fuseMapPoints(uint32_t mp1,uint32_t mp2 ,bool fullRemovePoint2){
         if(! Mp1.frames.count(p2_obs.first))//the points should not be already in this frame. Otherwise it would be projected in two different locations
             addMapPointObservation(mp1,p2_obs.first,p2_obs.second);
     }
- }
+}
+
 void Map::scale(double scaleFactor){
     //is there any valid marker
 //    for(auto &m:map_markers)
@@ -331,39 +353,38 @@ void Map::applyTransform(cv::Mat m4x4){
     m44_32f_rot.at<float>(1,2)=0;
     m44_32f_rot.at<float>(2,2)=0;
 
-    cout << "Marker Pose" << endl;
+    // cout << "Marker Pose" << endl;
 
     for(auto &m:map_markers){
-        cout << m.second.pose_g2m << "->";
+        // cout << m.second.pose_g2m << "->";
         m.second.pose_g2m = m44_32f * m.second.pose_g2m;
-        cout << m.second.pose_g2m << endl;
+        // cout << m.second.pose_g2m << endl;
     }
 
-    cout << "Point Pose" << endl;
+    // cout << "Point Pose" << endl;
 
     for(auto &p:map_points){
-        cout << p.pos3d << "->";
+        // cout << p.pos3d << "->";
         p.pos3d = m44_32f     * p.pos3d;
         p.normal= m44_32f_rot * p.normal;
-        cout << p.pos3d << endl;
+        // cout << p.pos3d << endl;
     }
 
     
-    cout << "KF Pose" << endl;
-    cout << "m4x4" << m4x4 << endl;
-    cout << "m44_32f" << m44_32f << endl;
-    cout << "m44_32f_rot" << m44_32f_rot << endl;
+    // cout << "KF Pose" << endl;
+    // cout << "m4x4" << m4x4 << endl;
+    // cout << "m44_32f" << m44_32f << endl;
+    // cout << "m44_32f_rot" << m44_32f_rot << endl;
     
     for(auto &kf:keyframes){
-        cout << "inv: " << kf.pose_f2g.inv() << endl;
-        cout << "times" << m44_32f * kf.pose_f2g.inv() << endl;
-        cout << kf.pose_f2g << "->";
+        // cout << "inv: " << kf.pose_f2g.inv() << endl;
+        // cout << "times" << m44_32f * kf.pose_f2g.inv() << endl;
+        // cout << kf.pose_f2g << "->";
         kf.pose_f2g = (m44_32f * kf.pose_f2g.inv()).inv() ;
-        cout << kf.pose_f2g << endl;
+        // cout << kf.pose_f2g << endl;
     }
-        
-
 }
+
 bool Map::centerRefSystemInMarker(uint32_t markerId){
 
 
@@ -406,101 +427,16 @@ void Map::projectTo(Map &refMap){
 
     // Expend the last row (0, 0, 0, 1)
     transformationMatrix.push_back(cv::Mat(1, 4, CV_64F));
+    transformationMatrix.at<double>(3, 0) = 0;
+    transformationMatrix.at<double>(3, 1) = 0;
+    transformationMatrix.at<double>(3, 2) = 0;
     transformationMatrix.at<double>(3, 3) = 1;
     
-    // Reproject to refMap
+    // cout << "transformation matrix\n";
+    // cout << transformationMatrix << endl;
+
     applyTransform(transformationMatrix);
-
-    // cout << "Transformed result comparsion:" << endl;
-    // for(auto id: overlapMarkerIds){
-    //     if ( map_markers[id].pose_g2m.isValid() && refMap.map_markers[id].pose_g2m.isValid() ){
-    //         cout << id << endl;
-    //         // Marker points of this map
-    //         auto p3d = map_markers[id].get3DPoints();
-    //         for(auto p: p3d) {
-    //             cout << p << " ";
-    //         }
-    //         cout << endl;
-    //         p3d = refMap.map_markers[id].get3DPoints();
-    //         for(auto p: p3d) {
-    //             cout << p << " ";
-    //         }
-    //         cout << endl;
-    //     }
-    // }
-    
 }
-
-// void Map::mergeWith(Map &mapB){
-//     // for(auto markerId: map_markers){ // SafeMap<uint32_t,Marker> map_markers;
-//     //     cout << markerId.first << " ";
-//     // }
-//     // cout << endl;
-
-//     // for(auto markerId: mapB.map_markers){ // SafeMap<uint32_t,Marker> map_markers;
-//     //     cout << markerId.first << " ";
-//     // }
-//     // cout << endl;
-
-//     // Look for overlap markers
-//     std::vector<uint32_t> overlapMarkerIds;
-//     for(auto markerId: map_markers){ // SafeMap<uint32_t,Marker> map_markers;
-//         if(mapB.map_markers.count(markerId.first) >= 1){ 
-//             overlapMarkerIds.push_back(markerId.first);
-//         }
-//     }
-
-//     // Estimate the transformation matrix (B -> A)
-//     std::vector<cv::Point3f> srcPoints, dstPoints;
-//     for(auto id: overlapMarkerIds){
-//         if ( map_markers[id].pose_g2m.isValid() && mapB.map_markers[id].pose_g2m.isValid() ){
-//             // Marker points of this map
-//             auto p3d = map_markers[id].get3DPoints();
-//             for(auto p: p3d) {
-//                 dstPoints.push_back(p);
-//             }
-
-//             // Marker points of another map
-//             p3d = mapB.map_markers[id].get3DPoints();
-//             for(auto p: p3d) {
-//                 srcPoints.push_back(p);
-//             }
-//         }
-//     }
-
-//     cout << "Estimate Transformation Matrix...";
-//     cv::Mat transformationMatrix;
-//     transformationMatrix = cv::estimateAffine3D(srcPoints, dstPoints);
-//     cout << "Done!" << endl;
-
-//     // Expend the last row (0, 0, 0, 1)
-//     transformationMatrix.push_back(cv::Mat(1, 4, CV_64F, {0, 0, 0, 1}));
-    
-//     // Reproject mapB to mapA
-//     mapB.applyTransform(transformationMatrix);
-
-//     cout << "Transformed result comparsion:" << endl;
-//     for(auto id: overlapMarkerIds){
-//         cout << id << endl;
-//         if ( map_markers[id].pose_g2m.isValid() && mapB.map_markers[id].pose_g2m.isValid() ){
-//             // Marker points of this map
-//             auto p3d = map_markers[id].get3DPoints();
-//             for(auto p: p3d) {
-//                 cout << p << " ";
-//             }
-//             cout << " -- " << endl;
-//             p3d = mapB.map_markers[id].get3DPoints();
-//             for(auto p: p3d) {
-//                 cout << p << " ";
-//             }
-//         }
-//         cout << "---------------------------" << endl;
-//     }
-    
-//     // Merge the maps
-    
-// }
-
 
 void Map::toStream(iostream &str)  {
     lock(__FUNCTION__,__FILE__,__LINE__);
@@ -1522,6 +1458,195 @@ void Map::removeWeakConnections(uint32_t kf,float minWeight){
             }
         }
     }
+}
+
+void Map::merge(std::shared_ptr<Map> mapB){
+    // first project mapB's axis to this map
+    mapB->projectTo(*this);
+    
+    // The architecture here is a little wired, where we have to rely on
+    // the function in MapManager to add new keyframes.
+    std::shared_ptr<ucoslam::MapManager> mapManager;
+    mapManager = std::make_shared<ucoslam::MapManager>();
+    mapManager->setParams(shared_from_this(), true);
+
+    // map point's index, from B(original) to A(merged)
+    std::map<uint32_t, uint32_t> pointIdB2A;
+
+    // cout << "Total points in A: " << map_points.size() << "points." << endl;
+    // cout << "Total points in B: " << mapB->map_points.size() << "points." << endl;
+
+    // Add keypoint
+    for(auto ptIter = mapB->map_points.begin(); ptIter != mapB->map_points.end(); ++ptIter){
+        // check if the id is already used, this should be trivial
+        if(pointIdB2A.count(ptIter->id) == 0){
+            // update keypoint attributes
+            MapPoint &mp = addNewPoint(0);
+            mp.setCoordinates(ptIter->getCoordinates());
+            mp.setStable(true);
+            mp.setBad(false);
+            mp.setSeen();
+            mp.setVisible();
+
+            // update id ref (B->A)
+            pointIdB2A[ptIter->id] = mp.id;
+        }
+    }
+
+    // Add keyframes
+    for(auto kfIter = mapB->keyframes.begin(); kfIter != mapB->keyframes.end(); ++kfIter){
+        // modify B's keyframes' reference keypoint id
+        for(int i = 0 ; i < kfIter->ids.size() ; i++){
+            if (kfIter->ids[i] != std::numeric_limits<uint32_t>::max()){
+                kfIter->ids[i] = pointIdB2A[kfIter->ids[i]];
+            }
+        }
+        mapManager->addKeyFrame(&(*kfIter));
+    }
+}
+
+void Map::optimize(int niters){
+    std::shared_ptr<g2o::SparseOptimizer> Optimizer;
+
+    Optimizer=std::make_shared<g2o::SparseOptimizer>();
+    std::unique_ptr<g2o::BlockSolverX::LinearSolverType> linearSolver=g2o::make_unique<g2o::LinearSolverEigen<g2o::BlockSolverX::PoseMatrixType>>();
+    g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(g2o::make_unique<g2o::BlockSolverX>(std::move(linearSolver)));
+
+    Optimizer->setAlgorithm(solver);
+
+    int id=0;
+    //first, the cameras
+    g2oba::CameraParams * camera = new g2oba::CameraParams();
+    camera->setId(id++);
+
+    //////////////////////////////
+    ///KEYFRAME POSES
+    //////////////////////////////
+    map<uint32_t, g2oba::SE3Pose * > kf_poses;
+    for(auto &kf:keyframes){
+        if(!camera->isSet()){
+            camera->setParams(kf.imageParams.CameraMatrix,kf.imageParams.Distorsion);
+            Optimizer->addVertex(camera);
+        }
+        g2oba::SE3Pose * pose= new g2oba::SE3Pose(kf.idx, kf.pose_f2g.getRvec(),kf.pose_f2g.getTvec());
+        pose->setId(id++);
+        Optimizer->addVertex(pose);
+        kf_poses.insert({kf.idx,pose});
+    }
+
+    //////////////////////////////
+    /// MAP POINTS
+    //////////////////////////////
+    list<g2oba::ProjectionEdge *> projectionsInGraph;
+    list<g2oba::MapPoint *> mapPoints;
+    for(auto &p:map_points){
+        g2oba::MapPoint *point=new g2oba::MapPoint (p.id, p.getCoordinates());
+        point->setId(id++);
+        point->setMarginalized(true);
+        Optimizer->addVertex(point);
+        mapPoints.push_back(point);
+
+        for(auto of:p.getObservingFrames()){
+            auto &kf=keyframes[of.first];
+            if ( kf.isBad() )continue;
+
+            auto Proj=new g2oba::ProjectionEdge(p.id,kf.idx, kf.kpts[of.second]);
+            Proj->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(point));
+            Proj->setVertex(1, dynamic_cast<g2o::OptimizableGraph::Vertex*>( camera));
+            Proj->setVertex(2, dynamic_cast<g2o::OptimizableGraph::Vertex*>( kf_poses.at(kf.idx)));
+            Eigen::Matrix<double,2,1> obs;
+            obs<<kf.kpts[of.second].x,kf.kpts[of.second].y;
+            Proj->setMeasurement(obs);
+            Proj->setInformation(Eigen::Matrix2d::Identity()* 1./ kf.scaleFactors[kf.und_kpts[of.second].octave]);
+            g2o::RobustKernelHuber* rk = new  g2o::RobustKernelHuber();
+            rk->setDelta(sqrt(5.99));
+            Proj->setRobustKernel(rk);
+            Optimizer->addEdge(Proj);
+            projectionsInGraph.push_back(Proj);
+        }
+    }
+
+    //////////////////////////////
+    ////MARKER POSES
+    //////////////////////////////
+    map<uint32_t, g2oba::SE3Pose * > marker_poses;
+    std::vector<g2oba::MarkerEdge * > marker_edges;
+    for(const auto &marker:map_markers){
+        if(!marker.second.pose_g2m.isValid()) continue;
+        g2oba::SE3Pose * marker_pose= new g2oba::SE3Pose(marker.first,marker.second.pose_g2m.getRvec(),marker.second.pose_g2m.getTvec());
+        marker_pose->setId(id++);
+        Optimizer->addVertex(marker_pose);
+        marker_poses.insert({marker.first,marker_pose});
+
+        for(const auto &kfidx:marker.second.frames){
+            auto &kf=keyframes[kfidx];
+            if ( kf.isBad() )continue;
+            if(  kf_poses.count(kfidx)==0)throw std::runtime_error("Key frame for marker not in the optimization:"+std::to_string(kfidx));
+
+            auto Proj=new g2oba::MarkerEdge(marker.second,kfidx);
+            Proj->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(marker_pose));
+            Proj->setVertex(1, dynamic_cast<g2o::OptimizableGraph::Vertex*>( kf_poses.at(kfidx)));
+            Proj->setVertex(2, dynamic_cast<g2o::OptimizableGraph::Vertex*>( camera));
+            auto mobs=keyframes[kfidx].getMarker(marker.first);
+            Eigen::Matrix<double,8,1> obs;
+            obs<<mobs.corners[0].x,mobs.corners[0].y,
+                    mobs.corners[1].x,mobs.corners[1].y,
+                    mobs.corners[2].x,mobs.corners[2].y,
+                    mobs.corners[3].x,mobs.corners[3].y;
+
+            Proj->setMeasurement(obs);
+            Proj->setInformation(Eigen::Matrix< double, 8, 8 >::Identity());
+            g2o::RobustKernelHuber* rk = new  g2o::RobustKernelHuber();
+            rk->setDelta(sqrt(15.507));
+            Proj->setRobustKernel(rk);
+            Optimizer->addEdge(Proj);
+            marker_edges.push_back(Proj);
+        }
+    }
+
+
+    //////////////////////////////
+    /// OPTIMIZE
+    //////////////////////////////
+
+
+    Optimizer->initializeOptimization();
+    //    Optimizer->setForceStopFlag( );
+    Optimizer->setVerbose(true);
+    Optimizer->optimize(niters,1e-3);
+    //now remove outliers
+    for(auto &p:projectionsInGraph)
+        p->setLevel(p->chi2()>5.99);
+    for(auto &p:marker_edges)
+        p->setLevel(p->chi2()>15.507);
+
+    Optimizer->optimize(niters,1e-4);
+
+    //copy data back to the map
+    //move data back to the map
+    for(auto &mp: mapPoints ){
+        map_points[ mp->getid()].setCoordinates(mp->getPoint3d());
+    }
+
+    //now, the keyframes
+    for(auto pose:kf_poses){
+        keyframes[pose.first].pose_f2g=ucoslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
+        keyframes[pose.first].imageParams.CameraMatrix.at<float>(0,0)=camera->fx();
+        keyframes[pose.first].imageParams.CameraMatrix.at<float>(1,1)=camera->fy();
+        keyframes[pose.first].imageParams.CameraMatrix.at<float>(0,2)=camera->cx();
+        keyframes[pose.first].imageParams.CameraMatrix.at<float>(1,2)=camera->cy();
+        for(int p=0;p<5;p++)
+            keyframes[pose.first].imageParams.Distorsion.ptr<float>(0)[p]=camera->dist()[p];
+    }
+//        //remove weak links
+//        for(auto &p:projectionsInGraph){
+//            if(p->chi2()>5.99) ucoslam::DebugTest::removeMapPointObservation(TheMapA,p->point_id,p->frame_id);
+//        }
+
+    //finally, markers
+    for(auto pose: marker_poses)
+        map_markers[pose.first].pose_g2m=ucoslam::se3((*pose.second)(0),(*pose.second)(1),(*pose.second)(2),(*pose.second)(3),(*pose.second)(4),(*pose.second)(5));
+
 }
 
 }

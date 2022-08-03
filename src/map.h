@@ -33,7 +33,7 @@ namespace ucoslam {
  * @brief The Map class represents a map of the environment.
  *
  */
-class UCOSLAM_API Map {
+class UCOSLAM_API Map : public std::enable_shared_from_this<Map> {
 
 
 
@@ -60,9 +60,11 @@ public:
     //cleans the unused keypoints from the frames. This will reduce a lot of space
     void removeUnUsedKeyPoints();
     //merge with another map
-    //void mergeWith(Map &mapB);
+    void merge(std::shared_ptr<Map> mapB);
     //project to another map
     void projectTo(Map &refMap);
+    // run fullba optimization
+    void optimize(int niters=50);
 
     //returns a unique hash value that identify the current status
     uint64_t getSignature(bool print=false)const;
@@ -90,7 +92,14 @@ public:
    //A database of keyframes employed for relocalization. It uses bag of words technique
    KeyFrameDataBase TheKFDataBase;
 
-//private:
+    // original priveate
+    // Creates a new point in the map and returns a reference to it
+    MapPoint & addNewPoint(uint32_t frameSeqId);
+    //remove the indicates keyframes and the mappoints with less than minNumProjPoints because of this
+    //Makes a full removal!!
+    void removeKeyFrames(const std::set<uint32_t> &keyFrames, int minNumProjPoints);
+
+private:
 
     friend class LoopDetector;
     friend class MapManager;
@@ -105,8 +114,7 @@ public:
     //returns the target focus of the map. If -1, it means that there is no keyframe yet
     float getTargetFocus()const;
 
-    //Creates a new point in the map and returns a reference to it
-    MapPoint & addNewPoint(uint32_t frameSeqId);
+    
 
     void addMapPointObservation(uint32_t mapPoint,uint32_t KeyFrame,uint32_t KfKPtIdx);
 
@@ -138,10 +146,7 @@ public:
     //returns the median depth of the indicated frame
     float  getFrameMedianDepth(uint32_t frame_idx);
 
-    //remove the indicates keyframes and the mappoints with less than minNumProjPoints because of this
-    //Makes a full removal!!
-    void removeKeyFrames(const std::set<uint32_t> &keyFrames, int minNumProjPoints);
-    void removeOldKeyFrames(const std::set<uint32_t> &keyFrames, int mapKFNumber,int keepAmount=20);
+    // void removeOldKeyFrames(const std::set<uint32_t> &keyFrames, int mapKFNumber,int keepAmount=20);
 
     //returns the expected id of the next frame to be inserted
     uint32_t getNextFrameIndex()const;

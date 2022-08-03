@@ -17,7 +17,7 @@
 * along with UCOSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
 #include "globaloptimizer.h"
- #include "globaloptimizer_g2o.h"
+#include "globaloptimizer_g2o.h"
 #include <basictypes/hash.h>
  //#ifdef USE_CVBA
 //#include "globaloptimizer_cvba_pba.h"
