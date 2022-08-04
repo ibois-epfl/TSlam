@@ -7,6 +7,8 @@ option(BUILD_OWN_G2O "Set to OFF to force find g2o in the system" ON)
 option(BUILD_OWN_STAG "Set to OFF to force find stag in the system" ON)
 option(USE_AVX "SET ON/OFF " ON)
 
+option(BUILD_4_API "Set to ON to build TSlam just with API" OFF)
+
 option(USE_TIMERS "SET ON/OFF for see time of execution" OFF)
 option(XFEATURES2D "SET ON/OFF" OFF)
 
