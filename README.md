@@ -21,7 +21,10 @@ sudo apt-get install cmake libopencv-dev qtbase5-dev libqt5opengl5-dev libopenni
 # build
 mkdir build
 cd build
-cmake ../ -DBUILD_GUI=ON
+cmake .. 
+# cmake options:
+# [-DBUILD_GUI] default: OFF
+# [-DBUILD_UTILS] default: ON
 make -j4
 ```
 
@@ -29,6 +32,7 @@ make -j4
 ### Minimal example:
 ```bash
 cd build/utils
+unzip ../../example/example.map.zip -d ../../example/
 ./tslam_minimal_example
 ```
 This runs `tslam_minimal_example.cpp`, which takes the `example.map` and `video.mp4` in `/example` as input to show a brief demo.
@@ -98,7 +102,7 @@ cv::Mat process(cv::Mat &in_image, const ImageParams &ip, uint32_t frameseq_idx)
 
 
 ### Class `tslam::ImageParams`
-Storing the [camera matrix and distortion coefficients](https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html)
+Storing the [camera matrix and distortion coefficients](https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html) in opencv yml format.
 ```c++
 void readFromXMLFile(std::string filePath);
 ```
