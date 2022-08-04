@@ -11,9 +11,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON) #...is required...
 set(CMAKE_CXX_EXTENSIONS ON) #...with compiler extensions like gnu++11
 set(CMAKE_CXX_STANDARD 11) # C++11...
 
-IF(NOT CMAKE_BUILD_TYPE )
+if(NOT CMAKE_BUILD_TYPE )
    SET( CMAKE_BUILD_TYPE "Release" )
-ENDIF()
+endif()
 
 #------------------------------------------------------
 # Lib Names and Dirs
@@ -37,10 +37,10 @@ endif()
 
 
 
-ADD_SUBDIRECTORY(src)
-IF (BUILD_UTILS)
-ADD_SUBDIRECTORY(utils)
-ENDIF()
+add_subdirectory(src)
+if(BUILD_UTILS)
+add_subdirectory(utils)
+endif()
 
 # IF(BUILD_UTILS_RGBD)
 # ADD_SUBDIRECTORY(utils_rgbd)
@@ -68,19 +68,19 @@ ENDIF()
 # ----------------------------------------------------------------------------
 #   Uninstall target, for "make uninstall"
 # ----------------------------------------------------------------------------
-CONFIGURE_FILE( "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
-ADD_CUSTOM_TARGET(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
+add_custom_target(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 # ----------------------------------------------------------------------------
 # create configuration file from .in file (If you use windows take care with paths)
 # ----------------------------------------------------------------------------
-CONFIGURE_FILE("${PROJECT_SOURCE_DIR}/cmake/config.cmake.in" "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake")
-INSTALL(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION share/${PROJECT_NAME} )
+configure_file("${PROJECT_SOURCE_DIR}/cmake/config.cmake.in" "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake")
+install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION share/${PROJECT_NAME} )
 
 
 include(cmake/display.cmake)
 
 
 # Package Generator  #######################################################
-IF(BUILD_DEBPACKAGE)
+if(BUILD_DEBPACKAGE)
 include(cmake/cpack.cmake)
-ENDIF()
+endif()
