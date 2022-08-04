@@ -12,5 +12,3 @@ foreach(file ${files})
   message(STATUS "Uninstalling \"$ENV{DESTDIR}${file}\"")
   execute_process(COMMAND rm $ENV{DESTDIR}${file})
 endforeach(file)
-
-
