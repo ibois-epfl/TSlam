@@ -1,6 +1,6 @@
 option(BUILD_SHARED_LIBS 	"Set to OFF to build static libraries" ON)
 option(USE_OWN_EIGEN3	"Set to OFF to use a standard eigen3 version" ON)
-option(BUILD_OWN_ARUCO	"Set to OFF to force find aruco in the system" ON)  # <---- needs to include?
+option(BUILD_OWN_ARUCO	"Set to OFF to force find aruco in the system" ON)
 option(BUILD_OWN_FBOW 	"Set to OFF to force find fbow in the system" ON)
 option(BUILD_OWN_XFLANN "Set to OFF to force find xflann in the system" ON)
 option(BUILD_OWN_G2O "Set to OFF to force find g2o in the system" ON)

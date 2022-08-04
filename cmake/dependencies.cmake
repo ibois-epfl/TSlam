@@ -62,7 +62,8 @@ else()
     set(TSLAM_FBOW_LIBS ${EXTRALIBNAME}fbow)
 endif()
 
-if    find_package(stag   REQUIRED)
+if(NOT BUILD_OWN_STAG)
+    find_package(stag   REQUIRED)
     set(TSLAM_STAG_LIBS ${stag_LIBS})
 else()
     add_subdirectory(3rdparty/stag/stag)
@@ -80,12 +81,15 @@ else()
 endif()
 
 
+
 if(XFEATURES2D)
 add_definitions(-DXFEATURES2D)
 endif()
 
 
+
 set(TSLAM_REQUIRED_LIBRARIES ${TSLAM_REQUIRED_LIBRARIES}  ${TSLAM_FBOW_LIBS}  ${TSLAM_ARUCO_LIBS} ${TSLAM_STAG_LIBS} ${TSLAM_XFLANN_LIBS} ${G2O_LIBS})
+
 
 
 

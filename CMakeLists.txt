@@ -13,7 +13,7 @@ set(CMAKE_CXX_EXTENSIONS ON) #...with compiler extensions like gnu++11
 set(CMAKE_CXX_STANDARD 11) # C++11...
 
 if(NOT CMAKE_BUILD_TYPE )
-   SET( CMAKE_BUILD_TYPE "Release" )
+   set( CMAKE_BUILD_TYPE "Release" )
 endif()
 
 #------------------------------------------------------------------------------------------------------------
@@ -27,10 +27,10 @@ include(cmake/dependencies.cmake)
 
 if(WIN32)
     # Postfix of DLLs:
-    SET(PROJECT_DLLVERSION "${PROJECT_VERSION_MAJOR}${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
-    SET(RUNTIME_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin CACHE PATH "Directory for dlls and binaries")
-    SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin CACHE PATH "Directory for binaries")
-    SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin CACHE PATH "Directory for dlls")
+    set(PROJECT_DLLVERSION "${PROJECT_VERSION_MAJOR}${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
+    set(RUNTIME_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin CACHE PATH "Directory for dlls and binaries")
+    set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin CACHE PATH "Directory for binaries")
+    set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin CACHE PATH "Directory for dlls")
 else()
     # Postfix of so's:
     set(PROJECT_DLLVERSION) 
