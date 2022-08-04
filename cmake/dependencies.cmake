@@ -3,41 +3,40 @@
 # ----------------------------------------------------------------------------
 find_package(OpenCV 4.5.5 REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
-SET(TSLAM_REQUIRED_LIBRARIES ${OpenCV_LIBS})
+set(TSLAM_REQUIRED_LIBRARIES ${OpenCV_LIBS})
 
 find_package(OpenMP  )
-IF(OpenMP_FOUND)
-    SET (TSLAM_REQUIRED_LIBRARIES ${TSLAM_REQUIRED_LIBRARIES} ${OpenMP_CXX_LIBRARIES})
-    SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+if(OpenMP_FOUND)
+    set (TSLAM_REQUIRED_LIBRARIES ${TSLAM_REQUIRED_LIBRARIES} ${OpenMP_CXX_LIBRARIES})
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
     add_compile_options(-DUSE_OPENMP)
-ENDIF()
-SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
+endif()
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
 link_directories(${CMAKE_BINARY_DIR}/libs)
 
-IF(NOT USE_OWN_EIGEN3)
+if(NOT USE_OWN_EIGEN3)
     find_package( Eigen3 REQUIRED )
-ELSE()
+else()
     SET(EIGEN3_INCLUDE_DIR "3rdparty/eigen3/eigen3")
     SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "3rdparty/eigen3/eigen3")
-ENDIF()
+endif()
 include_directories( ${EIGEN3_INCLUDE_DIR} )
 
 
-SET(EXTRALIBNAME "${PROJECT_NAME}_")
-
+set(EXTRALIBNAME "${PROJECT_NAME}_")
 
 
 add_definitions(-DXFLANN_OPENCV)
-IF(NOT BUILD_OWN_XFLANN)
+if(NOT BUILD_OWN_XFLANN)
     find_package(xflann   REQUIRED)
-    SET(TSLAM_XFLANN_LIBS ${xflann_LIBS})
-ELSE ()
-    OPTION(XFLANN_OPENCV "Set on/off" ON)
-    ADD_SUBDIRECTORY(3rdparty/xflann/xflann)
+    set(TSLAM_XFLANN_LIBS ${xflann_LIBS})
+else()
+    option(XFLANN_OPENCV "Set on/off" ON)
+    add_subdirectory()(3rdparty/xflann/xflann)
     include_directories(3rdparty/xflann)
-    SET(TSLAM_XFLANN_LIBS ${EXTRALIBNAME}xflann)
-ENDIF()
+    set(TSLAM_XFLANN_LIBS ${EXTRALIBNAME}xflann)
+endif()
 
 
 
