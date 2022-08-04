@@ -12,6 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON) #...is required...
 set(CMAKE_CXX_EXTENSIONS ON) #...with compiler extensions like gnu++11
 set(CMAKE_CXX_STANDARD 11) # C++11...
 
+# Set the build type for API integration into third software or not
 if(BUILD_4_API)
     if(UNIX)
         set(CMAKE_INSTALL_PREFIX /usr)
@@ -19,7 +20,6 @@ if(BUILD_4_API)
     set(BUILD_UTILS OFF)
     set(BUILD_GUI OFF)
 endif()
-
 if(NOT CMAKE_BUILD_TYPE )
    set( CMAKE_BUILD_TYPE "Release" )
 endif()
