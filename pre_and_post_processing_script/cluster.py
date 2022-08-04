@@ -1,16 +1,19 @@
-import enum
 import numpy as np
 import open3d as o3d
 import yaml
 import sympy as sp
 import random
+import sys
 
-exported_tag_yml = '/home/tpp/UCOSlam-IBOIS/build/utils/merged_map.yml' 
+exported_tag_yml = '/home/tpp/UCOSlam-IBOIS/build/utils/long_new_param_comb.yml'
 threshold_norm = 0.5
 threshold_dist = 100
 
 marker_rescale_factor = 2
 
+if(len(sys.argv) > 1):
+    exported_tag_yml = sys.argv[0]
+    marker_rescale_factor = int(sys.argv[1])
 
 def rn():
     return random.random()
