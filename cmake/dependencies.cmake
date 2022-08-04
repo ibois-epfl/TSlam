@@ -2,7 +2,7 @@
 #   Find Dependencies
 # ----------------------------------------------------------------------------
 find_package(OpenCV 4.5.5 REQUIRED)
-INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
+include_directories(${OpenCV_INCLUDE_DIRS})
 SET(TSLAM_REQUIRED_LIBRARIES ${OpenCV_LIBS})
 
 find_package(OpenMP  )
