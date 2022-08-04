@@ -2,98 +2,93 @@
 #   Find Dependencies
 # ----------------------------------------------------------------------------
 find_package(OpenCV 4.5.5 REQUIRED)
-INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
-SET(TSLAM_REQUIRED_LIBRARIES ${OpenCV_LIBS})
+include_directories(${OpenCV_INCLUDE_DIRS})
+set(TSLAM_REQUIRED_LIBRARIES ${OpenCV_LIBS})
 
-find_package(OpenMP  )
-IF(OpenMP_FOUND)
-    SET (TSLAM_REQUIRED_LIBRARIES ${TSLAM_REQUIRED_LIBRARIES} ${OpenMP_CXX_LIBRARIES})
-    SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+find_package(OpenMP)
+if(OpenMP_FOUND)
+    set (TSLAM_REQUIRED_LIBRARIES ${TSLAM_REQUIRED_LIBRARIES} ${OpenMP_CXX_LIBRARIES})
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
     add_compile_options(-DUSE_OPENMP)
-ENDIF()
-SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
+endif()
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
 link_directories(${CMAKE_BINARY_DIR}/libs)
 
-IF(NOT USE_OWN_EIGEN3)
+if(NOT USE_OWN_EIGEN3)
     find_package( Eigen3 REQUIRED )
-ELSE()
-    SET(EIGEN3_INCLUDE_DIR "3rdparty/eigen3/eigen3")
-    SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "3rdparty/eigen3/eigen3")
-ENDIF()
+else()
+    set(EIGEN3_INCLUDE_DIR "3rdparty/eigen3/eigen3")
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "3rdparty/eigen3/eigen3")
+endif()
 include_directories( ${EIGEN3_INCLUDE_DIR} )
 
 
-SET(EXTRALIBNAME "${PROJECT_NAME}_")
-
+set(EXTRALIBNAME "${PROJECT_NAME}_")
 
 
 add_definitions(-DXFLANN_OPENCV)
-IF(NOT BUILD_OWN_XFLANN)
+if(NOT BUILD_OWN_XFLANN)
     find_package(xflann   REQUIRED)
-    SET(TSLAM_XFLANN_LIBS ${xflann_LIBS})
-ELSE ()
-    OPTION(XFLANN_OPENCV "Set on/off" ON)
-    ADD_SUBDIRECTORY(3rdparty/xflann/xflann)
+    set(TSLAM_XFLANN_LIBS ${xflann_LIBS})
+else()
+    option(XFLANN_OPENCV "Set on/off" ON)
+    add_subdirectory(3rdparty/xflann/xflann)
     include_directories(3rdparty/xflann)
-    SET(TSLAM_XFLANN_LIBS ${EXTRALIBNAME}xflann)
-ENDIF()
+    set(TSLAM_XFLANN_LIBS ${EXTRALIBNAME}xflann)
+endif()
 
 
-
-
-IF(NOT BUILD_OWN_G2O)
+if(NOT BUILD_OWN_G2O)
     link_directories(${G2O_DIR}/lib)
     include_directories(${G2O_DIR}/include)
-ELSE ()
+else()
     include_directories(3rdparty/g2o/)
     ADD_SUBDIRECTORY(3rdparty/g2o/g2o)
-ENDIF()
+endif()
 
-SET(G2O_LIBS    ${EXTRALIBNAME}g2o_stuff  ${EXTRALIBNAME}g2o_core       )
+set(G2O_LIBS    ${EXTRALIBNAME}g2o_stuff  ${EXTRALIBNAME}g2o_core       )
 
-IF(CHANGED_BUILD_TYPE STREQUAL "YES")
-SET(CMAKE_BUILD_TYPE "Debug")
-ENDIF()
+if(CHANGED_BUILD_TYPE STREQUAL "YES")
+set(CMAKE_BUILD_TYPE "Debug")
+endif()
 
-IF(NOT BUILD_OWN_FBOW)
+if(NOT BUILD_OWN_FBOW)
     find_package(fbow   REQUIRED)
-    SET(TSLAM_FBOW_LIBS ${fbow_LIBS})
-ELSE ()
-    ADD_SUBDIRECTORY(3rdparty/fbow/fbow)
+    set(TSLAM_FBOW_LIBS ${fbow_LIBS})
+else()
+    add_subdirectory(3rdparty/fbow/fbow)
     include_directories(3rdparty/fbow)
-    SET(TSLAM_FBOW_LIBS ${EXTRALIBNAME}fbow)
-ENDIF()
+    set(TSLAM_FBOW_LIBS ${EXTRALIBNAME}fbow)
+endif()
 
-IF(NOT BUILD_OWN_STAG)
+if(NOT BUILD_OWN_STAG)
     find_package(stag   REQUIRED)
-    SET(TSLAM_STAG_LIBS ${stag_LIBS})
-ELSE ()
-    ADD_SUBDIRECTORY(3rdparty/stag/stag)
+    set(TSLAM_STAG_LIBS ${stag_LIBS})
+else()
+    add_subdirectory(3rdparty/stag/stag)
     include_directories(3rdparty/stag)
-    SET(TSLAM_STAG_LIBS ${EXTRALIBNAME}stag)
-ENDIF()
+    set(TSLAM_STAG_LIBS ${EXTRALIBNAME}stag)
+endif()
 
-IF(NOT BUILD_OWN_ARUCO)
+if(NOT BUILD_OWN_ARUCO)
     find_package(aruco   REQUIRED)
-    SET(TSLAM_ARUCO_LIBS ${aruco_LIBS})
-ELSE ()
-    ADD_SUBDIRECTORY(3rdparty/aruco/aruco)
+    set(TSLAM_ARUCO_LIBS ${aruco_LIBS})
+else()
+    add_subdirectory(3rdparty/aruco/aruco)
     include_directories(3rdparty/aruco)
-    SET(TSLAM_ARUCO_LIBS ${EXTRALIBNAME}aruco)
-ENDIF()
-
- 
+    set(TSLAM_ARUCO_LIBS ${EXTRALIBNAME}aruco)
+endif()
 
 
 
-IF(XFEATURES2D)
+if(XFEATURES2D)
 add_definitions(-DXFEATURES2D)
-ENDIF()
+endif()
 
 
 
-SET(TSLAM_REQUIRED_LIBRARIES ${TSLAM_REQUIRED_LIBRARIES}  ${TSLAM_FBOW_LIBS}  ${TSLAM_ARUCO_LIBS} ${TSLAM_STAG_LIBS} ${TSLAM_XFLANN_LIBS} ${G2O_LIBS})
+set(TSLAM_REQUIRED_LIBRARIES ${TSLAM_REQUIRED_LIBRARIES}  ${TSLAM_FBOW_LIBS}  ${TSLAM_ARUCO_LIBS} ${TSLAM_STAG_LIBS} ${TSLAM_XFLANN_LIBS} ${G2O_LIBS})
 
 
 
@@ -124,6 +119,6 @@ if ( (OpenNI2_INCLUDE STREQUAL "OpenNI2_INCLUDE-NOTFOUND") OR (LIBOPENNI2_LIBRAR
  endif()
 
 
- IF(BUILD_GUI)
+ if(BUILD_GUI)
  add_subdirectory(gui)
- ENDIF()
+ endif()
