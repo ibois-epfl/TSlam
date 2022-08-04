@@ -1,6 +1,7 @@
 #------------------------------------------------------------------------------------------------------------
 #   Basic Configuration
 #------------------------------------------------------------------------------------------------------------
+
 cmake_minimum_required(VERSION 3.5)
 
 
@@ -18,6 +19,7 @@ endif()
 #------------------------------------------------------------------------------------------------------------
 # Lib Names and Dirs
 #------------------------------------------------------------------------------------------------------------
+
 include(cmake/options.cmake)
 include(cmake/compiler.cmake)
 include(cmake/dependencies.cmake)
@@ -34,7 +36,7 @@ else()
     set(PROJECT_DLLVERSION) 
 endif()
 
-
+# ??
 add_subdirectory(src)
 if(BUILD_UTILS)
 add_subdirectory(utils)
@@ -43,19 +45,25 @@ endif()
 #------------------------------------------------------------------------------------------------------------
 #   Uninstall target, for "make uninstall"
 #------------------------------------------------------------------------------------------------------------
+
 configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
 add_custom_target(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+
+
 #------------------------------------------------------------------------------------------------------------
 # create configuration file from .in file (If you use windows take care with paths)
 #------------------------------------------------------------------------------------------------------------
+
 configure_file("${PROJECT_SOURCE_DIR}/cmake/config.cmake.in" "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake")
 install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION share/${PROJECT_NAME} )
-
 
 include(cmake/display.cmake)
 
 
-# Package Generator  #######################################################
+#------------------------------------------------------------------------------------------------------------
+# CPack packaging
+#------------------------------------------------------------------------------------------------------------
+
 if(BUILD_DEBPACKAGE)
 include(cmake/cpack.cmake)
 endif()
