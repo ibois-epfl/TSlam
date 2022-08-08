@@ -42,7 +42,7 @@ void TSlam::setMode(MODES mode){
 //    reinterpret_cast<System*>(impl)->resetCurrentPose();
 //}
 uint32_t TSlam::getLastProcessedFrame()const{
-    return  reinterpret_cast<System*>(impl)->getLastProcessedFrame();
+    return reinterpret_cast<System*>(impl)->getLastProcessedFrame();
 }
 void TSlam::saveToFile(std::string filepath){
     reinterpret_cast<System*>(impl)->saveToFile(filepath);
@@ -60,9 +60,9 @@ void TSlam::waitForFinished(){
 uint32_t TSlam::getCurrentKeyFrameIndex(){
     return reinterpret_cast<System*>(impl)->getCurrentKeyFrameIndex();
 }
-std::shared_ptr<Map> TSlam::getMap(){
-    return reinterpret_cast<System*>(impl)->getMap();
-}
+// std::shared_ptr<Map> TSlam::getMap(){
+//     return reinterpret_cast<System*>(impl)->getMap();
+// }
 void TSlam::setDebugLevel(int level){
     debug::Debug::setLevel(level);
 }
@@ -74,4 +74,49 @@ void TSlam::updateParams(const Params &p){
 std::string TSlam::getSignatureStr()const{
     return reinterpret_cast<System*>(impl)->getSignatureStr();
 }
+
+/**
+* Things the original UcoSlam doesn't implement
+**/
+void TSlam::setMap(std::string pathToMapFile){
+    // auto newMap = std::shared_ptr<Map> newMap;
+    auto newMap = std::make_shared<tslam::Map>();
+    newMap->readFromFile(pathToMapFile);
+    map = newMap;
+    updateSystem();
+}
+
+void TSlam::setVocabulary(std::string pathToVocFile){
+    this->pathToVoc = pathToVocFile;
+    updateSystem();
+}
+
+void TSlam::setCamParams(std::string pathToCamParamFile){
+    imageParams.readFromXMLFile(pathToCamParamFile);
+}
+
+void TSlam::setInstancing(bool isInstancing){
+    systemParams.isInstancing = true;
+    updateSystem();
+}
+
+bool TSlam::process(cv::Mat frame, cv::Mat &camPose){
+    bool isTracked;
+    camPose = process(frame, imageParams, currentFrameIndex++);
+    if(camPose.empty()){
+        isTracked = false;
+        camPose = cv::Mat::eye(4, 4, CV_32F);
+    } else {
+        isTracked = true;
+        camPose.copyTo(lastTrackedCamPose);
+    }
+    return isTracked;
+}
+
+void TSlam::updateSystem(){
+    delete (System*)impl;
+    impl = new System;
+    setParams(map, systemParams, pathToVoc);
+}
+
 }

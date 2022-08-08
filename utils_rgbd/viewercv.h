@@ -508,7 +508,7 @@ class MapViewer{
     bool isWindowCreated=false;
 public:
     MapViewer(){
-        setParams(1,1280,720, "xSLAM");
+        setParams(1,640,480, "xSLAM");
     }
     void setParams(float f,int width,int height,std::string wname){
         _imshow.create(height,width,CV_8UC4);
@@ -707,7 +707,7 @@ public:
     void drawText(cv::Mat &image,const string &userMessage){
 
         auto putText=[](cv::Mat &im,string text,cv::Point p ){
-            float fact=float(im.cols)/float(1280);
+            float fact=float(im.cols)/float(640);
             cv::putText(im,text,p,cv::FONT_HERSHEY_SIMPLEX, 0.5*fact,cv::Scalar(0,0,0),3*fact);
             cv::putText(im,text,p,cv::FONT_HERSHEY_SIMPLEX, 0.5*fact,cv::Scalar(125,255,255),1*fact);
         };

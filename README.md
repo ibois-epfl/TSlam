@@ -67,49 +67,32 @@ unzip ../../example/example.map.zip -d ../../example/
 ```
 
 ## APIs
+### Header
+All interface is included in `tslam.h`.
 ```cpp
 #include "tslam.h"
 ```
-### Class `tslam::TSlam`
-The main interface.
+
+---
+
+### Class `TSlam`
+#### Initilization
 ```c++
-void setParams(std::shared_ptr<Map> map, const tslam::Params &params, const std::string &vocabulary="");
-```
-- Initialize the UcoSLAM.
-- Params:
-    - `std::shared_ptr<Map> map`: The map.
-    - `const tslam::Params &params`: The system parameter (not the camera parameter).
-    - `const std::string &vocabulary`: Path to the `.fbow` file.
+tslam::TSlam *slam = new tslam::TSlam;
 
-```cpp
-cv::Mat process(cv::Mat &in_image, const ImageParams &ip, uint32_t frameseq_idx);
-```
-- Process the frame and return the camera position.
-- Params:
-    - `cv::Mat &in_image`: The frame.
-    - `const ImageParams &ip`: An initialized camera parameter.
-    - `uint32_t frameseq_idx`: Input frame counter.
-- Return:
-    - `cv::Mat cameraPose`:
-        - If tracked: A 4x4 transformation matrix looks like this:
-            ```
-            [ 0.936, -0.247,  0.250, 14.770;
-             -0.236, -0.968, -0.073, -0.522;
-              0.261,  0.009, -0.965, 43.664;
-                  0,      0,      0,      1]
-            ```
-        - If not tracked: empty `cv::Mat`.
+slam->setMap("long_new_param_comb.map");
 
+// If already set map, the vocabulary can be skipped
+slam->setVocabulary("../../orb.fbow");
 
-### Class `tslam::ImageParams`
-Storing the [camera matrix and distortion coefficients](https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html) in opencv yml format.
-```c++
-void readFromXMLFile(std::string filePath);
+// Indicate if it's 
+slam->setInstancing(true);
+
+// Set path to the camera calibration matrix.
+// The yml file structure is described below.
+slam->setCamParams("../../example/calibration_webcam.yml");
 ```
-- Read from file (but .yml instead of .xml(?)
-- Params:
-    - `std::string filePath`: File path.
-- Example file:
+- Example `calibration_webcam.yml`:
     ```yml
     %YAML:1.0
     ---
@@ -127,47 +110,56 @@ void readFromXMLFile(std::string filePath);
         data: [0.274109, -1.71439, 0.00250987, 5.0718e-05, 3.46554 ]
     ```
 
-### Class `Params`
-The system parameters.
+#### Functions
 ```c++
-void readFromYMLFile(const std::string &path);
-void saveToYMLFile(const std::string &path);
+cv::Mat getLastTrackedCamPose();
 ```
-- Read/save the params from/to a file.
-- Params:
-    - `std::string path`: Read/save path.
-- Parameters we may use:
-    - `aruco_markerSize`: `float`, size of the marker in the real-world.
-    - `isInstancing`: `bool`, indicate if it's mapping/instancing.
+- Get the last tracked camera pose (not guarentee to be the last frame)
+- **Return:** A 4x4 cv::Mat; cv::Mat::eye if not tracked ever.
+
+```c++
+bool process(cv::Mat frame, cv::Mat &camPose);
+```
+- Process a frame.
+- **Params:**
+    - `cv::Mat frame`: Frame to process.
+    - `cv::Mat &camPose`: The reference will be updated to the camera pose of the frame.
+
+```c++
+std::shared_ptr<Map> getMap();
+```
+- Get the pointer to the map being used
+- **Return:** A `std::shared_ptr<Map>` point to the map in use.
+
+---
 
 ### Class `Map`
 ```cpp
-void readFromFile(std::string fpath);
 void saveToFile(std::string fpath);
 ```
-- Read/save the (binary) map from/to a file.
-- Params:
+- Save the (binary) map to a file.
+- **Params:**
     - `std::string fpath`: Read/save path.
 
 ```cpp
 void saveToMarkerMap(std::string filepath)const;
 ```
 - Saves the set of markers to a marker map file (.yml) that can be used with aruco.
-- Params:
+- **Params:**
     - `std::string filepath`: Save path, should include the extension (.yml)
 
 ```cpp
 void merge(std::shared_ptr<Map> mapB);
 ```
 - Merge mapB into this.
-- Params:
+- **Params:**
     - `std::shared_ptr<Map> mapB`: Another map
 
 ```cpp
 void optimization(int niters=50);
 ```
 - Run fullba optimization.
-- Params:
+- **Params:**
     - `niters`: Number of iterations(default = 50).
 
 ## Other

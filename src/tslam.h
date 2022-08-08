@@ -27,7 +27,6 @@
 namespace tslam{
 class TSLAM_API TSlam{
 public:
-
     TSlam();
     ~TSlam();
 
@@ -43,7 +42,7 @@ public:
     void clear();
 
     //returns system params
-    static Params  & getParams() ;
+    static Params &getParams() ;
 
 
     //Feeds the system with a new image and the parameters of the camera it has been processed with. The final
@@ -61,7 +60,7 @@ public:
     void setMode(MODES mode);
 
     //sets the system in lost mode
-   // void resetCurrentPose();
+    //void resetCurrentPose();
 
     //returns the number of the last processed framed
     uint32_t getLastProcessedFrame()const;
@@ -85,7 +84,7 @@ public:
 
 
     //returns a pointer to the map being used
-    std::shared_ptr<Map> getMap();
+    inline std::shared_ptr<Map> getMap() { return map; } ;
 
 
     //returns an string that identifies the system state. It is like a md5 sum the system state
@@ -95,13 +94,71 @@ public:
     void setDebugLevel(int level);
     void showTimers(bool v);
 
-
     //will update the internal parameters.Not all parameters can be changed
-    void updateParams(const  Params &p);
+    void updateParams(const Params &p);
+
+    /**
+    * Things the original UcoSlam doesn't implement
+    **/
+    std::shared_ptr<tslam::Map> map;
+    tslam::Params systemParams;
+    tslam::ImageParams imageParams;
+
+    /**
+     * @brief Set the map
+     * @param pathToMap path to the .map file
+     */
+    void setMap(std::string pathToMapFile);
+    /**
+     * @brief Set the vocabulary
+     * @param pathToMap path to the .fbow file
+     */
+    void setVocabulary(std::string pathToVocFile);
+    /**
+     * @brief Set the camera parameter
+     * @param pathToMap Path to the camera parameter file, the structure should be like
+     */
+    void setCamParams(std::string pathToCamParamFile);
+    /**
+     * Set the status of the map
+     * 
+     * Set the status of the map. If "isInstancing" is set to true global optimization will be off and the
+     * new added keyframes will be kept in a fixed number
+     * @param isInstancing true/false
+     */
+    void setInstancing(bool isInstancing);
+    
+    /**
+     * @brief Get the last tracked camera pose (not guarentee to be the last frame)
+     * @return A 4x4 cv::Mat; cv::Mat::eye if not tracked ever.
+     */
+    inline cv::Mat getLastTrackedCamPose() { return lastTrackedCamPose; };
+    /**
+     * @brief get the camera pose of the last processed frame,
+     * @return A 4x4 cv::Mat; cv::eye if last frame was not tracked.
+     */
+    // inline cv::Mat getLastCamPose(){ return lastCamPose; };
+    /**
+     * @brief Process a frame
+     * @param frame Frame to process
+     * @param camPose The reference will be updated to the camera pose of the frame.
+     * @return A boolean indicate if is tracked
+     */
+    bool process(cv::Mat frame, cv::Mat &camPose);
+
 
 private:
     void *impl;
+    void updateSystem();
+
+    std::string pathToVoc = "";
+
+    // cv::Mat lastCamPose = cv::Mat::eye(4, 4, CV_32F);
+    cv::Mat lastTrackedCamPose = cv::Mat::eye(4, 4, CV_32F);
+    
+    int currentFrameIndex = 0;
 
 };
+
 }
 #endif
