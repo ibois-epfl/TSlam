@@ -2,6 +2,7 @@
 ![](./example/tracking_demo.gif)
 
 This is a modified version of [UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62) for augmented carpentry project. The main features are:
+- Better API for use.
 - Using [STag](https://github.com/bbenligiray/stag)
 - Can do map fusion (merging one map into another).
 - By indicating it's in instance mode, the system stop running global optimization and only keeps a fixed number of new added keyframes, which smooth the overall experience.
@@ -42,7 +43,7 @@ This runs `tslam_minimal_example.cpp`, which takes the `example.map` and `video.
 ./tslam_monocular ../../example/video.mp4 ../../example/calibration_webcam.yml -voc ../../orb.fbow -out test
 ```
 This runs `monocular_slam.cpp`.
-- `2nd argument`: Input source, "live" indicates the camera[0].
+- `2nd argument`: Input source, "live" indicates the camera[0], to use another camera, use "live:N" instead.
 - `3rd argument`: Path to the camera parameter file.
 - `-voc`: Path to vocabulary file.
 - `-out`: Name of the output map, it will be saved with extension `.map` (in this case, `test.map`)
@@ -80,16 +81,27 @@ All interface is included in `tslam.h`.
 ```c++
 tslam::TSlam *slam = new tslam::TSlam;
 
+/** Set path to the binary map **/
 slam->setMap("long_new_param_comb.map");
 
-// If already set map, the vocabulary can be skipped
+/**
+ * Set path to the .fbow file.
+ * If map is already setted, this can be skipped
+ **/
 slam->setVocabulary("../../orb.fbow");
 
-// Indicate if it's 
+/**
+ * Indicate if it's instancing or mapping.
+ * When set to true, global optimization will be turned off and
+ * the the new added key-frames will be kept in a fix number by
+ * continuely deleting the old ones.
+ **/
 slam->setInstancing(true);
 
-// Set path to the camera calibration matrix.
-// The yml file structure is described below.
+/**
+ * Set path to the camera calibration matrix.
+ * The structure of the .yml file is described below.
+ **/
 slam->setCamParams("../../example/calibration_webcam.yml");
 ```
 - Example `calibration_webcam.yml`:
@@ -110,7 +122,7 @@ slam->setCamParams("../../example/calibration_webcam.yml");
         data: [0.274109, -1.71439, 0.00250987, 5.0718e-05, 3.46554 ]
     ```
 
-#### Functions
+#### Member Functions
 ```c++
 cv::Mat getLastTrackedCamPose();
 ```
@@ -132,8 +144,8 @@ std::shared_ptr<Map> getMap();
 - **Return:** A `std::shared_ptr<Map>` point to the map in use.
 
 ---
-
 ### Class `Map`
+#### Member Functions
 ```cpp
 void saveToFile(std::string fpath);
 ```
