@@ -5,13 +5,21 @@
 cmake_minimum_required(VERSION 3.5)
 
 
-project(tslam VERSION "1.1.0" LANGUAGES CXX)
+project(TSlam VERSION "1.1.0" LANGUAGES CXX)
 set(PROJECT_SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON) #...is required...
 set(CMAKE_CXX_EXTENSIONS ON) #...with compiler extensions like gnu++11
 set(CMAKE_CXX_STANDARD 11) # C++11...
 
+# Set the build type for API integration into third software or not
+if(BUILD_4_API)
+    if(UNIX)
+        set(CMAKE_INSTALL_PREFIX /usr)
+    endif()
+    set(BUILD_UTILS OFF)
+    set(BUILD_GUI OFF)
+endif()
 if(NOT CMAKE_BUILD_TYPE )
    set( CMAKE_BUILD_TYPE "Release" )
 endif()
@@ -24,7 +32,6 @@ include(cmake/options.cmake)
 include(cmake/compiler.cmake)
 include(cmake/dependencies.cmake)
 
-
 if(WIN32)
     # Postfix of DLLs:
     set(PROJECT_DLLVERSION "${PROJECT_VERSION_MAJOR}${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
@@ -36,11 +43,12 @@ else()
     set(PROJECT_DLLVERSION) 
 endif()
 
-# ??
 add_subdirectory(src)
+
 if(BUILD_UTILS)
-add_subdirectory(utils)
+    add_subdirectory(utils)
 endif()
+
 
 #------------------------------------------------------------------------------------------------------------
 #   Uninstall target, for "make uninstall"
@@ -65,5 +73,5 @@ include(cmake/display.cmake)
 #------------------------------------------------------------------------------------------------------------
 
 if(BUILD_DEBPACKAGE)
-include(cmake/cpack.cmake)
+    include(cmake/cpack.cmake)
 endif()

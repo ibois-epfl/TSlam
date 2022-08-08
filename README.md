@@ -15,17 +15,17 @@ Here are some reference related to this project:
 
 ## Build
 ```bash
-# install library
-sudo apt-get install cmake libopencv-dev qtbase5-dev libqt5opengl5-dev libopenni2-dev
+# install library (compile from source opencv 4.5.5)
+sudo apt-get update
+sudo apt-get install cmake qtbase5-dev libqt5opengl5-dev libopenni2-dev
+git clone https://github.com/ibois-epfl/TSlam.git
+cd TSlam
 
-# build
-mkdir build
-cd build
-cmake .. 
-# cmake options:
-# [-DBUILD_GUI] default: OFF
-# [-DBUILD_UTILS] default: ON
-make -j4
+mkdir build && cd build
+cmake ../ -DBUILD_4_API=OFF  # (ON: if building as API with no GUI)
+make -j$(nproc)
+
+sudo make install  # if building as API
 ```
 
 ## Run with examples(monocular video):

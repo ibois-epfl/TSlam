@@ -1,3 +1,4 @@
+include(InstallRequiredSystemLibraries)
 set(CPACK_PACKAGE_DESCRIPTION "TSlam Package")
 set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
@@ -8,14 +9,14 @@ set(CPACK_PACKAGE_CONTACT "andrea.settimi@epfl.ch")
 
 execute_process(COMMAND lsb_release -a COMMAND grep Release:  COMMAND  cut -f2 OUTPUT_VARIABLE RELEASE_CODENAME OUTPUT_STRIP_TRAILING_WHITESPACE)
 set(CPACK_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}_ubuntu${RELEASE_CODENAME}")
-SET(CPACK_PACKAGE_DESCRIPTION "TSlam library and applications")
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "TSlam is a library for Localization and Mapping with STags")
+set(CPACK_PACKAGE_DESCRIPTION "TSlam library and applications")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "TSlam is a library for Localization and Mapping with STags")
 
-SET(CPACK_CMAKE_GENERATOR "Unix Makefiles")
+set(CPACK_CMAKE_GENERATOR "Unix Makefiles")
 
-SET(CPACK_GENERATOR "DEB")
-SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "i386")
-SET(CPACK_DEBIAN_PACKAGE_DEPENDS " python-opencv, libqt5gui5, libqt5opengl5 ")
-SET(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+set(CPACK_GENERATOR "DEB")
+set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "i386")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS " python-opencv, libqt5gui5, libqt5opengl5 ")
+set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 
-include (CPack)
+include(CPack)

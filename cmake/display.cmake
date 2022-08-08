@@ -9,6 +9,8 @@ MESSAGE( STATUS "---------------------------------------------------------------
 message( STATUS )
 message("    Built as dynamic libs?:" ${BUILD_SHARED_LIBS})
 message("    Compiler:"                   "${CMAKE_COMPILER}"   "${CMAKE_CXX_COMPILER}")
+message("    CMAKE_INSTALL_PREFIX:"       "${CMAKE_INSTALL_PREFIX}")
+
 
 message( STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 message( STATUS "C++ flags (Release):      ${CMAKE_CXX_FLAGS_RELEASE}")
@@ -17,6 +19,7 @@ message( STATUS "C++ flags (Relase+Debug): ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
 message( STATUS "CMAKE_BINARY_DIR:         ${CMAKE_BINARY_DIR}")
 
 MESSAGE( STATUS )
+message( STATUS "BUILD_4_API = ${BUILD_4_API}")
 MESSAGE( STATUS "CMAKE_SYSTEM_PROCESSOR = ${CMAKE_SYSTEM_PROCESSOR}" )
 MESSAGE( STATUS "BUILD_SHARED_LIBS = ${BUILD_SHARED_LIBS}" )
 MESSAGE( STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}" )
