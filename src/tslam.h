@@ -103,7 +103,11 @@ public:
     std::shared_ptr<tslam::Map> map;
     tslam::Params systemParams;
     tslam::ImageParams imageParams;
-
+    
+    /**
+     * @brief Clear the map.
+     */
+    void clearMap();
     /**
      * @brief Set the map
      * @param pathToMap path to the .map file

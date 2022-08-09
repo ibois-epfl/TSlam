@@ -4,15 +4,15 @@
 using namespace cv;
 int main(){
     // initialize slam
-    tslam::TSlam *slam = new tslam::TSlam;
-    slam->setMap("long_new_param_comb.map");
-    slam->setVocabulary("../../orb.fbow");
-    slam->setCamParams("../../example/calibration_webcam.yml");
-    slam->setInstancing(true);
+    tslam::TSlam slam;
+    slam.setMap("long_new_param_comb.map");
+    slam.setVocabulary("../../orb.fbow");
+    slam.setCamParams("../../example/calibration_webcam.yml");
+    slam.setInstancing(true);
 
     cv::Mat camPose;
 
-    tslam::MapViewer mapViewer;
+    auto mapViewer = new tslam::MapViewer();
 
     /* read video from camera 0 */
     VideoCapture cap(0); 
@@ -32,14 +32,14 @@ int main(){
         cap >> frame; frameIdx++;
         if(frame.empty()) break;
 
-        isTracked = slam->process(frame, camPose);
+        isTracked = slam.process(frame, camPose);
         cout << "Frame #" << frameIdx << ": " << (isTracked?"tracked":"not tracked") << ", Camera Pose: " <<endl;
-        cout << slam->getLastTrackedCamPose() << endl;
+        cout << slam.getLastTrackedCamPose() << endl;
 
-        char c = mapViewer.show(
-            slam->map,
+        char c = mapViewer->show(
+            slam.map,
             frame,
-            slam->getLastTrackedCamPose(),
+            slam.getLastTrackedCamPose(),
             "#" + std::to_string(frameIdx),
             frameIdx
         );

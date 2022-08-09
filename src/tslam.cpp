@@ -78,6 +78,12 @@ std::string TSlam::getSignatureStr()const{
 /**
 * Things the original UcoSlam doesn't implement
 **/
+void TSlam::clearMap(){
+    
+    map = std::make_shared<tslam::Map>();
+    updateSystem();
+}
+
 void TSlam::setMap(std::string pathToMapFile){
     // auto newMap = std::shared_ptr<Map> newMap;
     auto newMap = std::make_shared<tslam::Map>();
@@ -96,7 +102,9 @@ void TSlam::setCamParams(std::string pathToCamParamFile){
 }
 
 void TSlam::setInstancing(bool isInstancing){
-    systemParams.isInstancing = true;
+    systemParams.isInstancing = isInstancing;
+    auto newMap = map;
+    map = newMap;
     updateSystem();
 }
 

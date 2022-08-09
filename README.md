@@ -143,6 +143,12 @@ std::shared_ptr<Map> getMap();
 - Get the pointer to the map being used
 - **Return:** A `std::shared_ptr<Map>` point to the map in use.
 
+```c++
+void clearMap();
+```
+- Clear the map. This will open a new empty map and reinitialize the slam backend.
+
+
 ---
 ### Class `Map`
 #### Member Functions
