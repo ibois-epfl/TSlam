@@ -284,7 +284,7 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
             std::set<uint32_t> markerInNeighbors;
             for(auto n:neigh){
                 for(const auto &m:TheMap->keyframes[n].markers){
-                    if (TheMap->map_markers[m.id].pose_g2m.isValid())
+                    if (TheMap->map_markers.is(m.id) && TheMap->map_markers[m.id].pose_g2m.isValid())
                         markerInNeighbors.insert(m.id);
                 }
             }
