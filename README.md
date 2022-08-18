@@ -1,7 +1,14 @@
 # TSlam
+
+
+<p>
+    <img src="./logo/logo_linux_violet.png" width="200">
+</p>
+
+
 ![](./example/tracking_demo.gif)
 
-This is a modified version of [UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62) for augmented carpentry project. The main features are:
+This is a modified version of [UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62) for augmented carpentry research. The main features are:
 - Better API for use.
 - Using [STag](https://github.com/bbenligiray/stag)
 - Can do map fusion (merging one map into another).
