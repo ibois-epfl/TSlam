@@ -1,6 +1,9 @@
+#include <regex>
+
 #include "tslam.h"
 #include "utils/system.h"
 #include "basictypes/debug.h"
+
 namespace tslam{
     TSlam::TSlam(){
         impl=new System;
@@ -142,6 +145,39 @@ namespace tslam{
 
 
 
+    }
+
+    void TSlam::CombineMap(string mapPathA, string mapPathB, string outputPath,
+                           bool exportYml, bool exportPly,
+                           ImageParams *estimatedImageParam, int niters) {
+
+        std::shared_ptr<tslam::Map> TheMapA, TheMapB;
+        TheMapA = std::make_shared<tslam::Map>();
+        TheMapB = std::make_shared<tslam::Map>();
+
+        TheMapA->readFromFile(std::move(mapPathA));
+        TheMapB->readFromFile(std::move(mapPathB));
+
+        TheMapA->merge(TheMapB);
+
+        TheMapA->optimize(niters);
+
+        if(estimatedImageParam != nullptr){
+            *estimatedImageParam = TheMapA->keyframes.begin()->imageParams;
+        }
+
+        string basePath = outputPath;
+        if(std::regex_match(basePath, std::regex("\\.map$"))){
+            basePath.substr(0, basePath.length() - 4);
+        }
+        if(exportYml){
+            TheMapA->saveToMarkerMap(basePath + ".yml");
+        }
+        if(exportPly){
+            TheMapA->exportToFile(basePath + ".ply",cv::Scalar(125,125,125),cv::Scalar(255,0,0),cv::Scalar(0,0,255),{1111,1195,1129,1196,1141},cv::Scalar(0,255,0));
+        }
+
+        TheMapA->saveToFile(std::move(outputPath));
     }
 
 }

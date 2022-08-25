@@ -167,6 +167,9 @@ namespace tslam{
         bool toClearMap = false, toResetMap = false;
         bool toResetCamParams = false;
 
+    // static functions
+    public:
+        static void CombineMap(string mapPathA, string mapPathB, string outputPath, bool exportYml=true, bool exportPly=true, ImageParams *estimatedImageParam=nullptr, int niters=50);
     };
 
 }
