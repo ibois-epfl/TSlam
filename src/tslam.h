@@ -7,7 +7,8 @@
 #include "imageparams.h"
 #include "map.h"
 namespace tslam{
-    class TSLAM_API TSlam{
+    class TSLAM_API TSlam
+    {
     public:
         TSlam();
         ~TSlam();

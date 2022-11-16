@@ -25,8 +25,8 @@ int main()
 
     PySys_SetArgv(argc, _argv);
     fp = _Py_fopen(filename, "r");
-    PyRun_SimpleFile(fp, filename); 
-    Py_Finalize();  
+    PyRun_SimpleFile(fp, filename);
+    Py_Finalize();
     return 0;
 }
 

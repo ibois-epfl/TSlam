@@ -27,17 +27,12 @@
 #include "basictypes/safemap.h"
 #include "tslam_exports.h"
 namespace tslam {
-
-
 /**
  * @brief The Map class represents a map of the environment.
  *
  */
-class TSLAM_API Map : public std::enable_shared_from_this<Map> {
-
-
-
-
+class TSLAM_API Map : public std::enable_shared_from_this<Map>
+{
 public:
     //set of keypoints of the environments
     ReusableContainer<MapPoint> map_points;
@@ -134,12 +129,8 @@ private:
     friend class PnPSolver;
     friend class DebugTest;
 
-
-
     //returns the target focus of the map. If -1, it means that there is no keyframe yet
     float getTargetFocus()const;
-
-    
 
     void addMapPointObservation(uint32_t mapPoint,uint32_t KeyFrame,uint32_t KfKPtIdx);
 
@@ -188,7 +179,6 @@ private:
 
 
     //remove connections of  neighbors of the kf with a weight smaller than specified
-
     void removeWeakConnections(uint32_t kf,float minWeight);
     //---------------------
     //serialization routines

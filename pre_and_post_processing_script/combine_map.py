@@ -48,7 +48,6 @@ for marker_id in marker_ids[0]:
         else:
             src_points = np.concatenate([src_points, marker_corners[0][marker_id].flatten()])
             dst_points = np.concatenate([dst_points, marker_corners[1][marker_id].flatten()])
-        
 
 # src_points = np.array(src_points)
 # dst_points = np.array(dst_points)
