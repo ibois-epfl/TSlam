@@ -21,6 +21,9 @@ Here are some reference related to this project:
 - [STag ROS](https://github.com/usrl-uofsc/stag_ros): Code of STag is from this repo. This one upgrade the original STag from OpenCV 3 to OpenCV 4.
 - [Dev Log of this modification](./dev_log)
 
+## Scanned Map
+Some scanned map can be download from [[Google Drive](https://drive.google.com/drive/folders/1wYFZq54syWwTFVQ5soJTMVUmcufcvQoT?usp=share_link)](You have to login with EPFL account to view).
+
 ## Build
 ```bash
 # install library (compile from source opencv 4.5.5)
@@ -68,6 +71,22 @@ unzip ../../example/example.map.zip -d ../../example/
 ```
 - `map`: Path to the map.
 - `isInstancing`: Indicating it's not mapping, so we can skip some operations.
+
+### Util Programs
+Some utility programs would be built defautly in `build/utils`
+#### View Map 
+```bash
+./tslam_mapviewer example.map
+```
+#### Combine Maps
+```bash
+./tslam_combine_map A.map B.map AB_comb.map
+```
+#### Export Maps
+```bash
+./tslam_map_export example.map example.[pcd|ply|yml]
+```
+
 
 ### Run GUI:
 ```
