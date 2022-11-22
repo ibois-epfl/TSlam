@@ -21,6 +21,8 @@ add_executable(reconstruct reconstruct_test.cc)
 
 target_link_libraries(reconstruct PRIVATE Open3D::Open3D)
 target_link_libraries(reconstruct PRIVATE Eigen3::Eigen)
+target_link_libraries(reconstruct PRIVATE ${YAML_CPP_LIBRARIES})
 
 target_include_directories(reconstruct PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(reconstruct PUBLIC ${YAML_CPP_INCLUDE_DIR})
 # target_link_libraries(test gtest_main gtest)
