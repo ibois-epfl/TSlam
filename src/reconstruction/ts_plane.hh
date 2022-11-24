@@ -30,6 +30,7 @@ namespace tslam
             return os;
         };
 
+        static void parseFromMAPYAML(const std::string& filename, std::vector<std::shared_ptr<tslam::TSPlane>>& planes);
 
     private:
         std::vector<Eigen::Vector3f> m_corners;

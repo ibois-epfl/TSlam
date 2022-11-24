@@ -13,7 +13,7 @@ message(STATUS "Open3D ${Open3D_VERSION} found at ${Open3D_DIR}")
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 
-file(GLOB SRC_FILES *.cc *.cpp *.h *.hpp)
+file(GLOB SRC_FILES *.cc *.cpp *.h *.hh *.hpp)
 list(REMOVE_ITEM SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/reconstruct_test.cc")
 
 
