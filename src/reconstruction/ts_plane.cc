@@ -128,5 +128,26 @@ namespace tslam
         }
     }
 
+    o3dMeshPtr TSPlane::toOpen3dMesh()
+    {
+        o3dMeshPtr mesh = std::make_shared<open3d::geometry::TriangleMesh>();
 
+        std::vector<Eigen::Vector3d> vertices;
+        std::vector<Eigen::Vector3i> triangles;
+
+        vertices.push_back(Eigen::Vector3d(m_corners[0](0), m_corners[0](1), m_corners[0](2)));
+        vertices.push_back(Eigen::Vector3d(m_corners[1](0), m_corners[1](1), m_corners[1](2)));
+        vertices.push_back(Eigen::Vector3d(m_corners[2](0), m_corners[2](1), m_corners[2](2)));
+        vertices.push_back(Eigen::Vector3d(m_corners[3](0), m_corners[3](1), m_corners[3](2)));
+
+        triangles.push_back(Eigen::Vector3i(0, 1, 2));
+        triangles.push_back(Eigen::Vector3i(0, 2, 3));
+
+        mesh->vertices_ = vertices;
+        mesh->triangles_ = triangles;
+
+        m_PlaneMesh = *mesh;  //TODO: whatch out if this is creating problems (memory leak eg)
+
+        return mesh;
+    }
 }

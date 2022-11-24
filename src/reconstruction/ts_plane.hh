@@ -2,10 +2,13 @@
 
 #include <open3d/Open3D.h>
 #include <Eigen/Core>
-
+#include <open3d/Open3D.h>
 
 namespace tslam
 {
+    using o3dMesh = open3d::geometry::TriangleMesh;
+    using o3dMeshPtr = std::shared_ptr<o3dMesh>;
+
     /**
      * @brief TSPlane class responsible for storing the plane information
      * 
@@ -55,6 +58,13 @@ namespace tslam
         };
 
         /**
+         * @brief Convert the plane to a open3d mesh
+         * 
+         * @return The newly created mesh
+         */
+        o3dMeshPtr toOpen3dMesh();
+
+        /**
          * @brief Static method to fill a vector of TSPlanes from a yaml file containing their corners data
          * @param filename path to the map.yaml file
          * @param planes vector of TSPlane objects
@@ -64,5 +74,6 @@ namespace tslam
     private:
         std::vector<Eigen::Vector3f> m_corners;
         uint m_id;
+        o3dMesh m_PlaneMesh;
     };
 }
