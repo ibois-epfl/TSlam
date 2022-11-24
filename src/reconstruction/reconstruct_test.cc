@@ -78,9 +78,9 @@ int main()
 
     // =======================================================================
 
-    std::vector<std::shared_ptr<tslam::TSPlane>> planes;
 
     // Parse the markers string
+    std::vector<std::shared_ptr<tslam::TSPlane>> planes;
     for (uint i = 0; i < markersToParse.size(); i++)
     {
         // current marker to parse
@@ -93,22 +93,12 @@ int main()
         std::string id =  marker.substr(marker.find("id:") + 3, 3);
         plane->setID(std::stoi(id));
 
-        // Find the corners
+        // Find the corners points' cordinates
         const std::string keyCorners = "corners";
-        std::vector<Eigen::Vector3f> corners;
         while (marker.find(keyCorners) != std::string::npos)
         {
             marker = marker.substr(marker.find("corners") + 8);
 
-            // std::cout << marker << std::endl;
-
-            // std::string cornerA = marker.substr(0, marker.find("]") + 1);
-            // marker = marker.substr(marker.find("]") + 1);
-
-            // std::cout << cornerA << std::endl;
-
-
-            // split the marker string with char ","
             std::stringstream ss(marker);
             std::string token;
             std::vector<std::string> tokens;
@@ -119,10 +109,8 @@ int main()
                 token.erase(std::remove(token.begin(), token.end(), '{'), token.end());
                 token.erase(std::remove(token.begin(), token.end(), '}'), token.end());
                 token.erase(std::remove(token.begin(), token.end(), ' '), token.end());
-
                 tokens.push_back(token);
             }
-
 
             float xAF, yAF, zAF, xBF, yBF, zBF, xCF, yCF, zCF, xDF, yDF, zDF;
             xAF = std::stof(tokens[0]);
@@ -138,113 +126,27 @@ int main()
             yDF = std::stof(tokens[10]);
             zDF = std::stof(tokens[11]);
 
-            
+            Eigen::Vector3f A(xAF, yAF, zAF);
+            Eigen::Vector3f B(xBF, yBF, zBF);
+            Eigen::Vector3f C(xCF, yCF, zCF);
+            Eigen::Vector3f D(xDF, yDF, zDF);
 
-
-            // // erase all chars [ ] { } from the tokens
-            // for (uint i = 0; i < tokens.size(); i++)
-            // {
-            //     tokens[i].erase(std::remove(tokens[i].begin(), tokens[i].end(), '['), tokens[i].end());
-            //     tokens[i].erase(std::remove(tokens[i].begin(), tokens[i].end(), ']'), tokens[i].end());
-            //     tokens[i].erase(std::remove(tokens[i].begin(), tokens[i].end(), '{'), tokens[i].end());
-            //     tokens[i].erase(std::remove(tokens[i].begin(), tokens[i].end(), '}'), tokens[i].end());
-            // }
-
-            // for (auto token : tokens)
-            // {
-            //     std::cout << token << std::endl;
-            // }
-
-            // return 0;
-
-
-
-
-            // std::string cornerA2Parse = cornerA.substr(cornerA.find("[") + 3, cornerA.find("]") - cornerA.find("[") - 3);
-
-            // // get the next 3 numbers from corner
-
-            // std::string cornerB2Parse = cornerA2Parse.substr(cornerA2Parse.find(",") + 2);
-
-
-            // std::cout << cornerA2Parse << std::endl;
-            // std::cout << cornerB2Parse << std::endl;
-
-
-            // return 0;
-
-            // std::stringstream ssA(cornerA2Parse);
-            // std::stringstream ssB(cornerB2Parse);
-            // std::stringstream ssC(cornerC2Parse);
-            // std::stringstream ssD(cornerD2Parse);
-
-            // std::string xA, yA, zA, xB, yB, zB, xC, yC, zC, xD, yD, zD;
-
-            // std::vector<std::string> seglistA, seglistB, seglistC, seglistD;
-
-            // while (std::getline(ssA, xA, ','))
-            // {
-            //     seglistA.push_back(xA);
-            // }
-            // while (std::getline(ssB, xB, ','))
-            // {
-            //     seglistB.push_back(xB);
-            // }
-            // while (std::getline(ssC, xC, ','))
-            // {
-            //     seglistC.push_back(xC);
-            // }
-            // while (std::getline(ssD, xD, ','))
-            // {
-            //     seglistD.push_back(xD);
-            // }
-
-            // //print the vector
-            // for (uint i = 0; i < seglistA.size(); i++)
-            // {
-            //     std::cout << seglistA[i] << std::endl;
-            //     std::cout << seglistB[i] << std::endl;
-            // }
-
-
-            // return 0;
-
-
-            // float xAF, yAF, zAF, xBF, yBF, zBF, xCF, yCF, zCF, xDF, yDF, zDF;
-            // xAF = std::stof(seglistA[0]);
-            // yAF = std::stof(seglistA[1]);
-            // zAF = std::stof(seglistA[2]);
-            // xBF = std::stof(seglistB[0]);
-            // yBF = std::stof(seglistB[1]);
-            // zBF = std::stof(seglistB[2]);
-            // xCF = std::stof(seglistC[0]);
-            // yCF = std::stof(seglistC[1]);
-            // zCF = std::stof(seglistC[2]);
-            // xDF = std::stof(seglistD[0]);
-            // yDF = std::stof(seglistD[1]);
-            // zDF = std::stof(seglistD[2]);
-
-
-            std::cout << "id: " << id << std::endl;
-            std::cout << "corner A: " << xAF << ", " << yAF << ", " << zAF << std::endl;
-            std::cout << "corner B: " << xBF << ", " << yBF << ", " << zBF << std::endl;
-            std::cout << "corner C: " << xCF << ", " << yCF << ", " << zCF << std::endl;
-            std::cout << "corner D: " << xDF << ", " << yDF << ", " << zDF << std::endl;
+            plane->setCorners(A, B, C, D);
 
             break;
         }
-
-
-
-        // // Set the corners
-        // plane->setCorners(corners);
-
-        // // Add the plane to the list
-        // planes.push_back(plane);
+        planes.push_back(plane);
     }
 
-
-
+    // print all the planes
+    for (uint i = 0; i < planes.size(); i++)
+    {
+        std::cout << *planes[i] << std::endl;
+        std::cout << "corner A: " << planes[i]->getCornerA().transpose() << std::endl;
+        std::cout << "corner B: " << planes[i]->getCornerB().transpose() << std::endl;
+        std::cout << "corner C: " << planes[i]->getCornerC().transpose() << std::endl;
+        std::cout << "corner D: " << planes[i]->getCornerD().transpose() << std::endl;
+    }
 
     return 0;
 }
