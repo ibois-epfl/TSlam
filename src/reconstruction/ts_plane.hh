@@ -13,10 +13,23 @@ namespace tslam
         ~TSPlane() = default;
     
         inline std::vector<Eigen::Vector3f> getCorners() {return m_corners; };
-        inline uint getID() {return m_id; };
 
         void setCorners(std::vector<Eigen::Vector3f> corners);
-        void setID(uint id) {m_id = id; };
+        void setCorners(Eigen::Vector3f A, Eigen::Vector3f B, Eigen::Vector3f C, Eigen::Vector3f D);
+        inline Eigen::Vector3f getCornerA() {return m_corners[0]; };
+        inline Eigen::Vector3f getCornerB() {return m_corners[1]; };
+        inline Eigen::Vector3f getCornerC() {return m_corners[2]; };
+        inline Eigen::Vector3f getCornerD() {return m_corners[3]; };
+
+        inline void setID(uint id) {m_id = id; };
+        inline uint getID() {return m_id; };
+        friend std::ostream& operator<<(std::ostream& os, TSPlane& plane)
+        {
+            std::string id = std::to_string(plane.getID());
+            os << "id: " << id << std::endl;
+            return os;
+        };
+
 
     private:
         std::vector<Eigen::Vector3f> m_corners;
