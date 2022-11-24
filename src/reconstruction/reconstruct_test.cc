@@ -1,15 +1,13 @@
 #include <iostream>
 #include "ts_plane.hh"
 
-// files from: https://github.com/jimmiebergmann/mini-yaml
-// #include "YAML.hpp"
-
 #include <Eigen/Core>
-
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
+#include <stdexcept>
 
 // test files in https://drive.google.com/drive/folders/1wYFZq54syWwTFVQ5soJTMVUmcufcvQoT?usp=share_link
 // if you have problem installing open3d:
@@ -24,8 +22,6 @@
 
 int main()
 {
-    std::vector<std::shared_ptr<tslam::TSPlane>> planes;
-
     // File location
     const std::string FILENAME = "/home/as/TSlam/src/reconstruction/long_comb.yml";
 
@@ -46,22 +42,18 @@ int main()
         if (line.find(keyNmarkers) != std::string::npos)
         {
             nmarkers = std::stoi(line.substr(line.find(":") + 1));
-            std::cout << "Found " << nmarkers << " markers" << std::endl;
             break;
         }
     }
 
     // Find the aruco marker data
     const std::string keyMarkers = "aruco_bc_marker";
-    std::vector<uint> markerIds;
-
     std::vector<std::string> markersToParse;
 
     while (std::getline(ifss, line))
     {
         if (line.find(keyMarkers) != std::string::npos)
         {
-            // run a loop every 7 lines
             uint j = 0;
             for (uint i = 0; i < nmarkers; i++)
             {
@@ -73,136 +65,183 @@ int main()
                 }
                 markersToParse.push_back(marker2P);
             }
-
-            // std::string marker2Parse;
-            // for (uint i = 0; i < 7; i++)
-            // {
-            //     std::getline(ifss, line);
-            //     marker2Parse += line;
-            // }
-            // std::cout << "Found marker: " << marker2Parse << std::endl;
-            // markersToParse.push_back(marker2Parse);
-
-
-
-
-
-
             break;
         }
     }
 
+    // Check if the number of markers found is correct
+    if (markersToParse.size() != nmarkers)
+    {
+        throw std::runtime_error("[Error]: number of markers to parse is not correct.");
+    }
 
 
     // =======================================================================
 
-    // std::string yamlContent((std::istreambuf_iterator<char>(ifss)), std::istreambuf_iterator<char>());
+    std::vector<std::shared_ptr<tslam::TSPlane>> planes;
+
+    // Parse the markers string
+    for (uint i = 0; i < markersToParse.size(); i++)
+    {
+        // current marker to parse
+        std::string marker = markersToParse[i];
+
+        // Parse the marker string
+        std::shared_ptr<tslam::TSPlane> plane = std::make_shared<tslam::TSPlane>();
+
+        // Set id
+        std::string id =  marker.substr(marker.find("id:") + 3, 3);
+        plane->setID(std::stoi(id));
+
+        // Find the corners
+        const std::string keyCorners = "corners";
+        std::vector<Eigen::Vector3f> corners;
+        while (marker.find(keyCorners) != std::string::npos)
+        {
+            marker = marker.substr(marker.find("corners") + 8);
+
+            // std::cout << marker << std::endl;
+
+            // std::string cornerA = marker.substr(0, marker.find("]") + 1);
+            // marker = marker.substr(marker.find("]") + 1);
+
+            // std::cout << cornerA << std::endl;
 
 
-    // // find the "aruco_bc_nmarkers" key and save the value in an integer
-    // std::string key = "aruco_bc_nmarkers";
-    // std::size_t found = yamlContent.find(key);
-    // std::cout << "found: " << found << std::endl;
-    // std::string value = yamlContent.substr(found + key.size() + 2, 1);
-    // std::cout << "value: " << value << std::endl;
-    // int nmarkers = std::stoi(value);
-    // std::cout << "nmarkers: " << nmarkers << std::endl;
+            // split the marker string with char ","
+            std::stringstream ss(marker);
+            std::string token;
+            std::vector<std::string> tokens;
+            while (std::getline(ss, token, ','))
+            {
+                token.erase(std::remove(token.begin(), token.end(), '['), token.end());
+                token.erase(std::remove(token.begin(), token.end(), ']'), token.end());
+                token.erase(std::remove(token.begin(), token.end(), '{'), token.end());
+                token.erase(std::remove(token.begin(), token.end(), '}'), token.end());
+                token.erase(std::remove(token.begin(), token.end(), ' '), token.end());
 
-    // =======================================================================
-
-
-
-
-
-
-    // std::ifstream file(FILENAME);
-    // if (!file.is_open())
-    // {
-    //     std::cout << "Could not open file " << FILENAME << std::endl;
-    //     return 1;
-    // }
-
-    // std::string line;
-    // std::vector<std::string> tokens;
-    // std::string token;
+                tokens.push_back(token);
+            }
 
 
+            float xAF, yAF, zAF, xBF, yBF, zBF, xCF, yCF, zCF, xDF, yDF, zDF;
+            xAF = std::stof(tokens[0]);
+            yAF = std::stof(tokens[1]);
+            zAF = std::stof(tokens[2]);
+            xBF = std::stof(tokens[3]);
+            yBF = std::stof(tokens[4]);
+            zBF = std::stof(tokens[5]);
+            xCF = std::stof(tokens[6]);
+            yCF = std::stof(tokens[7]);
+            zCF = std::stof(tokens[8]);
+            xDF = std::stof(tokens[9]);
+            yDF = std::stof(tokens[10]);
+            zDF = std::stof(tokens[11]);
+
+            
 
 
+            // // erase all chars [ ] { } from the tokens
+            // for (uint i = 0; i < tokens.size(); i++)
+            // {
+            //     tokens[i].erase(std::remove(tokens[i].begin(), tokens[i].end(), '['), tokens[i].end());
+            //     tokens[i].erase(std::remove(tokens[i].begin(), tokens[i].end(), ']'), tokens[i].end());
+            //     tokens[i].erase(std::remove(tokens[i].begin(), tokens[i].end(), '{'), tokens[i].end());
+            //     tokens[i].erase(std::remove(tokens[i].begin(), tokens[i].end(), '}'), tokens[i].end());
+            // }
 
+            // for (auto token : tokens)
+            // {
+            //     std::cout << token << std::endl;
+            // }
 
-    // while (std::getline(file, line))
-    // {
-    //     //find line with "aruco_bc_markers"
-    //     std::size_t found = line.find("aruco_bc_markers");
-    //     if (found!=std::string::npos)
-    //     {
-    //         std::cout << "found aruco_bc_markers" << std::endl;
-
-    //         // int cap = 255;
-
-    //         // read the next 7 lines
-    //         for (int i = 0; i < 7; i++)
-    //         {
-    //             std::getline(file, line);
-    //             token += line;
-    //         }
-
-    //         std::cout << token << std::endl;
-
-
-
-
-    //         // // parse the token
-    //         // std::size_t pos = 0;
-    //         // std::string delimiter = ":";
-    //         // while ((pos = token.find(delimiter)) != std::string::npos)
-    //         // {
-    //         //     token.erase(0, pos + delimiter.length());
-    //         //     tokens.push_back(token);
-    //         // }
-
-    //         // std::cout << tokens[1] << std::endl;
-
-
-    //         // read file at line ix
-
-    //         // break;
-
-    //         // print number of line
-    //         // from now on, read everything betweeen "{}"
-    //         std::string line;
-
-    //     }
-
-    // }
-
-
-    // YAML::Node root;
-    // YAML::Parse(root, FILENAME.c_str());
-    // YAML::Parse(root, "/home/as/TSlam/src/reconstruction/long_comb.yml");
+            // return 0;
 
 
 
 
-    // std::cout << root.As<std::string>() << std::endl;
+            // std::string cornerA2Parse = cornerA.substr(cornerA.find("[") + 3, cornerA.find("]") - cornerA.find("[") - 3);
 
-    // for (auto it = root.Begin(); it != root.End(); ++it)
-    // {
-    //     std::shared_ptr<tslam::TSPlane> plane = std::make_shared<tslam::TSPlane>();
-    //     std::vector<Eigen::Vector3f> corners;
-    //     for (auto it2 = it->Begin(); it2 != it->End(); ++it2)
-    //     {
-    //         Eigen::Vector3f corner;
-    //         corner << it2->second[0].as<float>(), it2->second[1].as<float>(), it2->second[2].as<float>();
-    //         corners.push_back(corner);
-    //     }
-    //     plane->setCorners(corners);
-    //     planes.push_back(plane);
-    // }
+            // // get the next 3 numbers from corner
+
+            // std::string cornerB2Parse = cornerA2Parse.substr(cornerA2Parse.find(",") + 2);
 
 
+            // std::cout << cornerA2Parse << std::endl;
+            // std::cout << cornerB2Parse << std::endl;
 
+
+            // return 0;
+
+            // std::stringstream ssA(cornerA2Parse);
+            // std::stringstream ssB(cornerB2Parse);
+            // std::stringstream ssC(cornerC2Parse);
+            // std::stringstream ssD(cornerD2Parse);
+
+            // std::string xA, yA, zA, xB, yB, zB, xC, yC, zC, xD, yD, zD;
+
+            // std::vector<std::string> seglistA, seglistB, seglistC, seglistD;
+
+            // while (std::getline(ssA, xA, ','))
+            // {
+            //     seglistA.push_back(xA);
+            // }
+            // while (std::getline(ssB, xB, ','))
+            // {
+            //     seglistB.push_back(xB);
+            // }
+            // while (std::getline(ssC, xC, ','))
+            // {
+            //     seglistC.push_back(xC);
+            // }
+            // while (std::getline(ssD, xD, ','))
+            // {
+            //     seglistD.push_back(xD);
+            // }
+
+            // //print the vector
+            // for (uint i = 0; i < seglistA.size(); i++)
+            // {
+            //     std::cout << seglistA[i] << std::endl;
+            //     std::cout << seglistB[i] << std::endl;
+            // }
+
+
+            // return 0;
+
+
+            // float xAF, yAF, zAF, xBF, yBF, zBF, xCF, yCF, zCF, xDF, yDF, zDF;
+            // xAF = std::stof(seglistA[0]);
+            // yAF = std::stof(seglistA[1]);
+            // zAF = std::stof(seglistA[2]);
+            // xBF = std::stof(seglistB[0]);
+            // yBF = std::stof(seglistB[1]);
+            // zBF = std::stof(seglistB[2]);
+            // xCF = std::stof(seglistC[0]);
+            // yCF = std::stof(seglistC[1]);
+            // zCF = std::stof(seglistC[2]);
+            // xDF = std::stof(seglistD[0]);
+            // yDF = std::stof(seglistD[1]);
+            // zDF = std::stof(seglistD[2]);
+
+
+            std::cout << "id: " << id << std::endl;
+            std::cout << "corner A: " << xAF << ", " << yAF << ", " << zAF << std::endl;
+            std::cout << "corner B: " << xBF << ", " << yBF << ", " << zBF << std::endl;
+            std::cout << "corner C: " << xCF << ", " << yCF << ", " << zCF << std::endl;
+            std::cout << "corner D: " << xDF << ", " << yDF << ", " << zDF << std::endl;
+
+            break;
+        }
+
+
+
+        // // Set the corners
+        // plane->setCorners(corners);
+
+        // // Add the plane to the list
+        // planes.push_back(plane);
+    }
 
 
 
