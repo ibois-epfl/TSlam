@@ -30,6 +30,11 @@ namespace tslam
             return os;
         };
 
+        /**
+         * @brief fill a vector of TSPlanes from a yaml file containing their corners data
+         * @param filename path to the map.yaml file
+         * @param planes vector of TSPlane objects
+         */
         static void parseFromMAPYAML(const std::string& filename, std::vector<std::shared_ptr<tslam::TSPlane>>& planes);
 
     private:

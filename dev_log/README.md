@@ -176,3 +176,9 @@ std::string info;
 
 `Aug 01`
 - The map utilities (merge & optimization) is now a member function of Map.
+
+
+### Reconstruction
+We will use only the `.yaml` file since the point cloud obtained from the mapping phase has no definition. Mostly the points are concentrated where the fiducial markers are.
+
+![](./snappoints§.png)

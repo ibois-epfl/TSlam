@@ -28,15 +28,5 @@ int main()
     std::vector<std::shared_ptr<tslam::TSPlane>> planes;
     tslam::TSPlane::parseFromMAPYAML(FILENAME, planes);
 
-    // print all the planes
-    for (uint i = 0; i < planes.size(); i++)
-    {
-        std::cout << *planes[i] << std::endl;
-        std::cout << "corner A: " << planes[i]->getCornerA().transpose() << std::endl;
-        std::cout << "corner B: " << planes[i]->getCornerB().transpose() << std::endl;
-        std::cout << "corner C: " << planes[i]->getCornerC().transpose() << std::endl;
-        std::cout << "corner D: " << planes[i]->getCornerD().transpose() << std::endl;
-    }
-
     return 0;
 }
