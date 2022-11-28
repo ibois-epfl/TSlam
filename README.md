@@ -6,7 +6,7 @@
 </p>
 
 
-![](./example/tracking_demo.gif)
+<!-- ![](./example/tracking_demo.gif) -->
 
 This is a modified version of [UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62) for augmented carpentry research. The main features are:
 - Better API for use.
