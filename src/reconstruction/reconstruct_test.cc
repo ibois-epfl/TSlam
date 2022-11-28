@@ -30,24 +30,26 @@ int main()
     std::vector<std::shared_ptr<tslam::TSPlane>> planes;
     tslam::TSPlane::parseFromMAPYAML(FILENAME, planes);
 
-    // draw planes as filar with open3d
-    std::vector<tslam::o3dMeshPtr> meshes;
-    for (auto& plane : planes)
-    {
-        meshes.push_back(plane->toOpen3dMesh());
-    }
+
+    //---------------------------------------------------------------------------------
+    // Debug visualizer
+    //---------------------------------------------------------------------------------
 
     open3d::visualization::Visualizer* vis(new open3d::visualization::Visualizer());
     vis->CreateVisualizerWindow("TSPlanes", 1920, 1080);
-    for (auto& mesh : meshes)
+
+    // draw plane tags as wireframe
+    for (auto& plane : planes)
     {
-        vis->AddGeometry(mesh);
+        auto planesLineset = open3d::geometry::LineSet::CreateFromTriangleMesh(*plane->toOpen3dMesh());
+        planesLineset->PaintUniformColor(Eigen::Vector3d(0, 1, 0.2));
+
+        vis->AddGeometry(planesLineset);
     }
+
     vis->Run();
+    vis->Close();
     vis->DestroyVisualizerWindow();
-
-
-
 
     return 0;
 }

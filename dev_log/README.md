@@ -181,4 +181,8 @@ std::string info;
 ### Reconstruction
 We will use only the `.yaml` file since the point cloud obtained from the mapping phase has no definition. Mostly the points are concentrated where the fiducial markers are.
 
-![](./snappoints§.png)
+![](./snappoints.png)
+
+Added a small visualizer for debugging and dev.
+
+![](./snap_wireframe.png)
