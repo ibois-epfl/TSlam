@@ -10,14 +10,14 @@ namespace tslam
     using o3dMeshPtr = std::shared_ptr<o3dMesh>;
 
     /**
-     * @brief TSPlane class responsible for storing the plane information
+     * @brief TSPlaneTag class responsible for storing the plane information
      * 
      */
-    class TSPlane
+    class TSPlaneTag
     {
     public:
-        TSPlane();
-        ~TSPlane() = default;
+        TSPlaneTag();
+        ~TSPlaneTag() = default;
     
         /**
          * @brief Get the corners' coordinates of the planes
@@ -50,7 +50,7 @@ namespace tslam
          */
         inline uint getID() {return m_id; };
 
-        friend std::ostream& operator<<(std::ostream& os, TSPlane& plane)
+        friend std::ostream& operator<<(std::ostream& os, TSPlaneTag& plane)
         {
             std::string id = std::to_string(plane.getID());
             os << "id: " << id << std::endl;
@@ -65,11 +65,11 @@ namespace tslam
         o3dMeshPtr toOpen3dMesh();
 
         /**
-         * @brief Static method to fill a vector of TSPlanes from a yaml file containing their corners data
+         * @brief Static method to fill a vector of TSPlaneTag from a yaml file containing their corners data
          * @param filename path to the map.yaml file
-         * @param planes vector of TSPlane objects
+         * @param planes vector of TSPlaneTag objects
          */
-        static void parseFromMAPYAML(const std::string& filename, std::vector<std::shared_ptr<tslam::TSPlane>>& planes);
+        static void parseFromMAPYAML(const std::string& filename, std::vector<std::shared_ptr<tslam::TSPlaneTag>>& planes);
 
     private:
         std::vector<Eigen::Vector3f> m_corners;

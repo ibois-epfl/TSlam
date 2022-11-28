@@ -1,4 +1,4 @@
-#include "ts_plane.hh"
+#include "ts_plane_tag.hh"
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
@@ -6,9 +6,9 @@
 
 namespace tslam
 {
-    TSPlane::TSPlane() {};
+    TSPlaneTag::TSPlaneTag() {};
 
-    void TSPlane::setCorners(std::vector<Eigen::Vector3f> corners)
+    void TSPlaneTag::setCorners(std::vector<Eigen::Vector3f> corners)
     {
         if (corners.size() != 4)
         {
@@ -18,7 +18,7 @@ namespace tslam
         m_corners = corners;
     }
 
-    void TSPlane::setCorners(Eigen::Vector3f A, Eigen::Vector3f B, Eigen::Vector3f C, Eigen::Vector3f D)
+    void TSPlaneTag::setCorners(Eigen::Vector3f A, Eigen::Vector3f B, Eigen::Vector3f C, Eigen::Vector3f D)
     {
         m_corners.clear();
         m_corners.push_back(A);
@@ -27,7 +27,7 @@ namespace tslam
         m_corners.push_back(D);
     }
 
-    void TSPlane::parseFromMAPYAML(const std::string& filename, std::vector<std::shared_ptr<tslam::TSPlane>>& planes)
+    void TSPlaneTag::parseFromMAPYAML(const std::string& filename, std::vector<std::shared_ptr<tslam::TSPlaneTag>>& planes)
     {
         std::ifstream ifss(filename);
         if (!ifss.is_open())
@@ -78,7 +78,7 @@ namespace tslam
         {
             std::string marker = markersToParse[i];
 
-            std::shared_ptr<tslam::TSPlane> plane = std::make_shared<tslam::TSPlane>();
+            std::shared_ptr<tslam::TSPlaneTag> plane = std::make_shared<tslam::TSPlaneTag>();
 
             std::string id =  marker.substr(marker.find("id:") + 3, 3);
             plane->setID(std::stoi(id));
@@ -128,7 +128,7 @@ namespace tslam
         }
     }
 
-    o3dMeshPtr TSPlane::toOpen3dMesh()
+    o3dMeshPtr TSPlaneTag::toOpen3dMesh()
     {
         o3dMeshPtr mesh = std::make_shared<open3d::geometry::TriangleMesh>();
 
