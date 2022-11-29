@@ -41,18 +41,3 @@ namespace tslam
 
     };
 }
-
-/* reconstruct algorithm
-        ref1: polyFit (https://github.com/LiangliangNan/PolyFit)
-        --- there is a licensed geometric solver Gurobi, this is not free and 
-        we want to find another solution;
-
-
-        Inspired byy polyfit
-        1. clip supporting planes with boundary box
-        2. refinement of planes selection
-        3. intersection of planes
-        4. selection of candidate rectangles
-        5. refinement and merging to create a manifolded, water-tight mesh
-
-        */
