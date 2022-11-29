@@ -7,7 +7,7 @@
 namespace tslam
 {
     using o3dMesh = open3d::geometry::TriangleMesh;
-    using o3dMeshPtr = std::shared_ptr<o3dMesh>;
+    using o3dMeshPtr = std::shared_ptr<open3d::geometry::TriangleMesh>;
 
     /**
      * @brief TSPlaneTag class responsible for storing the plane information
@@ -62,18 +62,18 @@ namespace tslam
          * 
          * @return The newly created mesh
          */
-        o3dMeshPtr toOpen3dMesh();
+        std::shared_ptr<open3d::geometry::TriangleMesh> toOpen3dMesh();
 
         /**
          * @brief Static method to fill a vector of TSPlaneTag from a yaml file containing their corners data
          * @param filename path to the map.yaml file
          * @param planes vector of TSPlaneTag objects
          */
-        static void parseFromMAPYAML(const std::string& filename, std::vector<std::shared_ptr<tslam::TSPlaneTag>>& planes);
+        static void parseFromMAPYAML(const std::string& filename, std::vector<std::shared_ptr<TSPlaneTag>>& planes);
 
     private:
         std::vector<Eigen::Vector3f> m_corners;
         uint m_id;
-        o3dMesh m_PlaneMesh;
+        open3d::geometry::TriangleMesh m_PlaneMesh;
     };
 }

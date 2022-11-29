@@ -1,5 +1,6 @@
 #include <iostream>
 #include "ts_plane_tag.hh"
+#include "ts_timber.hh"
 
 #include <Eigen/Core>
 
@@ -26,8 +27,10 @@ int main()
 {
     const std::string FILENAME = "/home/as/TSlam/src/reconstruction/long_comb.yml";
 
-    std::vector<std::shared_ptr<tslam::TSPlaneTag>> planeTags;
-    tslam::TSPlaneTag::parseFromMAPYAML(FILENAME, planeTags);
+    tslam::TSTimber timber = tslam::TSTimber();
+    timber.setPlaneTagsFromYAML(FILENAME);
+    // std::vector<std::shared_ptr<tslam::TSPlaneTag>> planeTags;
+    // tslam::TSPlaneTag::parseFromMAPYAML(FILENAME, planeTags);
 
     //---------------------------------------------------------------------------------
     // Debug visualizer
@@ -37,7 +40,7 @@ int main()
     vis->CreateVisualizerWindow("TSPlaneTags", 1920, 1080);
 
     // draw plane tags as wireframe
-    for (auto& tag : planeTags)
+    for (auto& tag : timber.getPlaneTags())
     {
         auto planeTagsLineset = open3d::geometry::LineSet::CreateFromTriangleMesh(*tag->toOpen3dMesh());
         planeTagsLineset->PaintUniformColor(Eigen::Vector3d(0, 1, 0.2));

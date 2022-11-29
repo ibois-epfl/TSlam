@@ -27,7 +27,7 @@ namespace tslam
         m_corners.push_back(D);
     }
 
-    void TSPlaneTag::parseFromMAPYAML(const std::string& filename, std::vector<std::shared_ptr<tslam::TSPlaneTag>>& planes)
+    void TSPlaneTag::parseFromMAPYAML(const std::string& filename, std::vector<std::shared_ptr<TSPlaneTag>>& planes)
     {
         std::ifstream ifss(filename);
         if (!ifss.is_open())
@@ -128,9 +128,9 @@ namespace tslam
         }
     }
 
-    o3dMeshPtr TSPlaneTag::toOpen3dMesh()
+    std::shared_ptr<open3d::geometry::TriangleMesh> TSPlaneTag::toOpen3dMesh()
     {
-        o3dMeshPtr mesh = std::make_shared<open3d::geometry::TriangleMesh>();
+        std::shared_ptr<open3d::geometry::TriangleMesh> mesh = std::make_shared<open3d::geometry::TriangleMesh>();
 
         std::vector<Eigen::Vector3d> vertices;
         std::vector<Eigen::Vector3i> triangles;
