@@ -39,6 +39,8 @@ int main()
     open3d::visualization::Visualizer* vis(new open3d::visualization::Visualizer());
     vis->CreateVisualizerWindow("TSPlaneTags", 1920, 1080);
 
+    //TODO: add numbers to visualization
+
     // draw plane tags as wireframe
     for (auto& tag : timber.getPlaneTags())
     {

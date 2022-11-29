@@ -2,13 +2,9 @@
 
 #include <open3d/Open3D.h>
 #include <Eigen/Core>
-#include <open3d/Open3D.h>
 
 namespace tslam
 {
-    using o3dMesh = open3d::geometry::TriangleMesh;
-    using o3dMeshPtr = std::shared_ptr<open3d::geometry::TriangleMesh>;
-
     /**
      * @brief TSPlaneTag class responsible for storing the plane information
      * 
