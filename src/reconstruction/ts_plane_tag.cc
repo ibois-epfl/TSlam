@@ -157,8 +157,6 @@ namespace tslam
         Eigen::Vector3d AB = B - A;
         Eigen::Vector3d AC = C - A;
         Eigen::Vector3d normal = AB.cross(AC);
-        //.normalized();  //TODO: check me if normalization creates problem
-
         return normal;
     }
 

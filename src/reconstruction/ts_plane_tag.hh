@@ -5,6 +5,7 @@
 
 namespace tslam
 {
+
     /**
      * @brief TSPlaneTag class responsible for storing the plane information
      * 
