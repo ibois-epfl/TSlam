@@ -8,7 +8,7 @@ namespace tslam
 {
     TSPlaneTag::TSPlaneTag() {};
 
-    void TSPlaneTag::setCorners(std::vector<Eigen::Vector3f> corners)
+    void TSPlaneTag::setCorners(std::vector<Eigen::Vector3d> corners)
     {
         if (corners.size() != 4)
         {
@@ -18,7 +18,7 @@ namespace tslam
         m_corners = corners;
     }
 
-    void TSPlaneTag::setCorners(Eigen::Vector3f A, Eigen::Vector3f B, Eigen::Vector3f C, Eigen::Vector3f D)
+    void TSPlaneTag::setCorners(Eigen::Vector3d A, Eigen::Vector3d B, Eigen::Vector3d C, Eigen::Vector3d D)
     {
         m_corners.clear();
         m_corners.push_back(A);
@@ -116,10 +116,10 @@ namespace tslam
                 yDF = std::stof(tokens[10]);
                 zDF = std::stof(tokens[11]);
 
-                Eigen::Vector3f A(xAF, yAF, zAF);
-                Eigen::Vector3f B(xBF, yBF, zBF);
-                Eigen::Vector3f C(xCF, yCF, zCF);
-                Eigen::Vector3f D(xDF, yDF, zDF);
+                Eigen::Vector3d A(xAF, yAF, zAF);
+                Eigen::Vector3d B(xBF, yBF, zBF);
+                Eigen::Vector3d C(xCF, yCF, zCF);
+                Eigen::Vector3d D(xDF, yDF, zDF);
 
                 plane->setCorners(A, B, C, D);
 
@@ -152,14 +152,11 @@ namespace tslam
         return mesh;
     }
 
-    Eigen::Vector3d TSPlaneTag::computeUnorientedPlaneNormal(const Eigen::Vector3f& A, const Eigen::Vector3f& B, const Eigen::Vector3f& C)
+    Eigen::Vector3d TSPlaneTag::computeUnorientedPlaneNormal(const Eigen::Vector3d& A, const Eigen::Vector3d& B, const Eigen::Vector3d& C)
     {
-        Eigen::Vector3f AB = B - A;
-        Eigen::Vector3f AC = C - A;
-
-        Eigen::Vector3d ABd(AB(0), AB(1), AB(2));
-        Eigen::Vector3d ACd(AC(0), AC(1), AC(2));
-        Eigen::Vector3d normal = ABd.cross(ACd);
+        Eigen::Vector3d AB = B - A;
+        Eigen::Vector3d AC = C - A;
+        Eigen::Vector3d normal = AB.cross(AC);
         //.normalized();  //TODO: check me if normalization creates problem
 
         return normal;
@@ -181,7 +178,7 @@ namespace tslam
         return m_unorientedPlaneNormal;
     }
 
-    Eigen::Vector3d TSPlaneTag::computeCenter(std::vector<Eigen::Vector3f> corners)
+    Eigen::Vector3d TSPlaneTag::computeCenter(std::vector<Eigen::Vector3d> corners)
     {
         Eigen::Vector3d center(((corners[0] + corners[1] + corners[2] + corners[3]) / 4.0).cast<double>());
         return center;
