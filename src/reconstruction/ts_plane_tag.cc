@@ -47,6 +47,7 @@ namespace tslam
             }
         }
 
+
         const std::string keyMarkers = "aruco_bc_marker";
         std::vector<std::string> markersToParse;
         while (std::getline(ifss, line))
@@ -146,8 +147,51 @@ namespace tslam
         mesh->vertices_ = vertices;
         mesh->triangles_ = triangles;
 
-        m_PlaneMesh = *mesh;  //TODO: whatch out if this is creating problems (memory leak eg)
+        m_PlaneMesh = *mesh;
 
         return mesh;
+    }
+
+    Eigen::Vector3d TSPlaneTag::computeUnorientedPlaneNormal(const Eigen::Vector3f& A, const Eigen::Vector3f& B, const Eigen::Vector3f& C)
+    {
+        Eigen::Vector3f AB = B - A;
+        Eigen::Vector3f AC = C - A;
+
+        Eigen::Vector3d ABd(AB(0), AB(1), AB(2));
+        Eigen::Vector3d ACd(AC(0), AC(1), AC(2));
+        Eigen::Vector3d normal = ABd.cross(ACd);
+        //.normalized();  //TODO: check me if normalization creates problem
+
+        return normal;
+    }
+
+    open3d::geometry::TriangleMesh& TSPlaneTag::getOpen3dMesh()
+    {
+        if (m_corners.size() != 4) throw std::runtime_error("[ERROR]: corners are not set.");
+
+        toOpen3dMesh();
+        return m_PlaneMesh;
+    }
+
+    Eigen::Vector3d& TSPlaneTag::getUnorientedPlaneNormal()
+    {
+        if (m_corners.size() != 4) throw std::runtime_error("[ERROR]: corners are not set.");
+
+        m_unorientedPlaneNormal = computeUnorientedPlaneNormal(m_corners[0], m_corners[1], m_corners[2]);
+        return m_unorientedPlaneNormal;
+    }
+
+    Eigen::Vector3d TSPlaneTag::computeCenter(std::vector<Eigen::Vector3f> corners)
+    {
+        Eigen::Vector3d center(((corners[0] + corners[1] + corners[2] + corners[3]) / 4.0).cast<double>());
+        return center;
+    }
+
+    Eigen::Vector3d& TSPlaneTag::getCenter()
+    {
+        if (m_corners.size() != 4) throw std::runtime_error("[ERROR]: corners are not set.");
+
+        m_center = computeCenter(m_corners);
+        return m_center;
     }
 }
