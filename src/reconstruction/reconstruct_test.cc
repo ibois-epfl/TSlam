@@ -204,11 +204,9 @@ std::vector<std::shared_ptr<open3d::geometry::Segment3D>> cropMeshPlaneByOBB(ope
 
 
     Eigen::Vector3d n = v1.cross(v2);
+    n.normalize();
 
-
-    // n.normalize();
-
-    planeDebug.push_back(std::make_shared<open3d::geometry::Segment3D>(p1, n/1000 + p1)); // DEBUG
+    planeDebug.push_back(std::make_shared<open3d::geometry::Segment3D>(p1, n*100 + p1)); // DEBUG
 
 
     double d = n.dot(p1);
