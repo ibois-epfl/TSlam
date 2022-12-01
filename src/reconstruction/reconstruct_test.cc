@@ -22,11 +22,115 @@
 [2] display those planeTags in a 3d window
 */
 
+//==================================================================================================
 
-open3d::geometry::TriangleMesh cropMeshPlaneByOBB(open3d::geometry::TriangleMesh& plane, open3d::geometry::OrientedBoundingBox o3dOBB)
+// test for https://asawicki.info/news_1428_finding_polygon_of_plane-aabb_intersection
+
+struct TSTPlane
 {
-    open3d::geometry::TriangleMesh cropedPlaneMesh;
-    std::vector<Eigen::Vector3d> OBBpts = o3dOBB.GetBoxPoints();
+    TSTPlane(double a, double b, double c, double d)
+        : a(a), b(b), c(c), d(d)
+    {};
+    double a, b, c, d;  // ax+by+cz=d
+};
+
+
+// OutVD > 0 means ray is back-facing the plane
+// returns false if there is no intersection because ray is perpedicular to plane
+
+bool ray_to_plane(const Eigen::Vector3d &RayOrig,
+                  const Eigen::Vector3d &RayDir,
+                  const TSTPlane &Plane,
+                  float& OutT,
+                  float& OutVD)
+{
+    OutVD = Plane.a * RayDir[0] + Plane.b * RayDir[1] + Plane.c * RayDir[2];
+    if (OutVD == 0.0f)
+        return false;
+    OutT = - (Plane.a * RayOrig[0] + Plane.b * RayOrig[1] + Plane.c * RayOrig[2] + Plane.d) / OutVD;
+    return true;
+}
+
+bool rayIntersectsPlane(const Eigen::Vector3d& rayOrigin,
+                        const Eigen::Vector3d& rayDirection,
+                        const TSTPlane& plane,
+                        std::vector<Eigen::Vector3d>& intersectionPoints,
+                        double& OutVD)
+{
+    double vd = plane.a * rayDirection(0) + plane.b * rayDirection(1) + plane.c * rayDirection(2);
+    OutVD = vd;
+    if (vd == 0)
+    {
+        return false;
+    }
+    double t = -(plane.a * rayOrigin(0) + plane.b * rayOrigin(1) + plane.c * rayOrigin(2) + plane.d) / vd;
+    intersectionPoints.push_back(rayOrigin + t * rayDirection);
+    return true;
+}
+
+
+// Maximum out_point_count == 6, so out_points must point to 6-element array.
+// out_point_count == 0 mean no intersection.
+// out_points are not sorted.
+// void calc_plane_aabb_intersection_points(const TSTPlane &plane,
+//                                          const Eigen::Vector3d &aabb_min, const
+//                                          Eigen::Vector3d &aabb_max,
+//                                          Eigen::Vector3d *out_points,
+//                                          unsigned &out_point_count)
+// {
+//     out_point_count = 0;
+//     float vd, t;
+
+//     // Test edges along X axis, pointing right.
+//     Eigen::Vector3d dir = Eigen::Vector3d(aabb_max[0] - aabb_min[0], 0.f, 0.f);
+//     Eigen::Vector3d orig = aabb_min;
+//     if (ray_to_plane(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+//         out_points[out_point_count++] = orig + dir * t;
+//     orig = Eigen::Vector3d(aabb_min[0], aabb_max[1], aabb_min[2]);
+//     if (ray_to_plane(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+//         out_points[out_point_count++] = orig + dir * t;
+//     orig = Eigen::Vector3d(aabb_min[0], aabb_min[1], aabb_max[2]);
+//     if (ray_to_plane(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+//         out_points[out_point_count++] = orig + dir * t;
+//     orig = Eigen::Vector3d(aabb_min[0], aabb_max[1], aabb_max[2]);
+//     if (ray_to_plane(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+//         out_points[out_point_count++] = orig + dir * t;
+
+//     // Test edges along Y axis, pointing up.
+//     dir = Eigen::Vector3d(0.f, aabb_max[1] - aabb_min[1], 0.f);
+//     orig = Eigen::Vector3d(aabb_min[0], aabb_min[1], aabb_min[2]);
+//     if (ray_to_plane(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+//         out_points[out_point_count++] = orig + dir * t;
+//     orig = Eigen::Vector3d(aabb_max[0], aabb_min[1], aabb_min[2]);
+//     if (ray_to_plane(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+//         out_points[out_point_count++] = orig + dir * t;
+//     orig = Eigen::Vector3d(aabb_min[0], aabb_min[1], aabb_max[2]);
+//     if (ray_to_plane(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+//         out_points[out_point_count++] = orig + dir * t;
+//     orig = Eigen::Vector3d(aabb_max[0], aabb_min[1], aabb_max[2]);
+//     if (ray_to_plane(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+//         out_points[out_point_count++] = orig + dir * t;
+
+//     // Test edges along Z axis, pointing forward.
+//     dir = Eigen::Vector3d(0.f, 0.f, aabb_max[2] - aabb_min[2]);
+//     orig = Eigen::Vector3d(aabb_min[0], aabb_min[1], aabb_min[2]);
+//     if (ray_to_plane(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+//         out_points[out_point_count++] = orig + dir * t;
+//     orig = Eigen::Vector3d(aabb_max[0], aabb_min[1], aabb_min[2]);
+//     if (ray_to_plane(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+//         out_points[out_point_count++] = orig + dir * t;
+//     orig = Eigen::Vector3d(aabb_min[0], aabb_max[1], aabb_min[2]);
+//     if (ray_to_plane(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+//         out_points[out_point_count++] = orig + dir * t;
+//     orig = Eigen::Vector3d(aabb_max[0], aabb_max[1], aabb_min[2]);
+//     if (ray_to_plane(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+//         out_points[out_point_count++] = orig + dir * t;
+// }
+
+std::vector<std::shared_ptr<open3d::geometry::Segment3D>> cropMeshPlaneByOBB(open3d::geometry::TriangleMesh& plane, open3d::geometry::OrientedBoundingBox o3dOBB)
+{
+
+    std::vector<Eigen::Vector3d> OBBcorners = o3dOBB.GetBoxPoints();
 
     // get lines of the OBB from Open3d structure
     ///      ------- x
@@ -46,36 +150,128 @@ open3d::geometry::TriangleMesh cropMeshPlaneByOBB(open3d::geometry::TriangleMesh
     ///   | /               | /
     ///   |/                |/
     /// 5 ------------------- 4
-    std::vector<Eigen::Vector3d> OBBlines;
-    OBBlines.push_back(OBBpts[0] - OBBpts[1]);
-    OBBlines.push_back(OBBpts[1] - OBBpts[7]);
-    OBBlines.push_back(OBBpts[7] - OBBpts[2]);
-    OBBlines.push_back(OBBpts[2] - OBBpts[0]);
+    // std::vector<Eigen::Vector3d> OBBsegments;
+    std::vector<std::shared_ptr<open3d::geometry::Segment3D>> OBBsegments;
+    OBBsegments.push_back(std::make_shared<open3d::geometry::Segment3D>(OBBcorners[0], OBBcorners[1]));
+    OBBsegments.push_back(std::make_shared<open3d::geometry::Segment3D>(OBBcorners[0], OBBcorners[1]));
+    OBBsegments.push_back(std::make_shared<open3d::geometry::Segment3D>(OBBcorners[1], OBBcorners[7]));
+    OBBsegments.push_back(std::make_shared<open3d::geometry::Segment3D>(OBBcorners[7], OBBcorners[2]));
+    OBBsegments.push_back(std::make_shared<open3d::geometry::Segment3D>(OBBcorners[2], OBBcorners[0]));
 
-    OBBlines.push_back(OBBpts[0] - OBBpts[3]);
-    OBBlines.push_back(OBBpts[1] - OBBpts[6]);
-    OBBlines.push_back(OBBpts[2] - OBBpts[5]);
-    OBBlines.push_back(OBBpts[7] - OBBpts[4]);
+    OBBsegments.push_back(std::make_shared<open3d::geometry::Segment3D>(OBBcorners[0], OBBcorners[3]));
+    OBBsegments.push_back(std::make_shared<open3d::geometry::Segment3D>(OBBcorners[1], OBBcorners[6]));
+    OBBsegments.push_back(std::make_shared<open3d::geometry::Segment3D>(OBBcorners[2], OBBcorners[5]));
+    OBBsegments.push_back(std::make_shared<open3d::geometry::Segment3D>(OBBcorners[7], OBBcorners[4]));
 
-    OBBlines.push_back(OBBpts[3] - OBBpts[6]);
-    OBBlines.push_back(OBBpts[6] - OBBpts[4]);
-    OBBlines.push_back(OBBpts[4] - OBBpts[5]);
-    OBBlines.push_back(OBBpts[5] - OBBpts[3]);
+    OBBsegments.push_back(std::make_shared<open3d::geometry::Segment3D>(OBBcorners[3], OBBcorners[6]));
+    OBBsegments.push_back(std::make_shared<open3d::geometry::Segment3D>(OBBcorners[6], OBBcorners[4]));
+    OBBsegments.push_back(std::make_shared<open3d::geometry::Segment3D>(OBBcorners[4], OBBcorners[5]));
+    OBBsegments.push_back(std::make_shared<open3d::geometry::Segment3D>(OBBcorners[5], OBBcorners[3]));
+
+
 
     // TODO: this has probably to be replaced by a tagplane object (not using open3d mesh as input)
-    // intersect each lien with the plane
-    std::cout << "plane vertices" << std::to_string(plane.vertices_.size()) << std::endl;
+    // intersect each line with the plane
+
+
+    // std::cout << "plane vertices" << std::to_string(plane.vertices_.size()) << std::endl;  // DEBUG
+
+
+    std::vector<Eigen::Vector3d> planeCorners;
+    for (auto& p : plane.vertices_)
+    {
+        planeCorners.push_back(p);
+    }
+
+    // plane.ComputeVertexNormals();
+
+    // convert plane to ax+by+cz=d
+    std::vector<std::shared_ptr<open3d::geometry::Segment3D>> planeDebug;  // DEBUG
+
+
+    Eigen::Vector3d p1 = planeCorners[0];
+    Eigen::Vector3d p2 = planeCorners[1];
+    Eigen::Vector3d p3 = planeCorners[3];
+    Eigen::Vector3d p4 = planeCorners[2];
+
+    planeDebug.push_back(std::make_shared<open3d::geometry::Segment3D>(p1, p2)); // DEBUG
+    planeDebug.push_back(std::make_shared<open3d::geometry::Segment3D>(p1, p3)); // DEBUG
+    planeDebug.push_back(std::make_shared<open3d::geometry::Segment3D>(p2, p4)); // DEBUG
+    planeDebug.push_back(std::make_shared<open3d::geometry::Segment3D>(p3, p4)); // DEBUG
+
+    Eigen::Vector3d v1 = p2 - p1;
+    Eigen::Vector3d v2 = p3 - p1;
+
+
+    Eigen::Vector3d n = v1.cross(v2);
+
+
+    // n.normalize();
+
+    planeDebug.push_back(std::make_shared<open3d::geometry::Segment3D>(p1, n/1000 + p1)); // DEBUG
+
+
+    double d = n.dot(p1);
+
+    TSTPlane planeEq(n[0], n[1], n[2], d);
+
+
+    std::cout << "POP1" << std::endl;  // DEBUG
+
+
+    //==================================================================================================
+    // ref math: https://math.stackexchange.com/questions/4432127/intersection-between-segment-and-plane
+    // ray casting open3d: http://www.open3d.org/html/cpp_api/classopen3d_1_1t_1_1geometry_1_1_raycasting_scene.html
+
+    std::vector<Eigen::Vector3d> planeIntersections;
+
+
+    // create raycasting scene from open3d
 
 
 
 
 
-    
 
 
-    
+    // // Maximum out_point_count == 6, so out_points must point to 6-element array
+    // // out_point_count == 0 mean no intersection
+    // // out_points are not sorted
 
-    return cropedPlaneMesh;
+    double outVD;
+    // Eigen::Vector3d intersection;
+    for (auto& seg : OBBsegments)
+    {
+        // detect if there is collision between segment and plance
+        if (rayIntersectsPlane(seg->Origin(), Eigen::Vector3d(seg->EndPoint()-seg->Origin()), planeEq, planeIntersections, outVD))
+        {
+            std::cout << "collision detected" << std::endl;
+        }
+    }
+
+    std::cout << "number of intersections: " << planeIntersections.size() << std::endl;
+
+    // std::cout << "POP2" << std::endl;  // DEBUG
+
+
+
+
+
+
+    //==================================================================================================
+
+
+    std::vector<std::shared_ptr<open3d::geometry::Segment3D>> polygonSegments;
+    // create a polygon from the intersection points
+    for (int i = 0; i < planeIntersections.size(); i++)
+    {
+        int j = (i + 1) % planeIntersections.size();
+        polygonSegments.push_back(std::make_shared<open3d::geometry::Segment3D>(planeIntersections[i], planeIntersections[j]));
+    }
+
+    // return polygonSegments;
+
+    return planeDebug;
 }
 
 
@@ -160,18 +356,22 @@ int main()
     Eigen::Vector3d obbCenter = obb.GetCenter();
     obb.Scale(SCALE_OBB_FACTOR, obbCenter);
 
-    std::vector<open3d::geometry::TriangleMesh> meshPlnsCrop;
+    std::vector<open3d::geometry::TriangleMesh> meshPlnsCrop;  //TODO: set as vector of points 
+    std::vector<std::vector<std::shared_ptr<open3d::geometry::Segment3D>>> meshPlnsCropSegments;
     for (auto& plnF : meshPlnsScaledUp)
     {
         // open3d::geometry::TriangleMesh test = *plnF.Crop(obb);
 
-        open3d::geometry::TriangleMesh test = cropMeshPlaneByOBB(plnF, obb);
+        // open3d::geometry::TriangleMesh test = cropMeshPlaneByOBB(plnF, obb);
+        // meshPlnsCrop.push_back(test);
+
+        std::vector<std::shared_ptr<open3d::geometry::Segment3D>> test = cropMeshPlaneByOBB(plnF, obb);
 
 
-
-        
-        meshPlnsCrop.push_back(test);
+        meshPlnsCropSegments.push_back(test);
     }
+
+    // return -1;  // DEBUG
 
 
     // <<<< end code <<<<
@@ -209,9 +409,9 @@ int main()
     // }
 
     // add bounding box
-    auto obbLineset = open3d::geometry::LineSet::CreateFromOrientedBoundingBox(obb);
-    obbLineset->PaintUniformColor(Eigen::Vector3d(1, 0, 0));
-    vis->AddGeometry(obbLineset);
+    auto obbsegmentset = open3d::geometry::LineSet::CreateFromOrientedBoundingBox(obb);
+    obbsegmentset->PaintUniformColor(Eigen::Vector3d(1, 0, 0));
+    vis->AddGeometry(obbsegmentset);
 
     // draw scaled and cropped planes
     for (auto& pln : meshPlnsCrop)
@@ -219,6 +419,29 @@ int main()
         auto planeTagsLineset3 = open3d::geometry::LineSet::CreateFromTriangleMesh(pln);
         planeTagsLineset3->PaintUniformColor(Eigen::Vector3d(0, 0, 1));
         vis->AddGeometry(planeTagsLineset3);
+    }
+
+    // draw polygon segments3D 
+    for (auto& vecSegm : meshPlnsCropSegments)
+    {
+        for (auto& segm : vecSegm)
+        {
+            // draw spheres at the segment's endpoints
+            std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+            // Create a LineSet from given points and line indices
+            segLineset->points_.push_back(segm->Origin());
+            segLineset->points_.push_back(segm->EndPoint());
+            segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+            segLineset->PaintUniformColor(Eigen::Vector3d(0.5, 1, 0.5));
+            vis->AddGeometry(segLineset);
+
+            // auto segmLineset = open3d::geometry::LineSet::CreateFromSegment3D(*segm);
+            // segmLineset->PaintUniformColor(Eigen::Vector3d(0, 1, 0));
+            // vis->AddGeometry(segm);
+        }
+        break;  // DEBUG
     }
 
     vis->Run();
