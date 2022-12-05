@@ -25,7 +25,6 @@ namespace tslam
         void setCorners(Eigen::Vector3d A, Eigen::Vector3d B, Eigen::Vector3d C, Eigen::Vector3d D);
         inline void setID(uint id) {m_id = id; };
 
-        // TODO: check if acces by ref is good
         inline std::vector<Eigen::Vector3d>& getCorners() {return m_corners; }; 
         inline Eigen::Vector3d& getCornerA() {return m_corners[0]; };
         inline Eigen::Vector3d& getCornerB() {return m_corners[1]; };
