@@ -47,7 +47,6 @@ namespace tslam
             }
         }
 
-
         const std::string keyMarkers = "aruco_bc_marker";
         std::vector<std::string> markersToParse;
         while (std::getline(ifss, line))

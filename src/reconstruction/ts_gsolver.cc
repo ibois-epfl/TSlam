@@ -2,11 +2,8 @@
 
 namespace tslam
 {
-    TSGSolver::TSGSolver() {};
-
     void TSGSolver::reconstruct(std::shared_ptr<tslam::TSTimber>& timber)
     {
-
         // TODO
 
         /* reconstruct algorithm
@@ -32,4 +29,9 @@ namespace tslam
 
         */
     }
+
+    // void TSGSolver::scaleUpPlaneTags()
+    // {
+    //     // TODO
+    // }
 }

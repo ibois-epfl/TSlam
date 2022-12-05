@@ -3,7 +3,7 @@
 
 namespace tslam
 {
-    TSTimber::TSTimber() {};
+    TSTimber::TSTimber() {m_planeTags = std::vector<std::shared_ptr<tslam::TSPlaneTag>>({}); };
 
     void TSTimber::setPlaneTagsFromYAML(const std::string& filename)
     {

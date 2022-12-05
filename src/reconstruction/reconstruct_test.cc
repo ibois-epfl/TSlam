@@ -1,6 +1,7 @@
 #include <iostream>
 #include "ts_plane_tag.hh"
 #include "ts_timber.hh"
+#include "ts_gsolver.hh"
 
 #include <Eigen/Core>
 
@@ -8,9 +9,15 @@
 #include <fstream>
 #include <sstream>
 
+#include <algorithm>
+
 #include <stdexcept>
 
 #include <open3d/Open3D.h>
+
+
+//TODO: replace pre-compiled macro in cmake config
+// #define PROFILER 1
 
 // test files in https://drive.google.com/drive/folders/1wYFZq54syWwTFVQ5soJTMVUmcufcvQoT?usp=share_link
 // if you have problem installing open3d:
@@ -35,8 +42,6 @@ struct TSTPlane
 };
 
 
-// OutVD > 0 means ray is back-facing the plane
-// returns false if there is no intersection because ray is perpedicular to plane
 bool ray2Plane(const Eigen::Vector3d &RayOrig,
                const Eigen::Vector3d &RayDir,
                const TSTPlane &Plane,
@@ -69,13 +74,6 @@ bool ray2Plane(const Eigen::Vector3d &RayOrig,
     }
 
     return true;
-
-
-    // *OutVD = Plane.a * RayDir.x() + Plane.b * RayDir.y() + Plane.c * RayDir.z();
-    // if (*OutVD == 0.0f)
-    //     return false;
-    // *OutT = - (Plane.a * RayOrig.x() + Plane.b * RayOrig.y() + Plane.c * RayOrig.z() + Plane.d) / *OutVD;
-    // return true;
 }
 
 // Maximum out_point_count == 6, so out_points must point to 6-element array.
@@ -84,7 +82,7 @@ bool ray2Plane(const Eigen::Vector3d &RayOrig,
 void plane2AABBIntersect(const TSTPlane &plane,
                          const Eigen::Vector3d &aabb_min, 
                          const Eigen::Vector3d &aabb_max,
-                         Eigen::Vector3d *out_points,
+                         Eigen::Vector3d* out_points,
                          unsigned &out_point_count)
 {
     out_point_count = 0;
@@ -141,34 +139,30 @@ void plane2AABBIntersect(const TSTPlane &plane,
         out_points[out_point_count++] = orig;
 }
 
+void sortIntersections(Eigen::Vector3d* points,
+                       unsigned point_count,
+                       const TSTPlane& plane)
+{
+    // sort points clockwise
+    Eigen::Vector3d center = Eigen::Vector3d(0.f, 0.f, 0.f);
+    for (unsigned i = 0; i < point_count; ++i)
+        center += points[i];
+    center /= (float)point_count;
+
+    std::sort(points, points + point_count, [&center, &plane](const Eigen::Vector3d& a, const Eigen::Vector3d& b) {
+        Eigen::Vector3d v1 = a - center;
+        Eigen::Vector3d v2 = b - center;
+        float dot = v1.x() * v2.y() - v1.y() * v2.x();
+        if (plane.a > 0.f)
+            return dot > 0.f;
+        else
+            return dot < 0.f;
+    });
+}
+
 std::vector<std::shared_ptr<open3d::geometry::Segment3D>> cropMeshPlaneByOBB(open3d::geometry::TriangleMesh& plane, open3d::geometry::AxisAlignedBoundingBox o3dOBB)
 {
 
-    std::vector<Eigen::Vector3d> OBBcorners = o3dOBB.GetBoxPoints();
-
-    // get lines of the OBB from Open3d structure
-    ///      ------- x
-    ///     /|
-    ///    / |
-    ///   /  | z
-    ///  y
-    ///      0 ------------------- 1
-    ///       /|                /|
-    ///      / |               / |
-    ///     /  |              /  |
-    ///    /   |             /   |
-    /// 2 ------------------- 7  |
-    ///   |    |____________|____| 6
-    ///   |   /3            |   /
-    ///   |  /              |  /
-    ///   | /               | /
-    ///   |/                |/
-    /// 5 ------------------- 4
-
-    // Eigen::Vector3d aabb_min = o3dOBB.min_bound_;
-    // Eigen::Vector3d aabb_max = o3dOBB.max_bound_;
-
-    // plane equation
     std::vector<Eigen::Vector3d> planeCorners;
     for (auto& p : plane.vertices_)
     {
@@ -208,7 +202,11 @@ std::vector<std::shared_ptr<open3d::geometry::Segment3D>> cropMeshPlaneByOBB(ope
                         outPtsCount);
 
 
-    std::cout << "Number of intersections: " << std::to_string(outPtsCount) << std::endl;  // DEBUG
+    // std::cout << "Number of intersections: " << std::to_string(outPtsCount) << std::endl;  // DEBUG
+
+
+    // sort points by angle around the plane normal
+    sortIntersections(outPtsPtr, outPtsCount, planeEq);
 
 
 
@@ -221,7 +219,7 @@ std::vector<std::shared_ptr<open3d::geometry::Segment3D>> cropMeshPlaneByOBB(ope
         planeIntersections.push_back(outPtsPtr[i]);
         // std::cout << "intersection: " << outPtsPtr[i].transpose() << std::endl;
     }
-    std::cout << "number of intersections: " << planeIntersections.size() << std::endl;
+    // std::cout << "number of intersections: " << planeIntersections.size() << std::endl;
 
 
 
@@ -242,18 +240,7 @@ std::vector<std::shared_ptr<open3d::geometry::Segment3D>> cropMeshPlaneByOBB(ope
     return polygonSegments;
 }
 
-
-int main()
-{
-    const std::string FILENAME = "/home/as/TSlam/src/reconstruction/long_comb.yml";
-
-    tslam::TSTimber timber = tslam::TSTimber();
-    timber.setPlaneTagsFromYAML(FILENAME);
-    // std::vector<std::shared_ptr<tslam::TSPlaneTag>> planeTags;
-    // tslam::TSPlaneTag::parseFromMAPYAML(FILENAME, planeTags);
-
-
-    //---------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------
     // Reconstruction
     //---------------------------------------------------------------------------------
 
@@ -280,41 +267,54 @@ int main()
 
     */
 
+int main()
+{
+    // create timber object
+    std::shared_ptr<tslam::TSTimber> timberPtr = std::shared_ptr<tslam::TSTimber>();
+
+    std::cout << "POP1" << std::endl;
+
+    // parse tags from file
+    const std::string FILENAME = "/home/as/TSlam/src/reconstruction/long_comb.yml";
+    timberPtr->setPlaneTagsFromYAML(FILENAME);
+
+    std::cout << "POP2" << std::endl;
+
+    // create geometric solver
+    tslam::TSGSolver solver = tslam::TSGSolver(timberPtr);
+
+
     //---------------------------------------------------------------------------------
     // Scale up planes
     //---------------------------------------------------------------------------------
 
     std::cout << "[DEBUG]: generting mesh planes from planeTags" << std::endl;                   // DEBUG
-    auto start1 = std::chrono::high_resolution_clock::now();                                    // DEBUG
-    // >>>> start code >>>>
+    solver.timeStart();
 
     const uint SCALE_PLN_FACTOR = 500;
 
     std::vector<open3d::geometry::TriangleMesh> meshPlnsScaledUp;
-    for (auto& p : timber.getPlaneTags())
+    for (auto& p : timberPtr->getPlaneTags())
     {
         open3d::geometry::TriangleMesh mPln = p->getOpen3dMesh();
         mPln.Scale(SCALE_PLN_FACTOR, p->getCenter());
         meshPlnsScaledUp.push_back(mPln);
     }
 
-    // <<<< end code <<<<
-    auto end1 = std::chrono::system_clock::now();                                               // DEBUG
-    std::chrono::duration<double> elapsed_seconds1 = end1-start1;                              // DEBUG
-    std::cout << "[DEBUG]: elapsed time: " << elapsed_seconds1.count() << " s" << std::endl;  // DEBUG
+    solver.timeEnd();
 
 
     //---------------------------------------------------------------------------------
     // Cropping planes
     //---------------------------------------------------------------------------------
 
-    std::cout << "[DEBUG]: generting mesh planes from planeTags" << std::endl;                   // DEBUG
+    std::cout << "[DEBUG]: cropping planes" << std::endl;                   // DEBUG
     auto start2 = std::chrono::high_resolution_clock::now();                                    // DEBUG
     // >>>> start code >>>>
 
     // get all the tag's center points in a point cloud, get its obb, scale it to half the scalePlnF and crop the planes
     open3d::geometry::PointCloud pntCld;
-    for (auto& p : timber.getPlaneTags())
+    for (auto& p : timberPtr->getPlaneTags())
     {
         pntCld.points_.push_back(p->getCenter());
     }
@@ -359,7 +359,7 @@ int main()
     vis->CreateVisualizerWindow("TSPlaneTags", 1920, 1080);
 
     // draw base plane tags as wireframe
-    for (auto& tag : timber.getPlaneTags())
+    for (auto& tag : timberPtr->getPlaneTags())
     {
         open3d::geometry::TriangleMesh tagBase = tag->getOpen3dMesh();
         auto planeTagsLineset1 = open3d::geometry::LineSet::CreateFromTriangleMesh(tagBase);
