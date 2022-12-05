@@ -186,3 +186,16 @@ We will use only the `.yaml` file since the point cloud obtained from the mappin
 Added a small visualizer for debugging and dev.
 
 ![](./snap_wireframe.png)
+
+Here's the workflow for the reconstruction:
+*[To be added]*
+
+* parse the yml mapping file
+![](./snap_wireframe.png)
+
+* we get the plane for each tag
+![](./planesinter.png)
+
+* To get the intersections of the planes we switched to an AABB instead of OBB. It's simpler and faster for 
+calculating the polygon intersections for all the tags. Here's the preliminary result:
+![](./abbintersect.png)
