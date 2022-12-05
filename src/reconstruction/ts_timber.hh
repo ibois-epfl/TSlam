@@ -13,8 +13,8 @@ namespace tslam
     class TSTimber
     {
     public:
-        TSTimber();
-        TSTimber(std::vector<std::shared_ptr<tslam::TSPlaneTag>> planeTags)
+        TSTimber() {m_planeTags = {}; };
+        TSTimber(std::vector<tslam::TSPlaneTag> planeTags)
             : m_planeTags(planeTags)
         {};
         ~TSTimber() = default;
@@ -25,15 +25,15 @@ namespace tslam
          * @param filename path of the yaml file
          */
         void setPlaneTagsFromYAML(const std::string& filename);
-        inline void setPlaneTags(std::vector<std::shared_ptr<tslam::TSPlaneTag>> planeTags) {m_planeTags = planeTags; };
+        inline void setPlaneTags(std::vector<tslam::TSPlaneTag> planeTags) {m_planeTags = planeTags; };
         
-        inline std::vector<std::shared_ptr<tslam::TSPlaneTag>> getPlaneTags() {return m_planeTags; };
+        inline std::vector<tslam::TSPlaneTag> getPlaneTags() {return m_planeTags; };
 
     private:
         /**
          * @brief m_planeTags the tag objects sticked to the timber piece.
          */
-        std::vector<std::shared_ptr<tslam::TSPlaneTag>> m_planeTags;
+        std::vector<tslam::TSPlaneTag> m_planeTags;
         /**
          * @brief m_mesh the output mesh of the reconstructed object.
          */

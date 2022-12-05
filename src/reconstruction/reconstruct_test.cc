@@ -269,19 +269,14 @@ std::vector<std::shared_ptr<open3d::geometry::Segment3D>> cropMeshPlaneByOBB(ope
 
 int main()
 {
-    // create timber object
-    std::shared_ptr<tslam::TSTimber> timberPtr = std::shared_ptr<tslam::TSTimber>();
-
-    std::cout << "POP1" << std::endl;
-
-    // parse tags from file
+    // create timber object & read yml TSlam map
+    std::shared_ptr<tslam::TSTimber> timberPtr = std::make_shared<tslam::TSTimber>();
     const std::string FILENAME = "/home/as/TSlam/src/reconstruction/long_comb.yml";
     timberPtr->setPlaneTagsFromYAML(FILENAME);
 
-    std::cout << "POP2" << std::endl;
-
     // create geometric solver
     tslam::TSGSolver solver = tslam::TSGSolver(timberPtr);
+
 
 
     //---------------------------------------------------------------------------------
@@ -296,8 +291,8 @@ int main()
     std::vector<open3d::geometry::TriangleMesh> meshPlnsScaledUp;
     for (auto& p : timberPtr->getPlaneTags())
     {
-        open3d::geometry::TriangleMesh mPln = p->getOpen3dMesh();
-        mPln.Scale(SCALE_PLN_FACTOR, p->getCenter());
+        open3d::geometry::TriangleMesh mPln = p.getOpen3dMesh();
+        mPln.Scale(SCALE_PLN_FACTOR, p.getCenter());
         meshPlnsScaledUp.push_back(mPln);
     }
 
@@ -316,7 +311,7 @@ int main()
     open3d::geometry::PointCloud pntCld;
     for (auto& p : timberPtr->getPlaneTags())
     {
-        pntCld.points_.push_back(p->getCenter());
+        pntCld.points_.push_back(p.getCenter());
     }
 
     // aabb
@@ -361,7 +356,7 @@ int main()
     // draw base plane tags as wireframe
     for (auto& tag : timberPtr->getPlaneTags())
     {
-        open3d::geometry::TriangleMesh tagBase = tag->getOpen3dMesh();
+        open3d::geometry::TriangleMesh tagBase = tag.getOpen3dMesh();
         auto planeTagsLineset1 = open3d::geometry::LineSet::CreateFromTriangleMesh(tagBase);
         planeTagsLineset1->PaintUniformColor(Eigen::Vector3d(1, 1, 0.2));
         vis->AddGeometry(planeTagsLineset1);

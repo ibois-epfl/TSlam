@@ -40,7 +40,7 @@ namespace tslam
          * @param filename path to the map.yaml file
          * @param planes vector of TSPlaneTag objects
          */
-        static void parseFromMAPYAML(const std::string& filename, std::vector<std::shared_ptr<TSPlaneTag>>& planes);
+        static void parseFromMAPYAML(const std::string& filename, std::vector<TSPlaneTag>& planes);
     
         friend std::ostream& operator<<(std::ostream& os, TSPlaneTag& plane)
             {
@@ -65,7 +65,7 @@ namespace tslam
         /**
          * @brief Compute the center of the tag's polygon
          * 
-         * @param A corner A of the tag
+         * @param corners corners of the tag
          * @return Eigen::Vector3d The center of the plane
          */
         Eigen::Vector3d computeCenter(std::vector<Eigen::Vector3d> corners);

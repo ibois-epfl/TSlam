@@ -27,7 +27,7 @@ namespace tslam
         m_corners.push_back(D);
     }
 
-    void TSPlaneTag::parseFromMAPYAML(const std::string& filename, std::vector<std::shared_ptr<TSPlaneTag>>& planes)
+    void TSPlaneTag::parseFromMAPYAML(const std::string& filename, std::vector<TSPlaneTag>& planes)
     {
         std::ifstream ifss(filename);
         if (!ifss.is_open())
@@ -78,10 +78,10 @@ namespace tslam
         {
             std::string marker = markersToParse[i];
 
-            std::shared_ptr<tslam::TSPlaneTag> plane = std::make_shared<tslam::TSPlaneTag>();
+            tslam::TSPlaneTag plane = tslam::TSPlaneTag();
 
             std::string id =  marker.substr(marker.find("id:") + 3, 3);
-            plane->setID(std::stoi(id));
+            plane.setID(std::stoi(id));
 
             const std::string keyCorners = "corners";
             while (marker.find(keyCorners) != std::string::npos)
@@ -120,7 +120,7 @@ namespace tslam
                 Eigen::Vector3d C(xCF, yCF, zCF);
                 Eigen::Vector3d D(xDF, yDF, zDF);
 
-                plane->setCorners(A, B, C, D);
+                plane.setCorners(A, B, C, D);
 
                 break;
             }
