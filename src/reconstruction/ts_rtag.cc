@@ -1,4 +1,4 @@
-#include "ts_plane_tag.hh"
+#include "ts_rtag.hh"
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
@@ -6,28 +6,26 @@
 
 namespace tslam
 {
-    TSPlaneTag::TSPlaneTag() {};
-
-    void TSPlaneTag::setCorners(std::vector<Eigen::Vector3d> corners)
+    void TSRTag::setCorners(std::vector<Eigen::Vector3d> corners)
     {
         if (corners.size() != 4)
         {
             throw std::invalid_argument("[ERROR]: corners must be 4");
         }
-        m_corners.clear();
-        m_corners = corners;
+        m_Corners.clear();
+        m_Corners = corners;
     }
 
-    void TSPlaneTag::setCorners(Eigen::Vector3d A, Eigen::Vector3d B, Eigen::Vector3d C, Eigen::Vector3d D)
+    void TSRTag::setCorners(Eigen::Vector3d A, Eigen::Vector3d B, Eigen::Vector3d C, Eigen::Vector3d D)
     {
-        m_corners.clear();
-        m_corners.push_back(A);
-        m_corners.push_back(B);
-        m_corners.push_back(C);
-        m_corners.push_back(D);
+        m_Corners.clear();
+        m_Corners.push_back(A);
+        m_Corners.push_back(B);
+        m_Corners.push_back(C);
+        m_Corners.push_back(D);
     }
 
-    void TSPlaneTag::parseFromMAPYAML(const std::string& filename, std::vector<TSPlaneTag>& planes)
+    void TSRTag::parseFromMAPYAML(const std::string& filename, std::vector<TSRTag>& planes)
     {
         std::ifstream ifss(filename);
         if (!ifss.is_open())
@@ -78,7 +76,7 @@ namespace tslam
         {
             std::string marker = markersToParse[i];
 
-            tslam::TSPlaneTag plane = tslam::TSPlaneTag();
+            tslam::TSRTag plane = tslam::TSRTag();
 
             std::string id =  marker.substr(marker.find("id:") + 3, 3);
             plane.setID(std::stoi(id));
@@ -128,17 +126,17 @@ namespace tslam
         }
     }
 
-    std::shared_ptr<open3d::geometry::TriangleMesh> TSPlaneTag::toOpen3dMesh()
+    std::shared_ptr<open3d::geometry::TriangleMesh> TSRTag::toOpen3dMesh()
     {
         std::shared_ptr<open3d::geometry::TriangleMesh> mesh = std::make_shared<open3d::geometry::TriangleMesh>();
 
         std::vector<Eigen::Vector3d> vertices;
         std::vector<Eigen::Vector3i> triangles;
 
-        vertices.push_back(Eigen::Vector3d(m_corners[0](0), m_corners[0](1), m_corners[0](2)));
-        vertices.push_back(Eigen::Vector3d(m_corners[1](0), m_corners[1](1), m_corners[1](2)));
-        vertices.push_back(Eigen::Vector3d(m_corners[2](0), m_corners[2](1), m_corners[2](2)));
-        vertices.push_back(Eigen::Vector3d(m_corners[3](0), m_corners[3](1), m_corners[3](2)));
+        vertices.push_back(Eigen::Vector3d(m_Corners[0](0), m_Corners[0](1), m_Corners[0](2)));
+        vertices.push_back(Eigen::Vector3d(m_Corners[1](0), m_Corners[1](1), m_Corners[1](2)));
+        vertices.push_back(Eigen::Vector3d(m_Corners[2](0), m_Corners[2](1), m_Corners[2](2)));
+        vertices.push_back(Eigen::Vector3d(m_Corners[3](0), m_Corners[3](1), m_Corners[3](2)));
 
         triangles.push_back(Eigen::Vector3i(0, 1, 2));
         triangles.push_back(Eigen::Vector3i(0, 2, 3));
@@ -151,7 +149,7 @@ namespace tslam
         return mesh;
     }
 
-    Eigen::Vector3d TSPlaneTag::computeUnorientedPlaneNormal(const Eigen::Vector3d& A, const Eigen::Vector3d& B, const Eigen::Vector3d& C)
+    Eigen::Vector3d TSRTag::computeUnorientedPlaneNormal(const Eigen::Vector3d& A, const Eigen::Vector3d& B, const Eigen::Vector3d& C)
     {
         Eigen::Vector3d AB = B - A;
         Eigen::Vector3d AC = C - A;
@@ -159,33 +157,33 @@ namespace tslam
         return normal;
     }
 
-    open3d::geometry::TriangleMesh& TSPlaneTag::getOpen3dMesh()
+    open3d::geometry::TriangleMesh& TSRTag::getOpen3dMesh()
     {
-        if (m_corners.size() != 4) throw std::runtime_error("[ERROR]: corners are not set.");
+        if (m_Corners.size() != 4) throw std::runtime_error("[ERROR]: corners are not set.");
 
         toOpen3dMesh();
         return m_PlaneMesh;
     }
 
-    Eigen::Vector3d& TSPlaneTag::getUnorientedPlaneNormal()
+    Eigen::Vector3d& TSRTag::getUnorientedPlaneNormal()
     {
-        if (m_corners.size() != 4) throw std::runtime_error("[ERROR]: corners are not set.");
+        if (m_Corners.size() != 4) throw std::runtime_error("[ERROR]: corners are not set.");
 
-        m_unorientedPlaneNormal = computeUnorientedPlaneNormal(m_corners[0], m_corners[1], m_corners[2]);
-        return m_unorientedPlaneNormal;
+        m_UnorientedPlaneNormal = computeUnorientedPlaneNormal(m_Corners[0], m_Corners[1], m_Corners[2]);
+        return m_UnorientedPlaneNormal;
     }
 
-    Eigen::Vector3d TSPlaneTag::computeCenter(std::vector<Eigen::Vector3d> corners)
+    Eigen::Vector3d TSRTag::computeCenter(std::vector<Eigen::Vector3d> corners)
     {
         Eigen::Vector3d center(((corners[0] + corners[1] + corners[2] + corners[3]) / 4.0).cast<double>());
         return center;
     }
 
-    Eigen::Vector3d& TSPlaneTag::getCenter()
+    Eigen::Vector3d& TSRTag::getCenter()
     {
-        if (m_corners.size() != 4) throw std::runtime_error("[ERROR]: corners are not set.");
+        if (m_Corners.size() != 4) throw std::runtime_error("[ERROR]: corners are not set.");
 
-        m_center = computeCenter(m_corners);
-        return m_center;
+        m_Center = computeCenter(m_Corners);
+        return m_Center;
     }
 }

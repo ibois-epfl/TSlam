@@ -5,16 +5,16 @@
 
 namespace tslam
 {
-
+    
     /**
-     * @brief TSPlaneTag class responsible for storing the plane information
+     * @brief TSRTag class responsible for storing the plane information
      * 
      */
-    class TSPlaneTag
+    class TSRTag
     {
     public:
-        TSPlaneTag();
-        ~TSPlaneTag() = default;
+        TSRTag() = default;
+        ~TSRTag() = default;
 
         /**
          * @brief Get the corners' coordinates of the planes
@@ -23,26 +23,26 @@ namespace tslam
          */
         void setCorners(std::vector<Eigen::Vector3d> corners);
         void setCorners(Eigen::Vector3d A, Eigen::Vector3d B, Eigen::Vector3d C, Eigen::Vector3d D);
-        inline void setID(uint id) {m_id = id; };
+        inline void setID(uint id) {m_Id = id; };
 
-        inline std::vector<Eigen::Vector3d>& getCorners() {return m_corners; }; 
-        inline Eigen::Vector3d& getCornerA() {return m_corners[0]; };
-        inline Eigen::Vector3d& getCornerB() {return m_corners[1]; };
-        inline Eigen::Vector3d& getCornerC() {return m_corners[2]; };
-        inline Eigen::Vector3d& getCornerD() {return m_corners[3]; };
-        inline uint& getID() {return m_id; };
+        inline std::vector<Eigen::Vector3d>& getCorners() {return m_Corners; }; 
+        inline Eigen::Vector3d& getCornerA() {return m_Corners[0]; };
+        inline Eigen::Vector3d& getCornerB() {return m_Corners[1]; };
+        inline Eigen::Vector3d& getCornerC() {return m_Corners[2]; };
+        inline Eigen::Vector3d& getCornerD() {return m_Corners[3]; };
+        inline uint& getID() {return m_Id; };
         open3d::geometry::TriangleMesh& getOpen3dMesh();
         Eigen::Vector3d& getUnorientedPlaneNormal();
         Eigen::Vector3d& getCenter();
 
         /**
-         * @brief Static method to fill a vector of TSPlaneTag from a yaml file containing their corners data
+         * @brief Static method to fill a vector of TSRTag from a yaml file containing their corners data
          * @param filename path to the map.yaml file
-         * @param planes vector of TSPlaneTag objects
+         * @param planes vector of TSRTag objects
          */
-        static void parseFromMAPYAML(const std::string& filename, std::vector<TSPlaneTag>& planes);
+        static void parseFromMAPYAML(const std::string& filename, std::vector<TSRTag>& planes);
     
-        friend std::ostream& operator<<(std::ostream& os, TSPlaneTag& plane)
+        friend std::ostream& operator<<(std::ostream& os, TSRTag& plane)
             {
                 std::string id = std::to_string(plane.getID());
                 os << "id: " << id << std::endl;
@@ -71,10 +71,10 @@ namespace tslam
         Eigen::Vector3d computeCenter(std::vector<Eigen::Vector3d> corners);
 
     private:
-        std::vector<Eigen::Vector3d> m_corners;
-        uint m_id;
+        std::vector<Eigen::Vector3d> m_Corners;
+        uint m_Id;
         open3d::geometry::TriangleMesh m_PlaneMesh;
-        Eigen::Vector3d m_unorientedPlaneNormal;
-        Eigen::Vector3d m_center;
+        Eigen::Vector3d m_UnorientedPlaneNormal;
+        Eigen::Vector3d m_Center;
     };
 }

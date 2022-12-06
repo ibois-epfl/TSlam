@@ -1,8 +1,9 @@
-#include "ts_gsolver.hh"
+#include "ts_geometric_solver.hh"
+#include <stdexcept>
 
 namespace tslam
 {
-    void TSGSolver::reconstruct(std::shared_ptr<tslam::TSTimber>& timber)
+    void TSGeometricSolver::reconstruct()
     {
         // TODO
 
@@ -30,8 +31,18 @@ namespace tslam
         */
     }
 
-    // void TSGSolver::scaleUpPlaneTags()
-    // {
-    //     // TODO
-    // }
+    void TSGeometricSolver::scaleUpPlaneTags()
+    {
+    }
+
+    bool TSGeometricSolver::check4PlaneTags()
+    {
+        std::vector<tslam::TSRTag> tstag = m_Timber->getPlaneTags();
+        if (tstag.size() != 0) return true;
+        else
+        {
+            throw std::runtime_error("[ERROR]: corners are not set.");
+        }
+        return false;
+    }
 }

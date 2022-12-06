@@ -4,18 +4,22 @@
 
 namespace tslam
 {
-    class TSGSolver
+    class TSGeometricSolver
     {
     public:
-        TSGSolver(std::shared_ptr<TSTimber> timber)
-        : m_timber(timber)
+        TSGeometricSolver() = default;
+        TSGeometricSolver(std::shared_ptr<TSTimber> timber,
+                          const uint& planeScaleFactor)
+        : m_Timber(timber), m_PlaneScaleFactor(planeScaleFactor)
         {};
-        ~TSGSolver() = default;
+        ~TSGeometricSolver() = default;
 
+        void reconstruct();
+    
+        inline void setTimber(std::shared_ptr<TSTimber> timber){m_Timber = timber; check4PlaneTags();};
+        inline void setPlaneScaleFactor(const uint& planeScaleFactor){m_PlaneScaleFactor = planeScaleFactor;};
 
-        void reconstruct(std::shared_ptr<tslam::TSTimber>& timber);
-
-        // void setTimber(std::shared_ptr<tslam::TSTimber> timber) {m_timber = timber; };
+        bool check4PlaneTags();
 
 #ifndef PROFILER
         inline void timeStart(){m_time_start = std::chrono::high_resolution_clock::now(); };
@@ -29,9 +33,9 @@ namespace tslam
         inline void timeStart(){};
         inline void timeEnd(){};
 #endif
-//     private:
-//         // here are the uitlity functions for the reconstruction
-//         void scaleUpPlaneTags();
+
+    private:
+        void scaleUpPlaneTags();
 
     private:
 #ifndef PROFILER
@@ -39,11 +43,7 @@ namespace tslam
         std::chrono::time_point<std::chrono::high_resolution_clock> m_time_end;
         std::chrono::milliseconds m_time_elapsed;
 #endif
-        std::shared_ptr<tslam::TSTimber> m_timber;
-    
-    // public:__always_inline  // TEST
-    //     std::shared_ptr<tslam::TSTimber> getTimber() {return m_timber; };  // TEST
-    //     void setTimber(std::shared_ptr<tslam::TSTimber> timber) {m_timber = timber; };  // TEST
+        std::shared_ptr<tslam::TSTimber> m_Timber;
+        uint m_PlaneScaleFactor;
     };
-
 }

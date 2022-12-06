@@ -1,7 +1,7 @@
 #include <iostream>
-#include "ts_plane_tag.hh"
+#include "ts_rtag.hh"
 #include "ts_timber.hh"
-#include "ts_gsolver.hh"
+#include "ts_geometric_solver.hh"
 
 #include <Eigen/Core>
 
@@ -271,149 +271,149 @@ int main()
 {
     // create timber object & read yml TSlam map
     std::shared_ptr<tslam::TSTimber> timberPtr = std::make_shared<tslam::TSTimber>();
-    const std::string FILENAME = "/home/as/TSlam/src/reconstruction/long_comb.yml";
-    timberPtr->setPlaneTagsFromYAML(FILENAME);
+    timberPtr->setPlaneTagsFromYAML("/home/as/TSlam/src/reconstruction/long_comb.yml");
 
     // create geometric solver
-    tslam::TSGSolver solver = tslam::TSGSolver(timberPtr);
+    std::shared_ptr<tslam::TSGeometricSolver> solverPtr = std::make_shared<tslam::TSGeometricSolver>();
+    solverPtr->setTimber(timberPtr);
+    solverPtr->setPlaneScaleFactor(500);
 
 
+    // //---------------------------------------------------------------------------------
+    // // Scale up planes
+    // //---------------------------------------------------------------------------------
 
-    //---------------------------------------------------------------------------------
-    // Scale up planes
-    //---------------------------------------------------------------------------------
+    // std::cout << "[DEBUG]: generting mesh planes from planeTags" << std::endl;                   // DEBUG
+    // solverPtr->timeStart();
 
-    std::cout << "[DEBUG]: generting mesh planes from planeTags" << std::endl;                   // DEBUG
-    solver.timeStart();
+    // const uint SCALE_PLN_FACTOR = 500;
 
-    const uint SCALE_PLN_FACTOR = 500;
-
-    std::vector<open3d::geometry::TriangleMesh> meshPlnsScaledUp;
-    for (auto& p : timberPtr->getPlaneTags())
-    {
-        open3d::geometry::TriangleMesh mPln = p.getOpen3dMesh();
-        mPln.Scale(SCALE_PLN_FACTOR, p.getCenter());
-        meshPlnsScaledUp.push_back(mPln);
-    }
-
-    solver.timeEnd();
-
-
-    //---------------------------------------------------------------------------------
-    // Cropping planes
-    //---------------------------------------------------------------------------------
-
-    std::cout << "[DEBUG]: cropping planes" << std::endl;                   // DEBUG
-    auto start2 = std::chrono::high_resolution_clock::now();                                    // DEBUG
-    // >>>> start code >>>>
-
-    // get all the tag's center points in a point cloud, get its obb, scale it to half the scalePlnF and crop the planes
-    open3d::geometry::PointCloud pntCld;
-    for (auto& p : timberPtr->getPlaneTags())
-    {
-        pntCld.points_.push_back(p.getCenter());
-    }
-
-    // aabb
-    const double SCALE_OBB_FACTOR = 2.0;  // const
-    open3d::geometry::AxisAlignedBoundingBox aabb = pntCld.GetAxisAlignedBoundingBox();
-    // open3d::geometry::OrientedBoundingBox obb = pntCld.GetOrientedBoundingBox();
-    Eigen::Vector3d obbCenter = aabb.GetCenter();
-    aabb.Scale(SCALE_OBB_FACTOR, obbCenter);
-
-
-    std::vector<open3d::geometry::TriangleMesh> meshPlnsCrop;  //TODO: set as vector of points 
-    std::vector<std::vector<std::shared_ptr<open3d::geometry::Segment3D>>> meshPlnsCropSegments;
-    for (auto& plnF : meshPlnsScaledUp)
-    {
-        // open3d::geometry::TriangleMesh test = *plnF.Crop(obb);
-
-        // open3d::geometry::TriangleMesh test = cropMeshPlaneByOBB(plnF, obb);
-        // meshPlnsCrop.push_back(test);
-
-        std::vector<std::shared_ptr<open3d::geometry::Segment3D>> test = cropMeshPlaneByOBB(plnF, aabb);
-
-
-        meshPlnsCropSegments.push_back(test);
-    }
-
-    // return -1;  // DEBUG
-
-
-    // <<<< end code <<<<
-    auto end2 = std::chrono::system_clock::now();                                               // DEBUG
-    std::chrono::duration<double> elapsed_seconds2 = end2-start2;                              // DEBUG
-    std::cout << "[DEBUG]: elapsed time: " << elapsed_seconds2.count() << " s" << std::endl;  // DEBUG
-
-
-    //##################################################################################
-    // Debug visualizer
-    //##################################################################################
-
-    open3d::visualization::Visualizer* vis(new open3d::visualization::Visualizer());
-    vis->CreateVisualizerWindow("TSPlaneTags", 1920, 1080);
-
-    // draw base plane tags as wireframe
-    for (auto& tag : timberPtr->getPlaneTags())
-    {
-        open3d::geometry::TriangleMesh tagBase = tag.getOpen3dMesh();
-        auto planeTagsLineset1 = open3d::geometry::LineSet::CreateFromTriangleMesh(tagBase);
-        planeTagsLineset1->PaintUniformColor(Eigen::Vector3d(1, 1, 0.2));
-        vis->AddGeometry(planeTagsLineset1);
-    }
-
-    // // draw base scaled up tags as wireframe
-    // for (auto& tag : timber.getPlaneTags())
+    // std::vector<open3d::geometry::TriangleMesh> meshPlnsScaledUp;
+    // for (auto& p : timberPtr->getPlaneTags())
     // {
-    //     open3d::geometry::TriangleMesh tagScaledUp = tag->getOpen3dMesh();
-
-    //     tagScaledUp.Scale(500, tag->getCenter());
-
-    //     auto planeTagsLineset2 = open3d::geometry::LineSet::CreateFromTriangleMesh(tagScaledUp);
-    //     planeTagsLineset2->PaintUniformColor(Eigen::Vector3d(0, 1, 0.2));
-    //     vis->AddGeometry(planeTagsLineset2);
+    //     open3d::geometry::TriangleMesh mPln = p.getOpen3dMesh();
+    //     mPln.Scale(SCALE_PLN_FACTOR, p.getCenter());
+    //     meshPlnsScaledUp.push_back(mPln);
     // }
 
-    // add bounding box
-    // auto obbsegmentset = open3d::geometry::LineSet::CreateFromOrientedBoundingBox(obb);
-    auto obbsegmentset = open3d::geometry::LineSet::CreateFromAxisAlignedBoundingBox(aabb);
-    obbsegmentset->PaintUniformColor(Eigen::Vector3d(1, 0, 0));
-    vis->AddGeometry(obbsegmentset);
+    // solverPtr->timeEnd();
 
-    // draw scaled and cropped planes
-    for (auto& pln : meshPlnsCrop)
-    {
-        auto planeTagsLineset3 = open3d::geometry::LineSet::CreateFromTriangleMesh(pln);
-        planeTagsLineset3->PaintUniformColor(Eigen::Vector3d(0, 0, 1));
-        vis->AddGeometry(planeTagsLineset3);
-    }
 
-    // draw polygon segments3D 
-    for (auto& vecSegm : meshPlnsCropSegments)
-    {
-        for (auto& segm : vecSegm)
-        {
-            // draw spheres at the segment's endpoints
-            std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-            // Create a LineSet from given points and line indices
-            segLineset->points_.push_back(segm->Origin());
-            segLineset->points_.push_back(segm->EndPoint());
-            segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-            segLineset->PaintUniformColor(Eigen::Vector3d(0.5, 1, 0.5));
-            vis->AddGeometry(segLineset);
+    // //---------------------------------------------------------------------------------
+    // // Cropping planes
+    // //---------------------------------------------------------------------------------
 
-            // auto segmLineset = open3d::geometry::LineSet::CreateFromSegment3D(*segm);
-            // segmLineset->PaintUniformColor(Eigen::Vector3d(0, 1, 0));
-            // vis->AddGeometry(segm);
-        }
-        // break;  // DEBUG
-    }
+    // std::cout << "[DEBUG]: cropping planes" << std::endl;                   // DEBUG
+    // auto start2 = std::chrono::high_resolution_clock::now();                                    // DEBUG
+    // // >>>> start code >>>>
 
-    vis->Run();
-    vis->Close();
-    vis->DestroyVisualizerWindow();
+    // // get all the tag's center points in a point cloud, get its obb, scale it to half the scalePlnF and crop the planes
+    // open3d::geometry::PointCloud pntCld;
+    // for (auto& p : timberPtr->getPlaneTags())
+    // {
+    //     pntCld.points_.push_back(p.getCenter());
+    // }
+
+    // // aabb
+    // const double SCALE_OBB_FACTOR = 2.0;  // const
+    // open3d::geometry::AxisAlignedBoundingBox aabb = pntCld.GetAxisAlignedBoundingBox();
+    // // open3d::geometry::OrientedBoundingBox obb = pntCld.GetOrientedBoundingBox();
+    // Eigen::Vector3d obbCenter = aabb.GetCenter();
+    // aabb.Scale(SCALE_OBB_FACTOR, obbCenter);
+
+
+    // std::vector<open3d::geometry::TriangleMesh> meshPlnsCrop;  //TODO: set as vector of points 
+    // std::vector<std::vector<std::shared_ptr<open3d::geometry::Segment3D>>> meshPlnsCropSegments;
+    // for (auto& plnF : meshPlnsScaledUp)
+    // {
+    //     // open3d::geometry::TriangleMesh test = *plnF.Crop(obb);
+
+    //     // open3d::geometry::TriangleMesh test = cropMeshPlaneByOBB(plnF, obb);
+    //     // meshPlnsCrop.push_back(test);
+
+    //     std::vector<std::shared_ptr<open3d::geometry::Segment3D>> test = cropMeshPlaneByOBB(plnF, aabb);
+
+
+    //     meshPlnsCropSegments.push_back(test);
+    // }
+
+    // // return -1;  // DEBUG
+
+
+    // // <<<< end code <<<<
+    // auto end2 = std::chrono::system_clock::now();                                               // DEBUG
+    // std::chrono::duration<double> elapsed_seconds2 = end2-start2;                              // DEBUG
+    // std::cout << "[DEBUG]: elapsed time: " << elapsed_seconds2.count() << " s" << std::endl;  // DEBUG
+
+
+    // //##################################################################################
+    // // Debug visualizer
+    // //##################################################################################
+
+    // open3d::visualization::Visualizer* vis(new open3d::visualization::Visualizer());
+    // vis->CreateVisualizerWindow("TSPlaneTags", 1920, 1080);
+
+    // // draw base plane tags as wireframe
+    // for (auto& tag : timberPtr->getPlaneTags())
+    // {
+    //     open3d::geometry::TriangleMesh tagBase = tag.getOpen3dMesh();
+    //     auto planeTagsLineset1 = open3d::geometry::LineSet::CreateFromTriangleMesh(tagBase);
+    //     planeTagsLineset1->PaintUniformColor(Eigen::Vector3d(1, 1, 0.2));
+    //     vis->AddGeometry(planeTagsLineset1);
+    // }
+
+    // // // draw base scaled up tags as wireframe
+    // // for (auto& tag : timber.getPlaneTags())
+    // // {
+    // //     open3d::geometry::TriangleMesh tagScaledUp = tag->getOpen3dMesh();
+
+    // //     tagScaledUp.Scale(500, tag->getCenter());
+
+    // //     auto planeTagsLineset2 = open3d::geometry::LineSet::CreateFromTriangleMesh(tagScaledUp);
+    // //     planeTagsLineset2->PaintUniformColor(Eigen::Vector3d(0, 1, 0.2));
+    // //     vis->AddGeometry(planeTagsLineset2);
+    // // }
+
+    // // add bounding box
+    // // auto obbsegmentset = open3d::geometry::LineSet::CreateFromOrientedBoundingBox(obb);
+    // auto obbsegmentset = open3d::geometry::LineSet::CreateFromAxisAlignedBoundingBox(aabb);
+    // obbsegmentset->PaintUniformColor(Eigen::Vector3d(1, 0, 0));
+    // vis->AddGeometry(obbsegmentset);
+
+    // // draw scaled and cropped planes
+    // for (auto& pln : meshPlnsCrop)
+    // {
+    //     auto planeTagsLineset3 = open3d::geometry::LineSet::CreateFromTriangleMesh(pln);
+    //     planeTagsLineset3->PaintUniformColor(Eigen::Vector3d(0, 0, 1));
+    //     vis->AddGeometry(planeTagsLineset3);
+    // }
+
+    // // draw polygon segments3D 
+    // for (auto& vecSegm : meshPlnsCropSegments)
+    // {
+    //     for (auto& segm : vecSegm)
+    //     {
+    //         // draw spheres at the segment's endpoints
+    //         std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+    //         // Create a LineSet from given points and line indices
+    //         segLineset->points_.push_back(segm->Origin());
+    //         segLineset->points_.push_back(segm->EndPoint());
+    //         segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    //         segLineset->PaintUniformColor(Eigen::Vector3d(0.5, 1, 0.5));
+    //         vis->AddGeometry(segLineset);
+
+    //         // auto segmLineset = open3d::geometry::LineSet::CreateFromSegment3D(*segm);
+    //         // segmLineset->PaintUniformColor(Eigen::Vector3d(0, 1, 0));
+    //         // vis->AddGeometry(segm);
+    //     }
+    //     // break;  // DEBUG
+    // }
+
+    // vis->Run();
+    // vis->Close();
+    // vis->DestroyVisualizerWindow();
 
     return 0;
 }

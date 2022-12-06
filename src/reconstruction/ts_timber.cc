@@ -5,6 +5,6 @@ namespace tslam
 {
     void TSTimber::setPlaneTagsFromYAML(const std::string& filename)
     {
-        tslam::TSPlaneTag::parseFromMAPYAML(filename, m_planeTags);
+        tslam::TSRTag::parseFromMAPYAML(filename, m_RTags);
     };
 }
