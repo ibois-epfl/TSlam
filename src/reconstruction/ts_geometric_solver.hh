@@ -17,7 +17,8 @@ namespace tslam
         {};
         ~TSGeometricSolver() = default;
 
-        /** @brief Ths function reconstruct a mesh from the TSlam map composed by Tags.
+        /** 
+         * @brief Ths function reconstruct a mesh from the TSlam map composed by Tags.
          * 1. group the tags by radius search (on a ~plane) and normal angle difference (?)
          * (2. for each group of tags: average the tags' planes as much as possible)
          * 3. intersect selected planes with AABB
@@ -30,9 +31,10 @@ namespace tslam
         void reconstruct();
 
     private:
-        /** @brief the function intersect a plane with a AABB and store the intersection points. */
+        /// the function intersect a plane with a AABB and store the intersection points.
         void rIntersectTagPlnAABB();
-            /** @brief It checks if there is intersection between a ray and a plane following the:
+            /** 
+             * @brief It checks if there is intersection between a ray and a plane following the:
              * Plane: ax+by+cz=d
              * Ray: P(t) = P0 + t * D
              * Intersection: P(t) = P0 + t * D = (x,y,z) = (a,b,c) * t = (a,b,c) * (d - (a*x+b*y+c*z)) / (a*a+b*b+c*c)
@@ -54,7 +56,8 @@ namespace tslam
                                         const TSTPlane &Plane,
                                         float *OutT,
                                         float *OutVD);
-            /** @brief It computes the intersection points between a plane and an AABB
+            /** 
+             * @brief It computes the intersection points between a plane and an AABB
              * 
              * @see the function is modified from: https://asawicki.info/news_1428_finding_polygon_of_plane-aabb_intersection
              * 
@@ -69,7 +72,8 @@ namespace tslam
                                             const Eigen::Vector3d &aabb_max,
                                             Eigen::Vector3d* out_points,
                                             unsigned &out_point_count);
-            /** @brief It reorder the intersection points in a clockwise order and store them in a variable member
+            /** 
+             * @brief It reorder the intersection points in a clockwise order and store them in a variable member
              * 
              * @see the function is modified from: https://asawicki.info/news_1428_finding_polygon_of_plane-aabb_intersection
              * 

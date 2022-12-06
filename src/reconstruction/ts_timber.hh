@@ -22,6 +22,13 @@ namespace tslam
 
         /// It scales up the AABB linked to the timber element.
         void scaleAABB(double scale);
+        /** 
+         * @brief It removes the duplicate tags from the timber object by checking center distances
+         * 
+         * @param distancethreshold the distance threshold between two tags' centers to consider two 
+         * tags as duplicate.
+         */
+        void removeDuplicateTags(double distancethreshold = 0.5);
 
         /**
          * @brief Set the timber object's tags from the yaml file containing the planes coordinates
@@ -35,15 +42,18 @@ namespace tslam
          * @param planeTags vector of TSRTag objects
          */
         inline void setPlaneTags(std::vector<tslam::TSRTag> planeTags) {m_RTags = planeTags; };
-        
-        /// Get all the tags objects attached to the timber element.
-        inline std::vector<tslam::TSRTag>& getPlaneTags() {return m_RTags; };
-        /// Get the axis aligned box of the tags attached to the timber element.
-        inline open3d::geometry::AxisAlignedBoundingBox& getAABB() {return m_AABB; };
 
         // /// It divides the tags attached to the timber in groups by radius search, and normal angle difference.
         // std::vector<std::vector<tslam::TSRTag>> divideTagsByRadiusAndNormal();
-    
+
+    public: __always_inline
+        /// Get all the tags objects attached to the timber element.
+        std::vector<tslam::TSRTag>& getPlaneTags() {return m_RTags; };
+        /// Get the axis aligned box of the tags attached to the timber element.
+        open3d::geometry::AxisAlignedBoundingBox& getAABB() {return m_AABB; };
+        /// Get the point cloud of the tags' centers.
+        open3d::geometry::PointCloud& getTagsCtrs() {return m_RtagsCtrs; };
+
     private:
         void compute() override;
         /// It computes the axis aligned bounding box of the tags and store it in a member variable.
