@@ -5,15 +5,23 @@
 
 namespace tslam
 {
+    /** @brief TSTPlane struct to store the plane equation */
+    struct TSTPlane
+    {
+        TSTPlane() {};
+        TSTPlane(double a, double b, double c, double d)
+            : a(a), b(b), c(c), d(d)
+        {};
+        ~TSTPlane() = default;
+
+        double a, b, c, d;  // ax+by+cz=d
+    };
     
-    /**
-     * @brief TSRTag class responsible for storing the plane information
-     * 
-     */
+    /** @brief TSRTag class responsible for storing the plane information */
     class TSRTag
     {
     public:
-        TSRTag() = default;
+        TSRTag() {};
         ~TSRTag() = default;
 
         /**
@@ -32,15 +40,14 @@ namespace tslam
         inline Eigen::Vector3d& getCornerD() {return m_Corners[3]; };
         inline uint& getID() {return m_Id; };
         open3d::geometry::TriangleMesh& getOpen3dMesh();
-        Eigen::Vector3d& getUnorientedPlaneNormal();
-        Eigen::Vector3d& getCenter();
+        inline Eigen::Vector3d& getCenter() {return m_Center; };
 
         /**
          * @brief Static method to fill a vector of TSRTag from a yaml file containing their corners data
          * @param filename path to the map.yaml file
          * @param planes vector of TSRTag objects
          */
-        static void parseFromMAPYAML(const std::string& filename, std::vector<TSRTag>& planes);
+        static void parseFromMAPYAML(const std::string& filename, std::vector<TSRTag>& tags);
     
         friend std::ostream& operator<<(std::ostream& os, TSRTag& plane)
             {
@@ -52,27 +59,17 @@ namespace tslam
     private:
         /** @brief Convert the plane to a open3d mesh */
         std::shared_ptr<open3d::geometry::TriangleMesh> toOpen3dMesh();
-        /**
-         * @brief Compute the onoriented plane normal of the tag, there is no guarantee that the normal is 
-         * pointing outwards or inwards correctly
-         * 
-         * @param A corner A of the tag
-         * @param B corner B of the tag
-         * @param C corner C of the tag
-         * @return Eigen::Vector3d The unoriented plane normal
-         */
-        Eigen::Vector3d computeUnorientedPlaneNormal(const Eigen::Vector3d& A, const Eigen::Vector3d& B, const Eigen::Vector3d& C);
-        /**
-         * @brief Compute the center of the tag's polygon
-         * 
-         * @param corners corners of the tag
-         * @return Eigen::Vector3d The center of the plane
-         */
-        Eigen::Vector3d computeCenter(std::vector<Eigen::Vector3d> corners);
+
+        /** @brief Compute the intrinsic properties from the corners and it sets the obj members*/
+        void computeFromCorners();
+        void computeCenter();
+        void computePlaneEquation();
+
 
     private:
-        std::vector<Eigen::Vector3d> m_Corners;
         uint m_Id;
+        std::vector<Eigen::Vector3d> m_Corners;
+        TSTPlane m_Plane;
         open3d::geometry::TriangleMesh m_PlaneMesh;
         Eigen::Vector3d m_UnorientedPlaneNormal;
         Eigen::Vector3d m_Center;

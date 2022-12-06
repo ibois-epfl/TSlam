@@ -37,7 +37,7 @@ namespace tslam
 
     bool TSGeometricSolver::check4PlaneTags()
     {
-        std::vector<tslam::TSRTag> tstag = m_Timber->getPlaneTags();
+        std::vector<tslam::TSRTag> tstag = this->m_Timber->getPlaneTags();
         if (tstag.size() != 0) return true;
         else
         {

@@ -12,20 +12,23 @@ namespace tslam
         {
             throw std::invalid_argument("[ERROR]: corners must be 4");
         }
-        m_Corners.clear();
-        m_Corners = corners;
-    }
+        this->m_Corners.clear();
+        this->m_Corners = corners;
 
+        this->computeFromCorners();
+    }
     void TSRTag::setCorners(Eigen::Vector3d A, Eigen::Vector3d B, Eigen::Vector3d C, Eigen::Vector3d D)
     {
-        m_Corners.clear();
-        m_Corners.push_back(A);
-        m_Corners.push_back(B);
-        m_Corners.push_back(C);
-        m_Corners.push_back(D);
+        this->m_Corners.clear();
+        this->m_Corners.push_back(A);
+        this->m_Corners.push_back(B);
+        this->m_Corners.push_back(C);
+        this->m_Corners.push_back(D);
+
+        this->computeFromCorners();
     }
 
-    void TSRTag::parseFromMAPYAML(const std::string& filename, std::vector<TSRTag>& planes)
+    void TSRTag::parseFromMAPYAML(const std::string& filename, std::vector<TSRTag>& tags)
     {
         std::ifstream ifss(filename);
         if (!ifss.is_open())
@@ -76,10 +79,10 @@ namespace tslam
         {
             std::string marker = markersToParse[i];
 
-            tslam::TSRTag plane = tslam::TSRTag();
+            tslam::TSRTag tag = tslam::TSRTag();
 
             std::string id =  marker.substr(marker.find("id:") + 3, 3);
-            plane.setID(std::stoi(id));
+            tag.setID(std::stoi(id));
 
             const std::string keyCorners = "corners";
             while (marker.find(keyCorners) != std::string::npos)
@@ -118,11 +121,13 @@ namespace tslam
                 Eigen::Vector3d C(xCF, yCF, zCF);
                 Eigen::Vector3d D(xDF, yDF, zDF);
 
-                plane.setCorners(A, B, C, D);
+                tag.setCorners(A, B, C, D);
+
+                tag.computeFromCorners();
 
                 break;
             }
-            planes.push_back(plane);
+            tags.push_back(tag);
         }
     }
 
@@ -144,46 +149,50 @@ namespace tslam
         mesh->vertices_ = vertices;
         mesh->triangles_ = triangles;
 
-        m_PlaneMesh = *mesh;
+        this->m_PlaneMesh = *mesh;
 
         return mesh;
-    }
-
-    Eigen::Vector3d TSRTag::computeUnorientedPlaneNormal(const Eigen::Vector3d& A, const Eigen::Vector3d& B, const Eigen::Vector3d& C)
-    {
-        Eigen::Vector3d AB = B - A;
-        Eigen::Vector3d AC = C - A;
-        Eigen::Vector3d normal = AB.cross(AC);
-        return normal;
     }
 
     open3d::geometry::TriangleMesh& TSRTag::getOpen3dMesh()
     {
         if (m_Corners.size() != 4) throw std::runtime_error("[ERROR]: corners are not set.");
 
-        toOpen3dMesh();
+        this->toOpen3dMesh();
         return m_PlaneMesh;
     }
 
-    Eigen::Vector3d& TSRTag::getUnorientedPlaneNormal()
+    void TSRTag::computeFromCorners()
     {
-        if (m_Corners.size() != 4) throw std::runtime_error("[ERROR]: corners are not set.");
-
-        m_UnorientedPlaneNormal = computeUnorientedPlaneNormal(m_Corners[0], m_Corners[1], m_Corners[2]);
-        return m_UnorientedPlaneNormal;
+        if (this->m_Corners.size() != 4) throw std::runtime_error("[ERROR]: corners are not set.");
+        this->computeCenter();
+        this->computePlaneEquation();
     }
-
-    Eigen::Vector3d TSRTag::computeCenter(std::vector<Eigen::Vector3d> corners)
+    void TSRTag::computeCenter()
     {
-        Eigen::Vector3d center(((corners[0] + corners[1] + corners[2] + corners[3]) / 4.0).cast<double>());
-        return center;
+        Eigen::Vector3d center((this->m_Corners[0] + 
+                                this->m_Corners[1] + 
+                                this->m_Corners[2] + 
+                                this->m_Corners[3]) / 4.0);
+        this->m_Center = center;
     }
-
-    Eigen::Vector3d& TSRTag::getCenter()
+    void TSRTag::computePlaneEquation()
     {
-        if (m_Corners.size() != 4) throw std::runtime_error("[ERROR]: corners are not set.");
+        Eigen::Vector3d p1 = this->m_Corners[0];
+        Eigen::Vector3d p2 = this->m_Corners[1];
+        Eigen::Vector3d p3 = this->m_Corners[3];
+        Eigen::Vector3d p4 = this->m_Corners[2];
 
-        m_Center = computeCenter(m_Corners);
-        return m_Center;
+        Eigen::Vector3d v1 = p2 - p1;
+        Eigen::Vector3d v2 = p3 - p1;
+
+        Eigen::Vector3d n = v1.cross(v2);
+        n.normalize();
+
+        double d = n.dot(p1);
+
+        TSTPlane tsplane = TSTPlane(n[0], n[1], n[2], d);
+
+        this->m_Plane = tsplane;
     }
 }
