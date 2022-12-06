@@ -25,11 +25,15 @@ namespace tslam
         ~TSRTag() = default;
 
         /**
-         * @brief Get the corners' coordinates of the planes
+         * @brief Set the corners' coordinates of the planes
          * 
-         * @return The coordinates per each point
+         * @param corners vector of 4 corners' coordinates
          */
         void setCorners(std::vector<Eigen::Vector3d> corners);
+        /** @brief Set the corners' coordinates of the planes
+         * 
+         * @overload
+        */
         void setCorners(Eigen::Vector3d A, Eigen::Vector3d B, Eigen::Vector3d C, Eigen::Vector3d D);
         inline void setID(uint id) {m_Id = id; };
 
@@ -39,8 +43,9 @@ namespace tslam
         inline Eigen::Vector3d& getCornerC() {return m_Corners[2]; };
         inline Eigen::Vector3d& getCornerD() {return m_Corners[3]; };
         inline uint& getID() {return m_Id; };
-        open3d::geometry::TriangleMesh& getOpen3dMesh();
+        inline open3d::geometry::TriangleMesh& getOpen3dMesh() {return m_PlaneMesh; };
         inline Eigen::Vector3d& getCenter() {return m_Center; };
+        inline TSTPlane& getPlane() {return m_Plane; };
 
         /**
          * @brief Static method to fill a vector of TSRTag from a yaml file containing their corners data
@@ -57,14 +62,11 @@ namespace tslam
             };
 
     private:
-        /** @brief Convert the plane to a open3d mesh */
-        std::shared_ptr<open3d::geometry::TriangleMesh> toOpen3dMesh();
-
         /** @brief Compute the intrinsic properties from the corners and it sets the obj members*/
         void computeFromCorners();
         void computeCenter();
         void computePlaneEquation();
-
+        void computeOpen3dMesh();
 
     private:
         uint m_Id;

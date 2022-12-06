@@ -131,42 +131,12 @@ namespace tslam
         }
     }
 
-    std::shared_ptr<open3d::geometry::TriangleMesh> TSRTag::toOpen3dMesh()
-    {
-        std::shared_ptr<open3d::geometry::TriangleMesh> mesh = std::make_shared<open3d::geometry::TriangleMesh>();
-
-        std::vector<Eigen::Vector3d> vertices;
-        std::vector<Eigen::Vector3i> triangles;
-
-        vertices.push_back(Eigen::Vector3d(m_Corners[0](0), m_Corners[0](1), m_Corners[0](2)));
-        vertices.push_back(Eigen::Vector3d(m_Corners[1](0), m_Corners[1](1), m_Corners[1](2)));
-        vertices.push_back(Eigen::Vector3d(m_Corners[2](0), m_Corners[2](1), m_Corners[2](2)));
-        vertices.push_back(Eigen::Vector3d(m_Corners[3](0), m_Corners[3](1), m_Corners[3](2)));
-
-        triangles.push_back(Eigen::Vector3i(0, 1, 2));
-        triangles.push_back(Eigen::Vector3i(0, 2, 3));
-
-        mesh->vertices_ = vertices;
-        mesh->triangles_ = triangles;
-
-        this->m_PlaneMesh = *mesh;
-
-        return mesh;
-    }
-
-    open3d::geometry::TriangleMesh& TSRTag::getOpen3dMesh()
-    {
-        if (m_Corners.size() != 4) throw std::runtime_error("[ERROR]: corners are not set.");
-
-        this->toOpen3dMesh();
-        return m_PlaneMesh;
-    }
-
     void TSRTag::computeFromCorners()
     {
         if (this->m_Corners.size() != 4) throw std::runtime_error("[ERROR]: corners are not set.");
         this->computeCenter();
         this->computePlaneEquation();
+        this->computeOpen3dMesh();
     }
     void TSRTag::computeCenter()
     {
@@ -194,5 +164,25 @@ namespace tslam
         TSTPlane tsplane = TSTPlane(n[0], n[1], n[2], d);
 
         this->m_Plane = tsplane;
+    }
+    void TSRTag::computeOpen3dMesh()
+    {
+        std::shared_ptr<open3d::geometry::TriangleMesh> mesh = std::make_shared<open3d::geometry::TriangleMesh>();
+
+        std::vector<Eigen::Vector3d> vertices;
+        std::vector<Eigen::Vector3i> triangles;
+
+        vertices.push_back(Eigen::Vector3d(this->m_Corners[0](0), this->m_Corners[0](1), this->m_Corners[0](2)));
+        vertices.push_back(Eigen::Vector3d(this->m_Corners[1](0), this->m_Corners[1](1), this->m_Corners[1](2)));
+        vertices.push_back(Eigen::Vector3d(this->m_Corners[2](0), this->m_Corners[2](1), this->m_Corners[2](2)));
+        vertices.push_back(Eigen::Vector3d(this->m_Corners[3](0), this->m_Corners[3](1), this->m_Corners[3](2)));
+
+        triangles.push_back(Eigen::Vector3i(0, 1, 2));
+        triangles.push_back(Eigen::Vector3i(0, 2, 3));
+
+        mesh->vertices_ = vertices;
+        mesh->triangles_ = triangles;
+
+        this->m_PlaneMesh = *mesh;
     }
 }
