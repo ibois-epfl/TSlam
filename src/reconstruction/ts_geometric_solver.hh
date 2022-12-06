@@ -19,7 +19,8 @@ namespace tslam
 
         /** 
          * @brief Ths function reconstruct a mesh from the TSlam map composed by Tags.
-         * 1. group the tags by radius search (on a ~plane) and normal angle difference (?)
+         * 0. remove duplicate tags from map
+         * 1. group the tags by knn search (on a ~plane) and normal angle difference (?)
          * (2. for each group of tags: average the tags' planes as much as possible)
          * 3. intersect selected planes with AABB
          * 4. intersect planes(intersected polygons) with each other and generate new polygons

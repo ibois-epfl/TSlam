@@ -17,6 +17,9 @@ namespace tslam
         ~TSTPlane() = default;
 
         double a, b, c, d;  // ax+by+cz=d
+
+        public: __always_inline
+            Eigen::Vector3d getNormal() {return Eigen::Vector3d(a, b, c); };
     };
     
     /// TSRTag class responsible for storing the plane information.
@@ -25,29 +28,6 @@ namespace tslam
     public:
         TSRTag() {};
         ~TSRTag() = default;
-
-        /**
-         * @brief Set the corners' coordinates of the planes
-         * 
-         * @param corners vector of 4 corners' coordinates
-         */
-        void setCorners(std::vector<Eigen::Vector3d> corners);
-        /** @brief Set the corners' coordinates of the planes
-         * 
-         * @overload
-        */
-        void setCorners(Eigen::Vector3d A, Eigen::Vector3d B, Eigen::Vector3d C, Eigen::Vector3d D);
-        inline void setID(uint id) {m_Id = id; };
-
-        inline std::vector<Eigen::Vector3d>& getCorners() {return m_Corners; }; 
-        inline Eigen::Vector3d& getCornerA() {return m_Corners[0]; };
-        inline Eigen::Vector3d& getCornerB() {return m_Corners[1]; };
-        inline Eigen::Vector3d& getCornerC() {return m_Corners[2]; };
-        inline Eigen::Vector3d& getCornerD() {return m_Corners[3]; };
-        inline uint& getID() {return m_Id; };
-        inline open3d::geometry::TriangleMesh& getOpen3dMesh() {return m_PlaneMesh; };
-        inline Eigen::Vector3d& getCenter() {return m_Center; };
-        inline TSTPlane& getPlane() {return m_Plane; };
 
         /**
          * @brief Static method to fill a vector of TSRTag from a yaml file containing their corners data
@@ -62,6 +42,31 @@ namespace tslam
                 os << "id: " << id << std::endl;
                 return os;
             };
+
+        /**
+         * @brief Set the corners' coordinates of the planes
+         * 
+         * @param corners vector of 4 corners' coordinates
+         */
+        void setCorners(std::vector<Eigen::Vector3d> corners);
+        /** @brief Set the corners' coordinates of the planes
+         * 
+         * @overload
+        */
+        void setCorners(Eigen::Vector3d A, Eigen::Vector3d B, Eigen::Vector3d C, Eigen::Vector3d D);
+        inline void setID(uint id) {m_Id = id; };
+
+    public: __always_inline
+        std::vector<Eigen::Vector3d>& getCorners() {return m_Corners; }; 
+        Eigen::Vector3d& getCornerA() {return m_Corners[0]; };
+        Eigen::Vector3d& getCornerB() {return m_Corners[1]; };
+        Eigen::Vector3d& getCornerC() {return m_Corners[2]; };
+        Eigen::Vector3d& getCornerD() {return m_Corners[3]; };
+        uint& getID() {return m_Id; };
+        open3d::geometry::TriangleMesh& getOpen3dMesh() {return m_PlaneMesh; };
+        Eigen::Vector3d& getCenter() {return m_Center; };
+        TSTPlane& getPlane() {return m_Plane; };
+        Eigen::Vector3d& getNormal() {m_Normal = m_Plane.getNormal(); return m_Normal; };
 
     private:
         /// Compute the intrinsic properties from the corners and it sets the obj members.
@@ -84,7 +89,7 @@ namespace tslam
         std::vector<Eigen::Vector3d> m_Corners;
         TSTPlane m_Plane;
         open3d::geometry::TriangleMesh m_PlaneMesh;
-        Eigen::Vector3d m_UnorientedPlaneNormal;
+        Eigen::Vector3d m_Normal;  ///< Normal vector of the plane NOT oriented (in(outwards))
         Eigen::Vector3d m_Center;
 
 #ifdef TSLAM_REC_DEBUG

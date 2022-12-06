@@ -32,20 +32,20 @@ namespace tslam
     this->m_Timber->getTagsCtrs().PaintUniformColor(Eigen::Vector3d(0, 0, 1));
     vis->AddGeometry(std::make_shared<open3d::geometry::PointCloud>(this->m_Timber->getTagsCtrs()));
 
-    // show point cloud normals
-    for (int i=0; i < this->m_Timber->getTagsCtrs().points_.size(); i++)
-    {
-        auto p = this->m_Timber->getTagsCtrs().points_[i];
-        auto n = this->m_Timber->getTagsCtrs().normals_[i];
-        auto line = std::make_shared<open3d::geometry::LineSet>();
-        line->points_.push_back(p);
-        line->points_.push_back(p + n);
-        line->lines_.push_back(Eigen::Vector2i(0, 1));
-        line->colors_.push_back(Eigen::Vector3d(1, 0, 0));
-        line->colors_.push_back(Eigen::Vector3d(1, 0, 0));
-        line->PaintUniformColor(Eigen::Vector3d(1, 0, 0));
-        vis->AddGeometry(line);
-    }
+    // // show point cloud normals
+    // for (int i=0; i < this->m_Timber->getTagsCtrs().points_.size(); i++)
+    // {
+    //     auto p = this->m_Timber->getTagsCtrs().points_[i];
+    //     auto n = this->m_Timber->getTagsCtrs().normals_[i];
+    //     auto line = std::make_shared<open3d::geometry::LineSet>();
+    //     line->points_.push_back(p);
+    //     line->points_.push_back(p + n);
+    //     line->lines_.push_back(Eigen::Vector2i(0, 1));
+    //     line->colors_.push_back(Eigen::Vector3d(1, 0, 0));
+    //     line->colors_.push_back(Eigen::Vector3d(1, 0, 0));
+    //     line->PaintUniformColor(Eigen::Vector3d(1, 0, 0));
+    //     vis->AddGeometry(line);
+    // }
 
 
     // // add bounding box

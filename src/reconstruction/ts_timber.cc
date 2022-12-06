@@ -1,5 +1,5 @@
 #include "ts_timber.hh"
-
+#include <math.h>  ///< for acos()
 
 namespace tslam
 {
@@ -57,7 +57,7 @@ namespace tslam
         // std::vector<tslam::TSRTag> tagsGroup;
 
         // evaluate normals of point cloud
-        this->m_RtagsCtrs.EstimateNormals(open3d::geometry::KDTreeSearchParamKNN(20));
+        // this->m_RtagsCtrs.EstimateNormals(open3d::geometry::KDTreeSearchParamKNN(20));
 
 
         // // ======================================================
@@ -68,20 +68,43 @@ namespace tslam
 
         std::vector<int> indices;
         std::vector<double> distances;
-        int knn = 3;
+        int knn = 2;
 
-        kdtree.SearchKNN(this->getPlaneTags()[10].getCenter(), knn, indices, distances);
-
-        std::cout << "indices: " << indices.size() << std::endl;
-
-        // set different colors for each cluster
-        Eigen::Vector3d RED = Eigen::Vector3d(1.0, 0.0, 0.0);
-
-        for (int i = 0; i < indices.size(); i++)
+        for (int i = 0; i < this->getPlaneTags().size(); i++)
         {
-            this->getPlaneTags()[indices[i]].setColor(RED);
+            // find k nearest neighbor
+            kdtree.SearchKNN(this->getPlaneTags()[i].getCenter(), knn, indices, distances);
+            // std::cout << "indices: " << indices[0] << " " << indices[1] << std::endl;
+
+            // compute angle between normals
+            Eigen::Vector3d normal1 = this->getPlaneTags()[i].getNormal();
+            Eigen::Vector3d normal2 = this->getPlaneTags()[indices[1]].getNormal();
+
+            // calculate angle between normals
+            double angle = std::acos(normal1.dot(normal2) / (normal1.norm() * normal2.norm()));
+
+            std::cout << "angle btw index " << i << " and " << indices[1] << ": " << angle << std::endl;
+        
         }
-        this->getPlaneTags()[10].setColor(Eigen::Vector3d(0.0, 1.0, 0.0));
+
+
+
+        this->getPlaneTags()[246].setColor(Eigen::Vector3d(1.0, 0.0, 0.0));  // DEBUG
+        this->getPlaneTags()[157].setColor(Eigen::Vector3d(0.0, 1.0, 0.0));
+
+
+
+
+        // // set different colors for each cluster
+        // Eigen::Vector3d RED = Eigen::Vector3d(1.0, 0.0, 0.0);
+        // for (int i = 0; i < indices.size(); i++)
+        // {
+        //     this->getPlaneTags()[indices[i]].setColor(RED);
+        // }
+        // this->getPlaneTags()[10].setColor(Eigen::Vector3d(0.0, 1.0, 0.0));
+
+
+
     }
     void TSTimber::computeAABB()
     {
