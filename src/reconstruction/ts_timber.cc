@@ -26,21 +26,19 @@ namespace tslam
         this->computeAABB();
         this->computeTagsCtrs();
 
-        //WIP
-
+        //WIP >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        std::vector<tslam::TSRTag> tags = this->m_Timber.getPlaneTags();
         open3d::geometry::KDTreeFlann kdtree;
         kdtree.SetGeometry(open3d::geometry::PointCloud(this->m_RtagsCtrs));
 
 
-        // kdtree.;
         std::vector<int> indices;
         std::vector<double> distances;
-        double radius = 5.0;
-        for (auto& p : this->getPlaneTags())
-        {
-            // kdtree.SearchRadius(p.getCenter(), radius, indices, distances);
-            kdtree.SearchKNN(p.getCenter(), 20, indices, distances);
-        }
+        // double radius = 3.0;
+        int knn = 3;
+
+        kdtree.SearchKNN(this->getPlaneTags()[10].getCenter(), knn, indices, distances);
+
         std::cout << "indices: " << indices.size() << std::endl;
 
         // set different colors for each cluster
@@ -50,7 +48,7 @@ namespace tslam
         {
             this->getPlaneTags()[indices[i]].setColor(RED);
         }
-        
+        this->getPlaneTags()[10].setColor(Eigen::Vector3d(0.0, 1.0, 0.0));
     }
     void TSTimber::computeAABB()
     {

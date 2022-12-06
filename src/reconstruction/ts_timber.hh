@@ -41,8 +41,8 @@ namespace tslam
         /// Get the axis aligned box of the tags attached to the timber element.
         inline open3d::geometry::AxisAlignedBoundingBox& getAABB() {return m_AABB; };
 
-        /// It divides the tags attached to the timber in groups by radius search, and normal angle difference.
-        std::vector<std::vector<tslam::TSRTag>> divideTagsByRadiusAndNormal();
+        // /// It divides the tags attached to the timber in groups by radius search, and normal angle difference.
+        // std::vector<std::vector<tslam::TSRTag>> divideTagsByRadiusAndNormal();
     
     private:
         void compute() override;
