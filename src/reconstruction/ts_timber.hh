@@ -13,14 +13,14 @@ namespace tslam
      * tags' geometrical and metdata info as well as the reconstruction.
      * 
      */
-    class TSTimber
+    class TSTimber : public TSObject
     {
     public:
         TSTimber() {m_RTags = {}; };
         TSTimber(std::vector<tslam::TSRTag> planeTags);
         ~TSTimber() = default;
 
-        /** @brief It scales up the AABB linked to the timber element */
+        /// It scales up the AABB linked to the timber element.
         void scaleAABB(double scale);
 
         /**
@@ -36,20 +36,29 @@ namespace tslam
          */
         inline void setPlaneTags(std::vector<tslam::TSRTag> planeTags) {m_RTags = planeTags; };
         
-        /** @brief Get all the tags objects attached to the timber element */
+        /// Get all the tags objects attached to the timber element.
         inline std::vector<tslam::TSRTag>& getPlaneTags() {return m_RTags; };
-        /** @brief Get the axis aligned box of the tags attached to the timber element */
+        /// Get the axis aligned box of the tags attached to the timber element.
         inline open3d::geometry::AxisAlignedBoundingBox& getAABB() {return m_AABB; };
+
+        /// It divides the tags attached to the timber in groups by radius search, and normal angle difference.
+        std::vector<std::vector<tslam::TSRTag>> divideTagsByRadiusAndNormal();
     
     private:
+        void compute() override;
+        /// It computes the axis aligned bounding box of the tags and store it in a member variable.
         void computeAABB();
+        /// It computes the point cloud of the tags' centers and store it in a member variable.
+        void computeTagsCtrs();
 
     private:
         /// m_RTags the tag objects sticked to the timber piece.
         std::vector<tslam::TSRTag> m_RTags;
-        /// @brief m_Mesh the output mesh of the reconstructed object.
+        /// m_RtagsCtrs the point cloud constituted by the tags' centers.
+        open3d::geometry::PointCloud m_RtagsCtrs;
+        /// m_Mesh the output mesh of the reconstructed object.
         open3d::geometry::TriangleMesh m_Mesh;
-        /// @brief m_AABB the axis aligned bounding box of the tags.
+        ///  m_AABB the axis aligned bounding box of the tags.
         open3d::geometry::AxisAlignedBoundingBox m_AABB;
     };
 }

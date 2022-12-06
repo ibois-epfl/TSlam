@@ -4,8 +4,6 @@
 
 #include <Eigen/Core>
 
-// TODO: set #TSLAM_REC_PROFILER pre-processor macro to enable or disable
-// TODO: set #TSLAM_REC_DEBUG pre-processor macro to enable or disable (visualization e.g.)
 
 namespace tslam
 {
@@ -19,7 +17,16 @@ namespace tslam
         {};
         ~TSGeometricSolver() = default;
 
-        /** @brief Ths function reconstruct a mesh from the a TSlam map composed by Tags. */
+        /** @brief Ths function reconstruct a mesh from the TSlam map composed by Tags.
+         * 1. group the tags by radius search (on a ~plane) and normal angle difference (?)
+         * (2. for each group of tags: average the tags' planes as much as possible)
+         * 3. intersect selected planes with AABB
+         * 4. intersect planes(intersected polygons) with each other and generate new polygons
+         * 5. keep only the polygons with tags' corner points inside them
+         * 6. join the polygons into a mesh
+         * 7. check mesh for watertightness and manifoldness
+         * 
+        */
         void reconstruct();
 
     private:

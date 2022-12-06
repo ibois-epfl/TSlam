@@ -1,11 +1,13 @@
 #pragma once
 
+#include "ts_object.hh"
+
 #include <open3d/Open3D.h>
 #include <Eigen/Core>
 
 namespace tslam
 {
-    /** @brief TSTPlane struct to store the plane equation */
+    /// TSTPlane struct to store the plane equation.
     struct TSTPlane
     {
         TSTPlane() {};
@@ -17,8 +19,8 @@ namespace tslam
         double a, b, c, d;  // ax+by+cz=d
     };
     
-    /** @brief TSRTag class responsible for storing the plane information */
-    class TSRTag
+    /// TSRTag class responsible for storing the plane information.
+    class TSRTag : public TSObject
     {
     public:
         TSRTag() {};
@@ -62,11 +64,20 @@ namespace tslam
             };
 
     private:
-        /** @brief Compute the intrinsic properties from the corners and it sets the obj members*/
-        void computeFromCorners();
+        /// Compute the intrinsic properties from the corners and it sets the obj members.
+        void compute() override;
         void computeCenter();
         void computePlaneEquation();
         void computeOpen3dMesh();
+    
+    public: __always_inline
+#ifdef TSLAM_REC_DEBUG
+        void setColor(Eigen::Vector3d clr) {m_Color = clr; };
+        Eigen::Vector3d& getColor() {return m_Color; };
+#else
+        void setColor(Eigen::Vector3d clr) {};
+        Eigen::Vector3d& getColor() {};
+#endif
 
     private:
         uint m_Id;
@@ -75,5 +86,9 @@ namespace tslam
         open3d::geometry::TriangleMesh m_PlaneMesh;
         Eigen::Vector3d m_UnorientedPlaneNormal;
         Eigen::Vector3d m_Center;
+
+#ifdef TSLAM_REC_DEBUG
+        Eigen::Vector3d m_Color;
+#endif
     };
 }

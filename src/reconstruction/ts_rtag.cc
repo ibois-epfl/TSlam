@@ -15,7 +15,7 @@ namespace tslam
         this->m_Corners.clear();
         this->m_Corners = corners;
 
-        this->computeFromCorners();
+        this->compute();
     }
     void TSRTag::setCorners(Eigen::Vector3d A, Eigen::Vector3d B, Eigen::Vector3d C, Eigen::Vector3d D)
     {
@@ -25,7 +25,7 @@ namespace tslam
         this->m_Corners.push_back(C);
         this->m_Corners.push_back(D);
 
-        this->computeFromCorners();
+        this->compute();
     }
 
     void TSRTag::parseFromMAPYAML(const std::string& filename, std::vector<TSRTag>& tags)
@@ -123,7 +123,7 @@ namespace tslam
 
                 tag.setCorners(A, B, C, D);
 
-                tag.computeFromCorners();
+                tag.compute();
 
                 break;
             }
@@ -131,7 +131,7 @@ namespace tslam
         }
     }
 
-    void TSRTag::computeFromCorners()
+    void TSRTag::compute()
     {
         if (this->m_Corners.size() != 4) throw std::runtime_error("[ERROR]: corners are not set.");
         this->computeCenter();
