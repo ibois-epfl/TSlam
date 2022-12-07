@@ -7,6 +7,72 @@
 
 namespace tslam
 {
+    /**
+     * @brief TSPolygon is an utility struct to store a polygon
+     * 
+     */
+    struct TSPolygon : public TSObject
+    {
+        // TSPolygon()
+        // {
+        //     this->compute();
+        // };
+        TSPolygon(std::vector<Eigen::Vector3d> points, TSTPlane linkedPlane)
+            : m_Points(points), m_LinkedPlane(linkedPlane)
+        {
+            this->compute();
+        };
+        ~TSPolygon() = default;
+    
+    private: __always_inline
+        void compute() override 
+        {
+            computeCenter();
+            // computeNormal();  // FIXME: TEST
+        };
+        void computeCenter()
+        {
+            Eigen::Vector3d center = Eigen::Vector3d::Zero();
+            for (auto p : m_Points)
+                center += p;
+            center /= m_Points.size();
+            m_Center = center;
+        };
+        // void computeNormal() // FIXME: TEST
+        // {
+        //     Eigen::Vector3d v1 = m_Points[1] - m_Points[0];
+        //     Eigen::Vector3d v2 = m_Points[2] - m_Points[0];
+        //     Eigen::Vector3d normal = v1.cross(v2);
+        //     normal.normalize();
+        //     m_Normal = normal;
+        // };
+
+    private:
+        std::vector<Eigen::Vector3d> m_Points;
+        Eigen::Vector3d m_Center;
+        // Eigen::Vector3d m_Normal;
+        /// It is the plane on which the polygon lies
+        tslam::TSTPlane m_LinkedPlane;
+
+    public:__always_inline
+        std::vector<Eigen::Vector3d>& getPoints() {return m_Points; };
+        uint getNumPoints() {return m_Points.size(); };
+        Eigen::Vector3d& getPoint(uint i) {return m_Points[i]; };
+        Eigen::Vector3d& getCenter() {return m_Center; };
+        // Eigen::Vector3d& getNormal() {return m_Normal; };  // FIXME: TEST
+        Eigen::Vector3d getNormal() {return m_LinkedPlane.getNormal(); };  // FIXME: doublecheck
+        /**
+         * @brief Get the Linked Plane object
+         * 
+         * @return tslam::TSTPlane& it returns the plane on which the polygon lies
+         */
+        tslam::TSTPlane& getLinkedPlane() {return m_LinkedPlane; };
+    };
+
+    /**
+     * @brief TSGeometricSolver class responsible for reconstructing a mesh of the timber from its tags
+     * 
+     */
     class TSGeometricSolver
     {
     public:
@@ -107,6 +173,22 @@ namespace tslam
              */
             double rAngleBetweenVectors(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2);
 
+        /**
+         * @brief The functions merge similar planes into one if they are close and have a
+         * similar orientation.
+         * 
+         */
+        void rMergeSimilarPlanes();
+            /** 
+             * @brief It checks if two planes are close and similar in orientation
+             * 
+             * @param p1 the first plane
+             * @param p2 the second plane
+             * @return true if the two planes are similar
+             * @return false if the two planes are not similar
+             */
+            bool rAreSimilarPlanes(const TSTPlane &p1, const TSTPlane &p2);
+
     public: __always_inline
         void setTimber(std::shared_ptr<TSTimber> timber){m_Timber = timber; check4PlaneTags();};
         void setCreaseAngleThreshold(double crease_angle_threshold){m_CreaseAngleThreshold = crease_angle_threshold;};
@@ -126,8 +208,8 @@ namespace tslam
         double m_CreaseAngleThreshold;
         /// The scale factor for scaleing up the AABB of the timber element
         double m_AABBScaleFactor;
-        /// Vector of polygon's points of intersection between the planes and the AABB of the timber element
-        std::vector<std::vector<Eigen::Vector3d>> m_IntersectPlnAABBPts;
+        /// Vector of polygons issued of planes-AABB intersections
+        std::vector<TSPolygon> m_PlnAABBPolygons;
 
     public:
 #ifdef TSLAM_REC_PROFILER

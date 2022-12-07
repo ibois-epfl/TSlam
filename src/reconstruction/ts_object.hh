@@ -11,5 +11,7 @@ namespace tslam
 
     protected:
         virtual void compute() = 0;
+
+        //TODO: we should add function like e.g. calculate center used by many classes
     };
 }

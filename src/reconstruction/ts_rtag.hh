@@ -8,18 +8,32 @@
 namespace tslam
 {
     /// TSTPlane struct to store the plane equation.
-    struct TSTPlane
+    struct TSTPlane  // FIXME: does it need to inerith from TSObject?
     {
         TSTPlane() {};
         TSTPlane(double a, double b, double c, double d)
             : a(a), b(b), c(c), d(d)
         {};
+        TSTPlane(Eigen::Vector3d normal, Eigen::Vector3d center)
+            // : a(normal(0)), b(normal(1)), c(normal(2)), d(normal.dot(center))
+        {
+            a = normal(0);
+            b = normal(1);
+            c = normal(2);
+            d = normal.dot(center);
+        };  // FIXME: TEST - NOT WORKING
         ~TSTPlane() = default;
 
-        double a, b, c, d;  // ax+by+cz=d
+    // public: __always_inline
+    //     void setNormal(Eigen::Vector3d normal) {a = normal(0); b = normal(1); c = normal(2); }; // FIXME: TEST
+    //     void setCenter(Eigen::Vector3d center) {d = a*center(0) + b*center(1) + c*center(2); }; // FIXME: TEST
+    
+    public: __always_inline
+        Eigen::Vector3d getNormal() {return Eigen::Vector3d(a, b, c); };
+    //     Eigen::Vector3d getCenter() {return Eigen::Vector3d(-a*d, -b*d, -c*d); }; // FIXME: TEST
 
-        public: __always_inline
-            Eigen::Vector3d getNormal() {return Eigen::Vector3d(a, b, c); };
+    public:
+        double a, b, c, d;  // ax+by+cz=d  ///< FIXME: change to getA, getB, getC, getD methods
     };
 
     enum TSRTagType

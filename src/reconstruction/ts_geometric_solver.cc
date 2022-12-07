@@ -2,7 +2,8 @@
 #include <open3d/Open3D.h>
 #include <stdexcept>
 #include <algorithm>
-#include <math.h>  ///< for acos()
+#include <math.h>
+
 
 namespace tslam
 {
@@ -10,6 +11,149 @@ namespace tslam
     {
         this->rDetectCreasesTags();
         this->rIntersectTagPlnAABB();
+
+        // build a kdtree with radius search of the polygons centers
+        open3d::geometry::KDTreeFlann kdtree;
+        std::shared_ptr<open3d::geometry::PointCloud> pntCldPCtr = std::make_shared<open3d::geometry::PointCloud>();
+        std::vector<tslam::TSTPlane> planes;
+        for (auto& p : this->m_PlnAABBPolygons)
+        {
+            pntCldPCtr->points_.push_back(p.getCenter());
+            // std::cout << "Polygon center X: " << p.getCenter()[0] << std::endl;
+            // std::cout << "Polygon center Y: " << p.getCenter()[1] << std::endl;
+            // std::cout << "Polygon center Z: " << p.getCenter()[2] << std::endl;
+        }
+
+        std::cout << "Number of polygons: " << this->m_PlnAABBPolygons.size() << std::endl;  // DEBUG
+
+        kdtree.SetGeometry(*pntCldPCtr);
+
+
+        // for each polygon center, find the closest polygon centers by radius search
+
+        
+        double radius = 3.;
+        std::vector<int> indices;
+        std::vector<double> distances;
+
+        std::shared_ptr<open3d::geometry::PointCloud> pntCldNewPlanes = std::make_shared<open3d::geometry::PointCloud>();
+        std::vector<tslam::TSTPlane> newPlanes;
+        std::vector<int> mergedIndices;
+
+        // keep track of the indices of the polygons that have been merged
+
+        for (int i=0; i < pntCldPCtr->points_.size(); i++)
+        {
+            kdtree.SearchRadius(pntCldPCtr->points_[i], radius, indices, distances);
+            // std::cout << "Number of neighbors: " << indices.size() << std::endl;
+
+            // keep only one of all the neighbors by merging them
+            int k = 0;
+            Eigen::Vector3d meanPt(0, 0, 0);
+            Eigen::Vector3d meanNorm(0, 0, 0);
+            for (int j=0; j < indices.size(); j++)
+            {
+                // check if the index has already been merged
+                if (std::find(mergedIndices.begin(), mergedIndices.end(), indices[j]) != mergedIndices.end())
+                {
+                    // if it has, check the next one
+                    continue;
+                }
+                else
+                {
+                    // if it hasn't,
+                    // mean the center of the polygons
+                    meanPt += pntCldPCtr->points_[indices[j]];
+
+                    // get the TSPlanes of the polygons and mean their normals
+                    meanNorm += this->m_PlnAABBPolygons[indices[j]].getNormal();
+
+                    // add the index to the merged indices
+                    mergedIndices.push_back(indices[j]);
+                    k++;
+                }
+                // mean the indices of all the neighbors and create a new point
+            }
+            // meanPt /= indices.size();
+            meanPt /= k;
+            meanNorm /= k;
+
+
+
+            if (k > 1)
+            {
+
+                pntCldNewPlanes->points_.push_back(meanPt);
+
+
+
+                Eigen::Vector3d pt2 = meanPt + meanNorm;  /// DEBUG
+                pntCldNewPlanes->points_.push_back(pt2);  /// DEBUG
+
+                // construct a plane from the mean center and mean normal
+                TSTPlane newPlane(meanNorm, meanPt);
+
+
+
+
+                newPlanes.push_back(newPlane);
+            }
+
+            // for (auto& j : indices)
+            // {
+            //     std::cout << "Index: " << j << std::endl;
+            // }
+
+            // for (auto& j : indices)
+            // {
+            //     pntCldNewPlanes->points_.push_back(this->m_PlnAABBPolygons[j].getCenter());
+            // }
+        }
+
+        // DEBUG
+        // for (auto& i : mergedIndices)
+        // {
+        //     std::cout << "Merged index: " << i << std::endl;
+        // }
+        std::cout << "Number of merged pcd: " << pntCldNewPlanes->points_.size() << std::endl;
+
+
+        // // =======================================================================================
+        // // =======================================================================================
+
+        // TEST: rerunning the AABB plane interesections but now with the new merged planes
+        std::vector<TSPolygon> outputSimpPlnAABBPolygons;
+
+        Eigen::Vector3d* outPtsPtr2 = new Eigen::Vector3d[3*6];
+        std::vector<Eigen::Vector3d>* planeIntersections2 = new std::vector<Eigen::Vector3d>();
+        for (auto& pln : newPlanes)
+        {
+            
+            // b. caculate the intersection points
+            unsigned int outPtsCount2;
+            this->rPlane2AABBSegmentIntersect(pln,
+                                              this->m_Timber->getAABB().min_bound_, 
+                                              this->m_Timber->getAABB().max_bound_,
+                                              outPtsPtr2,
+                                              outPtsCount2);
+            this->rSortIntersectionPoints(outPtsPtr2, outPtsCount2, pln);
+
+            // c. save the result into a polygon
+            planeIntersections2->reserve(outPtsCount2);
+            planeIntersections2->clear();
+            for (unsigned int i = 0; i < outPtsCount2; i++)
+            {
+                planeIntersections2->push_back(outPtsPtr2[i]);
+            }
+            outputSimpPlnAABBPolygons.push_back(TSPolygon(*planeIntersections2, pln));
+        }
+        delete outPtsPtr2;
+        delete planeIntersections2;
+
+
+
+
+
 
 #ifdef TSLAM_REC_DEBUG
     // Debug visualizer
@@ -30,7 +174,7 @@ namespace tslam
     }
 
     // draw tag centers as point cloud with normals
-    this->m_Timber->getTagsCtrs().PaintUniformColor(Eigen::Vector3d(0, 0, 1));
+    this->m_Timber->getTagsCtrs().PaintUniformColor(Eigen::Vector3d(0, 0, 0));
     vis->AddGeometry(std::make_shared<open3d::geometry::PointCloud>(this->m_Timber->getTagsCtrs()));
 
     // // show point cloud normals
@@ -55,9 +199,9 @@ namespace tslam
     // vis->AddGeometry(obbsegmentset);
 
     // draw polygon segments3D 
-    for (auto& pts : this->m_IntersectPlnAABBPts)
+    for (auto& pg : this->m_PlnAABBPolygons)
     {
-        // create a polygon from the intersection points
+        std::vector<Eigen::Vector3d> pts = pg.getPoints();
         for (int i = 0; i < pts.size(); i++)
         {
             std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
@@ -68,6 +212,33 @@ namespace tslam
             segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
             segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
             segLineset->PaintUniformColor(Eigen::Vector3d(0.5, 1, 0.5));
+            vis->AddGeometry(segLineset);
+        }
+    }
+
+    // draw polygon centers
+    pntCldPCtr->PaintUniformColor(Eigen::Vector3d(0, 1, 1));
+    vis->AddGeometry(pntCldPCtr);
+
+    // draw new merged planes centers
+    pntCldNewPlanes->PaintUniformColor(Eigen::Vector3d(0.7, 0.3, 0.9));
+    vis->AddGeometry(pntCldNewPlanes);
+
+
+    // draw new interesected polygons
+    for (auto& pg : outputSimpPlnAABBPolygons)
+    {
+        std::vector<Eigen::Vector3d> pts = pg.getPoints();
+        for (int i = 0; i < pts.size(); i++)
+        {
+            std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
+            std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+            segLineset->points_.push_back(segm->Origin());
+            segLineset->points_.push_back(segm->EndPoint());
+            segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+            segLineset->PaintUniformColor(Eigen::Vector3d(0., 0., 1.));
             vis->AddGeometry(segLineset);
         }
     }
@@ -83,11 +254,15 @@ namespace tslam
         this->m_Timber->scaleAABB(this->m_AABBScaleFactor);
 
         this->timeStart("[PROFILER]: intersect planes with AABB");
+
+        Eigen::Vector3d* outPtsPtr = new Eigen::Vector3d[3*6];
+        std::vector<Eigen::Vector3d>* planeIntersections = new std::vector<Eigen::Vector3d>();
         for (auto& t : this->m_Timber->getPlaneTags())
         {
+            // a. skip face tags
             if (t.isFace()) continue;
-                
-            Eigen::Vector3d* outPtsPtr = new Eigen::Vector3d[3*6];
+            
+            // b. caculate the intersection points
             unsigned int outPtsCount;
             this->rPlane2AABBSegmentIntersect(t.getPlane(),
                                               this->m_Timber->getAABB().min_bound_, 
@@ -95,8 +270,20 @@ namespace tslam
                                               outPtsPtr,
                                               outPtsCount);
             this->rSortIntersectionPoints(outPtsPtr, outPtsCount, t.getPlane());
-            delete outPtsPtr;
+
+            // c. save the result into a polygon
+            planeIntersections->reserve(outPtsCount);
+            planeIntersections->clear();
+            for (unsigned int i = 0; i < outPtsCount; i++)
+            {
+                planeIntersections->push_back(outPtsPtr[i]);
+            }
+            this->m_PlnAABBPolygons.push_back(TSPolygon(*planeIntersections, t.getPlane()));
         }
+        delete outPtsPtr;
+        delete planeIntersections;
+
+
         this->timeEnd();
     }
     bool TSGeometricSolver::rRay2PlaneIntersection(const Eigen::Vector3d &RayOrig,
@@ -105,7 +292,7 @@ namespace tslam
                                                    float *OutT,
                                                    float *OutVD)
     {
-        const Eigen::Vector3d PlaneNormal(Plane.a, Plane.b, Plane.c);
+        const Eigen::Vector3d PlaneNormal(Plane.a, Plane.b, Plane.c);  /// FIXME: change to Getters from TSPlane
 
         const double Denominator = PlaneNormal.dot(RayDir);
         if (Denominator == 0.0f)  return false;  // ray is parallel to plane
@@ -195,13 +382,6 @@ namespace tslam
             else
                 return dot < 0.f;
         });
-
-        std::vector<Eigen::Vector3d> planeIntersections;
-        for (unsigned int i = 0; i < point_count; i++)
-        {
-            planeIntersections.push_back(points[i]);
-        }
-        this->m_IntersectPlnAABBPts.push_back(planeIntersections);
     }
 
     void TSGeometricSolver::rDetectCreasesTags()
