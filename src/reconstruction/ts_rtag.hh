@@ -52,6 +52,7 @@ namespace tslam
 
     public:
         inline bool isEdge() {return (m_Type==TSRTagType::Edge) ? true : false; };
+        inline bool isFace() {return (m_Type==TSRTagType::Face) ? true : false; };
 
     public:
         /**

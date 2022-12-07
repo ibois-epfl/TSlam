@@ -8,8 +8,8 @@ namespace tslam
 {
     void TSGeometricSolver::reconstruct()
     {
-        this->rIntersectTagPlnAABB();
         this->rDetectCreasesTags();
+        this->rIntersectTagPlnAABB();
 
 #ifdef TSLAM_REC_DEBUG
     // Debug visualizer
@@ -54,23 +54,23 @@ namespace tslam
     // obbsegmentset->PaintUniformColor(Eigen::Vector3d(1, 0, 0));
     // vis->AddGeometry(obbsegmentset);
 
-    // // draw polygon segments3D 
-    // for (auto& pts : this->m_IntersectPlnAABBPts)
-    // {
-    //     // create a polygon from the intersection points
-    //     for (int i = 0; i < pts.size(); i++)
-    //     {
-    //         std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
-    //         std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-    //         segLineset->points_.push_back(segm->Origin());
-    //         segLineset->points_.push_back(segm->EndPoint());
-    //         segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //         segLineset->PaintUniformColor(Eigen::Vector3d(0.5, 1, 0.5));
-    //         vis->AddGeometry(segLineset);
-    //     }
-    // }
+    // draw polygon segments3D 
+    for (auto& pts : this->m_IntersectPlnAABBPts)
+    {
+        // create a polygon from the intersection points
+        for (int i = 0; i < pts.size(); i++)
+        {
+            std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
+            std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+            segLineset->points_.push_back(segm->Origin());
+            segLineset->points_.push_back(segm->EndPoint());
+            segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+            segLineset->PaintUniformColor(Eigen::Vector3d(0.5, 1, 0.5));
+            vis->AddGeometry(segLineset);
+        }
+    }
 
     vis->Run();
     vis->Close();
@@ -85,6 +85,8 @@ namespace tslam
         this->timeStart("[PROFILER]: intersect planes with AABB");
         for (auto& t : this->m_Timber->getPlaneTags())
         {
+            if (t.isFace()) continue;
+                
             Eigen::Vector3d* outPtsPtr = new Eigen::Vector3d[3*6];
             unsigned int outPtsCount;
             this->rPlane2AABBSegmentIntersect(t.getPlane(),

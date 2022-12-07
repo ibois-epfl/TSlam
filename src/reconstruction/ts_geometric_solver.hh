@@ -13,6 +13,7 @@ namespace tslam
         TSGeometricSolver() 
         {
             m_AABBScaleFactor=2.0;
+            m_CreaseAngleThreshold=10.0;  /// TODO: test angle sensitivity to different shapes
         };
         ~TSGeometricSolver() = default;
 
@@ -22,17 +23,21 @@ namespace tslam
          * 1. detect the creases of the timber piece by proximity search and angle 
          * difference between tags'normals
          * 2. intersect selected planes with AABB
-         * 3. intersect planes(intersected polygons) with each other and generate new polygons
-         * 4. keep only the polygons with tags' corner points inside them
-         * 5. join the polygons into a mesh
-         * 6. check mesh for watertightness and manifoldness
-         * (7. get only the contours and not the inner polygons)
+         * 3. merge similar planes
+         * 4. intersect planes(intersected polygons) with each other and generate new polygons
+         * 5. keep only the polygons with tags' corner points inside them
+         * 6. join the polygons into a mesh
+         * 7. check mesh for watertightness and manifoldness
+         * (8. get only the contours and not the inner polygons)
          * 
         */
         void reconstruct();
 
     private:
-        /// the function intersect a plane with a AABB and store the intersection points.
+        /** 
+         * @brief the function intersect a plane with a AABB and store the intersection points.
+         * 
+         */
         void rIntersectTagPlnAABB();
             /** 
              * @brief It checks if there is intersection between a ray and a plane following the:
