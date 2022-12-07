@@ -66,9 +66,9 @@ namespace tslam
         std::vector<tslam::TSRTag> m_RTags;
         /// m_RtagsCtrs the point cloud constituted by the tags' centers.
         open3d::geometry::PointCloud m_RtagsCtrs;
-        /// m_Mesh the output mesh of the reconstructed object.
-        open3d::geometry::TriangleMesh m_Mesh;
         ///  m_AABB the axis aligned bounding box of the tags.
         open3d::geometry::AxisAlignedBoundingBox m_AABB;
+        /// m_Mesh the output mesh of the reconstructed object.
+        open3d::geometry::TriangleMesh m_Mesh;
     };
 }

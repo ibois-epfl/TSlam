@@ -19,14 +19,14 @@ namespace tslam
         /** 
          * @brief Ths function reconstruct a mesh from the TSlam map composed by Tags.
          * 0. remove duplicate tags from map
-         * 1. group the tags by knn search (on a ~plane) and normal angle difference (?)
-         * (2. for each group of tags: average the tags' planes as much as possible)
-         * 3. intersect selected planes with AABB
-         * 4. intersect planes(intersected polygons) with each other and generate new polygons
-         * 5. keep only the polygons with tags' corner points inside them
-         * 6. join the polygons into a mesh
-         * 7. check mesh for watertightness and manifoldness
-         * 8. get only the contours and not the inner polygons
+         * 1. detect the creases of the timber piece by proximity search and angle 
+         * difference between tags'normals
+         * 2. intersect selected planes with AABB
+         * 3. intersect planes(intersected polygons) with each other and generate new polygons
+         * 4. keep only the polygons with tags' corner points inside them
+         * 5. join the polygons into a mesh
+         * 6. check mesh for watertightness and manifoldness
+         * (7. get only the contours and not the inner polygons)
          * 
         */
         void reconstruct();
@@ -86,9 +86,25 @@ namespace tslam
                                         unsigned point_count,
                                         const TSTPlane& plane);
 
+        /**
+         * @brief The function detect the tags creases of the timber piece. It builds a ktree of the tags and by
+         * k-nearest neighbor search it finds the nearest tags to each tag. Then it computes the angle between
+         * the normals of the tags and if the angle is smaller than a threshold it is considered a crease.
+         * 
+         */
+        void rDetectCreasesTags();
+            /** 
+             * @brief It computes the angle between two vectors
+             * 
+             * @param v1 the first vector
+             * @param v2 the second vector
+             * @return double the angle between the two vectors in degrees
+             */
+            double rAngleBetweenVectors(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2);
+
     public: __always_inline
         void setTimber(std::shared_ptr<TSTimber> timber){m_Timber = timber; check4PlaneTags();};
-        // void setAABBScaleFactor(const double& aabbScaleFactor){m_AABBScaleFactor = aabbScaleFactor;};
+        void setCreaseAngleThreshold(double crease_angle_threshold){m_CreaseAngleThreshold = crease_angle_threshold;};
 
     private:
             /** 
@@ -101,6 +117,8 @@ namespace tslam
     private:
         /// The timber element to reconstruct
         std::shared_ptr<tslam::TSTimber> m_Timber;
+        /// The threshold for detection of crease's angle (the smaller the more creases will be detected)
+        double m_CreaseAngleThreshold;
         /// The scale factor for scaleing up the AABB of the timber element
         double m_AABBScaleFactor;
         /// Vector of polygon's points of intersection between the planes and the AABB of the timber element

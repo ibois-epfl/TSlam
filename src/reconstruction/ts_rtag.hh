@@ -21,6 +21,13 @@ namespace tslam
         public: __always_inline
             Eigen::Vector3d getNormal() {return Eigen::Vector3d(a, b, c); };
     };
+
+    enum TSRTagType
+    {
+        Unknown = 0,
+        Edge = 1,
+        Face = 2
+    };
     
     /// TSRTag class responsible for storing the plane information.
     class TSRTag : public TSObject
@@ -43,6 +50,10 @@ namespace tslam
                 return os;
             };
 
+    public:
+        inline bool isEdge() {return (m_Type==TSRTagType::Edge) ? true : false; };
+
+    public:
         /**
          * @brief Set the corners' coordinates of the planes
          * 
@@ -55,6 +66,7 @@ namespace tslam
         */
         void setCorners(Eigen::Vector3d A, Eigen::Vector3d B, Eigen::Vector3d C, Eigen::Vector3d D);
         inline void setID(uint id) {m_Id = id; };
+        inline void setType(TSRTagType type) {m_Type = type; };
 
     public: __always_inline
         std::vector<Eigen::Vector3d>& getCorners() {return m_Corners; }; 
@@ -67,6 +79,7 @@ namespace tslam
         Eigen::Vector3d& getCenter() {return m_Center; };
         TSTPlane& getPlane() {return m_Plane; };
         Eigen::Vector3d& getNormal() {m_Normal = m_Plane.getNormal(); return m_Normal; };
+        TSRTagType& getType() {return m_Type; };
 
     private:
         /// Compute the intrinsic properties from the corners and it sets the obj members.
@@ -91,6 +104,7 @@ namespace tslam
         open3d::geometry::TriangleMesh m_PlaneMesh;
         Eigen::Vector3d m_Normal;  ///< Normal vector of the plane NOT oriented (in(outwards))
         Eigen::Vector3d m_Center;
+        TSRTagType m_Type;
 
 #ifdef TSLAM_REC_DEBUG
         Eigen::Vector3d m_Color;

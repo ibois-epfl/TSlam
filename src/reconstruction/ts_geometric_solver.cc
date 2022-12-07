@@ -1,18 +1,15 @@
 #include "ts_geometric_solver.hh"
+#include <open3d/Open3D.h>
 #include <stdexcept>
 #include <algorithm>
+#include <math.h>  ///< for acos()
 
 namespace tslam
 {
     void TSGeometricSolver::reconstruct()
     {
-
-
-        // 1. intersect plane tags with tags' AABB(scaleUpFactor)
-        // >>>  we have a list of polygons of intersctions
         this->rIntersectTagPlnAABB();
-
-
+        this->rDetectCreasesTags();
 
 #ifdef TSLAM_REC_DEBUG
     // Debug visualizer
@@ -24,6 +21,10 @@ namespace tslam
     {
         open3d::geometry::TriangleMesh tagBase = tag.getOpen3dMesh();
         auto planeTagsLineset1 = open3d::geometry::LineSet::CreateFromTriangleMesh(tagBase);
+        if (tag.isEdge())
+            tag.setColor(Eigen::Vector3d(0, 1, 0));
+        else
+            tag.setColor(Eigen::Vector3d(1, 0, 0));
         planeTagsLineset1->PaintUniformColor(tag.getColor());
         vis->AddGeometry(planeTagsLineset1);
     }
@@ -199,6 +200,39 @@ namespace tslam
             planeIntersections.push_back(points[i]);
         }
         this->m_IntersectPlnAABBPts.push_back(planeIntersections);
+    }
+
+    void TSGeometricSolver::rDetectCreasesTags()
+    {
+        open3d::geometry::KDTreeFlann kdtree;
+        kdtree.SetGeometry(open3d::geometry::PointCloud(this->m_Timber->getTagsCtrs()));
+
+        std::vector<int> indices;
+        std::vector<double> distances;
+        const int knn = 2;
+
+        for (int i = 0; i < this->m_Timber->getPlaneTags().size(); i++)
+        {
+            kdtree.SearchKNN(this->m_Timber->getPlaneTags()[i].getCenter(), knn, indices, distances);
+
+            double angle = this->rAngleBetweenVectors(this->m_Timber->getPlaneTags()[i].getNormal(), 
+                                                      this->m_Timber->getPlaneTags()[indices[1]].getNormal());
+
+            if (angle < this->m_CreaseAngleThreshold) 
+            {
+                this->m_Timber->getPlaneTags()[i].setType(TSRTagType::Face);
+            }
+            else
+            {
+                this->m_Timber->getPlaneTags()[i].setType(TSRTagType::Edge);
+            }
+        }
+    }
+
+    double TSGeometricSolver::rAngleBetweenVectors(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2)
+    {
+        double angle = std::acos(v1.dot(v2) / (v1.norm() * v2.norm()));
+        return (angle * 180 / M_PI);
     }
 
     bool TSGeometricSolver::check4PlaneTags()

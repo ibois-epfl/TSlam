@@ -19,8 +19,9 @@ int main()
     // create geometric solver
     std::shared_ptr<tslam::TSGeometricSolver> solverPtr = std::make_shared<tslam::TSGeometricSolver>();
     solverPtr->setTimber(timberPtr);
-    // solverPtr->setAABBScaleFactor(2.0);
+    solverPtr->setCreaseAngleThreshold(10.0);
 
+    // solve
     solverPtr->reconstruct();
 
 

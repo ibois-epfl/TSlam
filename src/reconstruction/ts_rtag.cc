@@ -121,6 +121,8 @@ namespace tslam
                 Eigen::Vector3d C(xCF, yCF, zCF);
                 Eigen::Vector3d D(xDF, yDF, zDF);
 
+                tag.setType(TSRTagType::Unknown);
+
                 tag.setCorners(A, B, C, D);
 
                 tag.compute();
