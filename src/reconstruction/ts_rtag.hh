@@ -15,13 +15,8 @@ namespace tslam
             : a(a), b(b), c(c), d(d)
         {};
         TSTPlane(Eigen::Vector3d normal, Eigen::Vector3d center)
-            // : a(normal(0)), b(normal(1)), c(normal(2)), d(normal.dot(center))
-        {
-            a = normal(0);
-            b = normal(1);
-            c = normal(2);
-            d = normal.dot(center);
-        };  // FIXME: TEST - NOT WORKING
+            : a(normal(0)), b(normal(1)), c(normal(2)), d(normal.dot(center))
+        {};
         ~TSTPlane() = default;
 
     // public: __always_inline

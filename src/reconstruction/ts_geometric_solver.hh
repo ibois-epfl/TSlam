@@ -4,6 +4,7 @@
 
 #include <Eigen/Core>
 
+// TODO: add I/O functions to export mesh
 
 namespace tslam
 {
@@ -75,7 +76,6 @@ namespace tslam
      */
     class TSGeometricSolver
     {
-    public:
         TSGeometricSolver() 
         {
             m_AABBScaleFactor=2.0;
@@ -83,6 +83,7 @@ namespace tslam
         };
         ~TSGeometricSolver() = default;
 
+        // TODO: update solver steps
         /** 
          * @brief Ths function reconstruct a mesh from the TSlam map composed by Tags.
          * 0. remove duplicate tags from map
@@ -99,7 +100,25 @@ namespace tslam
         */
         void reconstruct();
 
-    private:
+    private:  ///< reconstruction methods
+        /// (a)
+        /**
+         * @brief The function detect the tags creases of the timber piece. It builds a ktree of the tags and by
+         * k-nearest neighbor search it finds the nearest tags to each tag. Then it computes the angle between
+         * the normals of the tags and if the angle is smaller than a threshold it is considered a crease.
+         * 
+         */
+        void rDetectCreasesTags();
+            /** 
+             * @brief It computes the angle between two vectors
+             * 
+             * @param v1 the first vector
+             * @param v2 the second vector
+             * @return double the angle between the two vectors in degrees
+             */
+            double rAngleBetweenVectors(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2);
+        
+        /// (b)
         /** 
          * @brief the function intersect a plane with a AABB and store the intersection points.
          * 
@@ -156,44 +175,73 @@ namespace tslam
             void rSortIntersectionPoints(Eigen::Vector3d* points, 
                                         unsigned point_count,
                                         const TSTPlane& plane);
-
+        
+        /// (c)
         /**
-         * @brief The function detect the tags creases of the timber piece. It builds a ktree of the tags and by
-         * k-nearest neighbor search it finds the nearest tags to each tag. Then it computes the angle between
-         * the normals of the tags and if the angle is smaller than a threshold it is considered a crease.
+         * @brief The function mean the previous similar polygons'planes and recompute the
+         * intersection of the mean planes with the AABB to obtain new polygons.
          * 
          */
-        void rDetectCreasesTags();
-            /** 
-             * @brief It computes the angle between two vectors
+        void rIntersectMeanPolygonPlnAABB();
+            /**
+             * @brief The function merge polygons/planes that are similar in orientation and close to 
+             * each  other. It builds a ktree of the polygons centers and group the "close" polygons.
+             * A new center and a ew normal are computed and a new plane is created.
              * 
-             * @param v1 the first vector
-             * @param v2 the second vector
-             * @return double the angle between the two vectors in degrees
              */
-            double rAngleBetweenVectors(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2);
+            void rMeanPolygonPlanes();
 
+        /// (d)
         /**
-         * @brief The functions merge similar planes into one if they are close and have a
-         * similar orientation.
+         * @brief The function intersect the polygons with each other and generate new polygons.
+         * It keeps only those polygons that have at least one corner point inside them.
          * 
          */
-        void rMergeSimilarPlanes();
-            /** 
-             * @brief It checks if two planes are close and similar in orientation
+        void rIntersectPolygons();
+            /**
+             * @brief The function intersect two polygons and store the intersection points.
              * 
-             * @param p1 the first plane
-             * @param p2 the second plane
-             * @return true if the two planes are similar
-             * @return false if the two planes are not similar
+             * @param poly1 the first polygon
+             * @param poly2 the second polygon
+             * @param out_points the intersection points
+             * @param out_point_count the number of intersection points
              */
-            bool rAreSimilarPlanes(const TSTPlane &p1, const TSTPlane &p2);
+            void rPoly2PolyIntersect(const TSPolygon& poly1, 
+                                     const TSPolygon& poly2,
+                                     Eigen::Vector3d* out_points,  //TODO: delete manually
+                                     unsigned& out_point_count);  //TODO: delete manually
+            /**
+             * @brief It checks if a point is inside a polygon.
+             * 
+             * @param point the point to check
+             * @param poly the polygon to check
+             * @return true if the point is inside the polygon
+             * @return false if the point is outside the polygon
+             */
+            bool rPointInPoly(const Eigen::Vector3d& point, const TSPolygon& poly);
+
+        /// (e)
+        /**
+         * @brief It joins the polygons and create a new mesh of the timber object.
+         * 
+         */
+        void rCreateMesh();
+            /**
+             * @brief It joins all the polygons in a new mesh.
+             * 
+             */
+            void rJoinPolygons();
+            /**
+             * @brief Check for manifoldness and watertightness of the mesh.
+             * 
+             */
+            void rCheckMeshSanity();
 
     public: __always_inline
         void setTimber(std::shared_ptr<TSTimber> timber){m_Timber = timber; check4PlaneTags();};
         void setCreaseAngleThreshold(double crease_angle_threshold){m_CreaseAngleThreshold = crease_angle_threshold;};
 
-    private:
+    private:  ///< utility funcs
             /** 
              * @brief check4PlaneTags checks if the timber object has plane tags
              * 
@@ -201,17 +249,28 @@ namespace tslam
              * @return false if the timber object has no plane tags
              */
             bool check4PlaneTags();
-    private:
+
+    private:  ///< I/O funcs
+            /**
+             * @brief Export the timber mesh to a .ply file locally.
+             * 
+             */
+            void exportMesh2PLY();  // TODO: implement
+    private:  ///< Solver parameters
         /// The timber element to reconstruct
         std::shared_ptr<tslam::TSTimber> m_Timber;
         /// The threshold for detection of crease's angle (the smaller the more creases will be detected)
         double m_CreaseAngleThreshold;
         /// The scale factor for scaleing up the AABB of the timber element
         double m_AABBScaleFactor;
-        /// Vector of polygons issued of planes-AABB intersections
-        std::vector<TSPolygon> m_PlnAABBPolygons;
 
-    public:
+    private:  ///< Solver internal variables
+        /// Vector of polygons issued of tags' planes-AABB intersections
+        std::vector<TSPolygon> m_PlnAABBPolygons;
+        /// Vector of merged close and similar polygons
+        std::vector<TSPolygon> m_MergedPolygons;
+
+    private:  ///< Profiler
 #ifdef TSLAM_REC_PROFILER
         inline void timeStart(const char* msg)
         {
@@ -224,17 +283,14 @@ namespace tslam
             m_time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(m_time_end - m_time_start);
             std::cout << this->m_time_msg << " : " << m_time_elapsed.count() << " ms" << std::endl;
         };
-#else
-        inline void timeStart(const char* msg){};
-        inline void timeEnd(){};
-#endif
 
-    private:
-#ifdef TSLAM_REC_PROFILER
         std::chrono::time_point<std::chrono::high_resolution_clock> m_time_start;
         std::chrono::time_point<std::chrono::high_resolution_clock> m_time_end;
         const char* m_time_msg;
         std::chrono::milliseconds m_time_elapsed;
+#else
+        inline void timeStart(const char* msg){};
+        inline void timeEnd(){};
 #endif
     };
 }

@@ -12,6 +12,11 @@ namespace tslam
         this->rDetectCreasesTags();
         this->rIntersectTagPlnAABB();
 
+
+
+        // // =======================================================================================
+        // // =======================================================================================
+
         // build a kdtree with radius search of the polygons centers
         open3d::geometry::KDTreeFlann kdtree;
         std::shared_ptr<open3d::geometry::PointCloud> pntCldPCtr = std::make_shared<open3d::geometry::PointCloud>();
@@ -19,12 +24,8 @@ namespace tslam
         for (auto& p : this->m_PlnAABBPolygons)
         {
             pntCldPCtr->points_.push_back(p.getCenter());
-            // std::cout << "Polygon center X: " << p.getCenter()[0] << std::endl;
-            // std::cout << "Polygon center Y: " << p.getCenter()[1] << std::endl;
-            // std::cout << "Polygon center Z: " << p.getCenter()[2] << std::endl;
         }
 
-        std::cout << "Number of polygons: " << this->m_PlnAABBPolygons.size() << std::endl;  // DEBUG
 
         kdtree.SetGeometry(*pntCldPCtr);
 
@@ -32,7 +33,7 @@ namespace tslam
         // for each polygon center, find the closest polygon centers by radius search
 
         
-        double radius = 3.;
+        double radius = 3.;  ///<--- ! this has to be parametrized in the class
         std::vector<int> indices;
         std::vector<double> distances;
 
@@ -74,7 +75,6 @@ namespace tslam
                 }
                 // mean the indices of all the neighbors and create a new point
             }
-            // meanPt /= indices.size();
             meanPt /= k;
             meanNorm /= k;
 
@@ -82,46 +82,18 @@ namespace tslam
 
             if (k > 1)
             {
+                pntCldNewPlanes->points_.push_back(meanPt);  // DEBUG
 
-                pntCldNewPlanes->points_.push_back(meanPt);
-
-
-
-                Eigen::Vector3d pt2 = meanPt + meanNorm;  /// DEBUG
-                pntCldNewPlanes->points_.push_back(pt2);  /// DEBUG
-
-                // construct a plane from the mean center and mean normal
                 TSTPlane newPlane(meanNorm, meanPt);
-
-
-
-
                 newPlanes.push_back(newPlane);
             }
-
-            // for (auto& j : indices)
-            // {
-            //     std::cout << "Index: " << j << std::endl;
-            // }
-
-            // for (auto& j : indices)
-            // {
-            //     pntCldNewPlanes->points_.push_back(this->m_PlnAABBPolygons[j].getCenter());
-            // }
         }
 
-        // DEBUG
-        // for (auto& i : mergedIndices)
-        // {
-        //     std::cout << "Merged index: " << i << std::endl;
-        // }
-        std::cout << "Number of merged pcd: " << pntCldNewPlanes->points_.size() << std::endl;
-
 
         // // =======================================================================================
         // // =======================================================================================
 
-        // TEST: rerunning the AABB plane interesections but now with the new merged planes
+        // TEST: rerunning the AABB plane interesections but now with the new mean planes
         std::vector<TSPolygon> outputSimpPlnAABBPolygons;
 
         Eigen::Vector3d* outPtsPtr2 = new Eigen::Vector3d[3*6];
@@ -247,6 +219,38 @@ namespace tslam
     vis->Close();
     vis->DestroyVisualizerWindow();
 #endif
+    }
+
+    void TSGeometricSolver::rDetectCreasesTags()
+    {
+        open3d::geometry::KDTreeFlann kdtree;
+        kdtree.SetGeometry(open3d::geometry::PointCloud(this->m_Timber->getTagsCtrs()));
+
+        std::vector<int> indices;
+        std::vector<double> distances;
+        const int knn = 2;
+
+        for (int i = 0; i < this->m_Timber->getPlaneTags().size(); i++)
+        {
+            kdtree.SearchKNN(this->m_Timber->getPlaneTags()[i].getCenter(), knn, indices, distances);
+
+            double angle = this->rAngleBetweenVectors(this->m_Timber->getPlaneTags()[i].getNormal(), 
+                                                      this->m_Timber->getPlaneTags()[indices[1]].getNormal());
+
+            if (angle < this->m_CreaseAngleThreshold) 
+            {
+                this->m_Timber->getPlaneTags()[i].setType(TSRTagType::Face);
+            }
+            else
+            {
+                this->m_Timber->getPlaneTags()[i].setType(TSRTagType::Edge);
+            }
+        }
+    }
+    double TSGeometricSolver::rAngleBetweenVectors(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2)
+    {
+        double angle = std::acos(v1.dot(v2) / (v1.norm() * v2.norm()));
+        return (angle * 180 / M_PI);
     }
 
     void TSGeometricSolver::rIntersectTagPlnAABB()
@@ -382,39 +386,6 @@ namespace tslam
             else
                 return dot < 0.f;
         });
-    }
-
-    void TSGeometricSolver::rDetectCreasesTags()
-    {
-        open3d::geometry::KDTreeFlann kdtree;
-        kdtree.SetGeometry(open3d::geometry::PointCloud(this->m_Timber->getTagsCtrs()));
-
-        std::vector<int> indices;
-        std::vector<double> distances;
-        const int knn = 2;
-
-        for (int i = 0; i < this->m_Timber->getPlaneTags().size(); i++)
-        {
-            kdtree.SearchKNN(this->m_Timber->getPlaneTags()[i].getCenter(), knn, indices, distances);
-
-            double angle = this->rAngleBetweenVectors(this->m_Timber->getPlaneTags()[i].getNormal(), 
-                                                      this->m_Timber->getPlaneTags()[indices[1]].getNormal());
-
-            if (angle < this->m_CreaseAngleThreshold) 
-            {
-                this->m_Timber->getPlaneTags()[i].setType(TSRTagType::Face);
-            }
-            else
-            {
-                this->m_Timber->getPlaneTags()[i].setType(TSRTagType::Edge);
-            }
-        }
-    }
-
-    double TSGeometricSolver::rAngleBetweenVectors(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2)
-    {
-        double angle = std::acos(v1.dot(v2) / (v1.norm() * v2.norm()));
-        return (angle * 180 / M_PI);
     }
 
     bool TSGeometricSolver::check4PlaneTags()
