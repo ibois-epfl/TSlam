@@ -10,11 +10,10 @@ namespace tslam
     class TSGeometricSolver
     {
     public:
-        TSGeometricSolver() = default;
-        TSGeometricSolver(std::shared_ptr<TSTimber> timber,
-                          const uint& planeScaleFactor)
-        : m_Timber(timber)
-        {};
+        TSGeometricSolver() 
+        {
+            m_AABBScaleFactor=2.0;
+        };
         ~TSGeometricSolver() = default;
 
         /** 
@@ -27,6 +26,7 @@ namespace tslam
          * 5. keep only the polygons with tags' corner points inside them
          * 6. join the polygons into a mesh
          * 7. check mesh for watertightness and manifoldness
+         * 8. get only the contours and not the inner polygons
          * 
         */
         void reconstruct();
@@ -88,7 +88,7 @@ namespace tslam
 
     public: __always_inline
         void setTimber(std::shared_ptr<TSTimber> timber){m_Timber = timber; check4PlaneTags();};
-        void setAABBScaleFactor(const double& aabbScaleFactor){m_AABBScaleFactor = aabbScaleFactor;};
+        // void setAABBScaleFactor(const double& aabbScaleFactor){m_AABBScaleFactor = aabbScaleFactor;};
 
     private:
             /** 

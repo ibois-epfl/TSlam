@@ -70,6 +70,30 @@ namespace tslam
         std::vector<double> distances;
         int knn = 2;
 
+        // for (int i = 0; i < this->getPlaneTags().size(); i++)
+        // {
+        //     // find k nearest neighbor
+        //     kdtree.SearchKNN(this->getPlaneTags()[i].getCenter(), knn, indices, distances);
+        //     // std::cout << "indices: " << indices[0] << " " << indices[1] << std::endl;
+
+        //     // compute angle between normals
+        //     Eigen::Vector3d normal1 = this->getPlaneTags()[i].getNormal();
+        //     Eigen::Vector3d normal2 = this->getPlaneTags()[indices[1]].getNormal();
+
+        //     // calculate angle between normals
+        //     double angle = std::acos(normal1.dot(normal2) / (normal1.norm() * normal2.norm()));
+
+        //     std::cout << "angle btw index " << i << " and " << indices[1] << ": " << angle << std::endl;
+        
+        // }
+
+        // this->getPlaneTags()[246].setColor(Eigen::Vector3d(1.0, 0.0, 0.0));  // DEBUG
+        // this->getPlaneTags()[157].setColor(Eigen::Vector3d(0.0, 1.0, 0.0));
+
+
+        // TEST
+        // color the tags based on the angle between normals
+        // what we do here is detecting the creases
         for (int i = 0; i < this->getPlaneTags().size(); i++)
         {
             // find k nearest neighbor
@@ -82,15 +106,20 @@ namespace tslam
 
             // calculate angle between normals
             double angle = std::acos(normal1.dot(normal2) / (normal1.norm() * normal2.norm()));
+            // convert angles to degrees
+            angle = angle * 180 / M_PI;
 
             std::cout << "angle btw index " << i << " and " << indices[1] << ": " << angle << std::endl;
         
+            if (angle < 10)  ///<--- this is the threshold/sensibility of the solver
+            {
+                this->getPlaneTags()[i].setColor(Eigen::Vector3d(1.0, 0.0, 0.0));
+            }
+            else
+            {
+                this->getPlaneTags()[i].setColor(Eigen::Vector3d(0.0, 1.0, 0.0));
+            }
         }
-
-
-
-        this->getPlaneTags()[246].setColor(Eigen::Vector3d(1.0, 0.0, 0.0));  // DEBUG
-        this->getPlaneTags()[157].setColor(Eigen::Vector3d(0.0, 1.0, 0.0));
 
 
 
