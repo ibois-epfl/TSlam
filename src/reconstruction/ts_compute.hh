@@ -2,12 +2,12 @@
 
 namespace tslam
 {
-    /// TSObject is a simple interface parent class.
-    class TSObject
+    /// TSCompute is a simple interface parent class for internal computation of geometric properties.
+    class TSCompute
     {
     public:
-        TSObject () = default;
-        ~TSObject () = default;
+        TSCompute () = default;
+        ~TSCompute () = default;
 
     protected:
         virtual void compute() = 0;

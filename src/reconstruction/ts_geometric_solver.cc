@@ -16,6 +16,46 @@ namespace tslam
 
 
 
+        std::shared_ptr<open3d::geometry::PointCloud> pntCldIntersect = std::make_shared<open3d::geometry::PointCloud>();
+        bool isIntersect = false;
+        Eigen::Vector3d* intersectPt = new Eigen::Vector3d();
+        // test each polygon against all the others for intersection
+        for (auto& pg : this->m_MergedPolygons)  /// Polygons
+        {
+            for (auto& qg : this->m_MergedPolygons)   /// Polygons
+            {
+                if (pg != qg)
+                {
+                    for (int i = 0; i < pg.size(); i++)  /// Segments
+                    {
+                        for (int j = 0; j < qg.size(); j++)  /// Segments
+                        {
+                            isIntersect = this->rSegment2SegmentIntersect(pg[i].Origin(), pg[i].EndPoint(), 
+                                                                          qg[j].Origin(), qg[j].EndPoint(),
+                                                                          intersectPt);
+                            if (isIntersect)
+                            {
+                                pntCldIntersect->points_.push_back(*intersectPt);
+                                // break;
+                            }
+                        }
+                        // if (isIntersect)
+                            // break;
+                    }
+                    if (isIntersect)  /// ?
+                    {
+                        std::cout << "Intersecting polygons found!" << std::endl;
+                        break;
+                    }
+                }
+            }
+            // if (isIntersect)  /// ?
+            //     break;
+        }
+
+        std::cout << "Number of intersecting points: " << pntCldIntersect->points_.size() << std::endl;
+
+
 
 #ifdef TSLAM_REC_DEBUG
     // Debug visualizer
@@ -75,7 +115,6 @@ namespace tslam
         vis->AddGeometry(pntCldNewPlanes);
     }
 
-
     // draw new interesected polygons
     for (auto& pg : this->m_MergedPolygons)
     {
@@ -93,6 +132,10 @@ namespace tslam
             vis->AddGeometry(segLineset);
         }
     }
+
+    // show polygons intersect points
+    pntCldIntersect->PaintUniformColor(Eigen::Vector3d(1, 0, 0));
+    vis->AddGeometry(pntCldIntersect);
 
     vis->Run();
     vis->Close();
@@ -171,7 +214,7 @@ namespace tslam
     }
     bool TSGeometricSolver::rRay2PlaneIntersection(const Eigen::Vector3d &RayOrig,
                                                    const Eigen::Vector3d &RayDir,
-                                                   const TSTPlane &Plane,
+                                                   const TSPlane &Plane,
                                                    float *OutT,
                                                    float *OutVD)
     {
@@ -188,7 +231,7 @@ namespace tslam
 
         return true;
     }
-    void TSGeometricSolver::rPlane2AABBSegmentIntersect(const TSTPlane &plane,
+    void TSGeometricSolver::rPlane2AABBSegmentIntersect(const TSPlane &plane,
                                                         const Eigen::Vector3d &aabb_min, 
                                                         const Eigen::Vector3d &aabb_max,
                                                         Eigen::Vector3d* out_points,
@@ -249,22 +292,56 @@ namespace tslam
     }
     void TSGeometricSolver::rSortIntersectionPoints(Eigen::Vector3d* points,
                                                     unsigned point_count,
-                                                    const TSTPlane& plane)
+                                                    const TSPlane& plane)
     {
         Eigen::Vector3d center = Eigen::Vector3d(0.f, 0.f, 0.f);
-        for (unsigned i = 0; i < point_count; ++i)
+
+        // compute the center of the polygon
+        for  (unsigned i = 0; i < point_count; ++i)
             center += points[i];
         center /= (float)point_count;
 
-        std::sort(points, points + point_count, [&center, &plane](const Eigen::Vector3d& a, const Eigen::Vector3d& b) {
-            Eigen::Vector3d v1 = a - center;
-            Eigen::Vector3d v2 = b - center;
-            float dot = v1.x() * v2.y() - v1.y() * v2.x();
-            if (plane.A > 0.f)
-                return dot > 0.f;
+        // sort the points in a clockwise order also for the case of plane.A < 0.f
+        std::sort(points, points + point_count, [center, plane](const Eigen::Vector3d& a, const Eigen::Vector3d& b)
+        {
+            // compute the angle between the center and the two points
+            float angleA = atan2(a.y() - center.y(), a.x() - center.x());
+            float angleB = atan2(b.y() - center.y(), b.x() - center.x());
+
+            // sort the points by the angle
+            if (angleA < angleB)
+                return true;
+            else if (angleA > angleB)
+                return false;
             else
-                return dot < 0.f;
+            {
+                // if the angle is the same, sort the points by the distance
+                float distA = (a - center).norm();
+                float distB = (b - center).norm();
+                return distA < distB;
+            }
         });
+
+        // compute the normal of the polygon
+        Eigen::Vector3d normal = Eigen::Vector3d(plane.A, plane.B, plane.C);
+        if (normal.dot(center) < 0.f)
+            normal *= -1.f;
+
+        // check if the points are in the right order
+        Eigen::Vector3d ab = points[1] - points[0];
+        Eigen::Vector3d bc = points[2] - points[1];
+        Eigen::Vector3d ca = points[0] - points[2];
+        Eigen::Vector3d n = ab.cross(bc);
+        if (n.dot(normal) < 0.f)
+        {
+            // reverse the order of the points
+            for (unsigned i = 0; i < point_count / 2; ++i)
+            {
+                Eigen::Vector3d tmp = points[i];
+                points[i] = points[point_count - i - 1];
+                points[point_count - i - 1] = tmp;
+            }
+        }
     }
 
     void TSGeometricSolver::rIntersectMeanPolygonPlnAABB()
@@ -343,10 +420,150 @@ namespace tslam
                 meanPt /= k;
                 meanNorm /= k;
                 TSPolygon newPoly;
-                newPoly.setLinkedPlane(TSTPlane(meanNorm, meanPt));
+                newPoly.setLinkedPlane(TSPlane(meanNorm, meanPt));
                 this->m_MergedPolygons.push_back(newPoly);
             }
         }
+    }
+
+    void TSGeometricSolver::rIntersectPolygons()
+    {
+        // TODO
+    }
+    bool TSGeometricSolver::rSegment2SegmentIntersect(const Eigen::Vector3d& p1, 
+                                                      const Eigen::Vector3d& p2, 
+                                                      const Eigen::Vector3d& p3, 
+                                                      const Eigen::Vector3d& p4,
+                                                      Eigen::Vector3d* intersectPt)
+    {
+        /*
+        (a1,a2,a3)________________(b1,b2,b3)
+        A                           B 
+
+        (c1,c2,c3)________________(d1,d2,d3)
+        C                            D
+        */
+        double A = p2.x() - p1.x();
+        double B = p3.x() - p4.x();
+        double C = p3.x() - p1.x();
+        double D = p2.y() - p1.y();
+        double E = p3.y() - p4.y();
+        double F = p3.y() - p1.y();
+
+        // find t using formula t=(C*E-F*B)/(E*A-B*D)
+        // and s=(C*D-A*F)/(E*A-B*D)
+        double t = (C*E-F*B)/(E*A-B*D);
+        double s = (C*D-A*F)/(E*A-B*D);
+
+        // check if t and s are between 0 and 1
+        if ((t*(1-t) >= 0) && (s*(1-s) >= 0))
+        {
+            // find the intersection point
+            *intersectPt = p1 + t*(p2-p1);
+            return true;
+        }
+        else
+            return false;
+
+
+        // // ===================================================================================
+
+        // check if the segments are parallel
+        // Eigen::Vector3d v1 = p2 - p1;
+        // Eigen::Vector3d v2 = p4 - p3;
+        // Eigen::Vector3d v3 = p3 - p1;
+
+        // float dot = v1.x() * v2.y() - v1.y() * v2.x();
+        // if (dot == 0.f)
+        //     return false;
+        
+        // // find the intersection point
+        // float t = (v1.x() * v3.y() - v1.y() * v3.x()) / dot;
+        // float u = (v2.x() * v3.y() - v2.y() * v3.x()) / dot;
+
+        // if (t >= 0.f && t <= 1.f && u >= 0.f && u <= 1.f)
+        // {
+        //     *intersectPt = p1 + t * v1;
+        //     return true;
+        // }
+        // else
+        //     return false;
+
+
+        // // ===================================================================================
+
+        // // find 3dimensional intersection (x,y,z) of two 3d segments
+        // // Line AB represented as a1x + b1y = c1
+        // double a1 = p2.y() - p1.y();
+        // double b1 = p1.x() - p2.x();
+        // double c1 = a1*(p1.x()) + b1*(p1.y());
+
+        // // Line CD represented as a2x + b2y = c2
+        // double a2 = p4.y() - p3.y();
+        // double b2 = p3.x() - p4.x();
+        // double c2 = a2*(p3.x())+ b2*(p3.y());
+
+        // // Line z represented as a3x + b3y = c3
+        // double a3 = p2.z() - p1.z();
+        // double b3 = p1.x() - p2.x();
+        // double c3 = a3*(p1.x()) + b3*(p1.y());
+
+        // double determinant = a1*b2 - a2*b1;
+
+        // // check if the lines are parallel
+        // if (determinant == 0) return false;
+
+        // double x = (b2*c1 - b1*c2)/determinant;
+        // double y = (a1*c2 - a2*c1)/determinant;
+        // double z = (a3*c1 - a1*c3)/determinant;
+
+        // *intersectPt = Eigen::Vector3d(x,y,z);
+
+        // // check if the intersection point is on both segments TODO: check if correct
+        // TSSegment seg1(p1, p2);  /// TODO: replace in function param
+        // TSSegment seg2(p3, p4);  /// TODO: replace in function param
+        // if (seg1.isPointOnSegment(*intersectPt) && seg2.isPointOnSegment(*intersectPt))
+        //     return true;
+        // else
+        //     return false;
+
+        // // ===================================================================================
+
+        // // Line AB represented as a1x + b1y = c1
+        // double a1 = p2.y() - p1.y();
+        // double b1 = p1.x() - p2.x();
+        // double c1 = a1*(p1.x()) + b1*(p1.y());
+
+        // // Line CD represented as a2x + b2y = c2
+        // double a2 = p4.y() - p3.y();
+        // double b2 = p3.x() - p4.x();
+        // double c2 = a2*(p3.x())+ b2*(p3.y());
+
+        // // Line z represented as a3x + b3y = c3
+
+        // double determinant = a1*b2 - a2*b1;
+
+        // // check if the lines are parallel
+        // if (determinant == 0) return false;
+
+        // double x = (b2*c1 - b1*c2)/determinant;
+        // double y = (a1*c2 - a2*c1)/determinant;
+        // *intersectPt = {x,y,0};
+        // return true;
+    }
+    void TSGeometricSolver::rPoly2PolyIntersect(const TSPolygon& poly1, 
+                                               const TSPolygon& poly2,
+                                               Eigen::Vector3d* out_points, 
+                                               unsigned& out_point_count)
+    {
+        // intersect two polygons and create new polygons out of the intersection
+        // check if the polygons are intersecting
+        
+        
+    }
+    void rPointInPoly(const Eigen::Vector3d& point, const TSPolygon& poly)
+    {
+        //TODO;
     }
 
     bool TSGeometricSolver::check4PlaneTags()

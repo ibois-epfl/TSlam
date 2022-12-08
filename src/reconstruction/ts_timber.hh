@@ -14,7 +14,7 @@ namespace tslam
      * tags' geometrical and metdata info as well as the reconstruction.
      * 
      */
-    class TSTimber : public TSObject
+    class TSTimber : public TSCompute
     {
     public:
         TSTimber() {m_RTags = {}; };

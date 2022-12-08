@@ -83,7 +83,7 @@ namespace tslam
              */
             bool rRay2PlaneIntersection(const Eigen::Vector3d &RayOrig,
                                         const Eigen::Vector3d &RayDir,
-                                        const TSTPlane &Plane,
+                                        const TSPlane &Plane,
                                         float *OutT,
                                         float *OutVD);
             /** 
@@ -97,7 +97,7 @@ namespace tslam
              * @param out_points[in] the intersection points
              * @param out_point_count[in] the number of intersection points (min:3, max: 6)
              */
-            void rPlane2AABBSegmentIntersect(const TSTPlane &plane,
+            void rPlane2AABBSegmentIntersect(const TSPlane &plane,
                                             const Eigen::Vector3d &aabb_min, 
                                             const Eigen::Vector3d &aabb_max,
                                             Eigen::Vector3d* out_points,
@@ -113,7 +113,7 @@ namespace tslam
              */
             void rSortIntersectionPoints(Eigen::Vector3d* points, 
                                         unsigned point_count,
-                                        const TSTPlane& plane);
+                                        const TSPlane& plane);
         
         /// (c)
         /**
@@ -137,6 +137,23 @@ namespace tslam
          * 
          */
         void rIntersectPolygons();
+            /**
+             * @brief Check if an intersection exist between two segments
+             * 
+             * @param p1 the first point of the first segment
+             * @param p2 the second point of the first segment
+             * @param p3 the first point of the second segment
+             * @param p4 the second point of the second segment
+             * @param intersectPt[out] the intersection point
+             * 
+             * @return true if there is intersection
+             * @return false if there is no intersection
+             */
+            bool rSegment2SegmentIntersect(const Eigen::Vector3d& p1, 
+                                           const Eigen::Vector3d& p2, 
+                                           const Eigen::Vector3d& p3, 
+                                           const Eigen::Vector3d& p4,
+                                           Eigen::Vector3d* intersectPt);
             /**
              * @brief The function intersect two polygons and store the intersection points.
              * 

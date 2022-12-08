@@ -163,7 +163,7 @@ namespace tslam
 
         double d = n.dot(p1);
 
-        TSTPlane tsplane = TSTPlane(n[0], n[1], n[2], d);
+        TSPlane tsplane = TSPlane(n[0], n[1], n[2], d);
 
         this->m_Plane = tsplane;
     }
