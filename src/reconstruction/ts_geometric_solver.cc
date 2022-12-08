@@ -175,12 +175,12 @@ namespace tslam
                                                    float *OutT,
                                                    float *OutVD)
     {
-        const Eigen::Vector3d PlaneNormal(Plane.a, Plane.b, Plane.c);  /// FIXME: change to Getters from TSPlane
+        const Eigen::Vector3d PlaneNormal(Plane.A, Plane.B, Plane.C);  /// FIXME: change to Getters from TSPlane
 
         const double Denominator = PlaneNormal.dot(RayDir);
         if (Denominator == 0.0f)  return false;  // ray is parallel to plane
 
-        const double Numerator = Plane.d - PlaneNormal.dot(RayOrig);
+        const double Numerator = Plane.D - PlaneNormal.dot(RayOrig);
         const double t = Numerator / Denominator;
 
         if (OutT) *OutT = t;
@@ -244,7 +244,7 @@ namespace tslam
 
         // Test the 8 vertices
         orig = aabb_min;
-        if (plane.a * orig.x() + plane.b * orig.y() + plane.c * orig.z() + plane.d == 0.f)
+        if (plane.A * orig.x() + plane.B * orig.y() + plane.C * orig.z() + plane.D == 0.f)
             out_points[out_point_count++] = orig;
     }
     void TSGeometricSolver::rSortIntersectionPoints(Eigen::Vector3d* points,
@@ -260,7 +260,7 @@ namespace tslam
             Eigen::Vector3d v1 = a - center;
             Eigen::Vector3d v2 = b - center;
             float dot = v1.x() * v2.y() - v1.y() * v2.x();
-            if (plane.a > 0.f)
+            if (plane.A > 0.f)
                 return dot > 0.f;
             else
                 return dot < 0.f;

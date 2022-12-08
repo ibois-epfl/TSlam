@@ -1,66 +1,12 @@
 #pragma once
 
 #include "ts_timber.hh"
+#include "ts_geo_util.hh"
 
 #include <Eigen/Core>
 
-// TODO: add I/O functions to export mesh
-
 namespace tslam
 {
-    /**
-     * @brief TSPolygon is an utility struct to store a polygon
-     * 
-     */
-    struct TSPolygon : public TSObject
-    {
-        TSPolygon() = default;
-        TSPolygon(std::vector<Eigen::Vector3d> points, TSTPlane linkedPlane)
-            : m_Points(points), m_LinkedPlane(linkedPlane)
-        {
-            this->compute();
-        };
-        ~TSPolygon() = default;
-
-    private: __always_inline
-        void compute() override 
-        {
-            computeCenter();
-        };
-        void computeCenter()
-        {
-            Eigen::Vector3d center = Eigen::Vector3d::Zero();
-            for (auto p : m_Points)
-                center += p;
-            center /= m_Points.size();
-            m_Center = center;
-        };
-
-    private:
-        std::vector<Eigen::Vector3d> m_Points;
-        Eigen::Vector3d m_Center;
-        /// The plane on which the polygon lies
-        tslam::TSTPlane m_LinkedPlane;
-    
-    public: __always_inline
-        void addPoint(Eigen::Vector3d point) {m_Points.push_back(point); compute(); };
-        void setPoints(std::vector<Eigen::Vector3d> points) {m_Points = points; compute(); };
-        void setLinkedPlane(TSTPlane linkedPlane) {m_LinkedPlane = linkedPlane; };
-
-    public:__always_inline
-        std::vector<Eigen::Vector3d>& getPoints() {return m_Points; };
-        uint getNumPoints() {return m_Points.size(); };
-        Eigen::Vector3d& getPoint(uint i) {return m_Points[i]; };
-        Eigen::Vector3d& getCenter() {return m_Center; };
-        Eigen::Vector3d getNormal() {return m_LinkedPlane.getNormal(); };
-        /**
-         * @brief Get the Linked Plane object
-         * 
-         * @return tslam::TSTPlane& it returns the plane on which the polygon lies
-         */
-        tslam::TSTPlane& getLinkedPlane() {return m_LinkedPlane; };
-    };
-
     /**
      * @brief TSGeometricSolver class responsible for reconstructing a mesh of the timber from its tags
      * 
@@ -126,11 +72,11 @@ namespace tslam
              * 
              * @see the function is modified from: https://asawicki.info/news_1428_finding_polygon_of_plane-aabb_intersection
              * 
-             * @param RayOrig the origin of the ray
-             * @param RayDir the direction of the ray
-             * @param Plane the plane to check the intersection with
-             * @param OutT the distance from the ray origin to the intersection point
-             * @param OutVD the distance from the ray origin to the plane
+             * @param RayOrig[out] the origin of the ray
+             * @param RayDir[out] the direction of the ray
+             * @param Plane[out] the plane to check the intersection with
+             * @param OutT[in] the distance from the ray origin to the intersection point
+             * @param OutVD[in] the distance from the ray origin to the plane
              * 
              * @return true if there is intersection
              * @return false if there is no intersection
@@ -145,11 +91,11 @@ namespace tslam
              * 
              * @see the function is modified from: https://asawicki.info/news_1428_finding_polygon_of_plane-aabb_intersection
              * 
-             * @param plane the plane to check the intersection with
-             * @param aabb_min the minimum point of the AABB
-             * @param aabb_max the maximum point of the AABB
-             * @param out_points the intersection points
-             * @param out_point_count the number of intersection points (min:3, max: 6)
+             * @param plane[out] the plane to check the intersection with
+             * @param aabb_min[out] the minimum point of the AABB
+             * @param aabb_max[out] the maximum point of the AABB
+             * @param out_points[in] the intersection points
+             * @param out_point_count[in] the number of intersection points (min:3, max: 6)
              */
             void rPlane2AABBSegmentIntersect(const TSTPlane &plane,
                                             const Eigen::Vector3d &aabb_min, 
@@ -161,9 +107,9 @@ namespace tslam
              * 
              * @see the function is modified from: https://asawicki.info/news_1428_finding_polygon_of_plane-aabb_intersection
              * 
-             * @param points the intersection points
-             * @param point_count the number of intersection points
-             * @param plane the plane to check the intersection with
+             * @param points[in] the intersection points
+             * @param point_count[in] the number of intersection points
+             * @param plane[out] the plane to check the intersection with
              */
             void rSortIntersectionPoints(Eigen::Vector3d* points, 
                                         unsigned point_count,
@@ -194,20 +140,20 @@ namespace tslam
             /**
              * @brief The function intersect two polygons and store the intersection points.
              * 
-             * @param poly1 the first polygon
-             * @param poly2 the second polygon
-             * @param out_points the intersection points
-             * @param out_point_count the number of intersection points
+             * @param poly1[out] the first polygon
+             * @param poly2[out] the second polygon
+             * @param out_points[in] the intersection points
+             * @param out_point_count[in] the number of intersection points
              */
             void rPoly2PolyIntersect(const TSPolygon& poly1, 
                                      const TSPolygon& poly2,
-                                     Eigen::Vector3d* out_points,  //TODO: delete manually
-                                     unsigned& out_point_count);  //TODO: delete manually
+                                     Eigen::Vector3d* out_points, 
+                                     unsigned& out_point_count);
             /**
              * @brief It checks if a point is inside a polygon.
              * 
-             * @param point the point to check
-             * @param poly the polygon to check
+             * @param point[out] the point to check
+             * @param poly[out] the polygon to check
              * @return true if the point is inside the polygon
              * @return false if the point is outside the polygon
              */
