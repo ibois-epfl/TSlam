@@ -14,22 +14,18 @@ namespace tslam
      */
     struct TSPolygon : public TSObject
     {
-        // TSPolygon()
-        // {
-        //     this->compute();
-        // };
+        TSPolygon() = default;
         TSPolygon(std::vector<Eigen::Vector3d> points, TSTPlane linkedPlane)
             : m_Points(points), m_LinkedPlane(linkedPlane)
         {
             this->compute();
         };
         ~TSPolygon() = default;
-    
+
     private: __always_inline
         void compute() override 
         {
             computeCenter();
-            // computeNormal();  // FIXME: TEST
         };
         void computeCenter()
         {
@@ -39,29 +35,23 @@ namespace tslam
             center /= m_Points.size();
             m_Center = center;
         };
-        // void computeNormal() // FIXME: TEST
-        // {
-        //     Eigen::Vector3d v1 = m_Points[1] - m_Points[0];
-        //     Eigen::Vector3d v2 = m_Points[2] - m_Points[0];
-        //     Eigen::Vector3d normal = v1.cross(v2);
-        //     normal.normalize();
-        //     m_Normal = normal;
-        // };
 
     private:
         std::vector<Eigen::Vector3d> m_Points;
         Eigen::Vector3d m_Center;
-        // Eigen::Vector3d m_Normal;
-        /// It is the plane on which the polygon lies
+        /// The plane on which the polygon lies
         tslam::TSTPlane m_LinkedPlane;
+    
+    public: __always_inline
+        void setPoints(std::vector<Eigen::Vector3d> points) {m_Points = points; compute(); };
+        void setLinkedPlane(TSTPlane linkedPlane) {m_LinkedPlane = linkedPlane; };
 
     public:__always_inline
         std::vector<Eigen::Vector3d>& getPoints() {return m_Points; };
         uint getNumPoints() {return m_Points.size(); };
         Eigen::Vector3d& getPoint(uint i) {return m_Points[i]; };
         Eigen::Vector3d& getCenter() {return m_Center; };
-        // Eigen::Vector3d& getNormal() {return m_Normal; };  // FIXME: TEST
-        Eigen::Vector3d getNormal() {return m_LinkedPlane.getNormal(); };  // FIXME: doublecheck
+        Eigen::Vector3d getNormal() {return m_LinkedPlane.getNormal(); };
         /**
          * @brief Get the Linked Plane object
          * 
@@ -76,10 +66,12 @@ namespace tslam
      */
     class TSGeometricSolver
     {
+    public:
         TSGeometricSolver() 
         {
             m_AABBScaleFactor=2.0;
-            m_CreaseAngleThreshold=10.0;  /// TODO: test angle sensitivity to different shapes
+            m_CreaseAngleThreshold=10.0;
+            m_MinPolyDist=3.0;
         };
         ~TSGeometricSolver() = default;
 
@@ -237,9 +229,10 @@ namespace tslam
              */
             void rCheckMeshSanity();
 
-    public: __always_inline
+    public: __always_inline  ///< Setters for solver parameters
         void setTimber(std::shared_ptr<TSTimber> timber){m_Timber = timber; check4PlaneTags();};
         void setCreaseAngleThreshold(double crease_angle_threshold){m_CreaseAngleThreshold = crease_angle_threshold;};
+        void setMinPolyDist(double min_poly_dist){m_MinPolyDist = min_poly_dist;};
 
     private:  ///< utility funcs
             /** 
@@ -263,6 +256,8 @@ namespace tslam
         double m_CreaseAngleThreshold;
         /// The scale factor for scaleing up the AABB of the timber element
         double m_AABBScaleFactor;
+        /// The minimum distance between two polygons' centers to be merged
+        double m_MinPolyDist;
 
     private:  ///< Solver internal variables
         /// Vector of polygons issued of tags' planes-AABB intersections

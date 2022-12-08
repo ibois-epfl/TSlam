@@ -17,35 +17,23 @@ namespace tslam
         // // =======================================================================================
         // // =======================================================================================
 
-        // build a kdtree with radius search of the polygons centers
         open3d::geometry::KDTreeFlann kdtree;
+
         std::shared_ptr<open3d::geometry::PointCloud> pntCldPCtr = std::make_shared<open3d::geometry::PointCloud>();
-        std::vector<tslam::TSTPlane> planes;
-        for (auto& p : this->m_PlnAABBPolygons)
-        {
-            pntCldPCtr->points_.push_back(p.getCenter());
-        }
-
-
+        for (auto& p : this->m_PlnAABBPolygons) pntCldPCtr->points_.push_back(p.getCenter());
         kdtree.SetGeometry(*pntCldPCtr);
 
-
-        // for each polygon center, find the closest polygon centers by radius search
-
-        
-        double radius = 3.;  ///<--- ! this has to be parametrized in the class
         std::vector<int> indices;
+        std::vector<int> mergedIndices;
         std::vector<double> distances;
 
-        std::shared_ptr<open3d::geometry::PointCloud> pntCldNewPlanes = std::make_shared<open3d::geometry::PointCloud>();
         std::vector<tslam::TSTPlane> newPlanes;
-        std::vector<int> mergedIndices;
-
-        // keep track of the indices of the polygons that have been merged
 
         for (int i=0; i < pntCldPCtr->points_.size(); i++)
         {
-            kdtree.SearchRadius(pntCldPCtr->points_[i], radius, indices, distances);
+            kdtree.SearchRadius(pntCldPCtr->points_[i],
+                                this->m_MinPolyDist,
+                                indices,distances);
             // std::cout << "Number of neighbors: " << indices.size() << std::endl;
 
             // keep only one of all the neighbors by merging them
@@ -82,8 +70,6 @@ namespace tslam
 
             if (k > 1)
             {
-                pntCldNewPlanes->points_.push_back(meanPt);  // DEBUG
-
                 TSTPlane newPlane(meanNorm, meanPt);
                 newPlanes.push_back(newPlane);
             }
@@ -188,13 +174,18 @@ namespace tslam
         }
     }
 
-    // draw polygon centers
+    // draw first intersection polygon centers
     pntCldPCtr->PaintUniformColor(Eigen::Vector3d(0, 1, 1));
     vis->AddGeometry(pntCldPCtr);
 
     // draw new merged planes centers
-    pntCldNewPlanes->PaintUniformColor(Eigen::Vector3d(0.7, 0.3, 0.9));
-    vis->AddGeometry(pntCldNewPlanes);
+    std::shared_ptr<open3d::geometry::PointCloud> pntCldNewPlanes = std::make_shared<open3d::geometry::PointCloud>();
+    for (auto& pg : outputSimpPlnAABBPolygons)
+    {
+        pntCldNewPlanes->points_.push_back(pg.getCenter());
+        pntCldNewPlanes->PaintUniformColor(Eigen::Vector3d(0.7, 0.3, 0.9));
+        vis->AddGeometry(pntCldNewPlanes);
+    }
 
 
     // draw new interesected polygons
