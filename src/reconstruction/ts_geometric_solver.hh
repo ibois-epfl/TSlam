@@ -43,6 +43,7 @@ namespace tslam
         tslam::TSTPlane m_LinkedPlane;
     
     public: __always_inline
+        void addPoint(Eigen::Vector3d point) {m_Points.push_back(point); compute(); };
         void setPoints(std::vector<Eigen::Vector3d> points) {m_Points = points; compute(); };
         void setLinkedPlane(TSTPlane linkedPlane) {m_LinkedPlane = linkedPlane; };
 
