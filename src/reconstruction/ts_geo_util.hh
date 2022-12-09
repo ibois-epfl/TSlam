@@ -18,6 +18,16 @@ namespace tslam
             : A(normal(0)), B(normal(1)), C(normal(2)), D(normal.dot(center)), Normal(normal), Center(center)
         {};
         ~TSPlane() = default;
+    
+    public: __always_inline
+        bool operator!=(const TSPlane& other) const
+        {
+            return (this->Normal != other.Normal || this->Center != other.Center);
+        };
+        bool operator==(const TSPlane& other) const
+        {
+            return (this->Normal == other.Normal && this->Center == other.Center);
+        };
 
     public:
         Eigen::Vector3d Normal;

@@ -38,13 +38,11 @@ namespace tslam
                             std::cout << "intersectPt: " << intersectPt->transpose() << std::endl;
 
                             isAlreadyIn = false;
+                            // check if the point is already in the point cloud to float precision
                             for (auto& pt : pntCldIntersect->points_)
                             {
-                                std::cout << "pt: " << pt.transpose() << std::endl;
-
-                                if (pt == *intersectPt)
+                                if (pt.isApprox(*intersectPt, 1e-6))
                                 {
-                                    std::cout << "Point already in" << std::endl;
                                     isAlreadyIn = true;
                                     break;
                                 }
@@ -54,7 +52,6 @@ namespace tslam
                                 pntCldIntersect->points_.push_back(*intersectPt);
                             }
                             std::cout << "check for poly-poly ==================================================" << std::endl;
-
                         }
                     }
                 }
