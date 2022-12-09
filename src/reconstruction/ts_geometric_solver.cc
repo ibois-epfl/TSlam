@@ -49,18 +49,24 @@ namespace tslam
                             }
                         }
                     }
+
+                    // here we can split the polygons in two (clockwise and counter clockwise)
+                    // we can do this by checking the distance of the intersection points to the center of the polygon
+                    // the ones closer to the center are the ones in the clockwise direction
+                    // the ones further away are the ones in the counter clockwise direction
+                    // we can then create two new polygons and add them to the list of polygons ?
+                    // we can then remove the old polygon from the list of polygons ?
+
                 }
             }
         }
         delete intersectPt;
 
-
-
-        // for (auto& pt : pntCldIntersect->points_)
-        // {
-        //     std::cout << pt.transpose() << std::endl;
-        // }
         std::cout << "Intersect points: " << pntCldIntersect->points_.size() << std::endl;
+
+
+        // // =============================================================================
+        // now we take the intersections when detected and we recreate two polygons in clockwise and counter clockwise order
 
 
 
@@ -488,47 +494,34 @@ namespace tslam
                                                       TSSegment& seg2, 
                                                       Eigen::Vector3d* intersectPt)
     {
-        // get the points of the segments
         Eigen::Vector3d A = seg1.Origin();
         Eigen::Vector3d B = seg1.EndPoint();
         Eigen::Vector3d C = seg2.Origin();
         Eigen::Vector3d D = seg2.EndPoint();
 
-        // get the vectors of the segments
         Eigen::Vector3d AB = B - A;
         Eigen::Vector3d CD = D - C;
 
-        // get the cross product of the vectors
         Eigen::Vector3d cross = AB.cross(CD);
         if (cross.norm() == 0.f) return false;
 
-        // get intersection in 3d (there can be only two)
         Eigen::Vector3d AC = C - A;
 
         double t = AC.cross(CD).dot(cross) / cross.squaredNorm();
         double u = AC.cross(AB).dot(cross) / cross.squaredNorm();
 
-        // check if the intersection is on the segments
         if (t >= 0.f && t <= 1.f && u >= 0.f && u <= 1.f)
         {
-            // get the intersection point
             Eigen::Vector3d ptTemp = A + t * AB;
 
-            // check if the intersection point is on both segments
             if (seg1.isPointOnSegment(ptTemp) && seg2.isPointOnSegment(ptTemp))
             {
                 *intersectPt = ptTemp;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            else return false;
         }
-        else
-        {
-            return false;
-        }
+        else return false;
     }
     void TSGeometricSolver::rPoly2PolyIntersect(const TSPolygon& poly1, 
                                                const TSPolygon& poly2,
