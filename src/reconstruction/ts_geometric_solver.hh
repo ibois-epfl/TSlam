@@ -139,6 +139,7 @@ namespace tslam
         void rIntersectPolygons();
             /**
              * @brief Check if an intersection exist between two segments
+             * TODO: we might add a variable tolerance for the intersection
              * 
              * @param p1 the first point of the first segment
              * @param p2 the second point of the first segment

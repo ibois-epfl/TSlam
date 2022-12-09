@@ -33,12 +33,8 @@ namespace tslam
                         {
                             isIntersect = this->rSegment2SegmentIntersect(polyA[i], polyB[j],
                                                                               intersectPt);
-                            // check if the point is already in the point cloud to float precision
-
-                            std::cout << "intersectPt: " << intersectPt->transpose() << std::endl;
 
                             isAlreadyIn = false;
-                            // check if the point is already in the point cloud to float precision
                             for (auto& pt : pntCldIntersect->points_)
                             {
                                 if (pt.isApprox(*intersectPt, 1e-6))
@@ -51,7 +47,6 @@ namespace tslam
                             {
                                 pntCldIntersect->points_.push_back(*intersectPt);
                             }
-                            std::cout << "check for poly-poly ==================================================" << std::endl;
                         }
                     }
                 }
