@@ -33,18 +33,27 @@ namespace tslam
             : P1(p1), P2(p2)
         {};
         ~TSSegment() = default;
+    
+    public: __always_inline
+        bool operator!=(const TSSegment& other) const
+        {
+            return (this->P1 != other.P1 || this->P2 != other.P2);
+        };
+        bool operator==(const TSSegment& other) const
+        {
+            return (this->P1 == other.P1 && this->P2 == other.P2);
+        };
 
     public: __always_inline
         bool isPointOnSegment(Eigen::Vector3d point) const
         {
             Eigen::Vector3d v1 = point - this->P1;
-            Eigen::Vector3d v2 = this->P2 - this->P1;
+            Eigen::Vector3d v2 = point - this->P2;
+            Eigen::Vector3d v3 = this->P2 - this->P1;
+            double cross = v1.cross(v2).norm();
             double dot = v1.dot(v2);
-            double len_sq = v2.dot(v2);
-            double param = dot / len_sq;
-            if (param < 0 || param > 1)
-                return false;
-            return true;
+            double l = v3.norm();
+            return (cross < 1e-5 && dot < 1e-5 && l > 1e-5);
         };
     
     public: __always_inline
@@ -108,10 +117,10 @@ namespace tslam
         void computeSegments()
         {
             m_Segments.clear();
-            
+
             for (uint i = 0; i < m_Points.size(); i++)
             {
-                uint j = (i+1) % m_Points.size();
+                uint j = (i + 1) % m_Points.size();
                 m_Segments.push_back(TSSegment(m_Points[i], m_Points[j]));
             }
         }

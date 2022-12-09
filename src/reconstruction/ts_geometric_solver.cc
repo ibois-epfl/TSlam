@@ -18,80 +18,57 @@ namespace tslam
 
         std::shared_ptr<open3d::geometry::PointCloud> pntCldIntersect = std::make_shared<open3d::geometry::PointCloud>();
         bool isIntersect = false;
+        bool isAlreadyIn = true;
+
         Eigen::Vector3d* intersectPt = new Eigen::Vector3d();
-        // test each polygon against all the others for intersection (avoid self-intersection)
-        // for (auto& pg : this->m_MergedPolygons)  /// Polygons
+        for (auto& polyA : this->m_MergedPolygons)
+        {
+            for (auto& polyB : this->m_MergedPolygons)
+            {
+                if (polyA != polyB)
+                {
+                    for (int i = 0; i < polyA.size(); i++)
+                    {
+                        for (int j = 0; j < polyB.size(); j++)
+                        {
+                            isIntersect = this->rSegment2SegmentIntersect(polyA[i], polyB[j],
+                                                                              intersectPt);
+                            // check if the point is already in the point cloud to float precision
+
+                            std::cout << "intersectPt: " << intersectPt->transpose() << std::endl;
+
+                            isAlreadyIn = false;
+                            for (auto& pt : pntCldIntersect->points_)
+                            {
+                                std::cout << "pt: " << pt.transpose() << std::endl;
+
+                                if (pt == *intersectPt)
+                                {
+                                    std::cout << "Point already in" << std::endl;
+                                    isAlreadyIn = true;
+                                    break;
+                                }
+                            }
+                            if (isIntersect && !isAlreadyIn)
+                            {
+                                pntCldIntersect->points_.push_back(*intersectPt);
+                            }
+                            std::cout << "check for poly-poly ==================================================" << std::endl;
+
+                        }
+                    }
+                }
+            }
+        }
+        delete intersectPt;
+
+
+
+        // for (auto& pt : pntCldIntersect->points_)
         // {
-        //     for (auto& qg : this->m_MergedPolygons)   /// Polygons
-        //     {
-        //         if (pg != qg)
-        //         {
-        //             // print pg center
-        //             // std::cout << "pg center: " << pg.getCenter().transpose() << std::endl;
-        //             // std::cout << "qg center: " << qg.getCenter().transpose() << std::endl;
-        //             // std::cout << "--------------------------------------------" << std::endl;
-
-        //             for (int i = 0; i < pg.size(); i++)  /// Segments
-        //             {
-        //                 for (int j = 0; j < qg.size(); j++)  /// Segments
-        //                 {
-        //                     isIntersect = this->rSegment2SegmentIntersect(pg[i], qg[j],
-        //                                                                   intersectPt);
-        //                     if (isIntersect)
-        //                     {
-        //                         pntCldIntersect->points_.push_back(*intersectPt);
-        //                         // break;
-        //                     }
-        //                 }
-        //                 // if (isIntersect)
-        //                 //     break;
-        //             }
-        //             // if (isIntersect)  /// ?
-        //             // {
-        //             //     std::cout << "Intersecting polygons found!" << std::endl;
-        //             //     break;
-        //             // }
-        //         }
-        //     }
-        //     // if (isIntersect)  /// ?
-        //     //     break;
+        //     std::cout << pt.transpose() << std::endl;
         // }
-
-        // testing only with two polygons
-        TSPolygon polyA = this->m_MergedPolygons[0];
-        TSPolygon polyB = this->m_MergedPolygons[1];
-
-        // for (auto& segA : polyA.getSegments())  /// Segments
-        // {
-        //     for (auto& segB : polyB.getSegments())  /// Segments
-        //     {
-        //         isIntersect = this->rSegment2SegmentIntersect(segA, segB,
-        //                                                       intersectPt);
-        //         if (isIntersect)
-        //         {
-        //             pntCldIntersect->points_.push_back(*intersectPt);
-        //             // break;
-        //         }
-        //     }
-        //     // if (isIntersect)
-        //     //     break;
-        // }
-
-        // testing only with two segments of two polygons
-        TSSegment segA = polyA[5];  // 3
-        TSSegment segB = polyB[1];  // 0
-        isIntersect = this->rSegment2SegmentIntersect(segA, segB, intersectPt);
-        if (isIntersect) pntCldIntersect->points_.push_back(*intersectPt);
-
-
-
-        // print coordinates of intersecting points
-        for (auto& p : pntCldIntersect->points_)
-            std::cout << p.transpose() << std::endl;
-        std::cout << "--------------------------------------------" << std::endl;
-
-
-        std::cout << "Number of intersecting points: " << pntCldIntersect->points_.size() << std::endl;
+        std::cout << "Intersect points: " << pntCldIntersect->points_.size() << std::endl;
 
 
 
@@ -121,22 +98,22 @@ namespace tslam
     std::shared_ptr<open3d::geometry::LineSet> aabbLineset = std::make_shared<open3d::geometry::LineSet>();
 
     // draw polygon segments3D 
-    // for (auto& pg : this->m_PlnAABBPolygons)
-    // {
-    //     std::vector<Eigen::Vector3d> pts = pg.getPoints();
-    //     for (int i = 0; i < pts.size(); i++)
-    //     {
-    //         std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
-    //         std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-    //         segLineset->points_.push_back(segm->Origin());
-    //         segLineset->points_.push_back(segm->EndPoint());
-    //         segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //         segLineset->PaintUniformColor(Eigen::Vector3d(0.5, 1, 0.5));
-    //         vis->AddGeometry(segLineset);
-    //     }
-    // }
+    for (auto& pg : this->m_PlnAABBPolygons)
+    {
+        std::vector<Eigen::Vector3d> pts = pg.getPoints();
+        for (int i = 0; i < pts.size(); i++)
+        {
+            std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
+            std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+            segLineset->points_.push_back(segm->Origin());
+            segLineset->points_.push_back(segm->EndPoint());
+            segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+            segLineset->PaintUniformColor(Eigen::Vector3d(0.5, 1, 0.5));
+            vis->AddGeometry(segLineset);
+        }
+    }
 
     // draw first intersection polygon centers
     for (auto& fpoly : this->m_PlnAABBPolygons)
@@ -156,69 +133,69 @@ namespace tslam
         vis->AddGeometry(pntCldNewPlanes);
     }
 
-    // // draw new interesected polygons
-    // for (auto& pg : this->m_MergedPolygons)
-    // {
-    //     std::vector<Eigen::Vector3d> pts = pg.getPoints();
-    //     for (int i = 0; i < pts.size(); i++)
-    //     {
-    //         std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
-    //         std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-    //         segLineset->points_.push_back(segm->Origin());
-    //         segLineset->points_.push_back(segm->EndPoint());
-    //         segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //         segLineset->PaintUniformColor(Eigen::Vector3d(0., 0., 1.));
-    //         vis->AddGeometry(segLineset);
-    //     }
-    // }
+    // draw new interesected polygons
+    for (auto& pg : this->m_MergedPolygons)
+    {
+        std::vector<Eigen::Vector3d> pts = pg.getPoints();
+        for (int i = 0; i < pts.size(); i++)
+        {
+            std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
+            std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+            segLineset->points_.push_back(segm->Origin());
+            segLineset->points_.push_back(segm->EndPoint());
+            segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+            segLineset->PaintUniformColor(Eigen::Vector3d(0., 0., 1.));
+            vis->AddGeometry(segLineset);
+        }
+    }
 
     // show polygons intersect points
     pntCldIntersect->PaintUniformColor(Eigen::Vector3d(1, 0, 1));
     vis->AddGeometry(pntCldIntersect);
 
-    // debug: show selected polygons polyA and polyB
-    std::vector<TSSegment> polyASegs = polyA.getSegments();
-    for (auto& seg : polyASegs)
-    {
-        std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-        segLineset->points_.push_back(seg.Origin());
-        segLineset->points_.push_back(seg.EndPoint());
-        segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-        segLineset->colors_.push_back(Eigen::Vector3d(1, 0, 0));
-        segLineset->colors_.push_back(Eigen::Vector3d(1, 0, 0));
-        segLineset->PaintUniformColor(Eigen::Vector3d(1, 0, 0));
-        vis->AddGeometry(segLineset);
-    }
+    // // debug: show selected polygons polyA and polyB
+    // std::vector<TSSegment> polyASegs = polyA.getSegments();
+    // for (auto& seg : polyASegs)
+    // {
+    //     std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+    //     segLineset->points_.push_back(seg.Origin());
+    //     segLineset->points_.push_back(seg.EndPoint());
+    //     segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+    //     segLineset->colors_.push_back(Eigen::Vector3d(1, 0, 0));
+    //     segLineset->colors_.push_back(Eigen::Vector3d(1, 0, 0));
+    //     segLineset->PaintUniformColor(Eigen::Vector3d(1, 0, 0));
+    //     vis->AddGeometry(segLineset);
+    // }
         
-    std::vector<TSSegment> polyBSegs = polyB.getSegments();
-    for (int i = 0; i < polyBSegs.size(); i++)
-    {
-        std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-        segLineset->points_.push_back(polyBSegs[i].Origin());
-        segLineset->points_.push_back(polyBSegs[i].EndPoint());
-        segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-        segLineset->colors_.push_back(Eigen::Vector3d(1, 0, 0));
-        segLineset->colors_.push_back(Eigen::Vector3d(1, 0, 0));
-        segLineset->PaintUniformColor(Eigen::Vector3d(1, 0, 0));
-        vis->AddGeometry(segLineset);
-    }
+    // std::vector<TSSegment> polyBSegs = polyB.getSegments();
+    // for (int i = 0; i < polyBSegs.size(); i++)
+    // {
+    //     std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+    //     segLineset->points_.push_back(polyBSegs[i].Origin());
+    //     segLineset->points_.push_back(polyBSegs[i].EndPoint());
+    //     segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+    //     segLineset->colors_.push_back(Eigen::Vector3d(1, 0, 0));
+    //     segLineset->colors_.push_back(Eigen::Vector3d(1, 0, 0));
+    //     segLineset->PaintUniformColor(Eigen::Vector3d(1, 0, 0));
+    //     vis->AddGeometry(segLineset);
+    // }
 
-    // debug: show only two segments
-    std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-    segLineset->points_.push_back(segA.Origin());
-    segLineset->points_.push_back(segA.EndPoint());
-    segLineset->points_.push_back(segB.Origin());
-    segLineset->points_.push_back(segB.EndPoint());
-    segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-    segLineset->lines_.push_back(Eigen::Vector2i(2, 3));
-    segLineset->colors_.push_back(Eigen::Vector3d(1, 0, 0));
-    segLineset->colors_.push_back(Eigen::Vector3d(1, 0, 0));
-    segLineset->colors_.push_back(Eigen::Vector3d(1, 0, 0));
-    segLineset->colors_.push_back(Eigen::Vector3d(1, 0, 0));
-    segLineset->PaintUniformColor(Eigen::Vector3d(1, 1, 0));
-    vis->AddGeometry(segLineset);
+    // // debug: show only two segments
+    // std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+    // segLineset->points_.push_back(segA.Origin());
+    // segLineset->points_.push_back(segA.EndPoint());
+    // segLineset->points_.push_back(segB.Origin());
+    // segLineset->points_.push_back(segB.EndPoint());
+    // segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+    // segLineset->lines_.push_back(Eigen::Vector2i(2, 3));
+    // segLineset->colors_.push_back(Eigen::Vector3d(1, 0, 0));
+    // segLineset->colors_.push_back(Eigen::Vector3d(1, 0, 0));
+    // segLineset->colors_.push_back(Eigen::Vector3d(1, 0, 0));
+    // segLineset->colors_.push_back(Eigen::Vector3d(1, 0, 0));
+    // segLineset->PaintUniformColor(Eigen::Vector3d(1, 1, 0));
+    // vis->AddGeometry(segLineset);
 
 
 
@@ -519,8 +496,6 @@ namespace tslam
                                                       TSSegment& seg2, 
                                                       Eigen::Vector3d* intersectPt)
     {
-        // we get too many false intersections with this method (but also the good ones)
-        // get the 3D point of intersection
         // get the points of the segments
         Eigen::Vector3d A = seg1.Origin();
         Eigen::Vector3d B = seg1.EndPoint();
@@ -545,15 +520,23 @@ namespace tslam
         if (t >= 0.f && t <= 1.f && u >= 0.f && u <= 1.f)
         {
             // get the intersection point
-            *intersectPt = A + t * AB;
-            return true;
+            Eigen::Vector3d ptTemp = A + t * AB;
+
+            // check if the intersection point is on both segments
+            if (seg1.isPointOnSegment(ptTemp) && seg2.isPointOnSegment(ptTemp))
+            {
+                *intersectPt = ptTemp;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         else
         {
             return false;
         }
-        
-
     }
     void TSGeometricSolver::rPoly2PolyIntersect(const TSPolygon& poly1, 
                                                const TSPolygon& poly2,
