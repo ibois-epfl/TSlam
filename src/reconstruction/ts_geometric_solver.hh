@@ -149,10 +149,8 @@ namespace tslam
              * @return true if there is intersection
              * @return false if there is no intersection
              */
-            bool rSegment2SegmentIntersect(const Eigen::Vector3d& p1, 
-                                           const Eigen::Vector3d& p2, 
-                                           const Eigen::Vector3d& p3, 
-                                           const Eigen::Vector3d& p4,
+            bool rSegment2SegmentIntersect(TSSegment& seg1, 
+                                           TSSegment& seg2, 
                                            Eigen::Vector3d* intersectPt);
             /**
              * @brief The function intersect two polygons and store the intersection points.

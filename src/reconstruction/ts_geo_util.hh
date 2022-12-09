@@ -107,6 +107,8 @@ namespace tslam
         };
         void computeSegments()
         {
+            m_Segments.clear();
+            
             for (uint i = 0; i < m_Points.size(); i++)
             {
                 uint j = (i+1) % m_Points.size();
@@ -131,6 +133,12 @@ namespace tslam
          * @return tslam::TSPlane& it returns the plane on which the polygon lies
          */
         tslam::TSPlane& getLinkedPlane() {return m_LinkedPlane; };
+        /**
+         * @brief Get the Segments object
+         * 
+         * @return std::vector<TSSegment>& it returns the polygon's segments
+         */
+        std::vector<TSSegment>& getSegments() {return m_Segments; };
     
     private:
         std::vector<Eigen::Vector3d> m_Points;
