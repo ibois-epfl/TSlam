@@ -98,7 +98,7 @@ namespace tslam
              * @param out_point_count[in] the number of intersection points (min:3, max: 6)
              */
             void rPlane2AABBSegmentIntersect(const TSPlane &plane,
-                                            const Eigen::Vector3d &aabb_min, 
+                                            const Eigen::Vector3d &aabb_min,  // TODO: refactor snakecase to camel
                                             const Eigen::Vector3d &aabb_max,
                                             Eigen::Vector3d* out_points,
                                             unsigned &out_point_count);
@@ -137,7 +137,7 @@ namespace tslam
          * 
          */
         void rIntersectPolygons();
-            // TODO: we might add a variable tolerance for the intersection
+            // TODO: we might add a variable tolerance for the seg-seg intersection
             /**
              * @brief Check if an intersection exist between two segments
              * 
@@ -158,22 +158,13 @@ namespace tslam
              * 
              * @param poly1[out] the first polygon
              * @param poly2[out] the second polygon
-             * @param out_points[in] the intersection points
+             * @param outPts[out] the intersection points
              * @param out_point_count[in] the number of intersection points
              */
             void rPoly2PolyIntersect(const TSPolygon& poly1, 
                                      const TSPolygon& poly2,
-                                     Eigen::Vector3d* out_points, 
+                                     std::vector<Eigen::Vector3d>& outPts,
                                      unsigned& out_point_count);
-            /**
-             * @brief It checks if a point is inside a polygon.
-             * 
-             * @param point[out] the point to check
-             * @param poly[out] the polygon to check
-             * @return true if the point is inside the polygon
-             * @return false if the point is outside the polygon
-             */
-            bool rPointInPoly(const Eigen::Vector3d& point, const TSPolygon& poly);
 
         /// (e)
         /**

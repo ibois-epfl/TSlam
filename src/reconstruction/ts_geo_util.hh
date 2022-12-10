@@ -4,6 +4,13 @@
 #include "ts_compute.hh"
 
 #include <Eigen/Core>
+#include <tuple>
+#include <vector>
+#include <iostream>
+
+#include <iterator>  // FIXME: test if needed
+#include <algorithm>  // FIXME: test if needed
+
 
 namespace tslam
 {
@@ -55,6 +62,7 @@ namespace tslam
         };
 
     public: __always_inline
+        // FIXME: potential bug here for splitPolygon()?
         bool isPointOnSegment(Eigen::Vector3d point) const
         {
             Eigen::Vector3d v1 = point - this->P1;
@@ -159,6 +167,59 @@ namespace tslam
          */
         std::vector<TSSegment>& getSegments() {return m_Segments; };
     
+    public: __always_inline
+        std::tuple<bool, TSPolygon, TSPolygon> splitPolygon(TSSegment segment)
+        {
+            // check that the segments extremes w std::runtime_error("TSPolygon::splitPolygon: segment extremes not found on polygon");
+            
+            // FIXME: we need a check if segment's endpoitns are on the polygon
+            // TODO: this function can be replaced by a TSPolygon function
+            // bool areSplitSegEndsOnPolygon = false;
+            // for (auto s : m_Segments)
+            // {
+            //     if (s.isPointOnSegment(segment.P1) && s.isPointOnSegment(segment.P2))
+            //     {
+            //         areSplitSegEndsOnPolygon = true;
+            //         break;
+            //     }
+            // }
+            // if (!areSplitSegEndsOnPolygon)
+            //     return std::make_tuple(false, TSPolygon(), TSPolygon());
+
+            // split the polygon into two polygons with clockwise ordering
+            TSPolygon poly1, poly2;
+            std::vector<Eigen::Vector3d> points1, points2;
+            bool found = false;
+            for (uint i = 0; i < m_Points.size(); i++)
+            {
+                uint j = (i + 1) % m_Points.size();
+                if (segment == TSSegment(m_Points[i], m_Points[j]))
+                {
+                    found = true;
+                    continue;
+                }
+                if (!found)
+                    points1.push_back(m_Points[i]);
+                else
+                    points2.push_back(m_Points[i]);
+            }
+            points1.push_back(segment.P1);
+            points1.push_back(segment.P2);
+            points2.push_back(segment.P1);
+            points2.push_back(segment.P2);
+
+            // reorder the points
+            if (TSSegment(points1[0], points1[1]).getDirection().dot(points1[2] - points1[0]) < 0)
+                std::reverse(points1.begin(), points1.end());
+            if (TSSegment(points2[0], points2[1]).getDirection().dot(points2[2] - points2[0]) < 0)
+                std::reverse(points2.begin(), points2.end());
+
+
+
+            // create a tuple of the two polygons
+            return std::make_tuple(true, TSPolygon(points1, m_LinkedPlane), TSPolygon(points2, m_LinkedPlane));
+        };
+
     private:
         std::vector<Eigen::Vector3d> m_Points;
         Eigen::Vector3d m_Center;
