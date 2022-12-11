@@ -27,6 +27,5 @@ int main()
     // solve
     solverPtr->reconstruct();
 
-
     return 0;
 }

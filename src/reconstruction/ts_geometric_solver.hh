@@ -5,6 +5,8 @@
 
 #include <Eigen/Core>
 
+// FIXME: the averaging of the planes is not accurate enough
+
 namespace tslam
 {
     /**
@@ -41,6 +43,7 @@ namespace tslam
 
     private:  ///< reconstruction methods
         /// (a)
+        // FIXME: this function should be a timber.hh's function
         /**
          * @brief The function detect the tags creases of the timber piece. It builds a ktree of the tags and by
          * k-nearest neighbor search it finds the nearest tags to each tag. Then it computes the angle between

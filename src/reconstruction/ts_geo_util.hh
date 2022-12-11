@@ -10,7 +10,7 @@
 
 #include <iterator>  // FIXME: test if needed
 #include <algorithm>  // FIXME: test if needed
-
+#include <math.h>  // FIXME: test if needed
 
 namespace tslam
 {
@@ -79,6 +79,25 @@ namespace tslam
         Eigen::Vector3d getCenter() const { return (this->P1 + this->P2) / 2.0; };
         Eigen::Vector3d& Origin() { return this->P1; };
         Eigen::Vector3d& EndPoint() { return this->P2; };
+    
+    public: __always_inline
+        /**
+         * @brief It computes the angle between two segments in degrees on a given plane
+         * 
+         * @param otherü[out] the other segment
+         * @param plane the plane on which the angle is computed
+         * @return double the computed angle in degrees
+         */
+        double angleDegOnPlane(const TSSegment& other, const TSPlane& plane) const
+        {
+            Eigen::Vector3d v1 = this->getDirection();
+            Eigen::Vector3d v2 = other.getDirection();
+            double angle = acos(v1.dot(v2));
+            Eigen::Vector3d cross = v1.cross(v2);
+            if (cross.dot(plane.Normal) < 0)
+                angle = -angle;
+            return angle * 180.0 / M_PI;
+        };
 
     public:
         Eigen::Vector3d P1, P2;
@@ -170,55 +189,121 @@ namespace tslam
     public: __always_inline
         std::tuple<bool, TSPolygon, TSPolygon> splitPolygon(TSSegment segment)
         {
-            // check that the segments extremes w std::runtime_error("TSPolygon::splitPolygon: segment extremes not found on polygon");
-            
-            // FIXME: we need a check if segment's endpoitns are on the polygon
-            // TODO: this function can be replaced by a TSPolygon function
-            // bool areSplitSegEndsOnPolygon = false;
-            // for (auto s : m_Segments)
-            // {
-            //     if (s.isPointOnSegment(segment.P1) && s.isPointOnSegment(segment.P2))
-            //     {
-            //         areSplitSegEndsOnPolygon = true;
-            //         break;
-            //     }
-            // }
-            // if (!areSplitSegEndsOnPolygon)
-            //     return std::make_tuple(false, TSPolygon(), TSPolygon());
-
-            // split the polygon into two polygons with clockwise ordering
+            // output polygons
             TSPolygon poly1, poly2;
-            std::vector<Eigen::Vector3d> points1, points2;
-            bool found = false;
+
+            // get the segment's extremes
+            Eigen::Vector3d splitPtA = segment.Origin();
+            Eigen::Vector3d splitPtB = segment.EndPoint();
+
+            std::vector<Eigen::Vector3d> pointsA, pointsB;
+
+            pointsA.push_back(splitPtA);
+            pointsB.push_back(splitPtB);
+
+
+            // get the vertices on the right and left of the segment
             for (uint i = 0; i < m_Points.size(); i++)
             {
-                uint j = (i + 1) % m_Points.size();
-                if (segment == TSSegment(m_Points[i], m_Points[j]))
-                {
-                    found = true;
-                    continue;
-                }
-                if (!found)
-                    points1.push_back(m_Points[i]);
+                // // this is checking the case in which the segment is on top of a polygon vertex (?)
+                // if (m_Points[i] == splitPtA || m_Points[i] == splitPtB)
+                //     continue;
+
+                TSSegment testSeg = TSSegment(splitPtA, m_Points[i]);
+                double angle = segment.angleDegOnPlane(testSeg, m_LinkedPlane);
+                // double angle = segment.angleDeg(testSeg);
+                std::cout << "angle: " << angle << std::endl;
+
+                if (angle < 0)
+                    pointsA.push_back(m_Points[i]);
+                else if (angle > 0)
+                    pointsB.push_back(m_Points[i]);
                 else
-                    points2.push_back(m_Points[i]);
+                {
+                    // check if the point is on the segment
+                    if (segment.isPointOnSegment(m_Points[i]))
+                    {
+                        pointsA.push_back(m_Points[i]);
+                        pointsB.push_back(m_Points[i]);
+                    }
+                }
+
+                // // if the angle is less than 90 degrees, the point is on the right
+                // if (angle < 90.0)
+                // {
+                //     pointsA.push_back(m_Points[i]);
+                // }
+                // // if the angle is greater than 90 degrees, the point is on the left
+                // else if (angle > 90.0)
+                // {
+                //     pointsB.push_back(m_Points[i]);
+                // }
+                // // if the angle is 90 degrees, the point is on the segment
+                // else
+                // {
+                //     // check if the point is on the segment
+                //     if (segment.isPointOnSegment(m_Points[i]))
+                //     {
+                //         pointsA.push_back(m_Points[i]);
+                //         pointsB.push_back(m_Points[i]);
+                //     }
+                // }
+
+                
             }
-            points1.push_back(segment.P1);
-            points1.push_back(segment.P2);
-            points2.push_back(segment.P1);
-            points2.push_back(segment.P2);
 
-            // reorder the points
-            if (TSSegment(points1[0], points1[1]).getDirection().dot(points1[2] - points1[0]) < 0)
-                std::reverse(points1.begin(), points1.end());
-            if (TSSegment(points2[0], points2[1]).getDirection().dot(points2[2] - points2[0]) < 0)
-                std::reverse(points2.begin(), points2.end());
+            pointsA.push_back(splitPtB);
+            pointsB.push_back(splitPtA);
 
+            // print the number of points in both polygons
+            std::cout << "total segments: " << m_Segments.size() << std::endl;
+            std::cout << "gt: " << (m_Segments.size() + 4) << std::endl;
+
+            std::cout << "found: " << (pointsA.size() + pointsB.size()) << std::endl;
+
+            std::cout << "ptsCount1: " << pointsA.size() << std::endl;
+            std::cout << "ptsCount2: " << pointsB.size() << std::endl;
+            std::cout << "============================================" << std::endl;
+
+
+            // this->reorderClockwisePoints(pointsA, pointsA.size(), m_LinkedPlane);
+            // this->reorderClockwisePoints(pointsB, pointsB.size(), m_LinkedPlane);
 
 
             // create a tuple of the two polygons
-            return std::make_tuple(true, TSPolygon(points1, m_LinkedPlane), TSPolygon(points2, m_LinkedPlane));
+            return std::make_tuple(true, TSPolygon(pointsA, m_LinkedPlane), TSPolygon(pointsB, m_LinkedPlane));
         };
+
+        // TODO: TEST
+        void reorderClockwisePoints(std::vector<Eigen::Vector3d>& points,
+                                    unsigned point_count,
+                                    const TSPlane& plane)
+        {
+            Eigen::Vector3d center = Eigen::Vector3d(0.f, 0.f, 0.f);
+
+            // compute the center of the polygon
+            for  (unsigned i = 0; i < point_count; ++i)
+                center += points[i];
+            center /= (float)point_count;
+
+            // sort the points in a clockwise order also for the case of plane.A < 0.f
+            std::sort(points.begin(), points.end(), [plane, center](const Eigen::Vector3d& p1, const Eigen::Vector3d& p2)
+            {
+                Eigen::Vector3d v1 = p1 - center;
+                Eigen::Vector3d v2 = p2 - center;
+
+                float dot = v1.dot(plane.Normal);
+                float det = v1.x() * v2.y() - v1.y() * v2.x();
+
+                return (det < 0.f) ? true : (det > 0.f) ? false : (dot < 0.f);
+            });
+
+            // if plane.A < 0.f, the points are ordered in a clockwise order, otherwise they are ordered in a counter-clockwise order
+            if (plane.A < 0.f)
+                std::reverse(points.begin(), points.end());
+            
+
+        }
 
     private:
         std::vector<Eigen::Vector3d> m_Points;
