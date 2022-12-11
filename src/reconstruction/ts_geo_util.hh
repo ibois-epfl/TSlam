@@ -62,7 +62,6 @@ namespace tslam
         };
 
     public: __always_inline
-        // FIXME: potential bug here for splitPolygon()?
         bool isPointOnSegment(Eigen::Vector3d point) const
         {
             Eigen::Vector3d v1 = point - this->P1;
@@ -187,32 +186,16 @@ namespace tslam
         std::vector<TSSegment>& getSegments() {return m_Segments; };
     
     public: __always_inline
-        std::tuple<bool, TSPolygon, TSPolygon> splitPolygon(TSSegment segment)
+        std::tuple<TSPolygon, TSPolygon> splitPolygon(TSSegment segment)
         {
-            // output polygons
-            TSPolygon poly1, poly2;
-
-            // get the segment's extremes
-            Eigen::Vector3d splitPtA = segment.Origin();
-            Eigen::Vector3d splitPtB = segment.EndPoint();
-
             std::vector<Eigen::Vector3d> pointsA, pointsB;
 
-            pointsA.push_back(splitPtA);
-            pointsB.push_back(splitPtB);
-
-
-            // get the vertices on the right and left of the segment
+            pointsA.push_back(segment.Origin());
+            pointsB.push_back(segment.EndPoint());
             for (uint i = 0; i < m_Points.size(); i++)
             {
-                // // this is checking the case in which the segment is on top of a polygon vertex (?)
-                // if (m_Points[i] == splitPtA || m_Points[i] == splitPtB)
-                //     continue;
-
-                TSSegment testSeg = TSSegment(splitPtA, m_Points[i]);
+                TSSegment testSeg = TSSegment(segment.Origin(), m_Points[i]);
                 double angle = segment.angleDegOnPlane(testSeg, m_LinkedPlane);
-                // double angle = segment.angleDeg(testSeg);
-                std::cout << "angle: " << angle << std::endl;
 
                 if (angle < 0)
                     pointsA.push_back(m_Points[i]);
@@ -220,58 +203,20 @@ namespace tslam
                     pointsB.push_back(m_Points[i]);
                 else
                 {
-                    // check if the point is on the segment
                     if (segment.isPointOnSegment(m_Points[i]))
                     {
                         pointsA.push_back(m_Points[i]);
                         pointsB.push_back(m_Points[i]);
                     }
                 }
-
-                // // if the angle is less than 90 degrees, the point is on the right
-                // if (angle < 90.0)
-                // {
-                //     pointsA.push_back(m_Points[i]);
-                // }
-                // // if the angle is greater than 90 degrees, the point is on the left
-                // else if (angle > 90.0)
-                // {
-                //     pointsB.push_back(m_Points[i]);
-                // }
-                // // if the angle is 90 degrees, the point is on the segment
-                // else
-                // {
-                //     // check if the point is on the segment
-                //     if (segment.isPointOnSegment(m_Points[i]))
-                //     {
-                //         pointsA.push_back(m_Points[i]);
-                //         pointsB.push_back(m_Points[i]);
-                //     }
-                // }
-
-                
             }
+            pointsA.push_back(segment.EndPoint());
+            pointsB.push_back(segment.Origin());
 
-            pointsA.push_back(splitPtB);
-            pointsB.push_back(splitPtA);
+            this->reorderClockwisePoints(pointsA, pointsA.size(), m_LinkedPlane);
+            this->reorderClockwisePoints(pointsB, pointsB.size(), m_LinkedPlane);
 
-            // print the number of points in both polygons
-            std::cout << "total segments: " << m_Segments.size() << std::endl;
-            std::cout << "gt: " << (m_Segments.size() + 4) << std::endl;
-
-            std::cout << "found: " << (pointsA.size() + pointsB.size()) << std::endl;
-
-            std::cout << "ptsCount1: " << pointsA.size() << std::endl;
-            std::cout << "ptsCount2: " << pointsB.size() << std::endl;
-            std::cout << "============================================" << std::endl;
-
-
-            // this->reorderClockwisePoints(pointsA, pointsA.size(), m_LinkedPlane);
-            // this->reorderClockwisePoints(pointsB, pointsB.size(), m_LinkedPlane);
-
-
-            // create a tuple of the two polygons
-            return std::make_tuple(true, TSPolygon(pointsA, m_LinkedPlane), TSPolygon(pointsB, m_LinkedPlane));
+            return std::make_tuple(TSPolygon(pointsA, m_LinkedPlane), TSPolygon(pointsB, m_LinkedPlane));
         };
 
         // TODO: TEST
@@ -287,20 +232,22 @@ namespace tslam
             center /= (float)point_count;
 
             // sort the points in a clockwise order also for the case of plane.A < 0.f
-            std::sort(points.begin(), points.end(), [plane, center](const Eigen::Vector3d& p1, const Eigen::Vector3d& p2)
-            {
-                Eigen::Vector3d v1 = p1 - center;
-                Eigen::Vector3d v2 = p2 - center;
+            // (the plane is not normalized)
+            std::sort(points.begin(), points.end(),
+                      [&](const Eigen::Vector3d& a, const Eigen::Vector3d& b)
+                      {
+                          Eigen::Vector3d a_center = a - center;
+                          Eigen::Vector3d b_center = b - center;
+                          float angle_a = std::atan2(a_center(1) * plane.A - a_center(0) * plane.B,
+                                                     a_center(0) * plane.A + a_center(1) * plane.B);
+                          float angle_b = std::atan2(b_center(1) * plane.A - b_center(0) * plane.B,
+                                                     b_center(0) * plane.A + b_center(1) * plane.B);
+                          return angle_a < angle_b;
+                      });
+        // };
 
-                float dot = v1.dot(plane.Normal);
-                float det = v1.x() * v2.y() - v1.y() * v2.x();
-
-                return (det < 0.f) ? true : (det > 0.f) ? false : (dot < 0.f);
-            });
-
-            // if plane.A < 0.f, the points are ordered in a clockwise order, otherwise they are ordered in a counter-clockwise order
-            if (plane.A < 0.f)
-                std::reverse(points.begin(), points.end());
+                
+            
             
 
         }

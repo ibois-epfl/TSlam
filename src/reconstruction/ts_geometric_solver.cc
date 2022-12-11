@@ -38,6 +38,8 @@ namespace tslam
         std::vector<Eigen::Vector3d> tempIntersectPts;
         Eigen::Vector3d* intersectPt = new Eigen::Vector3d();
 
+        int KK = 0;  // TODO: debug erase
+
         for (auto& polyA : this->m_MergedPolygons)
         {
             for (auto& polyB : this->m_MergedPolygons)
@@ -72,19 +74,20 @@ namespace tslam
                     // std::cout << "Length of tempIntersectPts: " << tempIntersectPts.size() << std::endl;
                     if (tempIntersectPts.size() == 2)
                     {
-                        // the intersection points are always 2 per polygon
+                        // KK++;
+                        // if (KK == 10) // TODO: debug erase // not working indexes: 5
+                        // {
+                            // the intersection points are always 2 per polygon
 
-                        TSSegment segSplit(tempIntersectPts[0], tempIntersectPts[1]);
+                            TSSegment segSplit(tempIntersectPts[0], tempIntersectPts[1]);
 
-                        std::tuple<bool, TSPolygon, TSPolygon> splitPolys = polyA.splitPolygon(segSplit);
-                        if (std::get<0>(splitPolys))
-                        {
-                            std::cout << "Splitting polygon" << std::endl;
-                            splitPolygonsA.push_back(std::get<1>(splitPolys));
-                            splitPolygonsB.push_back(std::get<2>(splitPolys));
+                            std::tuple<TSPolygon, TSPolygon> splitPolys = polyA.splitPolygon(segSplit);
+                            splitPolygonsA.push_back(std::get<0>(splitPolys));
+                            splitPolygonsB.push_back(std::get<1>(splitPolys));
 
-                            goto endLoop;  // TODO: debug erase
-                        }
+                            
+                        //     goto endLoop;  // TODO: debug erase
+                        // }
 
                     }
                     
@@ -99,7 +102,7 @@ namespace tslam
                 }
             }
         }
-        endLoop:  // TODO: debug erase
+        // endLoop:  // TODO: debug erase
         delete intersectPt;
 
         
@@ -250,7 +253,7 @@ namespace tslam
             segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
             segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
             segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-            segLineset->PaintUniformColor(Eigen::Vector3d(0., 1., 1.));
+            segLineset->PaintUniformColor(Eigen::Vector3d(1., 0., 1.));
             vis->AddGeometry(segLineset);
         }
     }
@@ -266,7 +269,7 @@ namespace tslam
             segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
             segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
             segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-            segLineset->PaintUniformColor(Eigen::Vector3d(1., 0., 1.));
+            segLineset->PaintUniformColor(Eigen::Vector3d(0., 1., 1.));
             vis->AddGeometry(segLineset);
         }
     }
