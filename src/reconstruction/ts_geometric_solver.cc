@@ -90,8 +90,6 @@ namespace tslam
                         // }
 
                     }
-                    
-
 
 
                     // clear out the intersect points vector
@@ -334,16 +332,17 @@ namespace tslam
                                               this->m_Timber->getAABB().max_bound_,
                                               outPtsPtr,
                                               outPtsCount);
-            this->rSortIntersectionPoints(outPtsPtr, outPtsCount, t.getPlane());
-
-            // c. save the result into a polygon
+            // b. save the result into a polygon
             planeIntersections->reserve(outPtsCount);
             planeIntersections->clear();
             for (unsigned int i = 0; i < outPtsCount; i++)
             {
                 planeIntersections->push_back(outPtsPtr[i]);
             }
-            this->m_PlnAABBPolygons.push_back(TSPolygon(*planeIntersections, t.getPlane()));
+
+            TSPolygon tempPoly = TSPolygon(*planeIntersections, t.getPlane());
+            tempPoly.reorderClorckwisePoints();
+            this->m_PlnAABBPolygons.push_back(tempPoly);
         }
         delete outPtsPtr;
         delete planeIntersections;
@@ -429,59 +428,6 @@ namespace tslam
         if (plane.A * orig.x() + plane.B * orig.y() + plane.C * orig.z() + plane.D == 0.f)
             out_points[out_point_count++] = orig;
     }
-    void TSGeometricSolver::rSortIntersectionPoints(Eigen::Vector3d* points,
-                                                    unsigned point_count,
-                                                    const TSPlane& plane)
-    {
-        Eigen::Vector3d center = Eigen::Vector3d(0.f, 0.f, 0.f);
-
-        // compute the center of the polygon
-        for  (unsigned i = 0; i < point_count; ++i)
-            center += points[i];
-        center /= (float)point_count;
-
-        // sort the points in a clockwise order also for the case of plane.A < 0.f
-        std::sort(points, points + point_count, [center, plane](const Eigen::Vector3d& a, const Eigen::Vector3d& b)
-        {
-            // compute the angle between the center and the two points
-            float angleA = atan2(a.y() - center.y(), a.x() - center.x());
-            float angleB = atan2(b.y() - center.y(), b.x() - center.x());
-
-            // sort the points by the angle
-            if (angleA < angleB)
-                return true;
-            else if (angleA > angleB)
-                return false;
-            else
-            {
-                // if the angle is the same, sort the points by the distance
-                float distA = (a - center).norm();
-                float distB = (b - center).norm();
-                return distA < distB;
-            }
-        });
-
-        // compute the normal of the polygon
-        Eigen::Vector3d normal = Eigen::Vector3d(plane.A, plane.B, plane.C);
-        if (normal.dot(center) < 0.f)
-            normal *= -1.f;
-
-        // check if the points are in the right order
-        Eigen::Vector3d ab = points[1] - points[0];
-        Eigen::Vector3d bc = points[2] - points[1];
-        Eigen::Vector3d ca = points[0] - points[2];
-        Eigen::Vector3d n = ab.cross(bc);
-        if (n.dot(normal) < 0.f)
-        {
-            // reverse the order of the points
-            for (unsigned i = 0; i < point_count / 2; ++i)
-            {
-                Eigen::Vector3d tmp = points[i];
-                points[i] = points[point_count - i - 1];
-                points[point_count - i - 1] = tmp;
-            }
-        }
-    }
 
     void TSGeometricSolver::rIntersectMeanPolygonPlnAABB()
     {
@@ -497,16 +443,15 @@ namespace tslam
                                               this->m_Timber->getAABB().max_bound_,
                                               outPtsPtr2,
                                               outPtsCount2);
-            this->rSortIntersectionPoints(outPtsPtr2, outPtsCount2, mpoly.getLinkedPlane());
 
             // b. store the new itnersection points into the polygon
             for (unsigned int i = 0; i < outPtsCount2; i++)
             {
                 mpoly.addPoint(outPtsPtr2[i]);
             }
+            mpoly.reorderClorckwisePoints();
         }
         delete outPtsPtr2;
-
     }
     void TSGeometricSolver::rMeanPolygonPlanes()
     {

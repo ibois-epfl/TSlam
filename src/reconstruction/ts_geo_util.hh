@@ -213,14 +213,13 @@ namespace tslam
             pointsA.push_back(segment.EndPoint());
             pointsB.push_back(segment.Origin());
 
-            this->reorderClockwisePoints(pointsA, pointsA.size(), m_LinkedPlane);
-            this->reorderClockwisePoints(pointsB, pointsB.size(), m_LinkedPlane);
+            TSPolygon::reorderClockwisePoints(pointsA, pointsA.size(), m_LinkedPlane);
+            TSPolygon::reorderClockwisePoints(pointsB, pointsB.size(), m_LinkedPlane);
 
             return std::make_tuple(TSPolygon(pointsA, m_LinkedPlane), TSPolygon(pointsB, m_LinkedPlane));
         };
 
-        // TODO: TEST
-        void reorderClockwisePoints(std::vector<Eigen::Vector3d>& points,
+        static void reorderClockwisePoints(std::vector<Eigen::Vector3d>& points,
                                     unsigned point_count,
                                     const TSPlane& plane)
         {
@@ -244,12 +243,12 @@ namespace tslam
                                                      b_center(0) * plane.A + b_center(1) * plane.B);
                           return angle_a < angle_b;
                       });
-        // };
+        }
 
-                
-            
-            
-
+        void reorderClorckwisePoints()
+        {
+            TSPolygon::reorderClockwisePoints(m_Points, m_Points.size(), m_LinkedPlane);
+            this->compute();
         }
 
     private:

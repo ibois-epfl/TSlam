@@ -105,18 +105,6 @@ namespace tslam
                                             const Eigen::Vector3d &aabb_max,
                                             Eigen::Vector3d* out_points,
                                             unsigned &out_point_count);
-            /** 
-             * @brief It reorder the intersection points in a clockwise order and store them in a variable member
-             * 
-             * @see the function is modified from: https://asawicki.info/news_1428_finding_polygon_of_plane-aabb_intersection
-             * 
-             * @param points[in] the intersection points
-             * @param point_count[in] the number of intersection points
-             * @param plane[out] the plane to check the intersection with
-             */
-            void rSortIntersectionPoints(Eigen::Vector3d* points, 
-                                        unsigned point_count,
-                                        const TSPlane& plane);
         
         /// (c)
         /**
