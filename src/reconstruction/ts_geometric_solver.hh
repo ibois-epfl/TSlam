@@ -141,21 +141,22 @@ namespace tslam
              * @return true if there is intersection
              * @return false if there is no intersection
              */
-            bool rSegment2SegmentIntersect(TSSegment& seg1, 
-                                           TSSegment& seg2, 
+            bool rSegment2SegmentIntersect(TSSegment& segA, 
+                                           TSSegment& segB, 
                                            Eigen::Vector3d* intersectPt);
             /**
              * @brief The function intersect two polygons and store the intersection points.
              * 
-             * @param poly1[out] the first polygon
-             * @param poly2[out] the second polygon
+             * @param polyA[in] the first polygon
+             * @param polyB[in] the second polygon
              * @param outPts[out] the intersection points
-             * @param out_point_count[in] the number of intersection points
+             * @param outPtsCount[out] the number of intersection points
+             * @param outSplitPolygons[out] the two new polygons after the intersection
              */
-            void rPoly2PolyIntersect(const TSPolygon& poly1, 
-                                     const TSPolygon& poly2,
-                                     std::vector<Eigen::Vector3d>& outPts,
-                                     unsigned& out_point_count);
+            bool rPolygon2PolygonIntersect(TSPolygon& polyA, 
+                                           TSPolygon& polyB,
+                                           std::vector<Eigen::Vector3d>& outPts,
+                                           std::tuple<TSPolygon, TSPolygon>& outSplitPolygons);
 
         /// (e)
         /**

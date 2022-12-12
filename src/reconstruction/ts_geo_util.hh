@@ -36,6 +36,19 @@ namespace tslam
             return (this->Normal == other.Normal && this->Center == other.Center);
         };
 
+    public: __always_inline
+        /**
+         * @brief Check if the point is on the plane
+         * 
+         * @param point the point to test
+         * @return true if the point is on the plane
+         * @return false if the point is not on the plane
+         */
+        bool isPointOnPlane(Eigen::Vector3d point)
+        {
+            return (this->Normal.dot(point - this->Center) < 1e-5);
+        };
+
     public:
         Eigen::Vector3d Normal;
         Eigen::Vector3d Center;
@@ -186,8 +199,41 @@ namespace tslam
         std::vector<TSSegment>& getSegments() {return m_Segments; };
     
     public: __always_inline
+        /**
+         * @brief Check if a point is on the polygon first by checking if it is on the plane,
+         * then by checking if it is on one of the polygon's segments.
+         * 
+         * @param point the point to check
+         * @return true if the point is on the polygon
+         * @return false if the point is not on the polygon
+         */
+        bool isPointOnPolygon(Eigen::Vector3d point)
+        {
+            if (!m_LinkedPlane.isPointOnPlane(point))
+                return false;
+
+            for (auto s : m_Segments)
+                if (s.isPointOnSegment(point))
+                    return true;
+            return false;
+        };
+
+    public: __always_inline
+        /**
+         * @brief It splits the polygon in two polygons given a segment with extremities on the polygon
+         * 
+         * @param segment the splitting segment
+         * @return std::tuple<TSPolygon, TSPolygon> the two splitted polygons
+         */
         std::tuple<TSPolygon, TSPolygon> splitPolygon(TSSegment segment)
         {
+            // check if the segment extremities are on the polygon
+            // TODO: in this scenario we need to build the splitting functions for segments not on the polygon
+            if (!this->isPointOnPolygon(segment.Origin()) || !this->isPointOnPolygon(segment.EndPoint()))
+                return std::make_tuple(TSPolygon(), TSPolygon());
+
+
+
             std::vector<Eigen::Vector3d> pointsA, pointsB;
 
             pointsA.push_back(segment.Origin());
@@ -219,6 +265,13 @@ namespace tslam
             return std::make_tuple(TSPolygon(pointsA, m_LinkedPlane), TSPolygon(pointsB, m_LinkedPlane));
         };
 
+        /**
+         * @brief Reorder the points in a clockwise order
+         * 
+         * @param points the points to reorder
+         * @param point_count the number of points
+         * @param plane the plane on which the points lie
+         */
         static void reorderClockwisePoints(std::vector<Eigen::Vector3d>& points,
                                     unsigned point_count,
                                     const TSPlane& plane)
@@ -244,7 +297,11 @@ namespace tslam
                           return angle_a < angle_b;
                       });
         }
-
+        /**
+         * @brief Reorder the polygon vertices in a clockwise order
+         * 
+         * @overload
+         */
         void reorderClorckwisePoints()
         {
             TSPolygon::reorderClockwisePoints(m_Points, m_Points.size(), m_LinkedPlane);
@@ -252,7 +309,9 @@ namespace tslam
         }
 
     private:
+        /// The polygon's vertices
         std::vector<Eigen::Vector3d> m_Points;
+        /// The polygon's center
         Eigen::Vector3d m_Center;
         /// The plane on which the polygon lies
         tslam::TSPlane m_LinkedPlane;
