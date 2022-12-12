@@ -66,6 +66,7 @@ namespace tslam
          * 
          */
         void rIntersectTagPlnAABB();
+            // TODO: this function should be a plane member function
             /** 
              * @brief It checks if there is intersection between a ray and a plane following the:
              * Plane: ax+by+cz=d
@@ -89,6 +90,7 @@ namespace tslam
                                         const TSPlane &Plane,
                                         float *OutT,
                                         float *OutVD);
+            // TODO: this function should be a plane member function
             /** 
              * @brief It computes the intersection points between a plane and an AABB
              * 
@@ -113,6 +115,7 @@ namespace tslam
          * 
          */
         void rIntersectMeanPolygonPlnAABB();
+            // TODO: this function should be a polygon member function
             /**
              * @brief The function merge polygons/planes that are similar in orientation and close to 
              * each  other. It builds a ktree of the polygons centers and group the "close" polygons.
@@ -129,6 +132,7 @@ namespace tslam
          */
         void rIntersectPolygons();
             // TODO: we might add a variable tolerance for the seg-seg intersection
+            // TODO: this function should be a polygon member function
             /**
              * @brief Check if an intersection exist between two segments
              * 
@@ -149,13 +153,12 @@ namespace tslam
              * 
              * @param polyA[in] the first polygon
              * @param polyB[in] the second polygon
-             * @param outPts[out] the intersection points
              * @param outPtsCount[out] the number of intersection points
              * @param outSplitPolygons[out] the two new polygons after the intersection
              */
+            // TODO: this function should be a polygon member function
             bool rPolygon2PolygonIntersect(TSPolygon& polyA, 
                                            TSPolygon& polyB,
-                                           std::vector<Eigen::Vector3d>& outPts,
                                            std::tuple<TSPolygon, TSPolygon>& outSplitPolygons);
 
         /// (e)
