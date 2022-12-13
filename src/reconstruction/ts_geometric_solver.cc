@@ -3,6 +3,10 @@
 #include <stdexcept>
 #include <algorithm>
 #include <math.h>
+#include <map>
+#include <numeric>
+#include <algorithm>
+#include <iterator>
 
 
 namespace tslam
@@ -37,6 +41,8 @@ namespace tslam
 
         std::vector<Eigen::Vector3d> tempIntersectPts;
         Eigen::Vector3d* intersectPt = new Eigen::Vector3d();
+
+        std::vector<TSSegment> splitSegs;  // DEBUG
 
         int KK = 0;  // TODO: debug erase
 
@@ -88,10 +94,11 @@ namespace tslam
                             // the intersection points are always 2 per polygon
 
                             TSSegment segSplit(tempIntersectPts[0], tempIntersectPts[1]);
+                            splitSegs.push_back(segSplit);  // DEBUG
 
-                            std::tuple<TSPolygon, TSPolygon> splitPolys = polyA.splitPolygon(segSplit);
-                            splitPolygonsA.push_back(std::get<0>(splitPolys));
-                            splitPolygonsB.push_back(std::get<1>(splitPolys));
+                            // std::tuple<TSPolygon, TSPolygon> splitPolys = polyA.splitPolygon(segSplit);
+                            // splitPolygonsA.push_back(std::get<0>(splitPolys));
+                            // splitPolygonsB.push_back(std::get<1>(splitPolys));
 
                         //     goto endLoop;  // TODO: debug erase
                         // }
@@ -110,9 +117,161 @@ namespace tslam
         // endLoop:  // TODO: debug erase
         delete intersectPt;
 
-        
+        // // =============================================================================
 
-        std::cout << "Intersect points: " << pntCldIntersect->points_.size() << std::endl;
+        // std::map<uint, TSPolygon> splitPolyMap;
+
+        // // set the values of the map from this->m_MergedPolygons
+        // for (uint i = 0; i < this->m_MergedPolygons.size(); i++)
+        // {
+        //     splitPolyMap[i] = this->m_MergedPolygons[i];
+        // }
+
+
+
+
+
+        std::vector<TSPolygon> splitPolygons = this->m_MergedPolygons;
+        uint NMergedPolygons = this->m_MergedPolygons.size();
+        uint NIntersectSegments = splitSegs.size();
+        uint maxNSplitPolygons = NIntersectSegments * 2 * NMergedPolygons;
+        std::cout << "[DEBUG] max number of split polygons: " << maxNSplitPolygons << std::endl;
+
+        std::vector<bool> flagsErase;
+
+
+        std::vector<TSPolygon> splitPolygonsReserve;
+
+
+        bool isSplittable = true;
+        bool isSplit = false;
+
+
+        std::tuple<TSPolygon, TSPolygon> splitPolys;
+
+
+        while (isSplittable)
+        {
+
+            for (auto& sPoly : splitPolygons)
+            {
+                std::cout << "==============================================" << std::endl;
+                std::cout << "split polygon size: " << splitPolygons.size() << std::endl;
+
+                uint Nsplits = 0;
+
+                for (auto& seg : splitSegs)
+                {
+                    
+                    isSplit = sPoly.splitPolygon(seg, splitPolys);
+                    //  std::cout << "[DEBUG] isSplit: " << isSplit << std::endl;
+
+                    if (isSplit)
+                    {
+                        // // check if the split polygons are already in the splitPolygonsReserve
+                        // bool isAlreadyIn = false;
+                        // for (auto& sPolyT : splitPolygons)
+                        // {
+                        //     if (sPolyT == std::get<0>(splitPolys) || sPolyT == std::get<1>(splitPolys))
+                        //     {
+                        //         isAlreadyIn = true;
+                        //         std::cout << "[DEBUG] isAlreadyIn!" << std::endl;
+                        //         std::cout << "[DEBUG] polyreserve size: " << splitPolygonsReserve.size() << std::endl;
+                        //     }
+                        // }
+
+
+                        // if (!isAlreadyIn)
+                        // {
+                        //     std::cout << "PPPPOOOIP" << std::endl;
+                        //     splitPolygonsReserve.emplace_back(std::get<0>(splitPolys));
+                        //     splitPolygonsReserve.emplace_back(std::get<1>(splitPolys));
+                        // }
+
+                        Nsplits++;
+
+                        splitPolygonsReserve.emplace_back(std::get<0>(splitPolys));
+                        splitPolygonsReserve.emplace_back(std::get<1>(splitPolys));
+                    }
+                }
+
+                // mark the polygon as split, hence to be erased from the next cycle
+                if (Nsplits > 0)
+                {
+                    flagsErase.push_back(true);
+                }
+                else
+                {
+                    flagsErase.push_back(false);
+                }
+            }
+
+            // print content of flagsErase
+            std::cout << "[DEBUG] flagsErase: ";
+            for (int k = 0; k < flagsErase.size(); k++)
+            {
+                std::cout << flagsErase[k] << " ";
+            }
+
+            if ( std::adjacent_find( flagsErase.begin(), flagsErase.end(), std::not_equal_to<>() ) == flagsErase.end() )
+            {
+                std::cout << "All elements are equal each other" << std::endl;
+                std::cout << "[DEBUG] hit exit condition!" << std::endl;
+                std::cout << "[DEBUG] exit number of split poly: " << splitPolygons.size() << std::endl;
+
+                isSplittable = false;
+                // break;
+            }
+
+            // // EXIT CONDITION: stops when there is no more split == when the vector of bool split flags is all false
+            // if (std::all_of(flagsErase.begin(), flagsErase.end(), [](bool v) { return v == false; }))
+            // {
+            //     std::cout << "[DEBUG] hit exit condition!" << std::endl;
+            //     std::cout << "[DEBUG] exit number of split poly: " << splitPolygons.size() << std::endl;
+
+            //     isSplittable = false;
+            //     break;
+            // }
+
+
+
+            // erase the polygons that have been split
+            for (int j = 0; j < flagsErase.size(); j++)
+            {
+                if (flagsErase[j])
+                {
+                    splitPolygons.erase(splitPolygons.begin() + j);
+                }
+            }
+            flagsErase.clear();
+
+
+            // add the new split polgons to the vector
+            for (auto& sPoly : splitPolygonsReserve)
+            {
+                splitPolygons.push_back(sPoly);
+            }
+
+            // // EXIT CONDITION: if the number of split polygons is greater than the max number of split polygons
+            // if (splitPolygons.size() > maxNSplitPolygons)
+            // {
+            //     std::cout << "[DEBUG] hit exit condition!" << std::endl;
+            //     std::cout << "[DEBUG] exit number of split poly: " << splitPolygons.size() << std::endl;
+
+            //     isSplittable = false;
+            //     break;
+            // }
+
+
+            std::cout << "[DEBUG] SplitPolygon size --inloop--: " << splitPolygons.size() << std::endl;
+
+
+            // check if there no more polygons to split
+
+        }
+
+        std::cout << "[DEBUG] Splitting segments number: " << splitSegs.size() << std::endl;
+        std::cout << "[DEBUG] Split Polygons number: " << splitPolygons.size() << std::endl;
 
 
         // // =============================================================================
@@ -245,24 +404,8 @@ namespace tslam
     // segLineset->PaintUniformColor(Eigen::Vector3d(1, 1, 0));
     // vis->AddGeometry(segLineset);
 
-    // show split polygons
-    for (auto& pg : splitPolygonsA)
-    {
-        std::vector<Eigen::Vector3d> pts = pg.getPoints();
-        for (int i = 0; i < pts.size(); i++)
-        {
-            std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
-            std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-            segLineset->points_.push_back(segm->Origin());
-            segLineset->points_.push_back(segm->EndPoint());
-            segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-            segLineset->PaintUniformColor(Eigen::Vector3d(1., 0., 1.));
-            vis->AddGeometry(segLineset);
-        }
-    }
-    // for (auto& pg : splitPolygonsB)
+    // // show split polygons
+    // for (auto& pg : splitPolygons)
     // {
     //     std::vector<Eigen::Vector3d> pts = pg.getPoints();
     //     for (int i = 0; i < pts.size(); i++)
@@ -278,6 +421,21 @@ namespace tslam
     //         vis->AddGeometry(segLineset);
     //     }
     // }
+
+    // show just one polygon
+    std::vector<Eigen::Vector3d> pts = splitPolygons[2].getPoints();
+    for (int i = 0; i < pts.size(); i++)
+    {
+        std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
+        std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+        segLineset->points_.push_back(segm->Origin());
+        segLineset->points_.push_back(segm->EndPoint());
+        segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+        segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+        segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+        segLineset->PaintUniformColor(Eigen::Vector3d(0., 1., 1.));
+        vis->AddGeometry(segLineset);
+    }
 
 
 
@@ -554,78 +712,78 @@ namespace tslam
         }
         else return false;
     }
-    bool TSGeometricSolver::rPolygon2PolygonIntersect(TSPolygon& polyA, 
-                                                      TSPolygon& polyB,
-                                                      std::tuple<TSPolygon, TSPolygon>& outSplitPolygons)
-    {
-        if (polyA == polyB) return false;
+//     bool TSGeometricSolver::rPolygon2PolygonIntersect(TSPolygon& polyA, 
+//                                                       TSPolygon& polyB,
+//                                                       std::tuple<TSPolygon, TSPolygon>& outSplitPolygons)
+//     {
+//         if (polyA == polyB) return false;
 
-        TSSegment segSplit;
-        uint idx = 0;
-        Eigen::Vector3d* intersectPt = new Eigen::Vector3d();
-        bool isIntersect = false;
-        std::vector<Eigen::Vector3d> intersectPts;
+//         TSSegment segSplit;
+//         uint idx = 0;
+//         Eigen::Vector3d* intersectPt = new Eigen::Vector3d();
+//         bool isIntersect = false;
+//         std::vector<Eigen::Vector3d> intersectPts;
 
-        for (int i = 0; i < polyA.size(); i++)
-        {
-            for (int j = 0; j < polyB.size(); j++)
-            {
-                isIntersect = false;
-                if (polyA[i] == polyB[j]) continue;
+//         for (int i = 0; i < polyA.size(); i++)
+//         {
+//             for (int j = 0; j < polyB.size(); j++)
+//             {
+//                 isIntersect = false;
+//                 if (polyA[i] == polyB[j]) continue;
 
-                isIntersect = this->rSegment2SegmentIntersect(polyA[i], polyB[j], intersectPt);
+//                 isIntersect = this->rSegment2SegmentIntersect(polyA[i], polyB[j], intersectPt);
 
-                if (isIntersect)
-                {
-                    intersectPts.push_back(*intersectPt);
-                }
+//                 if (isIntersect)
+//                 {
+//                     intersectPts.push_back(*intersectPt);
+//                 }
 
-                // if (isIntersect && idx <= 2)
-                // {
-                //     segSplit.P1 = polyA[i].Origin();
-                //     segSplit.P2 = polyA[i].EndPoint();
-                //     idx++;
-                // }
-                // else if (isIntersect && idx > 2)
-                // {
-                //     std::cout << "[ERROR]: degenerated intersection: more than 2 points." << std::endl;
-                //     return false;
-                // }
-            }
-        }
+//                 // if (isIntersect && idx <= 2)
+//                 // {
+//                 //     segSplit.P1 = polyA[i].Origin();
+//                 //     segSplit.P2 = polyA[i].EndPoint();
+//                 //     idx++;
+//                 // }
+//                 // else if (isIntersect && idx > 2)
+//                 // {
+//                 //     std::cout << "[ERROR]: degenerated intersection: more than 2 points." << std::endl;
+//                 //     return false;
+//                 // }
+//             }
+//         }
 
-        segSplit = TSSegment(intersectPts[0], intersectPts[1]);
+//         segSplit = TSSegment(intersectPts[0], intersectPts[1]);
 
-        // TSSegment segSplit(intersectPts[0], intersectPts[1]);
+//         // TSSegment segSplit(intersectPts[0], intersectPts[1]);
 
-        outSplitPolygons = polyA.splitPolygon(segSplit);
-
-// //             std::tuple<TSPolygon, TSPolygon> splitPolys = polyA.splitPolygon(segSplit);
-
-
-
-//         // polyA.reorderClockwisePoints();
 //         outSplitPolygons = polyA.splitPolygon(segSplit);
 
-        delete intersectPt;
+// // //             std::tuple<TSPolygon, TSPolygon> splitPolys = polyA.splitPolygon(segSplit);
 
-        return true;
 
-        // // =============================================================================
+
+// //         // polyA.reorderClockwisePoints();
+// //         outSplitPolygons = polyA.splitPolygon(segSplit);
+
+//         delete intersectPt;
+
+//         return true;
+
+//         // // =============================================================================
         
-        // if (tempIntersectPts.size() != 2) return false;
+//         // if (tempIntersectPts.size() != 2) return false;
          
-        // TSSegment segSplit(tempIntersectPts[0], tempIntersectPts[1]);
-        // outSplitPolygons = polyA.splitPolygon(segSplit);
+//         // TSSegment segSplit(tempIntersectPts[0], tempIntersectPts[1]);
+//         // outSplitPolygons = polyA.splitPolygon(segSplit);
 
-        // clear out the intersect points vector
-        // tempIntersectPts.clear();
+//         // clear out the intersect points vector
+//         // tempIntersectPts.clear();
 
-        // // =============================================================================
+//         // // =============================================================================
 
         
-        return true;
-    }
+//         return true;
+//     }
 
     bool TSGeometricSolver::check4PlaneTags()
     {

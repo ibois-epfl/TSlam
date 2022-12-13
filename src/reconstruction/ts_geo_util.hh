@@ -222,15 +222,19 @@ namespace tslam
         /**
          * @brief It splits the polygon in two polygons given a segment with extremities on the polygon
          * 
-         * @param segment the splitting segment
-         * @return std::tuple<TSPolygon, TSPolygon> the two splitted polygons
+         * @param segment[in] the splitting segment
+         * @param splitPoly[out] the two splitted polygons
+         * @return true if the polygon has been splitted
+         * @return false if the polygon has not been splitted or there is no intersection between the segment and the polygon
          */
-        std::tuple<TSPolygon, TSPolygon> splitPolygon(TSSegment segment)
+        bool splitPolygon(TSSegment& segment,
+                          std::tuple<TSPolygon, TSPolygon>& splitPoly)
         {
-            // check if the segment extremities are on the polygon
+            // check if the segment extremities are not on the polygon
             // TODO: in this scenario we need to build the splitting functions for segments not on the polygon
             if (!this->isPointOnPolygon(segment.Origin()) || !this->isPointOnPolygon(segment.EndPoint()))
-                return std::make_tuple(TSPolygon(), TSPolygon());
+                // this is the scenario where the segment's end points are not on the polygon contour
+                return false;
 
 
 
@@ -265,7 +269,10 @@ namespace tslam
             polyA.reorderClockwisePoints();
             polyB.reorderClockwisePoints();
 
-            return std::make_tuple(polyA, polyB);
+            std::get<0>(splitPoly) = polyA;
+            std::get<1>(splitPoly) = polyB;
+
+            return true;
         };
 
         /// Reorder the polygon vertices in a clockwise order
