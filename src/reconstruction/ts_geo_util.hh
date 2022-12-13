@@ -75,15 +75,21 @@ namespace tslam
         };
 
     public: __always_inline
+        // FIXME: not working (?)
         bool isPointOnSegment(Eigen::Vector3d point) const
         {
+            // test if the point is on the segment
             Eigen::Vector3d v1 = point - this->P1;
-            Eigen::Vector3d v2 = point - this->P2;
-            Eigen::Vector3d v3 = this->P2 - this->P1;
-            double cross = v1.cross(v2).norm();
+            Eigen::Vector3d v2 = this->P2 - this->P1;
             double dot = v1.dot(v2);
-            double l = v3.norm();
-            return (cross < 1e-5 && dot < 1e-5 && l > 1e-5);
+            double det = v1(0) * v2(1) - v1(1) * v2(0);
+            if (abs(det) < 1e-5)
+                return false;
+            double t1 = (v2(1) * v1(0) - v2(0) * v1(1)) / det;
+            double t2 = (v1(0) * v2(1) - v1(1) * v2(0)) / det;
+            if (t1 < 0 || t1 > 1 || t2 < 0 || t2 > 1)
+                return false;
+            return true;
         };
     
     public: __always_inline
@@ -109,6 +115,33 @@ namespace tslam
             if (cross.dot(plane.Normal) < 0)
                 angle = -angle;
             return angle * 180.0 / M_PI;
+        };
+
+        // FIXME: not working
+        // TODO: to be tested!
+        /**
+         * @brief It intersects two segments and returns the intersection point
+         * 
+         * @param other[in] the other segment
+         * @param intersection[out] the intersection point
+         * @return true if the segments intersect
+         * @return false if there is no intersection
+         */
+        bool intersect(const TSSegment& other, Eigen::Vector3d& intersection) const
+        {
+            Eigen::Vector3d v1 = this->P2 - this->P1;
+            Eigen::Vector3d v2 = other.P2 - other.P1;
+            Eigen::Vector3d v3 = other.P1 - this->P1;
+            double dot = v1.dot(v2);
+            double det = v1(0) * v2(1) - v1(1) * v2(0);
+            if (abs(det) < 1e-5)
+                return false;
+            double t1 = (v2(1) * v3(0) - v2(0) * v3(1)) / det;
+            double t2 = (v1(0) * v3(1) - v1(1) * v3(0)) / det;
+            if (t1 < 0 || t1 > 1 || t2 < 0 || t2 > 1)
+                return false;
+            intersection = this->P1 + t1 * v1;
+            return true;
         };
 
     public:
@@ -230,12 +263,78 @@ namespace tslam
         bool splitPolygon(TSSegment& segment,
                           std::tuple<TSPolygon, TSPolygon>& splitPoly)
         {
-            // check if the segment extremities are not on the polygon
-            // TODO: in this scenario we need to build the splitting functions for segments not on the polygon
-            if (!this->isPointOnPolygon(segment.Origin()) || !this->isPointOnPolygon(segment.EndPoint()))
-                // this is the scenario where the segment's end points are not on the polygon contour
-                return false;
+            // // check if the segment extremities are not on the polygon
+            // // TODO: in this scenario we need to build the splitting functions for segments not on the polygon
+            // if (!this->isPointOnPolygon(segment.Origin()) || !this->isPointOnPolygon(segment.EndPoint()))
+            //     // this is the scenario where the segment's end points are not on the polygon contour
+            //     // we need to build the splitting functions for segments not on the polygon
 
+            //     return false;
+
+            
+            if (!this->isPointOnPolygon(segment.Origin()) || !this->isPointOnPolygon(segment.EndPoint()))
+            {
+                // return false;
+                // in this case one or both segment's end points are not on the polygon contour
+                // we need to interesect the segment with the polygon contour
+                // assuming that the polygon is convex, we must have two intersection points
+                if (this->isPointOnPolygon(segment.Origin()))
+                {
+                    std::cout << "[DEBUG] case A" << std::endl;
+                    // we keep the segment origin
+                    std::vector<Eigen::Vector3d> traversePoints;
+                    Eigen::Vector3d ptTemp;
+                    for (auto s : m_Segments)
+                        if (s.intersect(segment, ptTemp)) traversePoints.push_back(ptTemp);
+
+                    // check the case in which the segment is not traversing the entire polygon contour
+                    if (traversePoints.size() != 2)
+                        return false;
+                    
+                    segment.P2 = traversePoints[1];
+                }
+
+                if (this->isPointOnPolygon(segment.EndPoint()))
+                {
+                    std::cout << "[DEBUG] case B" << std::endl;
+
+                    // we keep the segment end point
+                    std::vector<Eigen::Vector3d> traversePoints;
+                    Eigen::Vector3d ptTemp;
+                    for (auto s : m_Segments)
+                        if (s.intersect(segment, ptTemp)) traversePoints.push_back(ptTemp);
+
+                    // check the case in which the segment is not traversing the entire polygon contour
+                    if (traversePoints.size() != 2)
+                        return false;
+                    
+                    segment.P1 = traversePoints[0];
+                }
+
+                if (!this->isPointOnPolygon(segment.Origin()) && !this->isPointOnPolygon(segment.EndPoint()))
+                {
+                    std::cout << "[DEBUG] case C" << std::endl;
+
+                    // in this case both segment's end points are not on the polygon contour
+                    // we need to interesect the segment with the polygon contour
+                    // assuming that the polygon is convex, we must have two intersection points
+                    std::vector<Eigen::Vector3d> traversePoints;
+                    Eigen::Vector3d ptTemp;
+                    for (auto s : m_Segments)
+                        if (s.intersect(segment, ptTemp)) traversePoints.push_back(ptTemp);
+
+                    // check the case in which the segment is not traversing the entire polygon contour
+                    if (traversePoints.size() != 2)
+                    {
+                        std::cout << "[DEBUG] not enough points" << std::endl;
+                        std::cout << "[DEBUG] traversePoints.size() = " << traversePoints.size() << std::endl;
+                        return false;
+                    }
+                    
+                    segment.P1 = traversePoints[0];
+                    segment.P2 = traversePoints[1];
+                }
+            }
 
 
             std::vector<Eigen::Vector3d> pointsA, pointsB;
