@@ -131,23 +131,21 @@ namespace tslam
          * 
          */
         void rIntersectPolygons();
-            // TODO: we might add a variable tolerance for the seg-seg intersection
-            // TODO: this function should be a polygon member function
-            /**
-             * @brief Check if an intersection exist between two segments
-             * 
-             * @param p1 the first point of the first segment
-             * @param p2 the second point of the first segment
-             * @param p3 the first point of the second segment
-             * @param p4 the second point of the second segment
-             * @param intersectPt[out] the intersection point
-             * 
-             * @return true if there is intersection
-             * @return false if there is no intersection
-             */
-            bool rSegment2SegmentIntersect(TSSegment& segA, 
-                                           TSSegment& segB,
-                                           Eigen::Vector3d* intersectPt);
+            // /**
+            //  * @brief Check if an intersection exist between two segments
+            //  * 
+            //  * @param p1 the first point of the first segment
+            //  * @param p2 the second point of the first segment
+            //  * @param p3 the first point of the second segment
+            //  * @param p4 the second point of the second segment
+            //  * @param intersectPt[out] the intersection point
+            //  * 
+            //  * @return true if there is intersection
+            //  * @return false if there is no intersection
+            //  */
+            // bool rSegment2SegmentIntersect(TSSegment& segA, 
+            //                                TSSegment& segB,
+            //                                Eigen::Vector3d* intersectPt);
             /**
              * @brief It splits a polygon with a segment and give back the two new polygons.
              * 
