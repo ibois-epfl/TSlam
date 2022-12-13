@@ -76,29 +76,10 @@ namespace tslam
         };
 
     public: __always_inline
-        // FIXME: this is very weird, not working - TO ERASE IF EVERYTHING IS OK
-        bool isPointOnSegmentV1(Eigen::Vector3d point) const
+        // TODO: set the tolerance as aparameter (1e-5)?
+        /// it checks if a point is on a segment, also when the point is on the start or end of the segment
+        bool isPointOnSegment(Eigen::Vector3d point) const
         {
-            //============================================================
-            // version tested but wired in code (not working)
-            //============================================================
-
-            Eigen::Vector3d v1 = point - this->P1;
-            Eigen::Vector3d v2 = point - this->P2;
-            Eigen::Vector3d v3 = this->P2 - this->P1;
-            double cross = v1.cross(v2).norm();
-            double dot = v1.dot(v2);
-            double l = v3.norm();
-            return (cross < 1e-5 && dot < 1e-5 && l > 1e-5);
-        };
-
-        // FIXME: this version might be working
-        /// it works also when the point is on the start or end of the segment
-        bool isPointOnSegmentV2(Eigen::Vector3d point) const
-        {
-            //============================================================
-            // second version tested, seems to work
-            //============================================================
 
             double AB = sqrt(pow(this->P2(0) - this->P1(0), 2) + pow(this->P2(1) - this->P1(1), 2) + pow(this->P2(2) - this->P1(2), 2));
             double AP = sqrt(pow(point(0) - this->P1(0), 2) + pow(point(1) - this->P1(1), 2) + pow(point(2) - this->P1(2), 2));
@@ -170,7 +151,7 @@ namespace tslam
                 Eigen::Vector3d ptTemp = A + t * AB;
 
                 // FIXME: is point on segment is not working correctly
-                if (this->isPointOnSegmentV2(ptTemp) && other.isPointOnSegmentV2(ptTemp))
+                if (this->isPointOnSegment(ptTemp) && other.isPointOnSegment(ptTemp))
                 {
                     intersection = ptTemp;
                     return true;
@@ -207,7 +188,7 @@ namespace tslam
                 Eigen::Vector3d ptTemp = A + t * AB;
 
                 // FIXME: is point on segment is not working correctly
-                if (this->isPointOnSegmentV2(ptTemp) && other.isPointOnSegmentV2(ptTemp))
+                if (this->isPointOnSegment(ptTemp) && other.isPointOnSegment(ptTemp))
                 {
                     intersection = ptTemp;
                     return true;
@@ -320,7 +301,7 @@ namespace tslam
             //     return false;
 
             for (auto s : m_Segments)
-                if (s.isPointOnSegmentV2(point))
+                if (s.isPointOnSegment(point))
                     return true;
             return false;
         };
@@ -399,7 +380,7 @@ namespace tslam
                     pointsB.push_back(m_Points[i]);
                 else
                 {
-                    if (segment.isPointOnSegmentV1(m_Points[i]))
+                    if (segment.isPointOnSegment(m_Points[i]))
                     {
                         pointsA.push_back(m_Points[i]);
                         pointsB.push_back(m_Points[i]);

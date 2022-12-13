@@ -21,17 +21,6 @@ namespace tslam
         // testing
         // // =============================================================================
 
-        TSSegment seg1 = TSSegment(Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 1));
-        Eigen::Vector3d midPt = Eigen::Vector3d(0.5, 0.5, 0.5);
-
-        Eigen::Vector3d ptTest = Eigen::Vector3d(0.5, 0.5, 0.5);
-        Eigen::Vector3d ptTest2 = Eigen::Vector3d(0., 0., 0.);
-
-        bool isOnSeg = seg1.isPointOnSegmentV2(ptTest);
-        std::cout << "isOnSeg: " << isOnSeg << std::endl;
-
-        return;
-
         // // intersection between two segments
         // TSSegment segT1 = TSSegment(Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(1, 1, 1));
         // TSSegment segT2 = TSSegment(Eigen::Vector3d(0, 1, 0), Eigen::Vector3d(1, 0, 1));
