@@ -44,16 +44,16 @@ namespace tslam
         {
             for (auto& polyB : this->m_MergedPolygons)
             {
+                // std::tuple<TSPolygon, TSPolygon> splitPolysTest;                            // TODO: debug test
+                // bool test = this->rPolygon2PolygonIntersect(polyA, polyB, splitPolysTest);  // TODO: debug test
+                // if (test)
+                // {
+                //     splitPolygonsA.push_back(std::get<0>(splitPolysTest));
+                //     splitPolygonsB.push_back(std::get<1>(splitPolysTest));
+                // }
+
                 if (polyA != polyB)
                 {
-                    // std::tuple<TSPolygon, TSPolygon> splitPolysTest;                            // TODO: debug test
-                    // bool test = this->rPolygon2PolygonIntersect(polyA, polyB, splitPolysTest);  // TODO: debug test
-                    // if (test)
-                    // {
-                    //     splitPolygonsA.push_back(std::get<0>(splitPolysTest));
-                    //     splitPolygonsB.push_back(std::get<1>(splitPolysTest));
-                    // }
-
                     for (int i = 0; i < polyA.size(); i++)
                     {
                         for (int j = 0; j < polyB.size(); j++)
@@ -564,6 +564,7 @@ namespace tslam
         uint idx = 0;
         Eigen::Vector3d* intersectPt = new Eigen::Vector3d();
         bool isIntersect = false;
+        std::vector<Eigen::Vector3d> intersectPts;
 
         for (int i = 0; i < polyA.size(); i++)
         {
@@ -574,22 +575,37 @@ namespace tslam
 
                 isIntersect = this->rSegment2SegmentIntersect(polyA[i], polyB[j], intersectPt);
 
-                if (isIntersect && idx <= 2)
+                if (isIntersect)
                 {
-                    segSplit.P1 = polyA[i].Origin();
-                    segSplit.P2 = polyA[i].EndPoint();
-                    idx++;
+                    intersectPts.push_back(*intersectPt);
                 }
-                else if (isIntersect && idx > 2)
-                {
-                    std::cout << "[ERROR]: degenerated intersection: more than 2 points." << std::endl;
-                    return false;
-                }
+
+                // if (isIntersect && idx <= 2)
+                // {
+                //     segSplit.P1 = polyA[i].Origin();
+                //     segSplit.P2 = polyA[i].EndPoint();
+                //     idx++;
+                // }
+                // else if (isIntersect && idx > 2)
+                // {
+                //     std::cout << "[ERROR]: degenerated intersection: more than 2 points." << std::endl;
+                //     return false;
+                // }
             }
         }
 
-        polyA.reorderClockwisePoints();
+        segSplit = TSSegment(intersectPts[0], intersectPts[1]);
+
+        // TSSegment segSplit(intersectPts[0], intersectPts[1]);
+
         outSplitPolygons = polyA.splitPolygon(segSplit);
+
+// //             std::tuple<TSPolygon, TSPolygon> splitPolys = polyA.splitPolygon(segSplit);
+
+
+
+//         // polyA.reorderClockwisePoints();
+//         outSplitPolygons = polyA.splitPolygon(segSplit);
 
         delete intersectPt;
 
@@ -600,7 +616,7 @@ namespace tslam
         // if (tempIntersectPts.size() != 2) return false;
          
         // TSSegment segSplit(tempIntersectPts[0], tempIntersectPts[1]);
-        outSplitPolygons = polyA.splitPolygon(segSplit);
+        // outSplitPolygons = polyA.splitPolygon(segSplit);
 
         // clear out the intersect points vector
         // tempIntersectPts.clear();

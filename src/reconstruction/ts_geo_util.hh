@@ -266,50 +266,11 @@ namespace tslam
             polyB.reorderClockwisePoints();
 
             return std::make_tuple(polyA, polyB);
-
-            // TSPolygon::reorderClockwisePoints(pointsA, pointsA.size(), m_LinkedPlane);
-            // TSPolygon::reorderClockwisePoints(pointsB, pointsB.size(), m_LinkedPlane);
-
-            // return std::make_tuple(TSPolygon(pointsA, m_LinkedPlane), TSPolygon(pointsB, m_LinkedPlane));
         };
 
-        // /**
-        //  * @brief Reorder the points in a clockwise order
-        //  * 
-        //  * @param points the points to reorder
-        //  * @param point_count the number of points
-        //  * @param plane the plane on which the points lie
-        //  */
-        // void reorderClockwisePoints(std::vector<Eigen::Vector3d>& points,
-        //                             unsigned point_count,
-        //                             const TSPlane& plane)
-        // {
-        //     Eigen::Vector3d center = Eigen::Vector3d(0.f, 0.f, 0.f);
-
-        //     // compute the center of the polygon
-        //     for  (unsigned i = 0; i < point_count; ++i)
-        //         center += points[i];
-        //     center /= (float)point_count;
-
-        //     // sort the points in a clockwise order also for the case of plane.A < 0.f
-        //     // (the plane is not normalized)
-        //     std::sort(points.begin(), points.end(),
-        //               [&](const Eigen::Vector3d& a, const Eigen::Vector3d& b)
-        //               {
-        //                   Eigen::Vector3d a_center = a - center;
-        //                   Eigen::Vector3d b_center = b - center;
-        //                   float angle_a = std::atan2(a_center(1) * plane.A - a_center(0) * plane.B,
-        //                                              a_center(0) * plane.A + a_center(1) * plane.B);
-        //                   float angle_b = std::atan2(b_center(1) * plane.A - b_center(0) * plane.B,
-        //                                              b_center(0) * plane.A + b_center(1) * plane.B);
-        //                   return angle_a < angle_b;
-        //               });
-        // }
         /// Reorder the polygon vertices in a clockwise order
         void reorderClockwisePoints()
         {
-            // TSPolygon::reorderClockwisePoints(m_Points, m_Points.size(), m_LinkedPlane);
-
             Eigen::Vector3d center = Eigen::Vector3d(0.f, 0.f, 0.f);
 
             // compute the center of the polygon
