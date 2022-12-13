@@ -37,6 +37,7 @@ namespace tslam
         };
 
     public: __always_inline
+        // FIXME: to be tested!
         /**
          * @brief Check if the point is on the plane
          * 
@@ -75,23 +76,40 @@ namespace tslam
         };
 
     public: __always_inline
-        // FIXME: not working (?)
+        // FIXME: this is very weird, not working
         bool isPointOnSegment(Eigen::Vector3d point) const
         {
-            // test if the point is on the segment
+            //============================================================
+            // version tested but wired in code (not working)
+            //============================================================
+
             Eigen::Vector3d v1 = point - this->P1;
-            Eigen::Vector3d v2 = this->P2 - this->P1;
+            Eigen::Vector3d v2 = point - this->P2;
+            Eigen::Vector3d v3 = this->P2 - this->P1;
+            double cross = v1.cross(v2).norm();
             double dot = v1.dot(v2);
-            double det = v1(0) * v2(1) - v1(1) * v2(0);
-            if (abs(det) < 1e-5)
-                return false;
-            double t1 = (v2(1) * v1(0) - v2(0) * v1(1)) / det;
-            double t2 = (v1(0) * v2(1) - v1(1) * v2(0)) / det;
-            if (t1 < 0 || t1 > 1 || t2 < 0 || t2 > 1)
-                return false;
-            return true;
+            double l = v3.norm();
+            return (cross < 1e-5 && dot < 1e-5 && l > 1e-5);
+
+
+            //============================================================
+            // version tested but wired in code (not working)
+            //============================================================
+
+            // // test if the point is on the segment
+            // Eigen::Vector3d v1 = point - this->P1;
+            // Eigen::Vector3d v2 = this->P2 - this->P1;
+            // double dot = v1.dot(v2);
+            // double det = v1(0) * v2(1) - v1(1) * v2(0);
+            // if (abs(det) < 1e-5)
+            //     return false;
+            // double t1 = (v2(1) * v1(0) - v2(0) * v1(1)) / det;
+            // double t2 = (v1(0) * v2(1) - v1(1) * v2(0)) / det;
+            // if (t1 < 0 || t1 > 1 || t2 < 0 || t2 > 1)
+            //     return false;
+            // return true;
         };
-    
+
     public: __always_inline
         Eigen::Vector3d getDirection() const { return (this->P2 - this->P1).normalized(); };
         Eigen::Vector3d getCenter() const { return (this->P1 + this->P2) / 2.0; };
@@ -118,7 +136,6 @@ namespace tslam
         };
 
         // FIXME: not working
-        // TODO: to be tested!
         /**
          * @brief It intersects two segments and returns the intersection point
          * 
@@ -129,19 +146,103 @@ namespace tslam
          */
         bool intersect(const TSSegment& other, Eigen::Vector3d& intersection) const
         {
-            Eigen::Vector3d v1 = this->P2 - this->P1;
-            Eigen::Vector3d v2 = other.P2 - other.P1;
-            Eigen::Vector3d v3 = other.P1 - this->P1;
-            double dot = v1.dot(v2);
-            double det = v1(0) * v2(1) - v1(1) * v2(0);
-            if (abs(det) < 1e-5)
-                return false;
-            double t1 = (v2(1) * v3(0) - v2(0) * v3(1)) / det;
-            double t2 = (v1(0) * v3(1) - v1(1) * v3(0)) / det;
-            if (t1 < 0 || t1 > 1 || t2 < 0 || t2 > 1)
-                return false;
-            intersection = this->P1 + t1 * v1;
-            return true;
+            // find the 3d intersection point of two segments
+            Eigen::Vector3d A = P1;
+            Eigen::Vector3d B = P2;
+            Eigen::Vector3d C = other.P1;
+            Eigen::Vector3d D = other.P2;
+
+            Eigen::Vector3d AB = B - A;
+            Eigen::Vector3d CD = D - C;
+
+            Eigen::Vector3d cross = AB.cross(CD);
+            if (cross.norm() == 0.f) return false;
+
+            Eigen::Vector3d AC = C - A;
+
+            double t = AC.cross(CD).dot(cross) / cross.squaredNorm();
+            double u = AC.cross(AB).dot(cross) / cross.squaredNorm();
+
+            // add a tolerance
+            double tol = 1e-5;
+
+            if (t >= 0.f - tol && t <= 1.f + tol && u >= 0.f - tol && u <= 1.f + tol)
+            {
+                Eigen::Vector3d ptTemp = A + t * AB;
+
+                if (this->isPointOnSegment(ptTemp) && this->isPointOnSegment(ptTemp))
+                {
+                    intersection = ptTemp;
+                    return true;
+                }
+                else return false;
+            }
+            else return false;
+
+
+            // if (t >= 0.f && t <= 1.f && u >= 0.f && u <= 1.f)
+            // {
+            //     Eigen::Vector3d ptTemp = A + t * AB;
+
+            //     // if (this->isPointOnSegment(ptTemp) && this->isPointOnSegment(ptTemp))
+            //     // {
+            //     //     intersection = ptTemp;
+            //     //     return true;
+            //     // }
+            //     // else return false;
+
+            //     intersection = ptTemp;
+            //     return true;
+            // }
+            // else return false;
+
+            // =========================================================
+            // Eigen::Vector3d v1 = this->P2 - this->P1;
+            // Eigen::Vector3d v2 = other.P2 - other.P1;
+            // Eigen::Vector3d v3 = this->P1 - other.P1;
+            // Eigen::Matrix3d M;
+            // M << v1(0), -v2(0), v3(0),
+            //      v1(1), -v2(1), v3(1),
+            //      v1(2), -v2(2), v3(2);
+            // double det = M.determinant();
+            // if (abs(det) < 1e-5)
+            //     return false;
+            // Eigen::Vector3d sol = M.inverse() * Eigen::Vector3d(0, 0, 1);
+            // intersection = this->P1 + sol(0) * v1;
+            // return true;
+
+            // =========================================================
+            // Eigen::Vector3d u = this->P2 - this->P1;
+            // Eigen::Vector3d v = other.P2 - other.P1;
+            // Eigen::Vector3d w = this->P1 - other.P1;
+            // double a = u.dot(u);        // always >= 0
+            // double b = u.dot(v);
+            // double c = v.dot(v);        // always >= 0
+            // double d = u.dot(w);
+            // double e = v.dot(w);
+            // double D = a*c - b*b;       // always >= 0
+            // double sc, tc;
+
+            // // compute the line parameters of the two closest points
+            // if (D < 1e-5) {         // the lines are almost parallel
+            //     sc = 0.0;
+            //     tc = (b>c ? d/b : e/c);    // use the largest denominator
+            // }
+            // else {
+            //     sc = (b*e - c*d) / D;
+            //     tc = (a*e - b*d) / D;
+            // }
+
+            // // get the difference of the two closest points
+            // Eigen::Vector3d dP = w + (sc * u) - (tc * v);  // =  L1(sc) - L2(tc)
+
+            // // check if the intersection point is on both segments
+            // if (this->isPointOnSegment(this->P1 + sc * u) && other.isPointOnSegment(other.P1 + tc * v))
+            // {
+            //     intersection = this->P1 + sc * u;
+            //     return true;
+            // }
+            // return false;
         };
 
     public:
@@ -274,7 +375,8 @@ namespace tslam
             
             if (!this->isPointOnPolygon(segment.Origin()) || !this->isPointOnPolygon(segment.EndPoint()))
             {
-                // return false;
+                // return false;  // TODO: debug, get rid of this when this block is ok
+
                 // in this case one or both segment's end points are not on the polygon contour
                 // we need to interesect the segment with the polygon contour
                 // assuming that the polygon is convex, we must have two intersection points
