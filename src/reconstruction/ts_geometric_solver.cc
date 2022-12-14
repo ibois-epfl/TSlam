@@ -1,5 +1,5 @@
 #include "ts_geometric_solver.hh"
-#include <open3d/Open3D.h>
+#include<open3d/Open3D.h>
 #include <stdexcept>
 #include <algorithm>
 #include <math.h>
@@ -55,56 +55,106 @@ namespace tslam
         uint NMergedPolygons = this->m_MergedPolygons.size();
         uint NIntersectSegments = splitSegs.size();
         uint maxNSplitPolygons = NIntersectSegments * 2 * NMergedPolygons;
-        std::cout << "[DEBUG] max number of split polygons: " << maxNSplitPolygons << std::endl;
+        // std::cout << "[DEBUG] max number of split polygons: " << maxNSplitPolygons << std::endl;
 
-        std::vector<bool> flagsErase;
+        // std::vector<bool> flagsErase;
 
 
         std::vector<TSPolygon> splitPolygonsReserve;
 
 
-        bool isSplittable = true;
-        bool isSplit = false;
+        // bool isSplittable = true;
+        // bool isSplit = false;
 
 
         std::tuple<TSPolygon, TSPolygon> splitPolys;
 
 
-        while (isSplittable)
+
+        ////////////////////////////////////////////
+        // simple test with just 1 polygon
+        ////////////////////////////////////////////
+
+        TSPolygon polyT = m_MergedPolygons[1];
+        std::vector<TSPolygon> splitPolygonsT = {polyT};
+        std::vector<TSPolygon> tempContainerPolyT;
+        bool isSplit = false;
+        int NSplit = 0;
+        bool isSplittable = true;
+        std::vector<bool> flagsErase;
+
+
+        // write a snippet to split the polygon until there are no more splits
+        while(isSplittable)
         {
+            isSplittable = true;
 
-            for (auto& sPoly : splitPolygons)
+            std::cout << "[DEBUG] N tempContainerPolyT: " << tempContainerPolyT.size() << std::endl;
+
+            for (int k = 0; k < splitPolygonsT.size(); k++)
             {
-                std::cout << "==============================================" << std::endl;
-                std::cout << "split polygon size: " << splitPolygons.size() << std::endl;
-
-                uint Nsplits = 0;
-
+                NSplit = -1;
                 for (auto& seg : splitSegs)
                 {
-                    
-                    isSplit = sPoly.splitPolygon(seg, splitPolys);
-                    //  std::cout << "[DEBUG] isSplit: " << isSplit << std::endl;
+                    isSplit = true;
+                    isSplit = polyT.splitPolygon(seg, splitPolys);
 
-                    if (isSplit)
+                    if(isSplit)
                     {
-                        splitPolygonsReserve.emplace_back(std::get<0>(splitPolys));
-                        splitPolygonsReserve.emplace_back(std::get<1>(splitPolys));
+                        std::cout << "[DEBUG] isSplit for index: " << k << " -- " << isSplit << std::endl;
 
-                        Nsplits++;
+                        tempContainerPolyT.emplace_back(std::get<0>(splitPolys));
+                        tempContainerPolyT.emplace_back(std::get<1>(splitPolys));
+                        NSplit++;
                     }
                 }
 
-                // mark the polygon as split, hence to be erased from the next cycle
-                if (Nsplits > 0)
+                if(NSplit > 0)
                 {
-                    flagsErase.push_back(true);
+                    std::cout << "[DEBUG] erase index: " << k << std::endl;
+                    flagsErase.emplace_back(true);
                 }
-                else
+                else if (NSplit == 0)
                 {
-                    flagsErase.push_back(false);
+                    flagsErase.emplace_back(false);
+                    isSplittable = false;
+                }
+                else if (NSplit == -1)
+                {
+                    flagsErase.emplace_back(false);
+                    isSplittable = false;
                 }
             }
+
+            // if (tempContainerPolyT.size() == 0)
+            // {
+            //     std::cout << "[DEBUG] tempContainerPolyT is empty!" << std::endl;
+            //     isSplittable = false;
+            //     continue;
+            // }
+
+            // print all 
+
+            std::cout << "[DEBUG] N splitPolygonsT  --beforec--: " << splitPolygonsT.size() << std::endl;
+            for (int z = 0; z < flagsErase.size(); z++)
+            {
+                if (flagsErase[z])
+                {
+                    splitPolygonsT.erase(splitPolygonsT.begin() + z);
+                }
+            }
+            flagsErase.clear();
+            std::cout << "[DEBUG] N splitPolygonsT  --afterc--: " << splitPolygonsT.size() << std::endl;
+
+
+            for (auto& poly : tempContainerPolyT)
+            {
+                splitPolygonsT.emplace_back(poly);
+            }
+            tempContainerPolyT.clear();
+
+
+            
 
 
             // EXIT CONDITION: stops when there is no more split == when the vector of bool split flags is all false
@@ -115,39 +165,36 @@ namespace tslam
                 std::cout << "[DEBUG] exit number of split poly: " << splitPolygons.size() << std::endl;
 
                 isSplittable = false;
-                // break;
-            }
-
-            // erase the polygons that have been split
-            for (int j = 0; j < flagsErase.size(); j++)
-            {
-                if (flagsErase[j])
-                {
-                    splitPolygons.erase(splitPolygons.begin() + j);
-                }
             }
             flagsErase.clear();
 
-
-            // add the new split polgons to the vector
-            for (auto& sPoly : splitPolygonsReserve)
-            {
-                splitPolygons.push_back(sPoly);
-            }
-
-            // std::cout << "[DEBUG] SplitPolygon size --inloop--: " << splitPolygons.size() << std::endl;
-
-
-            // check if there no more polygons to split
-
         }
 
-        std::cout << "[DEBUG] MergedPoly number: " << this->m_MergedPolygons.size() << std::endl;
-        std::cout << "[DEBUG] Splitting segments number: " << splitSegs.size() << std::endl;
-        std::cout << "[DEBUG] Split Polygons number: " << splitPolygons.size() << std::endl;
+        std::cout << "[DEBUG] Number of split polygons: " << splitPolygonsT.size() << std::endl;  // DEBUG
+
+        /////////////////////////////////////////
+        // test of intersection
+        /////////////////////////////////////////
+
+        TSPolygon polyVT = splitPolygonsT[7];
+        std::vector<Eigen::Vector3d> pts = polyVT.getPoints();  // DEBUG
+
+        TSSegment segTV = splitSegs[0];
+
+        std::tuple<TSPolygon, TSPolygon> splitPolysVT;
+        bool isSplitVT;
+        isSplitVT = polyVT.splitPolygon(segTV, splitPolysVT);
+
+        TSPolygon polyVT1 = std::get<0>(splitPolysVT);
+        std::vector<Eigen::Vector3d> ptsVT1 = polyVT1.getPoints();  // DEBUG
 
 
-        // =============================================================================
+        std::cout << "[DEBUG] isSplitVT: " << isSplitVT << std::endl;  // DEBUG
+        std::cout << "[DEBUG] polygon result: " << polyVT1 << std::endl;  // DEBUG
+
+
+        // std::vector<Eigen::Vector3d> pts = splitPolygonsT[7].getPoints();  // DEBUG
+
 
 
 
@@ -212,37 +259,36 @@ namespace tslam
         vis->AddGeometry(pntCldNewPlanes);
     }
 
-    // draw new interesected polygons
-    for (auto& pg : this->m_MergedPolygons)
-    {
-        std::vector<Eigen::Vector3d> pts = pg.getPoints();
-        for (int i = 0; i < pts.size(); i++)
-        {
-            std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
-            std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-            segLineset->points_.push_back(segm->Origin());
-            segLineset->points_.push_back(segm->EndPoint());
-            segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-            segLineset->PaintUniformColor(Eigen::Vector3d(0., 0., 1.));
-            vis->AddGeometry(segLineset);
-        }
-    }
+    // // draw new interesected polygons
+    // for (auto& pg : this->m_MergedPolygons)
+    // {
+    //     std::vector<Eigen::Vector3d> pts = pg.getPoints();
+    //     for (int i = 0; i < pts.size(); i++)
+    //     {
+    //         std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
+    //         std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+    //         segLineset->points_.push_back(segm->Origin());
+    //         segLineset->points_.push_back(segm->EndPoint());
+    //         segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    //         segLineset->PaintUniformColor(Eigen::Vector3d(0., 0., 1.));
+    //         vis->AddGeometry(segLineset);
+    //     }
+    // }
 
-
-    // draw splitting segments
-    for (auto& seg : splitSegs)
-    {
-        std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-        segLineset->points_.push_back(seg.Origin());
-        segLineset->points_.push_back(seg.EndPoint());
-        segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-        segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-        segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-        segLineset->PaintUniformColor(Eigen::Vector3d(1., 0., 1.));
-        vis->AddGeometry(segLineset);
-    }
+    // // draw splitting segments
+    // for (auto& seg : splitSegs)
+    // {
+    //     std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+    //     segLineset->points_.push_back(seg.Origin());
+    //     segLineset->points_.push_back(seg.EndPoint());
+    //     segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+    //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    //     segLineset->PaintUniformColor(Eigen::Vector3d(1., 0., 1.));
+    //     vis->AddGeometry(segLineset);
+    // }
         
     // // // show split polygons
     // for (auto& pg : splitPolygons)
@@ -263,7 +309,7 @@ namespace tslam
     // }
 
     // // show just one polygon
-    // std::vector<Eigen::Vector3d> pts = splitPolygons[0].getPoints();
+    // // std::vector<Eigen::Vector3d> pts = splitPolygons[0].getPoints();
     // for (int i = 0; i < pts.size(); i++)
     // {
     //     std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
@@ -276,6 +322,31 @@ namespace tslam
     //     segLineset->PaintUniformColor(Eigen::Vector3d(0., 1., 1.));
     //     vis->AddGeometry(segLineset);
     // }
+
+    // show just one polygon test result
+    // std::vector<Eigen::Vector3d> pts = splitPolygons[0].getPoints();
+    for (int i = 0; i < ptsVT1.size(); i++)
+    {
+        std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
+        std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+        segLineset->points_.push_back(segm->Origin());
+        segLineset->points_.push_back(segm->EndPoint());
+        segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+        segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+        segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+        segLineset->PaintUniformColor(Eigen::Vector3d(0., 1., 1.));
+        vis->AddGeometry(segLineset);
+    }
+
+    // draw one segment
+    std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+    segLineset->points_.push_back(segTV.Origin());
+    segLineset->points_.push_back(segTV.EndPoint());
+    segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+    segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    segLineset->PaintUniformColor(Eigen::Vector3d(1., 0., 0.));
+    vis->AddGeometry(segLineset);
 
 
 

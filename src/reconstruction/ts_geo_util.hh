@@ -210,7 +210,11 @@ namespace tslam
         };
         friend std::ostream& operator<<(std::ostream& os, const TSPolygon& polygon)
         {
-            os << "Polygon on plane: " << polygon.m_LinkedPlane << std::endl;
+            os << "Polygon center: " << polygon.m_Center << std::endl;
+            os << "Polygon segments: " << std::endl;
+            for (auto s : polygon.m_Segments)
+                os << s << std::endl;
+            os << "Polygon linked plane: " << polygon.m_LinkedPlane << std::endl;
             return os;
         };
         uint size() {return m_Segments.size(); };
@@ -301,43 +305,48 @@ namespace tslam
 
 
             
-            if (!this->isPointOnPolygon(segment.Origin()) || !this->isPointOnPolygon(segment.EndPoint()))
-            {
-                return false;  // TODO: debug, get rid of this when this block is ok
+            // if (!this->isPointOnPolygon(segment.Origin()) || !this->isPointOnPolygon(segment.EndPoint()))
+            // {
+            //     return false;  // TODO: debug, get rid of this when this block is ok
 
-                // in this case one or both segment's end points are not on the polygon contour
-                // we need to interesect the segment with the polygon contour
-                // assuming that the polygon is convex, we must have two intersection points
+            //     // // in this case one or both segment's end points are not on the polygon contour
+            //     // // we need to interesect the segment with the polygon contour
+            //     // // assuming that the polygon is convex, we must have two intersection points
 
-                std::vector<Eigen::Vector3d> traversePoints;
-                    Eigen::Vector3d ptTemp;
-                    for (auto s : m_Segments)
-                        if (s.intersect(segment, ptTemp)) traversePoints.push_back(ptTemp);
+            //     // std::vector<Eigen::Vector3d> traversePoints;
+            //     // Eigen::Vector3d ptTemp;
+            //     // for (auto s : m_Segments)
+            //     //     if (s.intersect(segment, ptTemp)) traversePoints.push_back(ptTemp);
                 
-                if (this->isPointOnPolygon(segment.Origin()))
-                {
-                    std::cout << "[DEBUG] case A" << std::endl;
-                    segment.P2 = traversePoints[1];
-                }
+            //     // // std::cout << "[DEBUG] intersected point: " << ptTemp.transpose() << std::endl;
 
-                if (this->isPointOnPolygon(segment.EndPoint()))
-                {
-                    std::cout << "[DEBUG] case B" << std::endl;
-                    segment.P1 = traversePoints[0];
-                }
+            
+            //     // if (this->isPointOnPolygon(segment.Origin()))
+            //     // {
+            //     //     std::cout << "[DEBUG] case A" << std::endl;
+            //     //     segment.P2 = traversePoints[1];
+            //     // }
+            //     // else if (this->isPointOnPolygon(segment.EndPoint()))
+            //     // {
+            //     //     std::cout << "[DEBUG] case B" << std::endl;
+            //     //     segment.P1 = traversePoints[0];
+            //     // }
+            //     // else
+            //     // {
+            //     //     std::cout << "[DEBUG] case C" << std::endl;
+            //     //     if (traversePoints.size() != 2)
+            //     //     {
+            //     //         std::cout << "[ERROR] traversePoints.size(): " << traversePoints.size() << std::endl;
+            //     //         return false;
+            //     //     }
+            //     //     segment.P1 = traversePoints[0];
+            //     //     segment.P2 = traversePoints[1];
+            //     // }
 
-                if (!this->isPointOnPolygon(segment.Origin()) && !this->isPointOnPolygon(segment.EndPoint()))
-                {
-                    std::cout << "[DEBUG] case C" << std::endl;
-                    if (traversePoints.size() != 2)
-                    {
-                        std::cout << "[ERROR] traversePoints.size(): " << traversePoints.size() << std::endl;
-                        return false;
-                    }
-                    segment.P1 = traversePoints[0];
-                    segment.P2 = traversePoints[1];
-                }
-            }
+            // }
+
+            if (!this->isPointOnPolygon(segment.Origin()) || !this->isPointOnPolygon(segment.EndPoint()))
+                return false;
 
 
             std::vector<Eigen::Vector3d> pointsA, pointsB;
@@ -362,6 +371,7 @@ namespace tslam
                     }
                 }
             }
+
             pointsA.push_back(segment.EndPoint());
             pointsB.push_back(segment.Origin());
 
