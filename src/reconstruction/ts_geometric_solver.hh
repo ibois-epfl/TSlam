@@ -126,51 +126,13 @@ namespace tslam
 
         /// (d)
         /**
-         * @brief The function intersect the polygons with each other and generate new polygons.
-         * It keeps only those polygons that have at least one corner point inside them.
+         * @brief The function intersect the polygons with each other.
          * 
+         * @param polygons[in] the polygons to intersect
+         * @param segments[out] the segments connecting polygon's detected intersections
          */
-        void rIntersectPolygons();
-            // /**
-            //  * @brief Check if an intersection exist between two segments
-            //  * 
-            //  * @param p1 the first point of the first segment
-            //  * @param p2 the second point of the first segment
-            //  * @param p3 the first point of the second segment
-            //  * @param p4 the second point of the second segment
-            //  * @param intersectPt[out] the intersection point
-            //  * 
-            //  * @return true if there is intersection
-            //  * @return false if there is no intersection
-            //  */
-            // bool rSegment2SegmentIntersect(TSSegment& segA, 
-            //                                TSSegment& segB,
-            //                                Eigen::Vector3d* intersectPt);
-            /**
-             * @brief It splits a polygon with a segment and give back the two new polygons.
-             * 
-             * @param poly[in] the polygon to split
-             * @param seg[in] the splitter segment
-             * @param splitPoly[out] the two new polygons after the split
-             * @return true if the split is successful
-             * @return false if the split is not successful or there is no intersection
-             */
-            bool rPolygon2SegmentSplit(TSPolygon& poly, 
-                                       TSSegment& seg, 
-                                       std::tuple<TSPolygon, TSPolygon>& splitPolys);
-            // /**
-            //  * @brief The function intersect two polygons and store the intersection points.
-            //  * 
-            //  * @param polyA[in] the first polygon
-            //  * @param polyB[in] the second polygon
-            //  * @param outPtsCount[out] the number of intersection points
-            //  * @param outSplitPolygons[out] the two new polygons after the intersection
-            //  */
-            // // FIXME: on hold
-            // // TODO: this function should be a polygon member function
-            // bool rPolygon2PolygonIntersect(TSPolygon& polyA, 
-            //                                TSPolygon& polyB,
-            //                                std::tuple<TSPolygon, TSPolygon>& outSplitPolygons);
+        void rIntersectPolygons(std::vector<TSPolygon> &polygons,
+                                std::vector<TSSegment> &segments);
 
         /// (e)
         /**
