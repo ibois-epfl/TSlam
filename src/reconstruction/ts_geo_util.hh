@@ -8,9 +8,9 @@
 #include <vector>
 #include <iostream>
 
-#include <iterator>  // FIXME: test if needed
-#include <algorithm>  // FIXME: test if needed
-#include <math.h>  // FIXME: test if needed
+#include <iterator>
+#include <algorithm> 
+#include <math.h>
 
 namespace tslam
 {
@@ -46,7 +46,18 @@ namespace tslam
         };
     
     public: __always_inline
-        // FIXME: to be tested!
+        /**
+         * @brief It computes the distance between a point and the plane
+         * 
+         * @param point the point to compute the distance
+         * @return double the distance
+         */
+        double distance(Eigen::Vector3d point)
+        {
+            return this->Normal.dot(point - this->Center);
+        };
+
+    public: __always_inline
         /**
          * @brief Check if the point is on the plane
          * 
@@ -128,7 +139,6 @@ namespace tslam
             return angle * 180.0 / M_PI;
         };
 
-        // FIXME: seems to work (suspicious)
         /**
          * @brief It intersects two segments and returns the intersection point
          * 
@@ -223,9 +233,30 @@ namespace tslam
     private: __always_inline
         void compute() override
         {
+            // this->computeVertices();
             this->computeCenter();
             this->computeSegments();
         };
+        // void computeVertices()
+        // {
+        //     if (m_Points.size() != 0)
+        //         return;
+        //     else if (m_Points.size() != 0 && m_Segments.size() != 0)
+        //     {
+        //         for (auto s : m_Segments)
+        //         {
+        //             bool found = false;
+        //             for (auto p : m_Points)
+        //                 if (p == s.P1)
+        //                 {
+        //                     found = true;
+        //                     break;
+        //                 }
+        //             if (!found)
+        //                 m_Points.push_back(s.P1);
+        //         }
+        //     }
+        // };
         void computeCenter()
         {
             Eigen::Vector3d center = Eigen::Vector3d::Zero();
@@ -234,6 +265,7 @@ namespace tslam
             center /= m_Points.size();
             m_Center = center;
         };
+        // FIXME: problems with vertices storage
         void computeSegments()
         {
             m_Segments.clear();
@@ -247,13 +279,23 @@ namespace tslam
     
     public: __always_inline
         void addPoint(Eigen::Vector3d point) {m_Points.push_back(point); compute(); };
+        void removePoint(uint i) {m_Points.erase(m_Points.begin() + i); compute(); };
+        void addSegment(TSSegment segment) {m_Segments.push_back(segment); };  // FIXME: problems with vertices storage
         void setPoints(std::vector<Eigen::Vector3d> points) {m_Points = points; compute(); };
         void setLinkedPlane(TSPlane linkedPlane) {m_LinkedPlane = linkedPlane; };
 
     public:__always_inline
         std::vector<Eigen::Vector3d>& getPoints() {return m_Points; };
+        // TODO: refactor "point" term in "vertex" for polygon
         uint getNumPoints() {return m_Points.size(); };
         Eigen::Vector3d& getPoint(uint i) {return m_Points[i]; };
+        int getVertexIndex(Eigen::Vector3d point)
+        {
+            for (uint i = 0; i < m_Points.size(); i++)
+                if (m_Points[i].isApprox(point))
+                    return i;
+            return -1;
+        };
         Eigen::Vector3d& getCenter() {return m_Center; };
         Eigen::Vector3d getNormal() {return m_LinkedPlane.Normal; };
         /**
@@ -294,68 +336,53 @@ namespace tslam
          * @return true if the polygon has been splitted
          * @return false if the polygon has not been splitted or there is no intersection between the segment and the polygon
          */
-        bool splitPolygon(TSSegment segment,
-                          std::tuple<TSPolygon, TSPolygon>& splitPoly)
+        bool splitPolygon(TSSegment segment, std::tuple<TSPolygon, TSPolygon>& splitPoly)
         {
-            // // check if the segment extremities are not on the polygon
-            // // TODO: in this scenario we need to build the splitting functions for segments not on the polygon
-            // if (!this->isPointOnPolygon(segment.Origin()) || !this->isPointOnPolygon(segment.EndPoint()))
-            //     // this is the scenario where the segment's end points are not on the polygon contour
-            //     // we need to build the splitting functions for segments not on the polygon
+            ///< (1) catch corner's cases and adjust the segment's end points for the splitting
+            ///< (1.a) catch the case where the segment's end points are on the polygon's vertices
+            for (auto& v : m_Points)
+            {
+                if (v.isApprox(segment.P1) || v.isApprox(segment.P2))
+                {
+                    std::cout << "[WARN-SplitPolygon()] segment's end on polygon's vertices" << std::endl;
+                    return false;
+                }
+            }
 
-
-            
-            // if (!this->isPointOnPolygon(segment.Origin()) || !this->isPointOnPolygon(segment.EndPoint()))
-            // {
-            //     return false;  // TODO: debug, get rid of this when this block is ok
-
-            //     // // in this case one or both segment's end points are not on the polygon contour
-            //     // // we need to interesect the segment with the polygon contour
-            //     // // assuming that the polygon is convex, we must have two intersection points
-
-            //     // std::vector<Eigen::Vector3d> traversePoints;
-            //     // Eigen::Vector3d ptTemp;
-            //     // for (auto s : m_Segments)
-            //     //     if (s.intersect(segment, ptTemp)) traversePoints.push_back(ptTemp);
-                
-            //     // // std::cout << "[DEBUG] intersected point: " << ptTemp.transpose() << std::endl;
-
-            
-            //     // if (this->isPointOnPolygon(segment.Origin()))
-            //     // {
-            //     //     std::cout << "[DEBUG] case A" << std::endl;
-            //     //     segment.P2 = traversePoints[1];
-            //     // }
-            //     // else if (this->isPointOnPolygon(segment.EndPoint()))
-            //     // {
-            //     //     std::cout << "[DEBUG] case B" << std::endl;
-            //     //     segment.P1 = traversePoints[0];
-            //     // }
-            //     // else
-            //     // {
-            //     //     std::cout << "[DEBUG] case C" << std::endl;
-            //     //     if (traversePoints.size() != 2)
-            //     //     {
-            //     //         std::cout << "[ERROR] traversePoints.size(): " << traversePoints.size() << std::endl;
-            //     //         return false;
-            //     //     }
-            //     //     segment.P1 = traversePoints[0];
-            //     //     segment.P2 = traversePoints[1];
-            //     // }
-
-            // }
-
-            if (!this->isPointOnPolygon(segment.Origin()) || !this->isPointOnPolygon(segment.EndPoint()))
+            ///< (1.b) catch the case where both of the segment's end points are not on the polygon's contour
+            if (!this->isPointOnPolygon(segment.Origin()) && !this->isPointOnPolygon(segment.EndPoint()))
+            {
+                std::cout << "[WARN-SplitPolygon()] segment's ends not on polygon" << std::endl;
                 return false;
+            }
+            ///< (1.c) catch the case where one of the segment's end points is not on the polygon's contour
+            else if (!this->isPointOnPolygon(segment.Origin()) || !this->isPointOnPolygon(segment.EndPoint()))
+            {
+                bool isIntersect;
+                Eigen::Vector3d interPt;
 
+                for (auto& seg : this->m_Segments)
+                {
+                    isIntersect = seg.intersect(segment, interPt);
+                    if (isIntersect && !interPt.isApprox(segment.P1) && !interPt.isApprox(segment.P2) && this->isPointOnPolygon(interPt))
+                    {
+                        if (!this->isPointOnPolygon(segment.P1))
+                            segment.P1 = interPt;
+                        else if (!this->isPointOnPolygon(segment.P2))
+                            segment.P2 = interPt;
+                    }
+                }
+            }
 
+            ///< (2) execute the splitting
             std::vector<Eigen::Vector3d> pointsA, pointsB;
 
-            pointsA.push_back(segment.Origin());
-            pointsB.push_back(segment.EndPoint());
+            pointsA.push_back(segment.P1);
+            pointsB.push_back(segment.P2);
+
             for (uint i = 0; i < m_Points.size(); i++)
             {
-                TSSegment testSeg = TSSegment(segment.Origin(), m_Points[i]);
+                TSSegment testSeg = TSSegment(segment.P1, m_Points[i]);
                 double angle = segment.angleDegOnPlane(testSeg, m_LinkedPlane);
 
                 if (angle < 0)
@@ -372,8 +399,86 @@ namespace tslam
                 }
             }
 
-            pointsA.push_back(segment.EndPoint());
-            pointsB.push_back(segment.Origin());
+            pointsA.push_back(segment.P2);
+            pointsB.push_back(segment.P1);
+
+            TSPolygon polyA = TSPolygon(pointsA, m_LinkedPlane);
+            TSPolygon polyB = TSPolygon(pointsB, m_LinkedPlane);
+
+            polyA.reorderClockwisePoints();
+            polyB.reorderClockwisePoints();
+
+            std::get<0>(splitPoly) = polyA;
+            std::get<1>(splitPoly) = polyB;
+
+            return true;
+        };
+
+        bool splitPolygonTEST(TSSegment segment, std::tuple<TSPolygon, TSPolygon>& splitPoly)
+        {
+            ///< (1) catch corner's cases and adjust the segment's end points for the splitting
+            ///< (1.a) catch the case where the segment's end points are on the polygon's vertices
+            for (auto& v : m_Points)
+            {
+                if (v.isApprox(segment.P1) || v.isApprox(segment.P2))
+                {
+                    std::cout << "[WARN-SplitPolygon()] segment's end on polygon's vertices" << std::endl;
+                    return false;
+                }
+            }
+
+            ///< (1.b) catch the case where both of the segment's end points are not on the polygon's contour
+            if (!this->isPointOnPolygon(segment.Origin()) && !this->isPointOnPolygon(segment.EndPoint()))
+            {
+                std::cout << "[WARN-SplitPolygon()] segment's ends not on polygon" << std::endl;
+                return false;
+            }
+            ///< (1.c) catch the case where one of the segment's end points is not on the polygon's contour
+            else if (!this->isPointOnPolygon(segment.Origin()) || !this->isPointOnPolygon(segment.EndPoint()))
+            {
+                bool isIntersect;
+                Eigen::Vector3d interPt;
+
+                for (auto& seg : this->m_Segments)
+                {
+                    isIntersect = seg.intersect(segment, interPt);
+                    if (isIntersect && !interPt.isApprox(segment.P1) && !interPt.isApprox(segment.P2) && this->isPointOnPolygon(interPt))
+                    {
+                        if (!this->isPointOnPolygon(segment.P1))
+                            segment.P1 = interPt;
+                        else if (!this->isPointOnPolygon(segment.P2))
+                            segment.P2 = interPt;
+                    }
+                }
+            }
+
+            ///< (2) execute the splitting
+            std::vector<Eigen::Vector3d> pointsA, pointsB;
+
+            pointsA.push_back(segment.P1);
+            pointsB.push_back(segment.P2);
+
+            for (uint i = 0; i < m_Points.size(); i++)
+            {
+                TSSegment testSeg = TSSegment(segment.P1, m_Points[i]);
+                double angle = segment.angleDegOnPlane(testSeg, m_LinkedPlane);
+
+                if (angle < 0)
+                    pointsA.push_back(m_Points[i]);
+                else if (angle > 0)
+                    pointsB.push_back(m_Points[i]);
+                else
+                {
+                    if (segment.isPointOnSegment(m_Points[i]))
+                    {
+                        pointsA.push_back(m_Points[i]);
+                        pointsB.push_back(m_Points[i]);
+                    }
+                }
+            }
+
+            pointsA.push_back(segment.P2);
+            pointsB.push_back(segment.P1);
 
             TSPolygon polyA = TSPolygon(pointsA, m_LinkedPlane);
             TSPolygon polyB = TSPolygon(pointsB, m_LinkedPlane);
@@ -439,20 +544,37 @@ namespace tslam
 
             // sort the points in a clockwise order also for the case of plane.A < 0.f
             // (the plane is not normalized)
-            std::sort(m_Points.begin(), m_Points.end(),
-                      [&](const Eigen::Vector3d& a, const Eigen::Vector3d& b)
-                      {
-                          Eigen::Vector3d a_center = a - center;
-                          Eigen::Vector3d b_center = b - center;
-                          float angle_a = std::atan2(a_center(1) * m_LinkedPlane.A - a_center(0) * m_LinkedPlane.B,
-                                                     a_center(0) * m_LinkedPlane.A + a_center(1) * m_LinkedPlane.B);
-                          float angle_b = std::atan2(b_center(1) * m_LinkedPlane.A - b_center(0) * m_LinkedPlane.B,
-                                                     b_center(0) * m_LinkedPlane.A + b_center(1) * m_LinkedPlane.B);
-                          return angle_a < angle_b;
-                      });
+            std::sort(m_Points.begin(),m_Points.end(),
+                      [&](const Eigen::Vector3d& a, 
+                      const Eigen::Vector3d& b)
+            {
+                Eigen::Vector3d a_center = a - center;
+                Eigen::Vector3d b_center = b - center;
+                float angle_a = std::atan2(a_center(1) * m_LinkedPlane.A - a_center(0) * m_LinkedPlane.B,
+                                            a_center(0) * m_LinkedPlane.A + a_center(1) * m_LinkedPlane.B);
+                float angle_b = std::atan2(b_center(1) * m_LinkedPlane.A - b_center(0) * m_LinkedPlane.B,
+                                            b_center(0) * m_LinkedPlane.A + b_center(1) * m_LinkedPlane.B);
+                return angle_a < angle_b;
+            });
 
             this->compute();
-        }
+        };
+        // void reorderClockwisePoints2()
+        // {
+        //     // sort the points with a grahm scan algorithm
+        //     std::sort(m_Points.begin(),m_Points.end(),
+        //               [&](const Eigen::Vector3d& a, 
+        //               const Eigen::Vector3d& b)
+        //     {
+        //         Eigen::Vector3d a_center = a - m_Center;
+        //         Eigen::Vector3d b_center = b - m_Center;
+        //         float angle_a = std::atan2(a_center(1), a_center(0));
+        //         float angle_b = std::atan2(b_center(1), b_center(0));
+        //         return angle_a < angle_b;
+        //     });
+
+        //     this->compute();
+        // };
 
     private:
         /// The polygon's vertices

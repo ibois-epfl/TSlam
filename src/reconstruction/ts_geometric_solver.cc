@@ -42,7 +42,7 @@ namespace tslam
 
         std::vector<TSSegment> splitSegs;
         this->rIntersectPolygons(this->m_MergedPolygons, splitSegs);
-        std::cout << "[DEBUG] Number of split segments: " << splitSegs.size() << std::endl;  // DEBUG
+        // std::cout << "[DEBUG] Number of split segments: " << splitSegs.size() << std::endl;  // DEBUG
 
 
         // // // =============================================================================
@@ -89,7 +89,7 @@ namespace tslam
         {
             isSplittable = true;
 
-            std::cout << "[DEBUG] N tempContainerPolyT: " << tempContainerPolyT.size() << std::endl;
+            // std::cout << "[DEBUG] N tempContainerPolyT: " << tempContainerPolyT.size() << std::endl;
 
             for (int k = 0; k < splitPolygonsT.size(); k++)
             {
@@ -101,7 +101,7 @@ namespace tslam
 
                     if(isSplit)
                     {
-                        std::cout << "[DEBUG] isSplit for index: " << k << " -- " << isSplit << std::endl;
+                        // std::cout << "[DEBUG] isSplit for index: " << k << " -- " << isSplit << std::endl;
 
                         tempContainerPolyT.emplace_back(std::get<0>(splitPolys));
                         tempContainerPolyT.emplace_back(std::get<1>(splitPolys));
@@ -111,7 +111,7 @@ namespace tslam
 
                 if(NSplit > 0)
                 {
-                    std::cout << "[DEBUG] erase index: " << k << std::endl;
+                    // std::cout << "[DEBUG] erase index: " << k << std::endl;
                     flagsErase.emplace_back(true);
                 }
                 else if (NSplit == 0)
@@ -135,7 +135,7 @@ namespace tslam
 
             // print all 
 
-            std::cout << "[DEBUG] N splitPolygonsT  --beforec--: " << splitPolygonsT.size() << std::endl;
+            // std::cout << "[DEBUG] N splitPolygonsT  --beforec--: " << splitPolygonsT.size() << std::endl;
             for (int z = 0; z < flagsErase.size(); z++)
             {
                 if (flagsErase[z])
@@ -144,7 +144,7 @@ namespace tslam
                 }
             }
             flagsErase.clear();
-            std::cout << "[DEBUG] N splitPolygonsT  --afterc--: " << splitPolygonsT.size() << std::endl;
+            // std::cout << "[DEBUG] N splitPolygonsT  --afterc--: " << splitPolygonsT.size() << std::endl;
 
 
             for (auto& poly : tempContainerPolyT)
@@ -154,43 +154,68 @@ namespace tslam
             tempContainerPolyT.clear();
 
 
-            
-
 
             // EXIT CONDITION: stops when there is no more split == when the vector of bool split flags is all false
             if ( std::adjacent_find( flagsErase.begin(), flagsErase.end(), std::not_equal_to<>() ) == flagsErase.end() )
             {
                 std::cout << "All elements are equal each other" << std::endl;
-                std::cout << "[DEBUG] hit exit condition!" << std::endl;
-                std::cout << "[DEBUG] exit number of split poly: " << splitPolygons.size() << std::endl;
+                std::cout << "[DEBUG-1SPLIT] hit exit condition!" << std::endl;
+                std::cout << "[DEBUG-1SPLIT] exit number of split poly: " << splitPolygons.size() << std::endl;
 
                 isSplittable = false;
             }
             flagsErase.clear();
 
         }
-
-        std::cout << "[DEBUG] Number of split polygons: " << splitPolygonsT.size() << std::endl;  // DEBUG
+        // std::cout << "[DEBUG] Number of split polygons: " << splitPolygonsT.size() << std::endl;  // DEBUG
 
         /////////////////////////////////////////
         // test of intersection
         /////////////////////////////////////////
 
-        TSPolygon polyVT = splitPolygonsT[7];
+        TSPolygon polyVT = splitPolygonsT[1];
         std::vector<Eigen::Vector3d> pts = polyVT.getPoints();  // DEBUG
+        // std::cout << "[DEBUG] polyVT number of segment --before--: " << polyVT.size() << std::endl;  // DEBUG
+        // std::cout << "/////////////////////////////////////////////////////////////////////////////////" << std::endl;
+        // std::cout << "[DEBUG] poly info --before--: " << polyVT << std::endl;  // DEBUG
+        // std::cout << "/////////////////////////////////////////" << std::endl;
+
 
         TSSegment segTV = splitSegs[0];
+        TSSegment segTVCOPY = splitSegs[0];
+
+
+
 
         std::tuple<TSPolygon, TSPolygon> splitPolysVT;
         bool isSplitVT;
-        isSplitVT = polyVT.splitPolygon(segTV, splitPolysVT);
+        isSplitVT = polyVT.splitPolygon(segTVCOPY, splitPolysVT);
+        // std::cout << "[DEBUG] polyVT number of segment --after--: " << polyVT.size() << std::endl;  // DEBUG
+        // std::cout << "/////////////////////////////////////////////////////////////////////////////////" << std::endl;
+        // std::cout << "[DEBUG] poly info --after--: " << polyVT << std::endl;  // DEBUG
+        // std::cout << "/////////////////////////////////////////" << std::endl;
+        // std::vector<Eigen::Vector3d> pts = polyVT.getPoints();  // DEBUG
+
+
+
 
         TSPolygon polyVT1 = std::get<0>(splitPolysVT);
-        std::vector<Eigen::Vector3d> ptsVT1 = polyVT1.getPoints();  // DEBUG
+        TSPolygon polyVT2 = std::get<1>(splitPolysVT);
 
 
-        std::cout << "[DEBUG] isSplitVT: " << isSplitVT << std::endl;  // DEBUG
-        std::cout << "[DEBUG] polygon result: " << polyVT1 << std::endl;  // DEBUG
+
+        // std::cout << "/////////////////////////////////////////////////////////////////////////////////" << std::endl;
+        // std::cout << "[DEBUG] polyVT1 info --after--: " << polyVT1 << std::endl;  // DEBUG
+        // std::cout << "/////////////////////////////////////////" << std::endl;
+
+        // std::cout << "[DEBUG] orig seg" << segTV << std::endl;  // DEBUG
+        // std::cout << "[DEBUG] copy mod seg" << segTVCOPY << std::endl;  // DEBUG
+
+
+        // std::cout << "[DEBUG] isSplitVT: " << isSplitVT << std::endl;  // DEBUG
+        // std::cout << "[DEBUG] polygon result: " << polyVT1 << std::endl;  // DEBUG
+
+        // return;
 
 
         // std::vector<Eigen::Vector3d> pts = splitPolygonsT[7].getPoints();  // DEBUG
@@ -308,7 +333,7 @@ namespace tslam
     //     }
     // }
 
-    // // show just one polygon
+    // // show the unsplit polygon
     // // std::vector<Eigen::Vector3d> pts = splitPolygons[0].getPoints();
     // for (int i = 0; i < pts.size(); i++)
     // {
@@ -319,36 +344,82 @@ namespace tslam
     //     segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
     //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
     //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //     segLineset->PaintUniformColor(Eigen::Vector3d(0., 1., 1.));
+    //     segLineset->PaintUniformColor(Eigen::Vector3d(1., 0., 1.));
     //     vis->AddGeometry(segLineset);
     // }
 
     // show just one polygon test result
     // std::vector<Eigen::Vector3d> pts = splitPolygons[0].getPoints();
-    for (int i = 0; i < ptsVT1.size(); i++)
+    // for (int i = 0; i < ptsVT1.size(); i++)
+    // {
+    //     std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
+    //     std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+    //     segLineset->points_.push_back(segm->Origin());
+    //     segLineset->points_.push_back(segm->EndPoint());
+    //     segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+    //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    //     // generate a random vector for color
+    //     std::random_device rd;
+    //     std::mt19937 gen(rd());
+    //     std::uniform_real_distribution<> dis(0, 1);
+    //     Eigen::Vector3d color = Eigen::Vector3d(dis(gen), dis(gen), dis(gen));
+    //     segLineset->PaintUniformColor(color);
+    //     vis->AddGeometry(segLineset);
+    //     std::cout << "POP" << std::endl;
+    // }
+
+    // draw split polygo by accessing segments
+    for (auto& segVT : polyVT2.getSegments())
     {
-        std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
         std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-        segLineset->points_.push_back(segm->Origin());
-        segLineset->points_.push_back(segm->EndPoint());
+        segLineset->points_.push_back(segVT.Origin());
+        segLineset->points_.push_back(segVT.EndPoint());
         segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-        segLineset->PaintUniformColor(Eigen::Vector3d(0., 1., 1.));
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<> dis(0, 1);
+        Eigen::Vector3d color = Eigen::Vector3d(dis(gen), dis(gen), dis(gen));
+        segLineset->PaintUniformColor(color);
         vis->AddGeometry(segLineset);
+
+        std::cout << "POP" << std::endl;
+
     }
 
-    // draw one segment
-    std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-    segLineset->points_.push_back(segTV.Origin());
-    segLineset->points_.push_back(segTV.EndPoint());
-    segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-    segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    segLineset->PaintUniformColor(Eigen::Vector3d(1., 0., 0.));
-    vis->AddGeometry(segLineset);
+    // // draw one segment 1
+    // std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+    // segLineset->points_.push_back(segTV.Origin());
+    // segLineset->points_.push_back(segTV.EndPoint());
+    // segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+    // segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    // segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    // segLineset->PaintUniformColor(Eigen::Vector3d(1., 0., 0.));
+    // vis->AddGeometry(segLineset);
 
+    // // draw one segment 2
+    // std::shared_ptr<open3d::geometry::LineSet> segLinesetC = std::make_shared<open3d::geometry::LineSet>();
+    // segLinesetC->points_.push_back(segTVCOPY.Origin());
+    // segLinesetC->points_.push_back(segTV.EndPoint());
+    // segLinesetC->lines_.push_back(Eigen::Vector2i(0, 1));
+    // segLinesetC->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    // segLinesetC->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    // segLinesetC->PaintUniformColor(Eigen::Vector3d(0., 1., 0.));
+    // vis->AddGeometry(segLinesetC);
 
+    // visualize segment extremes
+    std::shared_ptr<open3d::geometry::PointCloud> pcdVTP1 = std::make_shared<open3d::geometry::PointCloud>();
+    pcdVTP1->points_.push_back(segTVCOPY.P1);
+    pcdVTP1->colors_.push_back(Eigen::Vector3d(1., 0., 0.));
+    vis->AddGeometry(pcdVTP1);
+
+    std::shared_ptr<open3d::geometry::PointCloud> pcdVTP2 = std::make_shared<open3d::geometry::PointCloud>();
+    pcdVTP2->points_.push_back(segTVCOPY.P2);
+    pcdVTP2->colors_.push_back(Eigen::Vector3d(0., 0., 1.));
+    vis->AddGeometry(pcdVTP2);
 
     vis->Run();
     vis->Close();
