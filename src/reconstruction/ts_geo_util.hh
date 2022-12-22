@@ -46,6 +46,7 @@ namespace tslam
         };
     
     public: __always_inline
+        // TODO: test
         /**
          * @brief It computes the distance between a point and the plane
          * 
@@ -56,6 +57,28 @@ namespace tslam
         {
             return this->Normal.dot(point - this->Center);
         };
+
+        // TODO: test me
+        /**
+         * @brief Project a point on the plane.
+         * 
+         * @param point[in] the point to project
+         * @return Eigen::Vector3d the projected point
+         */
+        Eigen::Vector3d projectPoint(Eigen::Vector3d& point)
+        {
+            Eigen::Vector3d pt =  point - this->distance(point) * this->Normal;
+            return pt;
+        };
+        // /**
+        //  * @brief 
+        //  * 
+        //  * @param point[in] 
+        //  * @param distThresh the distance threshold 
+        //  * @return Eigen::Vector3d 
+        //  * @see projectPoint(Eigen::Vector3d& point)
+        //  */
+        // Eigen::Vector3d projectPoint(Eigen::Vector3d& point, double distThresh)
 
     public: __always_inline
         /**
@@ -120,7 +143,6 @@ namespace tslam
             return (this->P1.isApprox(other.P1, 1e-5) || this->P1.isApprox(other.P2, 1e-5) ||
                     this->P2.isApprox(other.P1, 1e-5) || this->P2.isApprox(other.P2, 1e-5));
         };
-        // TODO: to be tested
         /// It checks if there is intersection between two segments
         bool isIntersecting(TSSegment other)
         {
@@ -133,7 +155,6 @@ namespace tslam
         Eigen::Vector3d getCenter() const { return (this->P1 + this->P2) / 2.0; };
         Eigen::Vector3d& Origin() { return this->P1; };  //TODO: clean out this method
         Eigen::Vector3d& EndPoint() { return this->P2; };  // TODO: clean out this method
-        // TODO: to be tested
         Eigen::Vector3d getMidPoint()
         {
             Eigen::Vector3d midPoint = Eigen::Vector3d::Zero();
@@ -233,7 +254,6 @@ namespace tslam
         ~TSPolygon() = default;
 
     public: __always_inline
-        // TODO: write test
         bool operator==(const TSPolygon& other) const
         {
             ///< (a) check for number of vertices
@@ -322,7 +342,6 @@ namespace tslam
                 m_Segments.push_back(TSSegment(m_Points[i], m_Points[j]));
             }
         }
-        // TODO: not tested
         /// Compute the area of the polygon
         void computeArea()
         {
@@ -408,7 +427,7 @@ namespace tslam
 
             return true;
         };
-        // TODO: not tested
+        // TODO: to be tested - not used
         /**
          * @brief Check if a point is inside the polygon.
          * 
@@ -438,20 +457,20 @@ namespace tslam
             {
                 if (s.intersect(segment, tempIntersection))
                 {
-                    // std::cout << "[DEBUG] intersection detected" << std::endl;
                     intersections.push_back(tempIntersection);
                 }
             }
 
-            if (intersections.size() != 1)
-                return false;
-            else
-                return true;
-
-            // if (intersections.size() % 2 == 0)
+            // // FIXME: check which checker is working
+            // if (intersections.size() != 1)
             //     return false;
             // else
             //     return true;
+
+            if (intersections.size() % 2 == 0)
+                return false;
+            else
+                return true;
         };
 
     public: __always_inline
@@ -549,7 +568,7 @@ namespace tslam
             polyB.reorderClockwisePoints();
 
 
-            // TEST: TODO: see if it works, it seems
+            ///< (3) test the polygon's sanity
             if (!(polyA.isValid() && polyB.isValid()))
                 return false;
 
@@ -558,7 +577,6 @@ namespace tslam
 
             return true;
         };
-        // FIXME: == operator for polygons check
         /**
          * @brief It intersect the polygon with another one
          * 

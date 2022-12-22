@@ -18,9 +18,10 @@ namespace tslam
     public:
         TSGeometricSolver() 
         {
-            m_AABBScaleFactor=2.0;
             m_CreaseAngleThreshold=10.0;
             m_MinPolyDist=3.0;
+            m_AABBScaleFactor=2.0;
+            m_MaxPolyTagDist=0.5;
         };
         ~TSGeometricSolver() = default;
 
@@ -42,7 +43,7 @@ namespace tslam
         void reconstruct();
 
     private:  ///< reconstruction methods
-        /// (a)
+        ///< (a)
         // FIXME: this function should be a timber.hh's function
         /**
          * @brief The function detect the tags creases of the timber piece. It builds a ktree of the tags and by
@@ -60,7 +61,7 @@ namespace tslam
              */
             double rAngleBetweenVectors(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2);
         
-        /// (b)
+        ///< (b)
         /** 
          * @brief the function intersect a plane with a AABB and store the intersection points.
          * 
@@ -108,7 +109,7 @@ namespace tslam
                                             Eigen::Vector3d* out_points,
                                             unsigned &out_point_count);
         
-        /// (c)
+        ///< (c)
         /**
          * @brief The function mean the previous similar polygons'planes and recompute the
          * intersection of the mean planes with the AABB to obtain new polygons.
@@ -124,9 +125,21 @@ namespace tslam
              */
             void rMeanPolygonPlanes();
 
-        /// (d)
+        ///< (d)
+
         /**
-         * @brief The function intersect the polygons with each other.
+         * @brief Split the polygons into smaller ones with the intersecting segments.
+         * 
+         * @param polygons[in] the polygons to split
+         * @param splitPolygons[out] the split polygons
+         * @param segments[in] the segments to split the polygons
+         */
+        void rSplitPolygons(std::vector<TSPolygon>& polygons,
+                            std::vector<TSPolygon>& splitPolygons,
+                            std::vector<TSSegment>& segments);
+
+        /**
+         * @brief Obtain a vector of segments connecting the detected intersections of the AABB-generated polygons.
          * 
          * @param polygons[in] the polygons to intersect
          * @param segments[out] the segments connecting polygon's detected intersections
@@ -134,7 +147,10 @@ namespace tslam
         void rIntersectPolygons(std::vector<TSPolygon> &polygons,
                                 std::vector<TSSegment> &segments);
 
-        /// (e)
+        ///< (e)
+
+
+        ///< (f)
         /**
          * @brief It joins the polygons and create a new mesh of the timber object.
          * 
@@ -155,6 +171,8 @@ namespace tslam
         void setTimber(std::shared_ptr<TSTimber> timber){m_Timber = timber; check4PlaneTags();};
         void setCreaseAngleThreshold(double crease_angle_threshold){m_CreaseAngleThreshold = crease_angle_threshold;};
         void setMinPolyDist(double min_poly_dist){m_MinPolyDist = min_poly_dist;};
+        void setAABBScaleFactor(double aabb_scale_factor){m_AABBScaleFactor = aabb_scale_factor;};
+        void setMaxPolyTagDist(double max_poly_dist){m_MaxPolyTagDist = max_poly_dist;};
 
     private:  ///< utility funcs
             /** 
@@ -180,6 +198,8 @@ namespace tslam
         double m_AABBScaleFactor;
         /// The minimum distance between two polygons' centers to be merged
         double m_MinPolyDist;
+        /// The maximal distance between a polygon and a tag to be considered as a candidate face in meters (0.03 ~3cm)
+        double m_MaxPolyTagDist;
 
     private:  ///< Solver internal variables
         /// Vector of polygons issued of tags' planes-AABB intersections

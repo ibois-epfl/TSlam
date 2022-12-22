@@ -23,6 +23,8 @@ int main()
     solverPtr->setTimber(timberPtr);
     solverPtr->setCreaseAngleThreshold(10.0);
     solverPtr->setMinPolyDist(3.0);
+    solverPtr->setAABBScaleFactor(2.0);
+    solverPtr->setMaxPolyTagDist(0.03);
 
     // solve
     solverPtr->reconstruct();
