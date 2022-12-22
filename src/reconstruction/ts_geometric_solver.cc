@@ -17,17 +17,13 @@ namespace tslam
         this->rIntersectTagPlnAABB();
         this->rIntersectMeanPolygonPlnAABB();
 
+        this->rCreatePolysurface();
+
 
         // // =============================================================================
-        // intersect polygons and get segments connecting the intersection points
+        // create mesh
         // // =============================================================================
-
-        std::vector<TSSegment> splitSegs;
-        this->rIntersectPolygons(this->m_MergedPolygons, splitSegs);
-
-        std::vector<TSPolygon> splitPolygons;
-        this->rSplitPolygons(this->m_MergedPolygons, splitPolygons, splitSegs);
-
+        // TODO: implement smaller angles to have creases and more definition
 
 
 
@@ -262,7 +258,7 @@ namespace tslam
     // vis->AddGeometry(ctrs);
 
     // draw all split poly
-    for (auto& poly : splitPolygons)
+    for (auto& poly : this->m_FacePolygons)
     {
         std::vector<Eigen::Vector3d> pts = poly.getPoints();
         // random color
@@ -521,6 +517,17 @@ namespace tslam
         }
     }
 
+    void TSGeometricSolver::rCreatePolysurface()
+    {
+        std::vector<TSSegment> splitSegs;
+        this->rIntersectPolygons(this->m_MergedPolygons, splitSegs);
+
+        std::vector<TSPolygon> splitPolygons;
+        this->rSplitPolygons(this->m_MergedPolygons, splitPolygons, splitSegs);
+
+        this->rSelectFacePolygons(splitPolygons, this->m_FacePolygons, this->m_MaxPolyTagDist);
+
+    }
     void TSGeometricSolver::rIntersectPolygons(std::vector<TSPolygon> &polygons,
                                                std::vector<TSSegment> &segments)
     {
@@ -545,20 +552,15 @@ namespace tslam
             }
         }
     }
-
-    void rSplitPolygons(std::vector<TSPolygon>& polygons,
-                            std::vector<TSPolygon>& splitPolygons,
-                            std::vector<TSSegment>& segments)
+    void TSGeometricSolver::rSplitPolygons(std::vector<TSPolygon>& polygons,
+                                           std::vector<TSPolygon>& splitPolygons,
+                                           std::vector<TSSegment>& segments)
     {
-        /////////////////////////////////////////
-        // test multiple intersections
-        /////////////////////////////////////////
-
         for (auto& poly : polygons)
         {
-
-            std::vector<TSPolygon> subSplitPolygonsT = {this->m_MergedPolygons[2]};
-            std::vector<TSPolygon> tempSubContainerPolyT;
+            splitPolygons.push_back(poly);
+            // std::vector<TSPolygon> splitPolygons = {poly};
+            std::vector<TSPolygon> tempSplitPolygons;
             std::tuple<TSPolygon, TSPolygon> subTuplePolys;
 
             bool isSubSplitVT;
@@ -567,13 +569,13 @@ namespace tslam
 
             do
             {
-                for (int i = 0; i < subSplitPolygonsT.size(); i++)
+                for (int i = 0; i < splitPolygons.size(); i++)
                 {
                     NSubSplit = 0;
 
-                    for (auto& seg : splitSegs)
+                    for (auto& seg : segments)
                     {
-                        isSubSplitVT = subSplitPolygonsT[i].splitPolygon(seg, subTuplePolys);
+                        isSubSplitVT = splitPolygons[i].splitPolygon(seg, subTuplePolys);
 
                         if (isSubSplitVT)
                         {
@@ -583,7 +585,7 @@ namespace tslam
                             TSPolygon polySplitB = std::get<1>(subTuplePolys);
 
                             isUnique = true;
-                            for (auto& poly : tempSubContainerPolyT)
+                            for (auto& poly : tempSplitPolygons)
                             {
                                 if (poly == polySplitA)
                                 {
@@ -592,10 +594,10 @@ namespace tslam
                                 }
                             }
                             if (isUnique)
-                                tempSubContainerPolyT.push_back(polySplitA);
+                                tempSplitPolygons.push_back(polySplitA);
 
                             isUnique = true;
-                            for (auto& poly : tempSubContainerPolyT)
+                            for (auto& poly : tempSplitPolygons)
                             {
                                 if (poly == polySplitB)
                                 {
@@ -604,91 +606,58 @@ namespace tslam
                                 }
                             }
                             if (isUnique)
-                                tempSubContainerPolyT.push_back(polySplitB);
+                                tempSplitPolygons.push_back(polySplitB);
                         }
                     }
 
                     if (NSubSplit == 0)
                     {
                         isUnique = true;
-                        for (auto& poly : tempSubContainerPolyT)
+                        for (auto& poly : tempSplitPolygons)
                         {
-                            if (poly == subSplitPolygonsT[i])
+                            if (poly == splitPolygons[i])
                             {
                                 isUnique = false;
                                 break;
                             }
                         }
                         if (isUnique)
-                            tempSubContainerPolyT.push_back(subSplitPolygonsT[i]);
+                            tempSplitPolygons.push_back(splitPolygons[i]);
                     }
                 }
 
-                subSplitPolygonsT.clear();
-                if (tempSubContainerPolyT.size() > 0)
-                    for (auto& tpoly : tempSubContainerPolyT)
-                        subSplitPolygonsT.emplace_back(tpoly);
-                tempSubContainerPolyT.clear();
+                splitPolygons.clear();
+                if (tempSplitPolygons.size() > 0)
+                    for (auto& tpoly : tempSplitPolygons)
+                        splitPolygons.emplace_back(tpoly);
+                tempSplitPolygons.clear();
 
             } while (NSubSplit > 0);
-
-            std::cout << "Number of polygons: " << subSplitPolygonsT.size() << std::endl;  // DEBUG
-
-
-
-            /////////////////////////////////////////
-            // test multiple intersections
-            /////////////////////////////////////////
-
-            /*
-            This unit selects the best candidates polygons to compose the mesh's faces.
-            To do this selection we do the following:
-            for each set of split polygons:
-                for each polygon:
-                    for each tag:
-                        get the distance to the polygon's plane
-                        if distance is less than a threshold:
-                            project tag center to polygon's plane
-                            if tag is inside polygon:
-                                add polygon to face
-                                break
-            */
-
-            std::vector<TSPolygon> facesPolys;
-
-            std::shared_ptr<open3d::geometry::PointCloud> ctrs(new open3d::geometry::PointCloud());
-
-            for (auto& poly : subSplitPolygonsT)
+        }
+    }
+    void TSGeometricSolver::rSelectFacePolygons(std::vector<TSPolygon>& polygons,
+                                                std::vector<TSPolygon>& facePolygons,
+                                                double tolerance)
+    {
+        for (auto& poly : polygons)
+        {
+            for (auto& tag : this->m_Timber->getPlaneTags())
             {
-                for (auto& tag : this->m_Timber->getPlaneTags())
+                Eigen::Vector3d& tagCtr = tag.getCenter();
+                TSPlane& polyPln = poly.getLinkedPlane();
+
+                if (polyPln.distance(tagCtr) < tolerance)
                 {
-                    Eigen::Vector3d& tagCtr = tag.getCenter();
-                    TSPlane& polyPln = poly.getLinkedPlane();
+                    Eigen::Vector3d tagCtrProj = polyPln.projectPoint(tagCtr);
 
-                    // print distance
-                    // std::cout << "Distance: " << polyPln.distance(tagCtr) << std::endl;
-
-                    if (polyPln.distance(tagCtr) < 0.03)  // hard coded (?) ~3cm
+                    if (poly.isPointInsidePolygon(tagCtrProj))
                     {
-                        Eigen::Vector3d tagCtrProj = polyPln.projectPoint(tagCtr);
-                        ctrs->points_.push_back(tagCtrProj);  // DEBUG
-
-                        if (poly.isPointInsidePolygon(tagCtrProj))
-                        {
-                            facesPolys.push_back(poly);
-                            break;
-                        }
+                        facePolygons.push_back(poly);
+                        break;
                     }
                 }
             }
-            subSplitPolygonsT.clear();
-            subSplitPolygonsT = facesPolys;
-
-            // print number of polygons
-            std::cout << "Number of polygons: " << subSplitPolygonsT.size() << std::endl;
-
         }
-
     }
 
     bool TSGeometricSolver::check4PlaneTags()

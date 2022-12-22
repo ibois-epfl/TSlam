@@ -126,31 +126,48 @@ namespace tslam
             void rMeanPolygonPlanes();
 
         ///< (d)
-
-        /**
-         * @brief Split the polygons into smaller ones with the intersecting segments.
-         * 
-         * @param polygons[in] the polygons to split
-         * @param splitPolygons[out] the split polygons
-         * @param segments[in] the segments to split the polygons
-         */
-        void rSplitPolygons(std::vector<TSPolygon>& polygons,
-                            std::vector<TSPolygon>& splitPolygons,
-                            std::vector<TSSegment>& segments);
-
-        /**
-         * @brief Obtain a vector of segments connecting the detected intersections of the AABB-generated polygons.
-         * 
-         * @param polygons[in] the polygons to intersect
-         * @param segments[out] the segments connecting polygon's detected intersections
-         */
-        void rIntersectPolygons(std::vector<TSPolygon> &polygons,
-                                std::vector<TSSegment> &segments);
+        /// Create the polysurface (list of polygons) that describes the timber solid volume
+        void rCreatePolysurface();
+            /**
+             * @brief Obtain a vector of segments connecting the detected intersections of the AABB-generated polygons.
+             * 
+             * @param polygons[in] the polygons to intersect
+             * @param segments[out] the segments connecting polygon's detected intersections
+             */
+            void rIntersectPolygons(std::vector<TSPolygon> &polygons,
+                                    std::vector<TSSegment> &segments);
+            /**
+             * @brief Split the polygons into smaller ones with the intersecting segments.
+             * 
+             * @param polygons[in] the polygons to split
+             * @param splitPolygons[out] the split polygons
+             * @param segments[in] the segments to split the polygons
+             */
+            void rSplitPolygons(std::vector<TSPolygon>& polygons,
+                                std::vector<TSPolygon>& splitPolygons,
+                                std::vector<TSSegment>& segments);
+            /**
+             * @brief This unit selects the best candidates polygons to compose the mesh's faces.
+            To do this selection we do the following:
+            for each set of split polygons:
+                for each polygon:
+                    for each tag:
+                        get the distance to the polygon's plane
+                        if distance is less than a threshold:
+                            project tag center to polygon's plane
+                            if tag is inside polygon:
+                                add polygon to face
+                                break
+            * 
+            * @param polygons[in] the polygons to select
+            * @param splitPolygons[out] the selected polygons
+            * @param tolerance[in] the tolerance to select the polygons
+            */
+            void rSelectFacePolygons(std::vector<TSPolygon>& polygons,
+                                    std::vector<TSPolygon>& facePolygons,
+                                    double tolerance);
 
         ///< (e)
-
-
-        ///< (f)
         /**
          * @brief It joins the polygons and create a new mesh of the timber object.
          * 
@@ -206,6 +223,8 @@ namespace tslam
         std::vector<TSPolygon> m_PlnAABBPolygons;
         /// Vector of merged close and similar polygons
         std::vector<TSPolygon> m_MergedPolygons;
+        /// Face polygons to create the mesh
+        std::vector<TSPolygon> m_FacePolygons;
 
     private:  ///< Profiler
 #ifdef TSLAM_REC_PROFILER
