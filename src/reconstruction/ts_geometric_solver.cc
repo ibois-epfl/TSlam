@@ -38,15 +38,15 @@ namespace tslam
         // test for polygon equals /////////////////////////////////////////////////
 
         // Eigen::Vector3d p1 = Eigen::Vector3d(0, 0, 0);
-        // Eigen::Vector3d p2 = Eigen::Vector3d(1, 0, 0);
-        // Eigen::Vector3d p3 = Eigen::Vector3d(0, 1, 0);
-        // Eigen::Vector3d p4 = Eigen::Vector3d(1, 1, 0);
+        // Eigen::Vector3d p2 = Eigen::Vector3d(10, 0, 0);
+        // Eigen::Vector3d p3 = Eigen::Vector3d(0, 10, 0);
+        // Eigen::Vector3d p4 = Eigen::Vector3d(10, 10, 0);
         // std::vector<Eigen::Vector3d> poly1 = {p1, p2, p3, p4};
         // std::vector<Eigen::Vector3d> poly2 = {p4, p3, p1, p2};
         // Eigen::Vector3d p5 = Eigen::Vector3d(0, 0, 0);
-        // Eigen::Vector3d p6 = Eigen::Vector3d(0, 0, 1);
-        // Eigen::Vector3d p7 = Eigen::Vector3d(0, 1, 0);
-        // Eigen::Vector3d p8 = Eigen::Vector3d(1, 1, 0);
+        // Eigen::Vector3d p6 = Eigen::Vector3d(0, 0, 10);
+        // Eigen::Vector3d p7 = Eigen::Vector3d(0, 10, 0);
+        // Eigen::Vector3d p8 = Eigen::Vector3d(10, 10, 0);
         // std::vector<Eigen::Vector3d> poly3 = {p5, p6, p7, p8};
 
 
@@ -87,172 +87,25 @@ namespace tslam
 
         std::vector<TSSegment> splitSegs;
         this->rIntersectPolygons(this->m_MergedPolygons, splitSegs);
-        // std::cout << "[DEBUG] Number of split segments: " << splitSegs.size() << std::endl;  // DEBUG
 
 
-        // // // =============================================================================
-        // // split poly with every seg until no more splits are possible
-        // // // =============================================================================
-
-
-
-        std::vector<TSPolygon> splitPolygons = this->m_MergedPolygons;
-        uint NMergedPolygons = this->m_MergedPolygons.size();
-        uint NIntersectSegments = splitSegs.size();
-        uint maxNSplitPolygons = NIntersectSegments * 2 * NMergedPolygons;
-        // std::cout << "[DEBUG] max number of split polygons: " << maxNSplitPolygons << std::endl;
-
-        // std::vector<bool> flagsErase;
-
-
-        std::vector<TSPolygon> splitPolygonsReserve;
-
-
-        // bool isSplittable = true;
-        // bool isSplit = false;
-
-
-        std::tuple<TSPolygon, TSPolygon> splitPolys;
-
-
-
-        ////////////////////////////////////////////
-        // simple test with just 1 polygon
-        ////////////////////////////////////////////
-        // TODO: test all the polygons and patch the algorithm
-        TSPolygon polyT = m_MergedPolygons[1];
-        std::vector<TSPolygon> splitPolygonsT = {polyT};
-        std::vector<TSPolygon> tempContainerPolyT;
-        bool isSplit = false;
-        int NSplit = 0;
-        bool isSplittable = true;
-        std::vector<bool> flagsErase;
-
-
-        // write a snippet to split the polygon until there are no more splits
-        while(isSplittable)
-        {
-            isSplittable = true;
-
-            // std::cout << "[DEBUG] N tempContainerPolyT: " << tempContainerPolyT.size() << std::endl;
-
-            for (int k = 0; k < splitPolygonsT.size(); k++)
-            {
-                NSplit = -1;
-                for (auto& seg : splitSegs)
-                {
-                    isSplit = true;
-                    isSplit = polyT.splitPolygon(seg, splitPolys);
-
-                    if(isSplit)
-                    {
-                        // std::cout << "[DEBUG] isSplit for index: " << k << " -- " << isSplit << std::endl;
-
-                        tempContainerPolyT.emplace_back(std::get<0>(splitPolys));
-                        tempContainerPolyT.emplace_back(std::get<1>(splitPolys));
-                        NSplit++;
-                    }
-                }
-
-                if(NSplit > 0)
-                {
-                    // std::cout << "[DEBUG] erase index: " << k << std::endl;
-                    flagsErase.emplace_back(true);
-                }
-                else if (NSplit == 0)
-                {
-                    flagsErase.emplace_back(false);
-                    isSplittable = false;
-                }
-                else if (NSplit == -1)
-                {
-                    flagsErase.emplace_back(false);
-                    isSplittable = false;
-                }
-            }
-
-            // if (tempContainerPolyT.size() == 0)
-            // {
-            //     std::cout << "[DEBUG] tempContainerPolyT is empty!" << std::endl;
-            //     isSplittable = false;
-            //     continue;
-            // }
-
-            // print all 
-
-            // std::cout << "[DEBUG] N splitPolygonsT  --beforec--: " << splitPolygonsT.size() << std::endl;
-            for (int z = 0; z < flagsErase.size(); z++)
-            {
-                if (flagsErase[z])
-                {
-                    splitPolygonsT.erase(splitPolygonsT.begin() + z);
-                }
-            }
-            flagsErase.clear();
-            // std::cout << "[DEBUG] N splitPolygonsT  --afterc--: " << splitPolygonsT.size() << std::endl;
-
-
-            for (auto& poly : tempContainerPolyT)
-            {
-                splitPolygonsT.emplace_back(poly);
-            }
-            tempContainerPolyT.clear();
-
-
-
-            // EXIT CONDITION: stops when there is no more split == when the vector of bool split flags is all false
-            if ( std::adjacent_find( flagsErase.begin(), flagsErase.end(), std::not_equal_to<>() ) == flagsErase.end() )
-            {
-                std::cout << "All elements are equal each other" << std::endl;
-                std::cout << "[DEBUG-1SPLIT] hit exit condition!" << std::endl;
-                std::cout << "[DEBUG-1SPLIT] exit number of split poly: " << splitPolygons.size() << std::endl;
-
-                isSplittable = false;
-            }
-            flagsErase.clear();
-
-        }
-        std::cout << "[DEBUG] Number of split polygons: " << splitPolygonsT.size() << std::endl;  // DEBUG
-        std::cout << "[DEBUG] N split segments: " << splitSegs.size() << std::endl;
-
-
-        /////////////////////////////////////////
-        // test of intersection
-        /////////////////////////////////////////
-
-
-        // TSPolygon polyVT = splitPolygonsT[7];
-        // std::vector<Eigen::Vector3d> pts = polyVT.getPoints();  // DEBUG
-
-
-        // TSSegment segTV = splitSegs[200];
-        // TSSegment segTVCOPY = segTV;
-
-
-
-
-        // std::tuple<TSPolygon, TSPolygon> splitPolysVT;
-        // bool isSplitVT;
-        // isSplitVT = polyVT.splitPolygon(segTVCOPY, splitPolysVT);
-
-
-
-        // TSPolygon polyVT1 = std::get<0>(splitPolysVT);
-        // TSPolygon polyVT2 = std::get<1>(splitPolysVT);
+        // TEST
 
 
         /////////////////////////////////////////
         // test multiple intersections
         /////////////////////////////////////////
 
-        std::vector<TSPolygon> subSplitPolygonsT = {polyT};
-        std::vector<TSPolygon> tempSubContainerPolyT;
+        std::vector<TSPolygon> subSplitPolygonsT = {this->m_MergedPolygons[1]};
+        std::vector<TSPolygon> tempSubContainerPolyT;  // <--- TODO: this probably must be set of unique elements
         std::tuple<TSPolygon, TSPolygon> subTuplePolys;
         bool isSubSplitVT;
 
         bool isFound0 = false;  // TEST
         bool isFoundA = false;  // TEST
         bool isFoundB = false;  // TEST
+
+        bool isUnique = true;  // TEST
 
 
         uint NSubSplit = 0;
@@ -262,6 +115,8 @@ namespace tslam
 
         do
         {
+            std::cout << "[DEBUG] while loop counter: " << ++whileCounter << std::endl;
+
             for (int i = 0; i < subSplitPolygonsT.size(); i++)
             {
                 NSubSplit = 0;
@@ -277,64 +132,72 @@ namespace tslam
 
                     if (isSubSplitVT)
                     {
+
                         NSubSplit++;
 
-                        tempSubContainerPolyT.push_back(std::get<0>(subTuplePolys));
-                        tempSubContainerPolyT.push_back(std::get<1>(subTuplePolys));
-                        
-                        // isFoundA = false;
-                        // isFoundB = false;
-                        // for (auto& poly : tempSubContainerPolyT)
+                        TSPolygon polySplitA = std::get<0>(subTuplePolys);
+                        TSPolygon polySplitB = std::get<1>(subTuplePolys);
+
+                        // if (polySplitA.isValid())
                         // {
-                        //     if (poly.areCentersEqual(std::get<0>(subTuplePolys)))
-                        //     {
-                        //         isFoundA = true;
-                        //         std::cout << "[DEBUG] found A equal centers!" << std::endl;
-                        //         break;
-                        //     }
-                        //     if (poly.areCentersEqual(std::get<1>(subTuplePolys)))
-                        //     {
-                        //         isFoundB = true;
-                        //         std::cout << "[DEBUG] found B equal centers!" << std::endl;
-                        //         break;
-                        //     }
+                            isUnique = true;
+                            for (auto& poly : tempSubContainerPolyT)
+                            {
+                                if (poly == polySplitA)
+                                {
+                                    isUnique = false;
+                                    break;
+                                }
+                                    
+                            }
+                            if (isUnique)
+                                tempSubContainerPolyT.push_back(polySplitA);
                         // }
-                        // if (!isFoundA && std::get<0>(subTuplePolys).isValid())
-                        //     tempSubContainerPolyT.push_back(std::get<0>(subTuplePolys));
-                        // if (!isFoundB && std::get<1>(subTuplePolys).isValid())
-                        //     tempSubContainerPolyT.push_back(std::get<1>(subTuplePolys));
+
+                        // if (polySplitB.isValid())
+                        // {
+                            isUnique = true;
+                            for (auto& poly : tempSubContainerPolyT)
+                            {
+                                if (poly == polySplitB)
+                                {
+                                    isUnique = false;
+                                    break;
+                                }
+                            }
+                            if (isUnique)
+                                tempSubContainerPolyT.push_back(polySplitB);
+                        // }
+
                     }
                 }
+
+
                 if (NSubSplit == 0)
                 {
-                    tempSubContainerPolyT.push_back(subSplitPolygonsT[i]);
-
-
-
-                    // isFound0 = false;
-                    // for (auto& poly : tempSubContainerPolyT)
-                    // {
-                    //     if (poly.areCentersEqual(subSplitPolygonsT[i]))
-                    //     {
-                    //         isFound0 = true;
-                    //         std::cout << "[DEBUG] found 0 equal centers!" << std::endl;
-                    //         break;
-                    //     }
-                    // }
-                    // if (!isFound0)
-                    //     tempSubContainerPolyT.push_back(subSplitPolygonsT[i]);
+                    isUnique = true;
+                    for (auto& poly : tempSubContainerPolyT)
+                    {
+                        if (poly == subSplitPolygonsT[i])
+                        {
+                            isUnique = false;
+                            break;
+                        }
+                    }
+                    if (isUnique)
+                        tempSubContainerPolyT.push_back(subSplitPolygonsT[i]);
                 }
 
-                std::cout << "----------------------------- loop: " << i << " / " << subSplitPolygonsT.size() << " ----------------------------" << std::endl;
-                std::cout << "[DEBUG] NSubSplit: " << NSubSplit << std::endl;
-                std::cout << "[DEBUG] subSplitPolygonsT size: " << subSplitPolygonsT.size() << std::endl;
-                std::cout << "[DEBUG] tempSubContainerPolyT size: " << tempSubContainerPolyT.size() << std::endl;
-                std::cout << "------------------------" << std::endl;
-                // for (auto& poly : tempSubContainerPolyT)
-                //     std::cout << "[DEBUG] centers: " << poly.getCenter().transpose() << std::endl;
-                std::cout << "---------------------------------------------------------------------" << std::endl;
+                // std::cout << "----------------------------- loop: " << i << " / " << subSplitPolygonsT.size() << " ----------------------------" << std::endl;
+                // std::cout << "[DEBUG] NSubSplit: " << NSubSplit << std::endl;
+                // std::cout << "[DEBUG] subSplitPolygonsT size: " << subSplitPolygonsT.size() << std::endl;
+                // std::cout << "[DEBUG] tempSubContainerPolyT size: " << tempSubContainerPolyT.size() << std::endl;
+                // std::cout << "------------------------" << std::endl;
+                // // for (auto& poly : tempSubContainerPolyT)
+                // //     std::cout << "[DEBUG] centers: " << poly.getCenter().transpose() << std::endl;
+                // std::cout << "---------------------------------------------------------------------" << std::endl;
 
-                // if (whileCounter == 1 && i == 5) return;  // DEBUG
+                // if (whileCounter == 1 && i == 1) return;  // DEBUG
             }
             // if (whileCounter == 0) return;  // DEBUG
             
@@ -350,8 +213,7 @@ namespace tslam
             {
                 for (auto& tpoly : tempSubContainerPolyT)
                 {
-                    if (tpoly.isValid())
-                        subSplitPolygonsT.emplace_back(tpoly);
+                    subSplitPolygonsT.emplace_back(tpoly);
                 }
             }
             tempSubContainerPolyT.clear();
@@ -363,21 +225,65 @@ namespace tslam
             // std::cout << "---------------------------------------------------------------------" << std::endl;
 
             // return;
-            whileCounter++;  // DEBUG
+            // whileCounter++;  // DEBUG
 
         } while (NSubSplit > 0);
 
-        // remove duplicates in subSplitPolygonsT
-        for (auto& polyA : subSplitPolygonsT)
-        {
-            for (auto& polyB : subSplitPolygonsT)
-            {
-                if (polyA == polyB)
-                {
-                    subSplitPolygonsT.erase(std::remove(subSplitPolygonsT.begin(), subSplitPolygonsT.end(), polyB), subSplitPolygonsT.end());
-                }
-            }
-        }
+
+
+        ////////////////////////////////
+        // clean out the intersections
+        // for each polygon, if it contains any other polyygon's center, remove it
+        ////////////////////////////////
+
+        // // TODO: to be implemented
+
+        // std::cout << "----------------------------- loop: " << "x" << " / " << subSplitPolygonsT.size() << " ----------------------------" << std::endl;
+        // std::cout << "[DEBUG] NSubSplit: " << NSubSplit << std::endl;
+        // std::cout << "[DEBUG] subSplitPolygonsT size: " << subSplitPolygonsT.size() << std::endl;
+        // std::cout << "[DEBUG] tempSubContainerPolyT size: " << tempSubContainerPolyT.size() << std::endl;
+        // std::cout << "------------------------" << std::endl;
+        // // for (auto& poly : tempSubContainerPolyT)
+        // //     std::cout << "[DEBUG] centers: " << poly.getCenter().transpose() << std::endl;
+        // std::cout << "---------------------------------------------------------------------" << std::endl;
+
+        // std::vector<TSPolygon> cleanSubSplitPolygonsT;
+        // bool isContained;
+
+        // for (int i = 0; i < subSplitPolygonsT.size(); i++)
+        // {
+        //     isContained = false;
+        //     for (int j = 0; j < subSplitPolygonsT.size(); j++)
+        //     {
+
+        //         // if (subSplitPolygonsT[i].getCenter().isApprox(subSplitPolygonsT[j].getCenter()))
+        //         // {
+                    
+        //         //     isContained = true;
+        //         //     break;
+        //         // }
+
+
+
+        //         // approach with point inside polygon
+        //         if (subSplitPolygonsT[i].isPointInsidePolygon(subSplitPolygonsT[j].getCenter()))
+        //         {
+        //             // // erase the polygon if true
+        //             subSplitPolygonsT.erase(subSplitPolygonsT.begin() + i);
+        //             // i--;
+
+
+        //             // std::cout << "POOOOP" << std::endl;
+        //             isContained = true;
+        //             break;
+        //         }
+        //     }
+        //     if (!isContained)
+        //         cleanSubSplitPolygonsT.push_back(subSplitPolygonsT[i]);
+        // }
+
+        // subSplitPolygonsT.clear();
+        // subSplitPolygonsT = cleanSubSplitPolygonsT;
 
 
 

@@ -120,13 +120,27 @@ namespace tslam
             return (this->P1.isApprox(other.P1, 1e-5) || this->P1.isApprox(other.P2, 1e-5) ||
                     this->P2.isApprox(other.P1, 1e-5) || this->P2.isApprox(other.P2, 1e-5));
         };
+        // TODO: to be tested
+        /// It checks if there is intersection between two segments
+        bool isIntersecting(TSSegment other)
+        {
+            Eigen::Vector3d tempIntersectPt;
+            return this->intersect(other, tempIntersectPt);
+        }
 
     public: __always_inline
         Eigen::Vector3d getDirection() const { return (this->P2 - this->P1).normalized(); };
         Eigen::Vector3d getCenter() const { return (this->P1 + this->P2) / 2.0; };
-        Eigen::Vector3d& Origin() { return this->P1; };
-        Eigen::Vector3d& EndPoint() { return this->P2; };
-    
+        Eigen::Vector3d& Origin() { return this->P1; };  //TODO: clean out this method
+        Eigen::Vector3d& EndPoint() { return this->P2; };  // TODO: clean out this method
+        // TODO: to be tested
+        Eigen::Vector3d getMidPoint()
+        {
+            Eigen::Vector3d midPoint = Eigen::Vector3d::Zero();
+            midPoint = (this->P1 + this->P2) / 2.0;
+            return midPoint;
+        };
+
     public: __always_inline
         /**
          * @brief It computes the angle between two segments in degrees on a given plane
@@ -191,6 +205,18 @@ namespace tslam
             else return false;
         };
 
+        // TODO: to be tested
+        /** 
+         * @brief It extends the segment to a given length
+         * 
+         * @param length the length to extend the segment
+         */
+        void extend(double length)
+        {
+            Eigen::Vector3d dir = this->getDirection();
+            this->P2 = this->P1 + length * dir;
+        };
+
     public:
         Eigen::Vector3d P1, P2;
     };
@@ -207,57 +233,29 @@ namespace tslam
         ~TSPolygon() = default;
 
     public: __always_inline
-        // FIXME: problem is here, not working <<<<<
+        // TODO: write test
         bool operator==(const TSPolygon& other) const
         {
-            // // check if the plane is the same
-            // if (this->m_LinkedPlane != other.m_LinkedPlane) return false;
-
-
-            // // check if points are the same and they occupy the same position
-            // if (this->m_Points.size() != other.m_Points.size()) return false;
-
-            // // check if points are the same
-            // if (this->m_Points.size() == other.m_Points.size())
-            // {
-            //     uint NFoundPts = 0;
-            //     for (uint i = 0; i < this->m_Points.size(); i++)
-            //     {
-            //         for (uint j = 0; j < other.m_Points.size(); j++)
-            //         {
-            //             if (this->m_Points[i].isApprox(other.m_Points[j], 1e-5))
-            //             {
-            //                 NFoundPts++;
-            //             }
-            //         }
-            //     }
-            //     if (NFoundPts == other.m_Points.size())
-            //         return true;
-            // }
-            // if (this->m_LinkedPlane != other.m_LinkedPlane) return false;
-
-            // // check if the center is the same
+            ///< (a) check for number of vertices
             if (this->m_Points.size() == other.m_Points.size())
             {
+                ///< (b) check for center (if the center is the same, the polygon is the same
                 if (this->m_Center.isApprox(other.m_Center, 1e-5))
                     return true;
                 
-                // uint NFoundPts = 0;
-                // for (uint i = 0; i < this->m_Points.size(); i++)
-                // {
-                //     for (uint j = 0; j < other.m_Points.size(); j++)
-                //     {
-                //         if (this->m_Points[i].isApprox(other.m_Points[j], 1e-5))
-                //             NFoundPts++;
-                //     }
-                // }
-                // if (NFoundPts == other.m_Points.size())
-                // {
-                //     return true;
-                // }
-
+                ///< (c) check for vertices' coordinates
+                uint NFoundPts = 0;
+                for (uint i = 0; i < this->m_Points.size(); i++)
+                {
+                    for (uint j = 0; j < other.m_Points.size(); j++)
+                    {
+                        if (this->m_Points[i].isApprox(other.m_Points[j], 1e-5))
+                            NFoundPts++;
+                    }
+                }
+                if (NFoundPts == other.m_Points.size())
+                    return true;
             }
-            else return true;
 
             return false;
         };
@@ -276,10 +274,6 @@ namespace tslam
         };
         uint size() {return m_Segments.size(); };
         TSSegment& operator[](uint i) {return m_Segments[i]; };
-        // bool operator>(const TSPolygon& other) const
-        // {
-                // TODO: to implement
-        // };
 
     private: __always_inline
         void compute() override
@@ -414,6 +408,51 @@ namespace tslam
 
             return true;
         };
+        // TODO: not tested
+        /**
+         * @brief Check if a point is inside the polygon.
+         * 
+         * @param point the point to check
+         * @return true if the point is inside the polygon
+         * @return false if the point is not inside the polygon
+         */
+        bool isPointInsidePolygon(Eigen::Vector3d point)
+        {
+            // if (!this->isPointOnPolygon(point))
+            //     return false;
+
+            Eigen::Vector3d point2 = point + 10 * this->getNormal();
+
+            TSSegment seg = this->getSegments()[0];
+            Eigen::Vector3d midPt = seg.getMidPoint();
+
+            TSSegment segment(point, midPt);
+
+            // extend the segment longer thant the mid point
+            segment.extend(1000);
+
+            std::vector<Eigen::Vector3d> intersections;
+            Eigen::Vector3d tempIntersection;
+
+            for (auto s : m_Segments)
+            {
+                if (s.intersect(segment, tempIntersection))
+                {
+                    // std::cout << "[DEBUG] intersection detected" << std::endl;
+                    intersections.push_back(tempIntersection);
+                }
+            }
+
+            if (intersections.size() != 1)
+                return false;
+            else
+                return true;
+
+            // if (intersections.size() % 2 == 0)
+            //     return false;
+            // else
+            //     return true;
+        };
 
     public: __always_inline
         /**
@@ -433,16 +472,12 @@ namespace tslam
             for (auto& v : this->m_Points)
             {
                 if (v.isApprox(segment.P1) || v.isApprox(segment.P2))
-                {
-                    // std::cout << "[WARN-SplitPolygon()] segment's end on polygon's vertices" << std::endl;
                     return false;
-                }
             }
 
             ///< (1.b) catch the case where both of the segment's end points are not on the polygon's contour
             if (!this->isPointOnPolygon(segment.Origin()) && !this->isPointOnPolygon(segment.EndPoint()))
             {
-                // std::cout << "[WARN-SplitPolygon()] segment's ends not on polygon" << std::endl;
                 Eigen::Vector3d interPt;
                 std::vector<Eigen::Vector3d> interPts;
                 for (auto& seg : this->m_Segments)
@@ -476,10 +511,7 @@ namespace tslam
                     }
                 }
                 if (!this->isPointOnPolygon(segment.P1) || !this->isPointOnPolygon(segment.P2))
-                {
-                    // std::cout << "[WARN-SplitPolygon()] segment's end not on polygon" << std::endl;
                     return false;
-                }
             }
 
             ///< (2) execute the splitting
@@ -515,6 +547,11 @@ namespace tslam
 
             polyA.reorderClockwisePoints();
             polyB.reorderClockwisePoints();
+
+
+            // TEST: TODO: see if it works, it seems
+            if (!(polyA.isValid() && polyB.isValid()))
+                return false;
 
             std::get<0>(splitPoly) = polyA;
             std::get<1>(splitPoly) = polyB;
