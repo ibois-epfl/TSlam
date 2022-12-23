@@ -168,21 +168,24 @@ namespace tslam
                                     double tolerance);
 
         ///< (e)
-        /**
-         * @brief It joins the polygons and create a new mesh of the timber object.
-         * 
-         */
+        /// Create the mesh out of the candidate polygon faces
         void rCreateMesh();
             /**
-             * @brief It joins all the polygons in a new mesh.
+             * @brief It joins all the polygons in a new o3d triangle mesh.
              * 
+             * @param facePolygons[in] the polygons to join
+             * @param mesh[out] the mesh to create
              */
-            void rJoinPolygons();
+            void rJoinPolygons(std::vector<TSPolygon>& facePolygons,
+                               open3d::geometry::TriangleMesh& mesh);
             /**
              * @brief Check for manifoldness and watertightness of the mesh.
              * 
+             * @param mesh[in] the mesh to check
+             * @return true if the mesh is manifold and watertight
+             * @return false if the mesh is not manifold or watertight
              */
-            void rCheckMeshSanity();
+            bool rCheckMeshSanity(open3d::geometry::TriangleMesh& mesh);
 
     public: __always_inline  ///< Setters for solver parameters
         void setTimber(std::shared_ptr<TSTimber> timber){m_Timber = timber; check4PlaneTags();};
@@ -206,7 +209,7 @@ namespace tslam
              * 
              */
             void exportMesh2PLY();  // TODO: implement
-    private:  ///< Solver parameters
+    private:  ///< Solver parameters for user's tuning
         /// The timber element to reconstruct
         std::shared_ptr<tslam::TSTimber> m_Timber;
         /// The threshold for detection of crease's angle (the smaller the more creases will be detected)
@@ -218,13 +221,19 @@ namespace tslam
         /// The maximal distance between a polygon and a tag to be considered as a candidate face in meters (0.03 ~3cm)
         double m_MaxPolyTagDist;
 
-    private:  ///< Solver internal variables
+    protected:  ///< Solver internal variables
         /// Vector of polygons issued of tags' planes-AABB intersections
         std::vector<TSPolygon> m_PlnAABBPolygons;
         /// Vector of merged close and similar polygons
         std::vector<TSPolygon> m_MergedPolygons;
+        /// Vector of splitting segments out of main polygons' intersection
+        std::vector<TSSegment> m_SplitSegments;
+        /// Vector of split polygons
+        std::vector<TSPolygon> m_SplitPolygons;
         /// Face polygons to create the mesh
         std::vector<TSPolygon> m_FacePolygons;
+        /// The timber mesh
+        open3d::geometry::TriangleMesh m_MeshOut;
 
     private:  ///< Profiler
 #ifdef TSLAM_REC_PROFILER

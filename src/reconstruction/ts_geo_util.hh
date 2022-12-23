@@ -12,9 +12,12 @@
 #include <algorithm> 
 #include <math.h>
 
+#include <open3d/Open3D.h>
+
+
 namespace tslam
 {
-    /// A simple struct to store a plane
+    /// A struct to store a plane
     struct TSPlane
     {
         TSPlane() {};
@@ -87,7 +90,7 @@ namespace tslam
         double A, B, C, D;  ///< eq: ax+by+cz=d
     };
 
-    /// A simple struct to store a segment object
+    /// A struct to store a segment object
     struct TSSegment
     {
         TSSegment() = default;
@@ -125,7 +128,13 @@ namespace tslam
 
             return (abs(AB - (AP + PB)) < 1e-5);
         };
-
+        /**
+         * @brief Test if the segment is connected to another segment
+         * 
+         * @param other the other segment to test
+         * @return true if the segments are connected
+         * @return false if the segments are not connected
+         */
         bool isConnected(TSSegment other) const
         {
             return (this->P1.isApprox(other.P1, 1e-5) || this->P1.isApprox(other.P2, 1e-5) ||
@@ -231,7 +240,7 @@ namespace tslam
     {
         TSPolygon() = default;
         TSPolygon(std::vector<Eigen::Vector3d> points, TSPlane linkedPlane)
-            : m_Points(points), m_LinkedPlane(linkedPlane)
+            : m_Vertices(points), m_LinkedPlane(linkedPlane)
         {
             this->compute();
         };
@@ -241,7 +250,7 @@ namespace tslam
         bool operator==(const TSPolygon& other) const
         {
             ///< (a) check for number of vertices
-            if (this->m_Points.size() == other.m_Points.size())
+            if (this->m_Vertices.size() == other.m_Vertices.size())
             {
                 ///< (b) check for center (if the center is the same, the polygon is the same
                 if (this->m_Center.isApprox(other.m_Center, 1e-5))
@@ -249,15 +258,15 @@ namespace tslam
                 
                 ///< (c) check for vertices' coordinates
                 uint NFoundPts = 0;
-                for (uint i = 0; i < this->m_Points.size(); i++)
+                for (uint i = 0; i < this->m_Vertices.size(); i++)
                 {
-                    for (uint j = 0; j < other.m_Points.size(); j++)
+                    for (uint j = 0; j < other.m_Vertices.size(); j++)
                     {
-                        if (this->m_Points[i].isApprox(other.m_Points[j], 1e-5))
+                        if (this->m_Vertices[i].isApprox(other.m_Vertices[j], 1e-5))
                             NFoundPts++;
                     }
                 }
-                if (NFoundPts == other.m_Points.size())
+                if (NFoundPts == other.m_Vertices.size())
                     return true;
             }
 
@@ -289,30 +298,30 @@ namespace tslam
         };
         void computeVertices()
         {
-            if (m_Points.size() != 0)
+            if (m_Vertices.size() != 0)
                 return;
-            else if (m_Points.size() != 0 && m_Segments.size() != 0)
+            else if (m_Vertices.size() != 0 && m_Segments.size() != 0)
             {
                 for (auto s : m_Segments)
                 {
                     bool found = false;
-                    for (auto p : m_Points)
+                    for (auto p : m_Vertices)
                         if (p == s.P1)
                         {
                             found = true;
                             break;
                         }
                     if (!found)
-                        m_Points.push_back(s.P1);
+                        m_Vertices.push_back(s.P1);
                 }
             }
         };
         void computeCenter()
         {
             Eigen::Vector3d center = Eigen::Vector3d::Zero();
-            for (auto p : m_Points)
+            for (auto p : m_Vertices)
                 center += p;
-            center /= m_Points.size();
+            center /= m_Vertices.size();
             m_Center = center;
         };
         // FIXME: problems with vertices storage
@@ -320,39 +329,39 @@ namespace tslam
         {
             m_Segments.clear();
 
-            for (uint i = 0; i < m_Points.size(); i++)
+            for (uint i = 0; i < m_Vertices.size(); i++)
             {
-                uint j = (i + 1) % m_Points.size();
-                m_Segments.push_back(TSSegment(m_Points[i], m_Points[j]));
+                uint j = (i + 1) % m_Vertices.size();
+                m_Segments.push_back(TSSegment(m_Vertices[i], m_Vertices[j]));
             }
         }
         /// Compute the area of the polygon
         void computeArea()
         {
             double area = 0;
-            for (uint i = 0; i < m_Points.size(); i++)
+            for (uint i = 0; i < m_Vertices.size(); i++)
             {
-                uint j = (i + 1) % m_Points.size();
-                area += m_Points[i].x() * m_Points[j].y() - m_Points[j].x() * m_Points[i].y();
+                uint j = (i + 1) % m_Vertices.size();
+                area += m_Vertices[i].x() * m_Vertices[j].y() - m_Vertices[j].x() * m_Vertices[i].y();
             }
             this->m_Area = area;
         };
 
     public: __always_inline
-        void addPoint(Eigen::Vector3d point) {m_Points.push_back(point); compute(); };
-        void removePoint(uint i) {m_Points.erase(m_Points.begin() + i); compute(); };
+        void addVertex(Eigen::Vector3d point) {m_Vertices.push_back(point); compute(); };
+        void removeVertex(uint i) {m_Vertices.erase(m_Vertices.begin() + i); compute(); };
         void addSegment(TSSegment segment) {m_Segments.push_back(segment); };  // FIXME: problems with vertices storage
-        void setPoints(std::vector<Eigen::Vector3d> points) {m_Points = points; compute(); };
+        void setVertices(std::vector<Eigen::Vector3d> points) {m_Vertices = points; compute(); };
         void setLinkedPlane(TSPlane linkedPlane) {m_LinkedPlane = linkedPlane; };
 
     public:__always_inline
-        std::vector<Eigen::Vector3d>& getVertices() {return m_Points; };
-        uint getNumVertices() {return m_Points.size(); };
-        Eigen::Vector3d& getVertex(uint i) {return m_Points[i]; };
+        std::vector<Eigen::Vector3d>& getVertices() {return m_Vertices; };
+        uint getNumVertices() {return m_Vertices.size(); };
+        Eigen::Vector3d& getVertex(uint i) {return m_Vertices[i]; };
         int getVertexIndex(Eigen::Vector3d point)
         {
-            for (uint i = 0; i < m_Points.size(); i++)
-                if (m_Points[i].isApprox(point))
+            for (uint i = 0; i < m_Vertices.size(); i++)
+                if (m_Vertices[i].isApprox(point))
                     return i;
             return -1;
         };
@@ -395,12 +404,12 @@ namespace tslam
          */
         bool isValid()
         {
-            if (m_Points.size() < 3)
+            if (m_Vertices.size() < 3)
                 return false;
             
-            for (uint i = 0; i < m_Points.size(); i++)
+            for (uint i = 0; i < m_Vertices.size(); i++)
             {
-                uint j = (i + 1) % m_Points.size();
+                uint j = (i + 1) % m_Vertices.size();
                 if (!m_Segments[i].isConnected(m_Segments[j]))
                     return false;
             }
@@ -470,7 +479,7 @@ namespace tslam
             ///< (1) catch corner's cases and adjust the segment's end points for the splitting
 
             ///< (1.a) catch the case where the segment's end points are on the polygon's vertices
-            for (auto& v : this->m_Points)
+            for (auto& v : this->m_Vertices)
             {
                 if (v.isApprox(segment.P1) || v.isApprox(segment.P2))
                     return false;
@@ -521,21 +530,21 @@ namespace tslam
             pointsA.push_back(segment.P1);
             pointsB.push_back(segment.P2);
 
-            for (uint i = 0; i < m_Points.size(); i++)
+            for (uint i = 0; i < m_Vertices.size(); i++)
             {
-                TSSegment testSeg = TSSegment(segment.P1, m_Points[i]);
+                TSSegment testSeg = TSSegment(segment.P1, m_Vertices[i]);
                 double angle = segment.angleDegOnPlane(testSeg, m_LinkedPlane);
 
                 if (angle < 0)
-                    pointsA.push_back(m_Points[i]);
+                    pointsA.push_back(m_Vertices[i]);
                 else if (angle > 0)
-                    pointsB.push_back(m_Points[i]);
+                    pointsB.push_back(m_Vertices[i]);
                 else
                 {
-                    if (segment.isPointOnSegment(m_Points[i]))
+                    if (segment.isPointOnSegment(m_Vertices[i]))
                     {
-                        pointsA.push_back(m_Points[i]);
-                        pointsB.push_back(m_Points[i]);
+                        pointsA.push_back(m_Vertices[i]);
+                        pointsB.push_back(m_Vertices[i]);
                     }
                 }
             }
@@ -601,13 +610,13 @@ namespace tslam
             Eigen::Vector3d center = Eigen::Vector3d(0.f, 0.f, 0.f);
 
             // compute the center of the polygon
-            for  (unsigned i = 0; i < m_Points.size(); ++i)
-                center += m_Points[i];
-            center /= (float)m_Points.size();
+            for  (unsigned i = 0; i < m_Vertices.size(); ++i)
+                center += m_Vertices[i];
+            center /= (float)m_Vertices.size();
 
             // sort the points in a clockwise order also for the case of plane.A < 0.f
             // (the plane is not normalized)
-            std::sort(m_Points.begin(),m_Points.end(),
+            std::sort(m_Vertices.begin(),m_Vertices.end(),
                       [&](const Eigen::Vector3d& a, 
                       const Eigen::Vector3d& b)
             {
@@ -627,10 +636,66 @@ namespace tslam
         {
             return this->m_Center.isApprox(other.m_Center, eps);
         }
+        // TODO: test for 4+ polygon vertices
+        /**
+         * @brief It triangulate a polygon by groups of 3 vertices.
+         * 
+         * @param polyVertices[in] the polygon's vertices
+         * @param polyTriangles[out] the triangles' indices
+         */
+        bool triangulate(std::vector<Eigen::Vector3d>& polyVertices,
+                         std::vector<Eigen::Vector3i>& polyTriangles)
+        {
+            if (this->getNumVertices() == 3)
+            {
+                Eigen::Vector3i triangle;
+                triangle(0) = 0;
+                triangle(1) = 1;
+                triangle(2) = 2;
+                polyTriangles.push_back(triangle);
+                return true;
+            }
+            for (unsigned i = 0; i < this->getNumVertices() - 2; i += 2)
+            {
+                Eigen::Vector3i triangle;
+                triangle(0) = i;
+                triangle(1) = (i + 1) % this->getNumVertices();
+                triangle(2) = (i + 2) % this->getNumVertices();
+
+                polyTriangles.push_back(triangle);
+            }
+            // add the last triangle
+            Eigen::Vector3i triangle;
+            triangle(0) = this->getNumVertices() - 2;
+            triangle(1) = this->getNumVertices() - 1;
+            triangle(2) = 0;
+            polyTriangles.push_back(triangle);
+
+            return true;
+        }
+        /**
+         * @brief Convert a polygon to an open3d triangle mesh by triangulation
+         * 
+         * @return open3d::geometry::TriangleMesh 
+         */
+        open3d::geometry::TriangleMesh cvtPoly2O3dMesh()
+        {
+            open3d::geometry::TriangleMesh mesh;
+            std::vector<Eigen::Vector3d> polyVertices;
+            std::vector<Eigen::Vector3i> polyTriangles;
+
+            polyVertices = this->getVertices();
+            this->triangulate(polyVertices, polyTriangles);
+
+            mesh.vertices_ = polyVertices;
+            mesh.triangles_ = polyTriangles;
+
+            return mesh;
+        }
 
     private:
         /// The polygon's vertices
-        std::vector<Eigen::Vector3d> m_Points;
+        std::vector<Eigen::Vector3d> m_Vertices;
         /// The polygon's center
         Eigen::Vector3d m_Center;
         /// The plane on which the polygon lies
