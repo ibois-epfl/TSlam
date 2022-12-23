@@ -168,7 +168,8 @@ namespace tslam
                                     double tolerance);
 
         /// (e)
-        /// Create the mesh out of the candidate polygon faces
+        /// Create the mesh out of the candidate polygon faces. The mesh is created by joining the polygons.
+        /// *** The mesh has no normals/orientation ***
         void rCreateMesh();
             /**
              * @brief It joins all the polygons in a new o3d triangle mesh.

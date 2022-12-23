@@ -20,8 +20,6 @@ namespace tslam
         this->rCreatePolysurface();
         this->rCreateMesh();
 
-
-
 #ifdef TSLAM_REC_DEBUG
     // Debug visualizer
     open3d::visualization::Visualizer* vis(new open3d::visualization::Visualizer());
@@ -676,10 +674,9 @@ namespace tslam
 
     void TSGeometricSolver::rCreateMesh()
     {
-        // open3d::geometry::TriangleMesh tempMesh;
         this->rJoinPolygons(this->m_FacePolygons, this->m_MeshOut);
-        this->rCheckMeshSanity(this->m_MeshOut);
-
+        if (!this->rCheckMeshSanity(this->m_MeshOut))
+            throw std::runtime_error("[ERROR]: mesh is not valid.");
     }
     void TSGeometricSolver::rJoinPolygons(std::vector<TSPolygon>& facePolygons,
                                           open3d::geometry::TriangleMesh& mesh)
@@ -693,17 +690,12 @@ namespace tslam
             mesh.RemoveNonManifoldEdges();
             mesh.RemoveDegenerateTriangles();
         }
-
-        // TODO: orient correctly normals
-        mesh.ComputeVertexNormals();
-        mesh.ComputeTriangleNormals();
-        mesh.OrientTriangles();
     }
     bool TSGeometricSolver::rCheckMeshSanity(open3d::geometry::TriangleMesh& mesh)
     {
         if (mesh.HasVertices() && mesh.HasTriangles() && mesh.IsWatertight())
             return true;
         else
-            throw std::runtime_error("[ERROR]: mesh is not valid.");
+            return false;
     }
 }
