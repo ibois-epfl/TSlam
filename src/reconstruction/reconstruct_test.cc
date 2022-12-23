@@ -21,7 +21,7 @@ int main()
 
     // set solver's parameters
     solverPtr->setTimber(timberPtr);
-    solverPtr->setCreaseAngleThreshold(10.0);
+    solverPtr->setCreaseAngleThreshold(10.0);  ///< default: 10.0
     solverPtr->setMinPolyDist(3.0);
     solverPtr->setAABBScaleFactor(2.0);
     solverPtr->setMaxPolyTagDist(0.03);

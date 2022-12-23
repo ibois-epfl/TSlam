@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <iterator>
 
+// TODO: try to catch more sensitive creaeses
 
 namespace tslam
 {
@@ -16,29 +17,8 @@ namespace tslam
         this->rDetectCreasesTags();
         this->rIntersectTagPlnAABB();
         this->rIntersectMeanPolygonPlnAABB();
-
         this->rCreatePolysurface();
-
-
-        // // =============================================================================
-        // create mesh
-        // // =============================================================================
-        // TODO: implement smaller angles to have creases and more definition
-
-        TSPolygon testPoly = this->m_FacePolygons[0];
-
-        std::shared_ptr<open3d::geometry::TriangleMesh> testMesh = 
-            std::make_shared<open3d::geometry::TriangleMesh>(testPoly.cvtPoly2O3dMesh());
-
-
-
-
-
-        
-
-
-
-
+        this->rCreateMesh();
 
 
 
@@ -122,7 +102,7 @@ namespace tslam
     // }
 
     // // draw splitting segments
-    // for (auto& seg : splitSegs)
+    // for (auto& seg : this->m_SplitSegments)
     // {
     //     std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
     //     segLineset->points_.push_back(seg.Origin());
@@ -189,12 +169,11 @@ namespace tslam
     // }
 
     // // // draw split polygo by accessing segments
-    // TSPolygon polyTESTSS = subSplitPolygonsT[2];
-    // for (auto& segVT : polyTESTSS.getSegments())
+    // for (auto& segVT : testPoly.getSegments())
     // {
     //     std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-    //     segLineset->points_.push_back(segVT.Origin());
-    //     segLineset->points_.push_back(segVT.EndPoint());
+    //     segLineset->points_.push_back(segVT.P1);
+    //     segLineset->points_.push_back(segVT.P2);
     //     segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
     //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
     //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
@@ -290,17 +269,19 @@ namespace tslam
         }
     }
 
-    // show triangulated test mesh
-    testMesh->PaintUniformColor(Eigen::Vector3d(0.5, 0.5, 0.5));
-    vis->AddGeometry(testMesh);
+    // show final mesh
+    std::shared_ptr<open3d::geometry::TriangleMesh> mesh = std::make_shared<open3d::geometry::TriangleMesh>(this->m_MeshOut);
+    mesh->PaintUniformColor(Eigen::Vector3d(0.5, 0.5, 0.5));
+    vis->AddGeometry(mesh);
 
-    // show the final mesh
-    std::shared_ptr<open3d::geometry::TriangleMesh> showMesh = std::make_shared<open3d::geometry::TriangleMesh>(this->m_MeshOut);
-    showMesh->PaintUniformColor(Eigen::Vector3d(0.5, 0.5, 0.5));
-    vis->AddGeometry(showMesh);
-
-
-
+    std::shared_ptr<open3d::geometry::PointCloud> pcdMeshCenters = std::make_shared<open3d::geometry::PointCloud>();
+    for (auto& tri : mesh->triangles_)
+    {
+        Eigen::Vector3d ctr = (mesh->vertices_[tri(0)] + mesh->vertices_[tri(1)] + mesh->vertices_[tri(2)]) / 3.;
+        pcdMeshCenters->points_.push_back(ctr);
+    }
+    pcdMeshCenters->PaintUniformColor(Eigen::Vector3d(1., 0., 0.));
+    vis->AddGeometry(pcdMeshCenters);
 
     vis->Run();
     vis->Close();
@@ -703,39 +684,26 @@ namespace tslam
     void TSGeometricSolver::rJoinPolygons(std::vector<TSPolygon>& facePolygons,
                                           open3d::geometry::TriangleMesh& mesh)
     {
-        // std::vector<Eigen::Vector3d> vertces;
-        // std::vector<Eigen::Vector3i> triangles;
+        for (auto& poly : this->m_FacePolygons)
+        {
+            mesh += poly.cvtPoly2O3dMesh();
+            mesh.MergeCloseVertices(0.001);
+            mesh.RemoveDuplicatedTriangles();
+            mesh.RemoveDuplicatedVertices();
+            mesh.RemoveNonManifoldEdges();
+            mesh.RemoveDegenerateTriangles();
+        }
 
-        // for (auto& poly : facePolygons)
-        // {
-        //     // if not triangular polygon, triangulate it
-        //     if (poly.getVertices().size() > 3)
-        //     {
-        //         std::vector<Eigen::Vector3d> polyVertices = poly.getVertices();
-        //         std::vector<Eigen::Vector3i> polyTriangles;
-
-        //         // triangulate the polygon
-        //         poly.triangulatePolygon(polyVertices, polyTriangles);
-
-        //         // add the vertices and triangles to the mesh
-        //         for (auto& v : polyVertices)
-        //             vertices.push_back(v);
-        //         for (auto& t : polyTriangles)
-        //             triangles.push_back(t);
-        //     }
-        //     else
-        //     {
-        //         for (auto& v : poly.getVertices())
-        //             vertices.push_back(v);
-        //         for (int i = 0; i < 3; i++)
-        //             triangles.push_back(Eigen::Vector3i(i, i + 1, i + 2));
-        //     }
-        // }
-
-        // mesh = open3d::geometry::TriangleMesh(vertices, triangles);
+        // TODO: orient correctly normals
+        mesh.ComputeVertexNormals();
+        mesh.ComputeTriangleNormals();
+        mesh.OrientTriangles();
     }
     bool TSGeometricSolver::rCheckMeshSanity(open3d::geometry::TriangleMesh& mesh)
     {
-        return true;
+        if (mesh.HasVertices() && mesh.HasTriangles() && mesh.IsWatertight())
+            return true;
+        else
+            throw std::runtime_error("[ERROR]: mesh is not valid.");
     }
 }

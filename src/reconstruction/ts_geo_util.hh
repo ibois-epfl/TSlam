@@ -329,11 +329,54 @@ namespace tslam
         {
             m_Segments.clear();
 
+            /// (a) create segments
             for (uint i = 0; i < m_Vertices.size(); i++)
             {
                 uint j = (i + 1) % m_Vertices.size();
                 m_Segments.push_back(TSSegment(m_Vertices[i], m_Vertices[j]));
             }
+
+            /// (b) for connected segments with the same direction, merge them
+            bool merged = true;
+            while (merged)
+            {
+                merged = false;
+                for (uint i = 0; i < m_Segments.size(); i++)
+                {
+                    for (uint j = i + 1; j < m_Segments.size(); j++)
+                    {
+                        if (m_Segments[i].getDirection().isApprox(m_Segments[j].getDirection(), 1e-5) &&
+                            m_Segments[i].P2.isApprox(m_Segments[j].P1, 1e-5))
+                        {
+                            m_Segments[i].P2 = m_Segments[j].P2;
+                            m_Segments.erase(m_Segments.begin() + j);
+                            merged = true;
+                            break;
+                        }
+                    }
+                    if (merged) break;
+                }
+            }
+
+            // FIXME: it's working but this has to be fixed, the order is not working segments>points
+            /// (c) update vertices
+            m_Vertices.clear();
+            for (auto s : m_Segments)
+            {
+                bool found = false;
+                for (auto p : m_Vertices)
+                    if (p == s.P1)
+                    {
+                        found = true;
+                        break;
+                    }
+                if (!found)
+                    m_Vertices.push_back(s.P1);
+            }
+
+            // FIXME: see above
+            // update center
+            this->computeCenter();
         }
         /// Compute the area of the polygon
         void computeArea()
@@ -604,7 +647,7 @@ namespace tslam
             
             return true;
         }
-        /// Reorder the polygon vertices in a clockwise order based on grahm scan algorithm
+        /// Reorder the polygon vertices in a clockwise order based on graham scan algorithm
         void reorderClockwisePoints()
         {
             Eigen::Vector3d center = Eigen::Vector3d(0.f, 0.f, 0.f);
@@ -636,42 +679,46 @@ namespace tslam
         {
             return this->m_Center.isApprox(other.m_Center, eps);
         }
-        // TODO: test for 4+ polygon vertices
         /**
-         * @brief It triangulate a polygon by groups of 3 vertices.
+         * @brief It triangulate a convex polygon by groups of 3 vertices and alawys the first index as 0.
+         *                  A
+         *                  x
+         *        O'       t3       B
+         *         o _____________ x
+         *           \             
+         *            \           
+         *             \    t2   
+         *              \       
+         *       D x  t1 \     
+         *                \   
+         *                  x
+         *                  C
          * 
          * @param polyVertices[in] the polygon's vertices
          * @param polyTriangles[out] the triangles' indices
          */
-        bool triangulate(std::vector<Eigen::Vector3d>& polyVertices,
+        void triangulate(std::vector<Eigen::Vector3d>& polyVertices,
                          std::vector<Eigen::Vector3i>& polyTriangles)
         {
+            Eigen::Vector3i triangle;
+
             if (this->getNumVertices() == 3)
             {
-                Eigen::Vector3i triangle;
                 triangle(0) = 0;
                 triangle(1) = 1;
                 triangle(2) = 2;
                 polyTriangles.push_back(triangle);
-                return true;
             }
-            for (unsigned i = 0; i < this->getNumVertices() - 2; i += 2)
+            else
             {
-                Eigen::Vector3i triangle;
-                triangle(0) = i;
-                triangle(1) = (i + 1) % this->getNumVertices();
-                triangle(2) = (i + 2) % this->getNumVertices();
-
-                polyTriangles.push_back(triangle);
+                for  (unsigned i = 0; i < this->getNumVertices() - 2; i += 1)
+                {
+                    triangle(0) = 0;
+                    triangle(1) = (i + 1) % this->getNumVertices();
+                    triangle(2) = (i + 2) % this->getNumVertices();
+                    polyTriangles.push_back(triangle);
+                }
             }
-            // add the last triangle
-            Eigen::Vector3i triangle;
-            triangle(0) = this->getNumVertices() - 2;
-            triangle(1) = this->getNumVertices() - 1;
-            triangle(2) = 0;
-            polyTriangles.push_back(triangle);
-
-            return true;
         }
         /**
          * @brief Convert a polygon to an open3d triangle mesh by triangulation
@@ -689,6 +736,9 @@ namespace tslam
 
             mesh.vertices_ = polyVertices;
             mesh.triangles_ = polyTriangles;
+            mesh.triangle_normals_.resize(polyTriangles.size());
+            for (unsigned i = 0; i < polyTriangles.size(); i++)
+                mesh.triangle_normals_[i] = this->getLinkedPlane().Normal;
 
             return mesh;
         }

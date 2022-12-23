@@ -43,7 +43,7 @@ namespace tslam
         void reconstruct();
 
     private:  ///< reconstruction methods
-        ///< (a)
+        /// (a)
         // FIXME: this function should be a timber.hh's function
         /**
          * @brief The function detect the tags creases of the timber piece. It builds a ktree of the tags and by
@@ -61,7 +61,7 @@ namespace tslam
              */
             double rAngleBetweenVectors(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2);
         
-        ///< (b)
+        /// (b)
         /** 
          * @brief the function intersect a plane with a AABB and store the intersection points.
          * 
@@ -109,7 +109,7 @@ namespace tslam
                                             Eigen::Vector3d* out_points,
                                             unsigned &out_point_count);
         
-        ///< (c)
+        /// (c)
         /**
          * @brief The function mean the previous similar polygons'planes and recompute the
          * intersection of the mean planes with the AABB to obtain new polygons.
@@ -125,7 +125,7 @@ namespace tslam
              */
             void rMeanPolygonPlanes();
 
-        ///< (d)
+        /// (d)
         /// Create the polysurface (list of polygons) that describes the timber solid volume
         void rCreatePolysurface();
             /**
@@ -167,7 +167,7 @@ namespace tslam
                                     std::vector<TSPolygon>& facePolygons,
                                     double tolerance);
 
-        ///< (e)
+        /// (e)
         /// Create the mesh out of the candidate polygon faces
         void rCreateMesh();
             /**
