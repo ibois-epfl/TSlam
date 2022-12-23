@@ -46,7 +46,6 @@ namespace tslam
         };
     
     public: __always_inline
-        // TODO: test
         /**
          * @brief It computes the distance between a point and the plane
          * 
@@ -57,8 +56,6 @@ namespace tslam
         {
             return this->Normal.dot(point - this->Center);
         };
-
-        // TODO: test me
         /**
          * @brief Project a point on the plane.
          * 
@@ -70,15 +67,6 @@ namespace tslam
             Eigen::Vector3d pt =  point - this->distance(point) * this->Normal;
             return pt;
         };
-        // /**
-        //  * @brief 
-        //  * 
-        //  * @param point[in] 
-        //  * @param distThresh the distance threshold 
-        //  * @return Eigen::Vector3d 
-        //  * @see projectPoint(Eigen::Vector3d& point)
-        //  */
-        // Eigen::Vector3d projectPoint(Eigen::Vector3d& point, double distThresh)
 
     public: __always_inline
         /**
@@ -153,8 +141,6 @@ namespace tslam
     public: __always_inline
         Eigen::Vector3d getDirection() const { return (this->P2 - this->P1).normalized(); };
         Eigen::Vector3d getCenter() const { return (this->P1 + this->P2) / 2.0; };
-        Eigen::Vector3d& Origin() { return this->P1; };  //TODO: clean out this method
-        Eigen::Vector3d& EndPoint() { return this->P2; };  // TODO: clean out this method
         Eigen::Vector3d getMidPoint()
         {
             Eigen::Vector3d midPoint = Eigen::Vector3d::Zero();
@@ -225,8 +211,6 @@ namespace tslam
             }
             else return false;
         };
-
-        // TODO: to be tested
         /** 
          * @brief It extends the segment to a given length
          * 
@@ -362,10 +346,9 @@ namespace tslam
         void setLinkedPlane(TSPlane linkedPlane) {m_LinkedPlane = linkedPlane; };
 
     public:__always_inline
-        std::vector<Eigen::Vector3d>& getPoints() {return m_Points; };
-        // TODO: refactor "point" term in "vertex" for polygon
-        uint getNumPoints() {return m_Points.size(); };
-        Eigen::Vector3d& getPoint(uint i) {return m_Points[i]; };
+        std::vector<Eigen::Vector3d>& getVertices() {return m_Points; };
+        uint getNumVertices() {return m_Points.size(); };
+        Eigen::Vector3d& getVertex(uint i) {return m_Points[i]; };
         int getVertexIndex(Eigen::Vector3d point)
         {
             for (uint i = 0; i < m_Points.size(); i++)
@@ -427,7 +410,6 @@ namespace tslam
 
             return true;
         };
-        // TODO: to be tested - not used
         /**
          * @brief Check if a point is inside the polygon.
          * 
@@ -495,7 +477,7 @@ namespace tslam
             }
 
             ///< (1.b) catch the case where both of the segment's end points are not on the polygon's contour
-            if (!this->isPointOnPolygon(segment.Origin()) && !this->isPointOnPolygon(segment.EndPoint()))
+            if (!this->isPointOnPolygon(segment.P1) && !this->isPointOnPolygon(segment.P2))
             {
                 Eigen::Vector3d interPt;
                 std::vector<Eigen::Vector3d> interPts;
@@ -513,7 +495,7 @@ namespace tslam
                     return false;
             }
             ///< (1.c) catch the case where one of the segment's end points is not on the polygon's contour
-            else if (!this->isPointOnPolygon(segment.Origin()) || !this->isPointOnPolygon(segment.EndPoint()))
+            else if (!this->isPointOnPolygon(segment.P1) || !this->isPointOnPolygon(segment.P2))
             {
                 bool isIntersect;
                 Eigen::Vector3d interPt;
