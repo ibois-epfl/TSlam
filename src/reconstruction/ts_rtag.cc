@@ -28,14 +28,17 @@ namespace tslam
         this->compute();
     }
 
+    // FIXME: this needs to refactor with a true yaml parser for cc
     void TSRTag::parseFromMAPYAML(const std::string& filename, std::vector<TSRTag>& tags)
     {
+        // Open file
         std::ifstream ifss(filename);
         if (!ifss.is_open())
         {
             throw std::runtime_error("[ERROR]: could not open file " + filename);
         }
 
+        // Get number of markers
         uint nmarkers = 0;
         const std::string keyNmarkers = "aruco_bc_nmarkers";
         std::string line;
@@ -48,6 +51,7 @@ namespace tslam
             }
         }
 
+        // Get markers
         const std::string keyMarkers = "aruco_bc_marker";
         std::vector<std::string> markersToParse;
         while (std::getline(ifss, line))
@@ -69,12 +73,11 @@ namespace tslam
             }
         }
 
+        // Check number of markers entry with the number of markers found
         if (markersToParse.size() != nmarkers)
-        {
             throw std::runtime_error("[Error]: number of markers to parse is not correct.");
-        }
 
-
+        // Parse markers
         for (uint i = 0; i < markersToParse.size(); i++)
         {
             std::string marker = markersToParse[i];
@@ -101,6 +104,8 @@ namespace tslam
                     token.erase(std::remove(token.begin(), token.end(), ' '), token.end());
                     tokens.push_back(token);
                 }
+
+                std::cout << "[DEBUG] pop" << std::endl;  // DEBUG
 
                 float xAF, yAF, zAF, xBF, yBF, zBF, xCF, yCF, zCF, xDF, yDF, zDF;
                 xAF = std::stof(tokens[0]);

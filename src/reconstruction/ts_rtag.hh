@@ -12,7 +12,7 @@ namespace tslam
     {
         Unknown = 0,
         Edge = 1,
-        Face = 2
+        Side = 2
     };
     
     /// TSRTag class responsible for storing the plane information.
@@ -38,7 +38,7 @@ namespace tslam
 
     public:
         inline bool isEdge() {return (m_Type==TSRTagType::Edge) ? true : false; };
-        inline bool isFace() {return (m_Type==TSRTagType::Face) ? true : false; };
+        inline bool isSide() {return (m_Type==TSRTagType::Side) ? true : false; };
 
     public:
         /**
@@ -54,6 +54,7 @@ namespace tslam
         void setCorners(Eigen::Vector3d A, Eigen::Vector3d B, Eigen::Vector3d C, Eigen::Vector3d D);
         inline void setID(uint id) {m_Id = id; };
         inline void setType(TSRTagType type) {m_Type = type; };
+        inline void setFaceIdx(int idx) {m_FaceIdx = idx; };
 
     public: __always_inline
         std::vector<Eigen::Vector3d>& getCorners() {return m_Corners; }; 
@@ -67,7 +68,8 @@ namespace tslam
         TSPlane& getPlane() {return m_Plane; };
         Eigen::Vector3d& getNormal() {m_Normal = m_Plane.Normal; return m_Normal; };
         TSRTagType& getType() {return m_Type; };
-
+        uint& getFaceIdx() {return m_FaceIdx; };
+        
     private:
         /// Compute the intrinsic properties from the corners and it sets the obj members.
         void compute() override;
@@ -92,6 +94,8 @@ namespace tslam
         Eigen::Vector3d m_Normal;  ///< Normal vector of the plane NOT oriented (in(outwards))
         Eigen::Vector3d m_Center;
         TSRTagType m_Type;
+        /// Index to identify the face on which the tag is stick to
+        uint m_FaceIdx;
 
 #ifdef TSLAM_REC_DEBUG
         Eigen::Vector3d m_Color;

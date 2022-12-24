@@ -19,7 +19,7 @@ namespace tslam
         this->rDetectCreasesTags();
         this->rIntersectTagPlnAABB();
         this->rCreatePolysurface();
-        // this->rCreateMesh();
+        // this->rCreateMesh();  // TODO: to reactivate
 
 #ifdef TSLAM_REC_DEBUG
     // Debug visualizer
@@ -31,17 +31,32 @@ namespace tslam
     {
         open3d::geometry::TriangleMesh tagBase = tag.getOpen3dMesh();
         auto planeTagsLineset1 = open3d::geometry::LineSet::CreateFromTriangleMesh(tagBase);
+
         if (tag.isEdge())
             tag.setColor(Eigen::Vector3d(0, 1, 0));
         else
             tag.setColor(Eigen::Vector3d(1, 0, 0));
+
         planeTagsLineset1->PaintUniformColor(tag.getColor());
         vis->AddGeometry(planeTagsLineset1);
     }
 
-    // draw tag centers as point cloud with normals
-    this->m_Timber->getTagsCtrs().PaintUniformColor(Eigen::Vector3d(0, 0, 0));
-    vis->AddGeometry(std::make_shared<open3d::geometry::PointCloud>(this->m_Timber->getTagsCtrs()));
+    // // get the tag centers as point cloud and color them according to their faceIdx value
+    std::shared_ptr<open3d::geometry::PointCloud> tagCenters = std::make_shared<open3d::geometry::PointCloud>();
+    for (auto& tag : this->m_Timber->getPlaneTags())
+    {
+        uint idx = tag.getFaceIdx();
+        tagCenters->points_.push_back(tag.getCenter());
+
+        // assign a random color to each tag value of faceIdx
+        // remap idx to color 0 to 1
+        double rempa = (double)idx / (double)this->m_Timber->getPlaneTags().size();
+        tagCenters->colors_.push_back(Eigen::Vector3d(rempa, 0, 1));
+        // std::cout << "tag " << idx << " color: " << rempa << std::endl;
+
+
+    }
+    vis->AddGeometry(tagCenters);
 
     // draw AABB
     std::shared_ptr<open3d::geometry::LineSet> aabbLineset = std::make_shared<open3d::geometry::LineSet>();
@@ -290,26 +305,135 @@ namespace tslam
 
     void TSGeometricSolver::rDetectCreasesTags()
     {
+        /////////////////////////////
+        // original
+        /////////////////////////////
+
         open3d::geometry::KDTreeFlann kdtree;
         kdtree.SetGeometry(open3d::geometry::PointCloud(this->m_Timber->getTagsCtrs()));
 
         std::vector<int> indices;
         std::vector<double> distances;
-        const int knn = 2;
+        int knn = 2;
 
         for (int i = 0; i < this->m_Timber->getPlaneTags().size(); i++)
         {
+            // TODO: test
+            if (this->m_Timber->getPlaneTags()[i].getType() != TSRTagType::Unknown)
+                continue;
+
             kdtree.SearchKNN(this->m_Timber->getPlaneTags()[i].getCenter(), knn, indices, distances);
+
+            // // print indices
+            // std::cout << "[DEBUG] indices: ";
+            // for (auto& idx : indices)
+            //     std::cout << idx << " ";
+            // std::cout << std::endl;
 
             double angle = tslam::TSVector::angleBetweenVectors(
                 this->m_Timber->getPlaneTags()[i].getNormal(),
                 this->m_Timber->getPlaneTags()[indices[1]].getNormal());
 
-            if (angle < this->m_CreaseAngleThreshold) 
-                this->m_Timber->getPlaneTags()[i].setType(TSRTagType::Face);
+            // std::cout << "[DEBUG] angle: " << angle << std::endl;
+
+            if (angle < this->m_CreaseAngleThreshold)
+            {
+                this->m_Timber->getPlaneTags()[i].setType(TSRTagType::Side);
+            }
             else
+            {
                 this->m_Timber->getPlaneTags()[i].setType(TSRTagType::Edge);
+                this->m_Timber->getPlaneTags()[indices[1]].setType(TSRTagType::Edge);  // TODO: test
+            }
         }
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // test with a different approach merging edge/sides detection and face mapping
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // this might probably be a timber.hh function
+
+        // indices.clear();
+        // distances.clear();
+        // // knn = this->m_Timber->getPlaneTags().size();
+        // knn = 3;
+        
+        // bool isMapped = false;
+
+        // std::vector<TSRTag>& tags = this->m_Timber->getPlaneTags();
+
+        // uint faceIdx = 0;
+
+        // TSRTag& tag = this->m_Timber->getPlaneTags()[0];
+
+        // do
+        // {
+        //     if (tag.getType() != TSRTagType::Unknown)
+        //             continue;
+
+        //     // kdtree.SearchKNN(tag.getCenter(), knn, indices, distances);
+
+        //     // if (tags[indices[1]].getType() != TSRTagType::Unknown)
+
+
+
+
+        //     // exit condition check
+        //     isMapped = true;
+        //     for (auto& tag : this->m_Timber->getPlaneTags())
+        //     {
+        //         if (tag.getType() == TSRTagType::Unknown)
+        //         {
+        //             isMapped = false;
+        //             break;
+        //         }
+        //     }
+
+        // } while (!isMapped);
+        
+
+        /////////////////////////////
+        // test for mapping edges
+        /////////////////////////////
+
+        // we need to find which tags belong to the same face
+
+        // loop through all the tags
+        // for each edge tag, find the closest face tag
+        // we continue to find the closest tag to the last face tag untill we find an edge tag
+        // (optional?) if: the first edge tag and newly found tag have a similar normal, we have a face
+        // we mark the two tags as the same face tags
+        // probably a cleaning up mechanism is needed to avoid doubled planes too close to each other
+
+        // indices.clear();
+        // distances.clear();
+        // // knn = this->m_Timber->getPlaneTags().size();
+        // knn = 3;
+
+
+        // for (int i = 0; i < this->m_Timber->getPlaneTags().size(); i++)
+        // {
+        //     kdtree.SearchKNN(this->m_Timber->getPlaneTags()[i].getCenter(), knn, indices, distances);
+
+        //     // print indices
+        //     std::cout << "[DEBUG] indices: ";
+        //     for (auto& idx : indices)
+        //         std::cout << idx << " ";
+        //     std::cout << std::endl;
+
+        //     std::cout << "///////////////////////////////////////////////" << std::endl;
+
+        //     // print distances
+        //     std::cout << "[DEBUG] distances: ";
+        //     for (auto& dist : distances)
+        //         std::cout << dist << " ";
+        //     std::cout << std::endl;
+
+
+
+        //     // this->m_Timber->getPlaneTags()[i].setFaceIdx(i);
+        // }
+
     }
 
     void TSGeometricSolver::rIntersectTagPlnAABB()
@@ -323,7 +447,7 @@ namespace tslam
         for (auto& t : this->m_Timber->getPlaneTags())
         {
             // a. skip face tags
-            if (t.isFace()) continue;
+            if (t.isSide()) continue;
             
             // b. caculate the intersection points
             unsigned int outPtsCount;
