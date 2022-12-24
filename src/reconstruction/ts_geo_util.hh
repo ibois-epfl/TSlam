@@ -70,6 +70,132 @@ namespace tslam
             Eigen::Vector3d pt =  point - this->distance(point) * this->Normal;
             return pt;
         };
+        /** 
+         * @brief It checks if there is intersection between a ray and a plane following the:
+         * Plane: ax+by+cz=d
+         * Ray: P(t) = P0 + t * D
+         * Intersection: P(t) = P0 + t * D = (x,y,z) = (a,b,c) * t = (a,b,c) * (d - (a*x+b*y+c*z)) / (a*a+b*b+c*c)
+         * t = (d - (a*x+b*y+c*z)) / (a*a+b*b+c*c)
+         * 
+         * @see the function is modified from: https://asawicki.info/news_1428_finding_polygon_of_plane-aabb_intersection
+         * 
+         * @param RayOrig[out] the origin of the ray
+         * @param RayDir[out] the direction of the ray
+         * @param Plane[out] the plane to check the intersection with
+         * @param OutT[in] the distance from the ray origin to the intersection point
+         * @param OutVD[in] the distance from the ray origin to the plane
+         * 
+         * @return true if there is intersection
+         * @return false if there is no intersection
+         */
+        static bool ray2PlaneIntersection(const Eigen::Vector3d &RayOrig,
+                                          const Eigen::Vector3d &RayDir,
+                                          const TSPlane &Plane,
+                                          float *OutT,
+                                          float *OutVD)
+        {
+            const Eigen::Vector3d PlaneNormal(Plane.A, Plane.B, Plane.C);
+
+            const double Denominator = PlaneNormal.dot(RayDir);
+            if (Denominator == 0.0f)  return false;  // ray is parallel to plane
+
+            const double Numerator = Plane.D - PlaneNormal.dot(RayOrig);
+            const double t = Numerator / Denominator;
+
+            if (OutT) *OutT = t;
+            if (OutVD) *OutVD = Denominator;
+
+            return true;
+        }
+        /** 
+         * @brief It computes the intersection points between a plane and an AABB
+         * 
+         * @see the function is modified from: https://asawicki.info/news_1428_finding_polygon_of_plane-aabb_intersection
+         * 
+         * @param plane[out] the plane to check the intersection with
+         * @param aabb_min[out] the minimum point of the AABB
+         * @param aabb_max[out] the maximum point of the AABB
+         * @param out_points[in] the intersection points
+         * @param out_point_count[in] the number of intersection points (min:3, max: 6)
+         */
+        static void plane2AABBSegmentIntersect(const TSPlane &plane,
+                                               const Eigen::Vector3d &aabb_min, 
+                                               const Eigen::Vector3d &aabb_max,
+                                               Eigen::Vector3d* out_points,
+                                               unsigned &out_point_count)
+        {
+            out_point_count = 0;
+            float vd, t;
+
+            // Test edges along X axis, pointing right
+            Eigen::Vector3d dir = Eigen::Vector3d(aabb_max[0] - aabb_min[0], 0.f, 0.f);
+            Eigen::Vector3d orig = aabb_min;
+            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+                out_points[out_point_count++] = orig + dir * t;
+            orig = Eigen::Vector3d(aabb_min[0], aabb_max[1], aabb_min[2]);
+            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+                out_points[out_point_count++] = orig + dir * t;
+            orig = Eigen::Vector3d(aabb_min[0], aabb_min[1], aabb_max[2]);
+            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+                out_points[out_point_count++] = orig + dir * t;
+            orig = Eigen::Vector3d(aabb_min[0], aabb_max[1], aabb_max[2]);
+            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+                out_points[out_point_count++] = orig + dir * t;
+
+            // Test edges along Y axis, pointing up
+            dir = Eigen::Vector3d(0.f, aabb_max[1] - aabb_min[1], 0.f);
+            orig = Eigen::Vector3d(aabb_min[0], aabb_min[1], aabb_min[2]);
+            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+                out_points[out_point_count++] = orig + dir * t;
+            orig = Eigen::Vector3d(aabb_max[0], aabb_min[1], aabb_min[2]);
+            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+                out_points[out_point_count++] = orig + dir * t;
+            orig = Eigen::Vector3d(aabb_min[0], aabb_min[1], aabb_max[2]);
+            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+                out_points[out_point_count++] = orig + dir * t;
+            orig = Eigen::Vector3d(aabb_max[0], aabb_min[1], aabb_max[2]);
+            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+                out_points[out_point_count++] = orig + dir * t;
+
+            // Test edges along Z axis, pointing forward
+            dir = Eigen::Vector3d(0.f, 0.f, aabb_max[2] - aabb_min[2]);
+            orig = Eigen::Vector3d(aabb_min[0], aabb_min[1], aabb_min[2]);
+            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+                out_points[out_point_count++] = orig + dir * t;
+            orig = Eigen::Vector3d(aabb_max[0], aabb_min[1], aabb_min[2]);
+            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+                out_points[out_point_count++] = orig + dir * t;
+            orig = Eigen::Vector3d(aabb_min[0], aabb_max[1], aabb_min[2]);
+            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+                out_points[out_point_count++] = orig + dir * t;
+            orig = Eigen::Vector3d(aabb_max[0], aabb_max[1], aabb_min[2]);
+            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+                out_points[out_point_count++] = orig + dir * t;
+
+            // Test the 8 vertices
+            orig = aabb_min;
+            if (plane.A * orig.x() + plane.B * orig.y() + plane.C * orig.z() + plane.D == 0.f)
+                out_points[out_point_count++] = orig;
+        }
+        // TODO: to test
+        /**
+         * @brief Average two planes together
+         * 
+         * @param plane the plane to average with
+         * 
+         * @return TSPlane the averaged plane
+         */
+        TSPlane averagePlane(const TSPlane &plane)
+        {
+            TSPlane outPln;
+            outPln.Normal = (this->Normal + plane.Normal).normalized();
+            outPln.Center = (this->Center + plane.Center) / 2.f;
+            outPln.A = outPln.Normal.x();
+            outPln.B = outPln.Normal.y();
+            outPln.C = outPln.Normal.z();
+            outPln.D = outPln.A * outPln.Center.x() + outPln.B * outPln.Center.y() + outPln.C * outPln.Center.z();
+            return outPln;
+        }
 
     public: __always_inline
         /**
@@ -88,6 +214,17 @@ namespace tslam
         Eigen::Vector3d Normal;
         Eigen::Vector3d Center;
         double A, B, C, D;  ///< eq: ax+by+cz=d
+    };
+
+    /// Struct interface for vector utility function
+    struct TSVector
+    {
+    public: __always_inline
+        static double angleBetweenVectors(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2)
+        {
+            double angle = std::acos(v1.dot(v2) / (v1.norm() * v2.norm()));
+            return (angle * 180 / M_PI);
+        }
     };
 
     /// A struct to store a segment object

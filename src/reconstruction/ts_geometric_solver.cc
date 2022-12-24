@@ -9,6 +9,8 @@
 #include <iterator>
 
 // TODO: try to catch more sensitive creaeses
+// TODO: try a timber with notch and implement merging polygons at the end (when selecting
+//       the polygons face candidates)
 
 namespace tslam
 {
@@ -16,9 +18,8 @@ namespace tslam
     {
         this->rDetectCreasesTags();
         this->rIntersectTagPlnAABB();
-        this->rIntersectMeanPolygonPlnAABB();
         this->rCreatePolysurface();
-        this->rCreateMesh();
+        // this->rCreateMesh();
 
 #ifdef TSLAM_REC_DEBUG
     // Debug visualizer
@@ -46,74 +47,43 @@ namespace tslam
     std::shared_ptr<open3d::geometry::LineSet> aabbLineset = std::make_shared<open3d::geometry::LineSet>();
 
     // draw polygon segments3D 
-    // for (auto& pg : this->m_PlnAABBPolygons)
-    // {
-    //     std::vector<Eigen::Vector3d> pts = pg.getVertices();
-    //     for (int i = 0; i < pts.size(); i++)
-    //     {
-    //         std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
-    //         std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-    //         segLineset->points_.push_back(segm->Origin());
-    //         segLineset->points_.push_back(segm->EndPoint());
-    //         segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //         segLineset->PaintUniformColor(Eigen::Vector3d(0.5, 1, 0.5));
-    //         vis->AddGeometry(segLineset);
-    //     }
-    // }
+    for (auto& pg : this->m_PlnAABBPolygons)
+    {
+        std::vector<Eigen::Vector3d> pts = pg.getVertices();
+        for (int i = 0; i < pts.size(); i++)
+        {
+            std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
+            std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+            segLineset->points_.push_back(segm->Origin());
+            segLineset->points_.push_back(segm->EndPoint());
+            segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+            segLineset->PaintUniformColor(Eigen::Vector3d(0.5, 1, 0.5));
+            vis->AddGeometry(segLineset);
+        }
+    }
 
-    // // draw first intersection polygon centers
-    // for (auto& fpoly : this->m_PlnAABBPolygons)
-    // {
-    //     std::shared_ptr<open3d::geometry::PointCloud> pntCldPCtr = std::make_shared<open3d::geometry::PointCloud>();
-    //     pntCldPCtr->points_.push_back(fpoly.getCenter());
-    //     pntCldPCtr->PaintUniformColor(Eigen::Vector3d(0, 1, 1));
-    //     vis->AddGeometry(pntCldPCtr);
-    // }
+    // draw first intersection polygon centers
+    for (auto& fpoly : this->m_PlnAABBPolygons)
+    {
+        std::shared_ptr<open3d::geometry::PointCloud> pntCldPCtr = std::make_shared<open3d::geometry::PointCloud>();
+        pntCldPCtr->points_.push_back(fpoly.getCenter());
+        pntCldPCtr->PaintUniformColor(Eigen::Vector3d(0, 1, 1));
+        vis->AddGeometry(pntCldPCtr);
+    }
 
-    // // draw new merged planes centers
-    // std::shared_ptr<open3d::geometry::PointCloud> pntCldNewPlanes = std::make_shared<open3d::geometry::PointCloud>();
-    // for (auto& pg : this->m_MergedPolygons)
-    // {
-    //     pntCldNewPlanes->points_.push_back(pg.getCenter());
-    //     pntCldNewPlanes->PaintUniformColor(Eigen::Vector3d(0.7, 0.3, 0.9));
-    //     vis->AddGeometry(pntCldNewPlanes);
-    // }
+    // draw new merged planes centers
+    std::shared_ptr<open3d::geometry::PointCloud> pntCldNewPlanes = std::make_shared<open3d::geometry::PointCloud>();
+    for (auto& pg : this->m_MergedPolygons)
+    {
+        pntCldNewPlanes->points_.push_back(pg.getCenter());
+        pntCldNewPlanes->PaintUniformColor(Eigen::Vector3d(0.7, 0.3, 0.9));
+        vis->AddGeometry(pntCldNewPlanes);
+    }
 
-    // // draw new interesected polygons
-    // for (auto& pg : this->m_MergedPolygons)
-    // {
-    //     std::vector<Eigen::Vector3d> pts = pg.getVertices();
-    //     for (int i = 0; i < pts.size(); i++)
-    //     {
-    //         std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
-    //         std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-    //         segLineset->points_.push_back(segm->Origin());
-    //         segLineset->points_.push_back(segm->EndPoint());
-    //         segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //         segLineset->PaintUniformColor(Eigen::Vector3d(0., 0., 1.));
-    //         vis->AddGeometry(segLineset);
-    //     }
-    // }
-
-    // // draw splitting segments
-    // for (auto& seg : this->m_SplitSegments)
-    // {
-    //     std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-    //     segLineset->points_.push_back(seg.Origin());
-    //     segLineset->points_.push_back(seg.EndPoint());
-    //     segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-    //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //     segLineset->PaintUniformColor(Eigen::Vector3d(1., 0., 1.));
-    //     vis->AddGeometry(segLineset);
-    // }
-        
-    // // show split polygons
-    for (auto& pg : this->m_SplitPolygons)
+    // draw new interesected polygons
+    for (auto& pg : this->m_MergedPolygons)
     {
         std::vector<Eigen::Vector3d> pts = pg.getVertices();
         for (int i = 0; i < pts.size(); i++)
@@ -129,6 +99,37 @@ namespace tslam
             vis->AddGeometry(segLineset);
         }
     }
+
+    // // draw splitting segments
+    // for (auto& seg : this->m_SplitSegments)
+    // {
+    //     std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+    //     segLineset->points_.push_back(seg.P1);
+    //     segLineset->points_.push_back(seg.P2);
+    //     segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+    //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    //     segLineset->PaintUniformColor(Eigen::Vector3d(1., 0., 1.));
+    //     vis->AddGeometry(segLineset);
+    // }
+        
+    // // // show split polygons
+    // for (auto& pg : this->m_SplitPolygons)
+    // {
+    //     std::vector<Eigen::Vector3d> pts = pg.getVertices();
+    //     for (int i = 0; i < pts.size(); i++)
+    //     {
+    //         std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
+    //         std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+    //         segLineset->points_.push_back(segm->Origin());
+    //         segLineset->points_.push_back(segm->EndPoint());
+    //         segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    //         segLineset->PaintUniformColor(Eigen::Vector3d(0., 0., 1.));
+    //         vis->AddGeometry(segLineset);
+    //     }
+    // }
 
     // // show the unsplit polygon
     // // std::vector<Eigen::Vector3d> pts = splitPolygons[0].getVertices();
@@ -267,19 +268,19 @@ namespace tslam
         }
     }
 
-    // show final mesh
-    std::shared_ptr<open3d::geometry::TriangleMesh> mesh = std::make_shared<open3d::geometry::TriangleMesh>(this->m_MeshOut);
-    mesh->PaintUniformColor(Eigen::Vector3d(0.5, 0.5, 0.5));
-    vis->AddGeometry(mesh);
+    // // show final mesh
+    // std::shared_ptr<open3d::geometry::TriangleMesh> mesh = std::make_shared<open3d::geometry::TriangleMesh>(this->m_MeshOut);
+    // mesh->PaintUniformColor(Eigen::Vector3d(0.5, 0.5, 0.5));
+    // vis->AddGeometry(mesh);
 
-    std::shared_ptr<open3d::geometry::PointCloud> pcdMeshCenters = std::make_shared<open3d::geometry::PointCloud>();
-    for (auto& tri : mesh->triangles_)
-    {
-        Eigen::Vector3d ctr = (mesh->vertices_[tri(0)] + mesh->vertices_[tri(1)] + mesh->vertices_[tri(2)]) / 3.;
-        pcdMeshCenters->points_.push_back(ctr);
-    }
-    pcdMeshCenters->PaintUniformColor(Eigen::Vector3d(1., 0., 0.));
-    vis->AddGeometry(pcdMeshCenters);
+    // std::shared_ptr<open3d::geometry::PointCloud> pcdMeshCenters = std::make_shared<open3d::geometry::PointCloud>();
+    // for (auto& tri : mesh->triangles_)
+    // {
+    //     Eigen::Vector3d ctr = (mesh->vertices_[tri(0)] + mesh->vertices_[tri(1)] + mesh->vertices_[tri(2)]) / 3.;
+    //     pcdMeshCenters->points_.push_back(ctr);
+    // }
+    // pcdMeshCenters->PaintUniformColor(Eigen::Vector3d(1., 0., 0.));
+    // vis->AddGeometry(pcdMeshCenters);
 
     vis->Run();
     vis->Close();
@@ -300,30 +301,22 @@ namespace tslam
         {
             kdtree.SearchKNN(this->m_Timber->getPlaneTags()[i].getCenter(), knn, indices, distances);
 
-            double angle = this->rAngleBetweenVectors(this->m_Timber->getPlaneTags()[i].getNormal(), 
-                                                      this->m_Timber->getPlaneTags()[indices[1]].getNormal());
+            double angle = tslam::TSVector::angleBetweenVectors(
+                this->m_Timber->getPlaneTags()[i].getNormal(),
+                this->m_Timber->getPlaneTags()[indices[1]].getNormal());
 
             if (angle < this->m_CreaseAngleThreshold) 
-            {
                 this->m_Timber->getPlaneTags()[i].setType(TSRTagType::Face);
-            }
             else
-            {
                 this->m_Timber->getPlaneTags()[i].setType(TSRTagType::Edge);
-            }
         }
-    }
-    double TSGeometricSolver::rAngleBetweenVectors(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2)
-    {
-        double angle = std::acos(v1.dot(v2) / (v1.norm() * v2.norm()));
-        return (angle * 180 / M_PI);
     }
 
     void TSGeometricSolver::rIntersectTagPlnAABB()
     {
         this->m_Timber->scaleAABB(this->m_AABBScaleFactor);
 
-        this->timeStart("[PROFILER]: intersect planes with AABB");
+        this->timeStart("[PROFILER]: intersect planes with AABB");  // TODO: implement true Profiler
 
         Eigen::Vector3d* outPtsPtr = new Eigen::Vector3d[3*6];
         std::vector<Eigen::Vector3d>* planeIntersections = new std::vector<Eigen::Vector3d>();
@@ -334,11 +327,11 @@ namespace tslam
             
             // b. caculate the intersection points
             unsigned int outPtsCount;
-            this->rPlane2AABBSegmentIntersect(t.getPlane(),
-                                              this->m_Timber->getAABB().min_bound_, 
-                                              this->m_Timber->getAABB().max_bound_,
-                                              outPtsPtr,
-                                              outPtsCount);
+            tslam::TSPlane::plane2AABBSegmentIntersect(t.getPlane(),
+                                                       this->m_Timber->getAABB().min_bound_, 
+                                                       this->m_Timber->getAABB().max_bound_,
+                                                       outPtsPtr,
+                                                       outPtsCount);
             // b. save the result into a polygon
             planeIntersections->reserve(outPtsCount);
             planeIntersections->clear();
@@ -354,111 +347,13 @@ namespace tslam
         delete outPtsPtr;
         delete planeIntersections;
 
-
-        this->timeEnd();
-    }
-    bool TSGeometricSolver::rRay2PlaneIntersection(const Eigen::Vector3d &RayOrig,
-                                                   const Eigen::Vector3d &RayDir,
-                                                   const TSPlane &Plane,
-                                                   float *OutT,
-                                                   float *OutVD)
-    {
-        const Eigen::Vector3d PlaneNormal(Plane.A, Plane.B, Plane.C);
-
-        const double Denominator = PlaneNormal.dot(RayDir);
-        if (Denominator == 0.0f)  return false;  // ray is parallel to plane
-
-        const double Numerator = Plane.D - PlaneNormal.dot(RayOrig);
-        const double t = Numerator / Denominator;
-
-        if (OutT) *OutT = t;
-        if (OutVD) *OutVD = Denominator;
-
-        return true;
-    }
-    void TSGeometricSolver::rPlane2AABBSegmentIntersect(const TSPlane &plane,
-                                                        const Eigen::Vector3d &aabb_min, 
-                                                        const Eigen::Vector3d &aabb_max,
-                                                        Eigen::Vector3d* out_points,
-                                                        unsigned &out_point_count)
-    {
-        out_point_count = 0;
-        float vd, t;
-
-        // Test edges along X axis, pointing right
-        Eigen::Vector3d dir = Eigen::Vector3d(aabb_max[0] - aabb_min[0], 0.f, 0.f);
-        Eigen::Vector3d orig = aabb_min;
-        if (this->rRay2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
-            out_points[out_point_count++] = orig + dir * t;
-        orig = Eigen::Vector3d(aabb_min[0], aabb_max[1], aabb_min[2]);
-        if (this->rRay2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
-            out_points[out_point_count++] = orig + dir * t;
-        orig = Eigen::Vector3d(aabb_min[0], aabb_min[1], aabb_max[2]);
-        if (this->rRay2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
-            out_points[out_point_count++] = orig + dir * t;
-        orig = Eigen::Vector3d(aabb_min[0], aabb_max[1], aabb_max[2]);
-        if (this->rRay2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
-            out_points[out_point_count++] = orig + dir * t;
-
-        // Test edges along Y axis, pointing up
-        dir = Eigen::Vector3d(0.f, aabb_max[1] - aabb_min[1], 0.f);
-        orig = Eigen::Vector3d(aabb_min[0], aabb_min[1], aabb_min[2]);
-        if (this->rRay2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
-            out_points[out_point_count++] = orig + dir * t;
-        orig = Eigen::Vector3d(aabb_max[0], aabb_min[1], aabb_min[2]);
-        if (this->rRay2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
-            out_points[out_point_count++] = orig + dir * t;
-        orig = Eigen::Vector3d(aabb_min[0], aabb_min[1], aabb_max[2]);
-        if (this->rRay2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
-            out_points[out_point_count++] = orig + dir * t;
-        orig = Eigen::Vector3d(aabb_max[0], aabb_min[1], aabb_max[2]);
-        if (this->rRay2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
-            out_points[out_point_count++] = orig + dir * t;
-
-        // Test edges along Z axis, pointing forward
-        dir = Eigen::Vector3d(0.f, 0.f, aabb_max[2] - aabb_min[2]);
-        orig = Eigen::Vector3d(aabb_min[0], aabb_min[1], aabb_min[2]);
-        if (this->rRay2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
-            out_points[out_point_count++] = orig + dir * t;
-        orig = Eigen::Vector3d(aabb_max[0], aabb_min[1], aabb_min[2]);
-        if (this->rRay2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
-            out_points[out_point_count++] = orig + dir * t;
-        orig = Eigen::Vector3d(aabb_min[0], aabb_max[1], aabb_min[2]);
-        if (this->rRay2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
-            out_points[out_point_count++] = orig + dir * t;
-        orig = Eigen::Vector3d(aabb_max[0], aabb_max[1], aabb_min[2]);
-        if (this->rRay2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
-            out_points[out_point_count++] = orig + dir * t;
-
-        // Test the 8 vertices
-        orig = aabb_min;
-        if (plane.A * orig.x() + plane.B * orig.y() + plane.C * orig.z() + plane.D == 0.f)
-            out_points[out_point_count++] = orig;
-    }
-
-    void TSGeometricSolver::rIntersectMeanPolygonPlnAABB()
-    {
+        // c. mean the polygons into new one 
         this->rMeanPolygonPlanes();
 
-        Eigen::Vector3d* outPtsPtr2 = new Eigen::Vector3d[3*6];
-        for (auto& mpoly : this->m_MergedPolygons)
-        {
-            // a. caculate the intersection points
-            unsigned int outPtsCount2;
-            this->rPlane2AABBSegmentIntersect(mpoly.getLinkedPlane(),
-                                              this->m_Timber->getAABB().min_bound_, 
-                                              this->m_Timber->getAABB().max_bound_,
-                                              outPtsPtr2,
-                                              outPtsCount2);
+        // d. intersect the new polygons with the timber
+        this->rIntersectMeanPolygonPlnAABB();
 
-            // b. store the new itnersection points into the polygon
-            for (unsigned int i = 0; i < outPtsCount2; i++)
-            {
-                mpoly.addVertex(outPtsPtr2[i]);
-            }
-            mpoly.reorderClockwisePoints();
-        }
-        delete outPtsPtr2;
+        this->timeEnd();  // TODO: implement true Profiler
     }
     void TSGeometricSolver::rMeanPolygonPlanes()
     {
@@ -487,10 +382,8 @@ namespace tslam
             {
                 // check if the index has already been merged
                 if (std::find(mergedIndices.begin(), mergedIndices.end(), indices[j]) != mergedIndices.end())
-                {
                     // if it has, check the next one
                     continue;
-                }
                 else
                 {
                     // if it hasn't,
@@ -516,6 +409,29 @@ namespace tslam
             }
         }
     }
+    void TSGeometricSolver::rIntersectMeanPolygonPlnAABB()
+    {
+        Eigen::Vector3d* outPtsPtr2 = new Eigen::Vector3d[3*6];
+        for (auto& mpoly : this->m_MergedPolygons)
+        {
+            // a. caculate the intersection points
+            unsigned int outPtsCount2;
+            tslam::TSPlane::plane2AABBSegmentIntersect(mpoly.getLinkedPlane(),
+                                                       this->m_Timber->getAABB().min_bound_, 
+                                                       this->m_Timber->getAABB().max_bound_,
+                                                       outPtsPtr2,
+                                                       outPtsCount2);
+
+            // b. store the new itnersection points into the polygon
+            for (unsigned int i = 0; i < outPtsCount2; i++)
+            {
+                mpoly.addVertex(outPtsPtr2[i]);
+            }
+            mpoly.reorderClockwisePoints();
+        }
+        delete outPtsPtr2;
+    }
+
 
     void TSGeometricSolver::rCreatePolysurface()
     {

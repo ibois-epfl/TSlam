@@ -52,80 +52,30 @@ namespace tslam
          * 
          */
         void rDetectCreasesTags();
-            /** 
-             * @brief It computes the angle between two vectors
-             * 
-             * @param v1 the first vector
-             * @param v2 the second vector
-             * @return double the angle between the two vectors in degrees
-             */
-            double rAngleBetweenVectors(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2);
         
         /// (b)
         /** 
-         * @brief the function intersect a plane with a AABB and store the intersection points.
+         * @brief the function intersect the edge tag's planes with a AABB and store the intersection points composing
+         * the new created polygons. The similar polygons are averaged and merged into one (by averaging the 
+         * intersected polygons centers get a new one per family and re-intersecting it with the AABB).
          * 
          */
         void rIntersectTagPlnAABB();
-            // TODO: this function should be a plane member function
-            /** 
-             * @brief It checks if there is intersection between a ray and a plane following the:
-             * Plane: ax+by+cz=d
-             * Ray: P(t) = P0 + t * D
-             * Intersection: P(t) = P0 + t * D = (x,y,z) = (a,b,c) * t = (a,b,c) * (d - (a*x+b*y+c*z)) / (a*a+b*b+c*c)
-             * t = (d - (a*x+b*y+c*z)) / (a*a+b*b+c*c)
-             * 
-             * @see the function is modified from: https://asawicki.info/news_1428_finding_polygon_of_plane-aabb_intersection
-             * 
-             * @param RayOrig[out] the origin of the ray
-             * @param RayDir[out] the direction of the ray
-             * @param Plane[out] the plane to check the intersection with
-             * @param OutT[in] the distance from the ray origin to the intersection point
-             * @param OutVD[in] the distance from the ray origin to the plane
-             * 
-             * @return true if there is intersection
-             * @return false if there is no intersection
-             */
-            bool rRay2PlaneIntersection(const Eigen::Vector3d &RayOrig,
-                                        const Eigen::Vector3d &RayDir,
-                                        const TSPlane &Plane,
-                                        float *OutT,
-                                        float *OutVD);
-            // TODO: this function should be a plane member function
-            /** 
-             * @brief It computes the intersection points between a plane and an AABB
-             * 
-             * @see the function is modified from: https://asawicki.info/news_1428_finding_polygon_of_plane-aabb_intersection
-             * 
-             * @param plane[out] the plane to check the intersection with
-             * @param aabb_min[out] the minimum point of the AABB
-             * @param aabb_max[out] the maximum point of the AABB
-             * @param out_points[in] the intersection points
-             * @param out_point_count[in] the number of intersection points (min:3, max: 6)
-             */
-            void rPlane2AABBSegmentIntersect(const TSPlane &plane,
-                                            const Eigen::Vector3d &aabb_min,  // TODO: refactor snakecase to camel
-                                            const Eigen::Vector3d &aabb_max,
-                                            Eigen::Vector3d* out_points,
-                                            unsigned &out_point_count);
-        
-        /// (c)
-        /**
-         * @brief The function mean the previous similar polygons'planes and recompute the
-         * intersection of the mean planes with the AABB to obtain new polygons.
-         * 
-         */
-        void rIntersectMeanPolygonPlnAABB();
-            // TODO: this function should be a polygon member function
             /**
              * @brief The function merge polygons/planes that are similar in orientation and close to 
-             * each  other. It builds a ktree of the polygons centers and group the "close" polygons.
-             * A new center and a ew normal are computed and a new plane is created.
+             * each  other. It builds a ktree of the polygons centers and group the "close" polygons' centers.
+             * A new center and a new normal are computed and a new plane is created.
              * 
              */
             void rMeanPolygonPlanes();
-
-        /// (d)
+            /**
+             * @brief The function mean the previous similar polygons'planes and recompute the
+             * intersection of the mean planes with the AABB to obtain new polygons.
+             * 
+             */
+            void rIntersectMeanPolygonPlnAABB();
+        
+        /// (c)
         /// Create the polysurface (list of polygons) that describes the timber solid volume
         void rCreatePolysurface();
             /**
@@ -167,7 +117,7 @@ namespace tslam
                                     std::vector<TSPolygon>& facePolygons,
                                     double tolerance);
 
-        /// (e)
+        /// (d)
         /// Create the mesh out of the candidate polygon faces. The mesh is created by joining the polygons.
         /// *** The mesh has no normals/orientation ***
         void rCreateMesh();
