@@ -51,28 +51,36 @@ namespace tslam
             }
         }
 
-        // Get markers
+        // Split string stream into seperate markers
         const std::string keyMarkers = "aruco_bc_marker";
+        std::string marker2P;
         std::vector<std::string> markersToParse;
         while (std::getline(ifss, line))
         {
             if (line.find(keyMarkers) != std::string::npos)
             {
-                uint j = 0;
-                for (uint i = 0; i < nmarkers; i++)
+                uint k = 0;
+                while(std::getline(ifss, line))
                 {
-                    std::string marker2P;
-                    for (uint j = 0; j < 7; j++)
+                    if (line.find("corners") != std::string::npos && k != 0)
                     {
-                        std::getline(ifss, line);
-                        marker2P += line + "\n";
+                        markersToParse.push_back(marker2P);
+                        marker2P = "";
                     }
-                    markersToParse.push_back(marker2P);
+
+                    marker2P += line + "\n";
+
+                    if ((markersToParse.size()) == nmarkers)
+                    {
+                        markersToParse.push_back(marker2P);
+                        break;
+                    }
+                    k++;
                 }
+                markersToParse.push_back(marker2P);
                 break;
             }
         }
-
         // Check number of markers entry with the number of markers found
         if (markersToParse.size() != nmarkers)
             throw std::runtime_error("[Error]: number of markers to parse is not correct.");
@@ -84,17 +92,21 @@ namespace tslam
 
             tslam::TSRTag tag = tslam::TSRTag();
 
-            std::string id =  marker.substr(marker.find("id:") + 3, 3);
+            // parse  id
+            const std::string keyID = "id:";
+            std::string id = marker.substr(marker.find(keyID) + keyID.size(), marker.find(",") - marker.find(keyID) - keyID.size());
             tag.setID(std::stoi(id));
 
-            const std::string keyCorners = "corners";
+            // parse the corners of the marker
+            const std::string keyCorners = "corners:";
             while (marker.find(keyCorners) != std::string::npos)
             {
-                marker = marker.substr(marker.find("corners") + 8);
+                marker = marker.substr(marker.find(keyCorners) + keyCorners.size());  // ORI
 
                 std::stringstream ss(marker);
                 std::string token;
                 std::vector<std::string> tokens;
+
                 while (std::getline(ss, token, ','))
                 {
                     token.erase(std::remove(token.begin(), token.end(), '['), token.end());
@@ -104,8 +116,6 @@ namespace tslam
                     token.erase(std::remove(token.begin(), token.end(), ' '), token.end());
                     tokens.push_back(token);
                 }
-
-                std::cout << "[DEBUG] pop" << std::endl;  // DEBUG
 
                 float xAF, yAF, zAF, xBF, yBF, zBF, xCF, yCF, zCF, xDF, yDF, zDF;
                 xAF = std::stof(tokens[0]);
@@ -126,14 +136,14 @@ namespace tslam
                 Eigen::Vector3d C(xCF, yCF, zCF);
                 Eigen::Vector3d D(xDF, yDF, zDF);
 
+                // fill TSRTag's info
                 tag.setType(TSRTagType::Unknown);
-
                 tag.setCorners(A, B, C, D);
-
                 tag.compute();
 
                 break;
             }
+            // store TSRTag
             tags.push_back(tag);
         }
     }
