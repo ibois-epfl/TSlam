@@ -199,3 +199,22 @@ Here's the workflow for the reconstruction:
 * To get the intersections of the planes we switched to an AABB instead of OBB. It's simpler and faster for 
 calculating the polygon intersections for all the tags. Here's the preliminary result:
 ![](./abbintersect.png)
+
+### Reconstruction - Unit testing
+We are building now the testing framework for the reconstruction part. The testing framework exploits googletest and the unit tests are composed of:
+
+- unit testing of each geometric solver step with boolean check 
+- value check for accuracy of comparison vertex-vertex with the ground truth synthetically generated model
+
+Ideally this has to be done with a series of very different geometries to test the robustness of the reconstruction method.
+
+> ⚠️ **compatibility bug GTest-Open3d**: there is an error by linking Open3d and GTest to the same executable (it does not happen with other libraries i.e. Eigen):
+> ```
+> /usr/bin/ld: CMakeFiles/test_gsolver.dir/test_gsolver.cc.o: in function `GSolverTest_TestHelloWorld_Test::TestBody()':
+> test_gsolver.cc:(.text+0x12d): undefined reference to `testing::internal::GetBoolAssertionFailureMessage(testing::AssertionResult const&, char const*, char const*, char const*)'
+> collect2: error: ld returned 1 exit status
+> gmake[2]: *** [tests/CMakeFiles/test_gsolver.dir/build.make:152: tests/test_gsolver] Error 1
+> gmake[1]: *** [CMakeFiles/Makefile2:917: tests/CMakeFiles/test_gsolver.dir/all] Error 2
+> gmake: *** [Makefile:91: all] Error 2
+> ```
+> To overcome this we will need to pack each step of the gsolver in a console app and call it from the test executable as an external process and read the return value.
