@@ -82,8 +82,8 @@ namespace tslam
         void setColor(Eigen::Vector3d clr) {m_Color = clr; };
         Eigen::Vector3d& getColor() {return m_Color; };
 #else
-        void setColor(Eigen::Vector3d clr) {};
-        Eigen::Vector3d& getColor() {};
+        void setColor(Eigen::Vector3d clr) {return;};
+        Eigen::Vector3d getColor() {return Eigen::Vector3d(0,0,0);};
 #endif
 
     private:

@@ -324,17 +324,9 @@ namespace tslam
 
             kdtree.SearchKNN(this->m_Timber->getPlaneTags()[i].getCenter(), knn, indices, distances);
 
-            // // print indices
-            // std::cout << "[DEBUG] indices: ";
-            // for (auto& idx : indices)
-            //     std::cout << idx << " ";
-            // std::cout << std::endl;
-
             double angle = tslam::TSVector::angleBetweenVectors(
                 this->m_Timber->getPlaneTags()[i].getNormal(),
                 this->m_Timber->getPlaneTags()[indices[1]].getNormal());
-
-            // std::cout << "[DEBUG] angle: " << angle << std::endl;
 
             if (angle < this->m_CreaseAngleThreshold)
             {
@@ -346,7 +338,6 @@ namespace tslam
                 this->m_Timber->getPlaneTags()[indices[1]].setType(TSRTagType::Edge);  // TODO: test
             }
         }
-
 
         ///////////////////////////////////////////////////////////////////////////////////////
         // test with a different approach merging edge/sides detection and face mapping

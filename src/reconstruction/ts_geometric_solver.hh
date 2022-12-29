@@ -44,7 +44,6 @@ namespace tslam
 
     private:  ///< reconstruction methods
         /// (a)
-        // FIXME: this function should be a timber.hh's function
         /**
          * @brief The function detect the tags creases of the timber piece. It builds a ktree of the tags and by
          * k-nearest neighbor search it finds the nearest tags to each tag. Then it computes the angle between
@@ -118,8 +117,11 @@ namespace tslam
                                     double tolerance);
 
         /// (d)
-        /// Create the mesh out of the candidate polygon faces. The mesh is created by joining the polygons.
-        /// *** The mesh has no normals/orientation ***
+        /**
+         * @brief Create the mesh out of the candidate polygon faces. The mesh is created by joining the polygons.
+         * *** The mesh has no normals/orientation ***
+         * 
+         */
         void rCreateMesh();
             /**
              * @brief It joins all the polygons in a new o3d triangle mesh.
