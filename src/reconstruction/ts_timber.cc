@@ -42,7 +42,7 @@ namespace tslam
 
     void TSTimber::setPlaneTagsFromYAML(const std::string& filename)
     {
-        tslam::TSRTag::parseFromMAPYAML(filename, m_RTags);
+        tslam::TSRTag::parseFromMAPYAML(filename, this->m_RTags);
         this->removeDuplicateTags();
         this->compute();
     };

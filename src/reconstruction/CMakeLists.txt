@@ -11,30 +11,25 @@ set(CMAKE_CXX_STANDARD 17)
 option(ENABLE_REC_PROFILER  "Enable profiling for the TSlam reconstruction"                             ON)
 option(ENABLE_REC_DEBUG     "Enable debug outputs (logs, visualizer) for the TSlam reconstruction"      ON)
 
-option(ENABLE_TESTING                          "Enable testing for the TSlam reconstruction"            ON)
+option(ENABLE_TESTING       "Enable testing for the TSlam reconstruction"                              OFF)
 
 #---------------------------------------------------------------------------------------------------------
-# dynamic library for tslam reconstruction
+# shared library for tslam reconstruction
 #---------------------------------------------------------------------------------------------------------
 
-file(GLOB TSLAMREC_SRC_FILES 
-    ts_geometric_solver.cc
-    ts_rtag.cc
-    ts_timber.cc
-)
-
-add_library(tslamrec SHARED ${TSLAMREC_SRC_FILES})
-
+# TODO: add properties and flags to library
+# build shared lib
+file(GLOB tslamrec_srcs_base "*.cc")
+add_library(tslamrec SHARED)
+target_sources(tslamrec PUBLIC ${tslamrec_srcs_base})
 find_package(Open3D REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-target_link_libraries(tslamrec PUBLIC Eigen3::Eigen)
 target_link_libraries(tslamrec PUBLIC Open3D::Open3D)
-
-target_include_directories(tslamrec PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(tslamrec PUBLIC Eigen3::Eigen)
 
 set(EXE_NAME reconstruct)                               # TODO: test exe
 add_executable(${EXE_NAME} reconstruct_test.cc)         # TODO: test exe
-target_link_libraries(${EXE_NAME} PUBLIC tslamrec)      # TODO: test exe
+target_link_libraries(${EXE_NAME} PRIVATE tslamrec)     # TODO: test exe
 
 #---------------------------------------------------------------------------------------------------------
 # Pre-processor definitions

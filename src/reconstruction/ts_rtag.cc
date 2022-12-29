@@ -28,7 +28,6 @@ namespace tslam
         this->compute();
     }
 
-    // FIXME: this needs to refactor with a true yaml parser for cc
     void TSRTag::parseFromMAPYAML(const std::string& filename, std::vector<TSRTag>& tags)
     {
         // Open file
@@ -84,7 +83,7 @@ namespace tslam
         // Check number of markers entry with the number of markers found
         if (markersToParse.size() != nmarkers)
             throw std::runtime_error("[Error]: number of markers to parse is not correct.");
-
+        
         // Parse markers
         for (uint i = 0; i < markersToParse.size(); i++)
         {
@@ -94,6 +93,7 @@ namespace tslam
 
             // parse  id
             const std::string keyID = "id:";
+
             std::string id = marker.substr(marker.find(keyID) + keyID.size(), marker.find(",") - marker.find(keyID) - keyID.size());
             tag.setID(std::stoi(id));
 
@@ -102,6 +102,8 @@ namespace tslam
             while (marker.find(keyCorners) != std::string::npos)
             {
                 marker = marker.substr(marker.find(keyCorners) + keyCorners.size());  // ORI
+
+                std::cout << marker << std::endl;  // DEBUG
 
                 std::stringstream ss(marker);
                 std::string token;
