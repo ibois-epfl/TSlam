@@ -42,10 +42,11 @@ namespace tslam
          * 
          * @param planeTags vector of TSRTag objects
          */
-        inline void setPlaneTags(std::vector<tslam::TSRTag> planeTags) {m_RTags = planeTags; };
-
-        // /// It divides the tags attached to the timber in groups by radius search, and normal angle difference.
-        // std::vector<std::vector<tslam::TSRTag>> divideTagsByRadiusAndNormal();
+        inline void setPlaneTags(std::vector<tslam::TSRTag> planeTags)
+        {
+            m_RTags.clear();
+            m_RTags = planeTags;
+        };
 
     public: __always_inline
         /// Get all the tags objects attached to the timber element.

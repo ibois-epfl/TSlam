@@ -103,8 +103,6 @@ namespace tslam
             {
                 marker = marker.substr(marker.find(keyCorners) + keyCorners.size());  // ORI
 
-                std::cout << marker << std::endl;  // DEBUG
-
                 std::stringstream ss(marker);
                 std::string token;
                 std::vector<std::string> tokens;

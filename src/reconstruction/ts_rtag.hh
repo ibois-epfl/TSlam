@@ -19,7 +19,15 @@ namespace tslam
     class TSRTag : public TSCompute
     {
     public:
-        TSRTag() {};
+        TSRTag()
+        {
+            m_Id = -1;
+            m_Type = TSRTagType::Unknown;
+            m_Corners = {};
+            m_Center = Eigen::Vector3d::Zero();
+            m_Plane = tslam::TSPlane();
+            m_FaceIdx = -1;
+        };
         ~TSRTag() = default;
 
         /**
@@ -69,6 +77,11 @@ namespace tslam
         Eigen::Vector3d& getNormal() {m_Normal = m_Plane.Normal; return m_Normal; };
         TSRTagType& getType() {return m_Type; };
         uint& getFaceIdx() {return m_FaceIdx; };
+    
+    public: __always_inline
+        bool isUnknown() const {return (m_Type==TSRTagType::Unknown) ? true : false; };
+        bool isEdge() const {return (m_Type==TSRTagType::Edge) ? true : false; };
+        bool isSide() const {return (m_Type==TSRTagType::Side) ? true : false; };
         
     private:
         /// Compute the intrinsic properties from the corners and it sets the obj members.
@@ -84,6 +97,7 @@ namespace tslam
 #else
         void setColor(Eigen::Vector3d clr) {return;};
         Eigen::Vector3d getColor() {return Eigen::Vector3d(0,0,0);};
+        void setFaceIdx(uint faceIdx) {m_FaceIdx = faceIdx; };
 #endif
 
     private:

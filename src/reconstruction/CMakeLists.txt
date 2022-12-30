@@ -14,13 +14,13 @@ option(ENABLE_REC_DEBUG     "Enable debug outputs (logs, visualizer) for the TSl
 option(ENABLE_TESTING       "Enable testing for the TSlam reconstruction"                              OFF)
 
 #---------------------------------------------------------------------------------------------------------
-# shared library for tslam reconstruction
+# library for tslam reconstruction
 #---------------------------------------------------------------------------------------------------------
 
 # TODO: add properties and flags to library
 # build shared lib
 file(GLOB tslamrec_srcs_base "*.cc")
-add_library(tslamrec SHARED)
+add_library(tslamrec STATIC)  # SHARED or STATIC
 target_sources(tslamrec PUBLIC ${tslamrec_srcs_base})
 find_package(Open3D REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)

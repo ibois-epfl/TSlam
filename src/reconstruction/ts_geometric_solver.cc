@@ -7,6 +7,7 @@
 #include <numeric>
 #include <algorithm>
 #include <iterator>
+#include <random>
 
 // TODO: try to catch more sensitive creaeses
 // TODO: try a timber with notch and implement merging polygons at the end (when selecting
@@ -17,8 +18,22 @@ namespace tslam
     void TSGeometricSolver::reconstruct()
     {
         this->rDetectCreasesTags();
-        this->rIntersectTagPlnAABB();
-        this->rCreatePolysurface();
+
+        // get the number of crease tags and side tags
+        int nCreaseTags = 0;
+        int nSideTags = 0;
+        for (auto& tag : this->m_Timber->getPlaneTags())
+        {
+            if (tag.isEdge())
+                nCreaseTags++;
+            else
+                nSideTags++;
+        }
+        std::cout << "nCreaseTags: " << nCreaseTags << std::endl;
+        std::cout << "nSideTags: " << nSideTags << std::endl;
+
+        // this->rIntersectTagPlnAABB();
+        // this->rCreatePolysurface();
         // this->rCreateMesh();  // TODO: to reactivate
 
 #ifdef TSLAM_REC_DEBUG
@@ -26,37 +41,54 @@ namespace tslam
     open3d::visualization::Visualizer* vis(new open3d::visualization::Visualizer());
     vis->CreateVisualizerWindow("TSPlaneTags", 1920, 1080);
 
+    // create a vector with 10 hardcoded colors
+    std::vector<Eigen::Vector3d> clrs;
+    for (int i = 0; i < 10; i++)
+    {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<> dis(0, 1);
+        Eigen::Vector3d color = Eigen::Vector3d(dis(gen), dis(gen), dis(gen));
+        clrs.push_back(color);
+    }
+
     // draw base plane tags as wireframe
     for (auto& tag : this->m_Timber->getPlaneTags())
     {
         open3d::geometry::TriangleMesh tagBase = tag.getOpen3dMesh();
         auto planeTagsLineset1 = open3d::geometry::LineSet::CreateFromTriangleMesh(tagBase);
 
-        if (tag.isEdge())
-            tag.setColor(Eigen::Vector3d(0, 1, 0));
-        else
-            tag.setColor(Eigen::Vector3d(1, 0, 0));
+        // if (tag.isEdge())
+        //     planeTagsLineset1->PaintUniformColor(Eigen::Vector3d(0, 1, 0));
+        // else
+        //     planeTagsLineset1->PaintUniformColor(Eigen::Vector3d(1, 0, 0));
+        
+        planeTagsLineset1->PaintUniformColor(clrs[tag.getFaceIdx()]);
 
-        planeTagsLineset1->PaintUniformColor(tag.getColor());
         vis->AddGeometry(planeTagsLineset1);
     }
 
-    // // get the tag centers as point cloud and color them according to their faceIdx value
-    std::shared_ptr<open3d::geometry::PointCloud> tagCenters = std::make_shared<open3d::geometry::PointCloud>();
-    for (auto& tag : this->m_Timber->getPlaneTags())
-    {
-        uint idx = tag.getFaceIdx();
-        tagCenters->points_.push_back(tag.getCenter());
+    // // // get the tag centers as point cloud and color them according to their faceIdx value
+    // std::shared_ptr<open3d::geometry::PointCloud> tagCenters = std::make_shared<open3d::geometry::PointCloud>();
+    // for (auto& tag : this->m_Timber->getPlaneTags())
+    // {
+    //     if (tag.isEdge())
+    //     {
+    //         tagCenters->points_.push_back(tag.getCenter());
+    //         tagCenters->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    //     }
+    // }
+    // vis->AddGeometry(tagCenters);
 
-        // assign a random color to each tag value of faceIdx
-        // remap idx to color 0 to 1
-        double rempa = (double)idx / (double)this->m_Timber->getPlaneTags().size();
-        tagCenters->colors_.push_back(Eigen::Vector3d(rempa, 0, 1));
-        // std::cout << "tag " << idx << " color: " << rempa << std::endl;
-
-
-    }
-    vis->AddGeometry(tagCenters);
+    // // show normals of the tag centers
+    // std::shared_ptr<open3d::geometry::LineSet> tagNormals = std::make_shared<open3d::geometry::LineSet>();
+    // for (auto& tag : this->m_Timber->getPlaneTags())
+    // {
+    //     tagNormals->points_.push_back(tag.getCenter());
+    //     tagNormals->points_.push_back(tag.getCenter() + tag.getNormal() * 1.0);
+    //     tagNormals->lines_.push_back(Eigen::Vector2i(tagNormals->points_.size() - 2, tagNormals->points_.size() - 1));
+    // }
+    // vis->AddGeometry(tagNormals);
 
     // draw AABB
     std::shared_ptr<open3d::geometry::LineSet> aabbLineset = std::make_shared<open3d::geometry::LineSet>();
@@ -115,153 +147,6 @@ namespace tslam
         }
     }
 
-    // // draw splitting segments
-    // for (auto& seg : this->m_SplitSegments)
-    // {
-    //     std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-    //     segLineset->points_.push_back(seg.P1);
-    //     segLineset->points_.push_back(seg.P2);
-    //     segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-    //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //     segLineset->PaintUniformColor(Eigen::Vector3d(1., 0., 1.));
-    //     vis->AddGeometry(segLineset);
-    // }
-        
-    // // // show split polygons
-    // for (auto& pg : this->m_SplitPolygons)
-    // {
-    //     std::vector<Eigen::Vector3d> pts = pg.getVertices();
-    //     for (int i = 0; i < pts.size(); i++)
-    //     {
-    //         std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
-    //         std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-    //         segLineset->points_.push_back(segm->Origin());
-    //         segLineset->points_.push_back(segm->EndPoint());
-    //         segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //         segLineset->PaintUniformColor(Eigen::Vector3d(0., 0., 1.));
-    //         vis->AddGeometry(segLineset);
-    //     }
-    // }
-
-    // // show the unsplit polygon
-    // // std::vector<Eigen::Vector3d> pts = splitPolygons[0].getVertices();
-    // for (int i = 0; i < pts.size(); i++)
-    // {
-    //     std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
-    //     std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-    //     segLineset->points_.push_back(segm->Origin());
-    //     segLineset->points_.push_back(segm->EndPoint());
-    //     segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-    //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //     segLineset->PaintUniformColor(Eigen::Vector3d(1., 0., 1.));
-    //     vis->AddGeometry(segLineset);
-    // }
-
-    // // show just one polygon test result
-    // std::vector<Eigen::Vector3d> ptsrr = subSplitPolygonsT[0].getVertices();
-    // for (int i = 0; i < ptsrr.size(); i++)
-    // {
-    //     std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
-    //     std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-    //     segLineset->points_.push_back(segm->Origin());
-    //     segLineset->points_.push_back(segm->EndPoint());
-    //     segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-    //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //     // generate a random vector for color
-    //     std::random_device rd;
-    //     std::mt19937 gen(rd());
-    //     std::uniform_real_distribution<> dis(0, 1);
-    //     Eigen::Vector3d color = Eigen::Vector3d(dis(gen), dis(gen), dis(gen));
-    //     segLineset->PaintUniformColor(color);
-    //     vis->AddGeometry(segLineset);
-    //     std::cout << "POP" << std::endl;
-    // }
-
-    // // // draw split polygo by accessing segments
-    // for (auto& segVT : testPoly.getSegments())
-    // {
-    //     std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-    //     segLineset->points_.push_back(segVT.P1);
-    //     segLineset->points_.push_back(segVT.P2);
-    //     segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-    //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-
-    //     std::random_device rd;
-    //     std::mt19937 gen(rd());
-    //     std::uniform_real_distribution<> dis(0, 1);
-    //     Eigen::Vector3d color = Eigen::Vector3d(dis(gen), dis(gen), dis(gen));
-    //     segLineset->PaintUniformColor(color);
-    //     vis->AddGeometry(segLineset);
-
-    // }
-
-    // // draw one segment 1
-    // std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-    // segLineset->points_.push_back(segTV.Origin());
-    // segLineset->points_.push_back(segTV.EndPoint());
-    // segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-    // segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    // segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    // segLineset->PaintUniformColor(Eigen::Vector3d(1., 0., 0.));
-    // vis->AddGeometry(segLineset);
-
-    // // draw one segment 2
-    // std::shared_ptr<open3d::geometry::LineSet> segLinesetC = std::make_shared<open3d::geometry::LineSet>();
-    // segLinesetC->points_.push_back(segTVCOPY.Origin());
-    // segLinesetC->points_.push_back(segTV.EndPoint());
-    // segLinesetC->lines_.push_back(Eigen::Vector2i(0, 1));
-    // segLinesetC->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    // segLinesetC->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-    // segLinesetC->PaintUniformColor(Eigen::Vector3d(0., 1., 0.));
-    // vis->AddGeometry(segLinesetC);
-
-    // // visualize segment extremes
-    // std::shared_ptr<open3d::geometry::PointCloud> pcdVTP1 = std::make_shared<open3d::geometry::PointCloud>();
-    // pcdVTP1->points_.push_back(segTVCOPY.P1);
-    // pcdVTP1->colors_.push_back(Eigen::Vector3d(1., 0., 0.));
-    // vis->AddGeometry(pcdVTP1);
-
-    // std::shared_ptr<open3d::geometry::PointCloud> pcdVTP2 = std::make_shared<open3d::geometry::PointCloud>();
-    // pcdVTP2->points_.push_back(segTVCOPY.P2);
-    // pcdVTP2->colors_.push_back(Eigen::Vector3d(0., 0., 1.));
-    // vis->AddGeometry(pcdVTP2);
-
-    // // draw all polygons in a vector with different colors
-    // std::shared_ptr<open3d::geometry::PointCloud> pcdPolyCentersT = std::make_shared<open3d::geometry::PointCloud>();
-    // for (auto& poly : subSplitPolygonsT)
-    // {
-    //     pcdPolyCentersT->points_.push_back(poly.getCenter());
-
-    //     std::vector<Eigen::Vector3d> pts = poly.getVertices();
-    //     // random color
-    //     std::random_device rd;
-    //     std::mt19937 gen(rd());
-    //     std::uniform_real_distribution<> dis(0, 1);
-    //     Eigen::Vector3d color = Eigen::Vector3d(dis(gen), dis(gen), dis(gen));
-    //     for (int i = 0; i < pts.size(); i++)
-    //     {
-    //         std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
-    //         std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-    //         segLineset->points_.push_back(segm->Origin());
-    //         segLineset->points_.push_back(segm->EndPoint());
-    //         segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-    //         segLineset->PaintUniformColor(color);
-    //         vis->AddGeometry(segLineset);
-    //     }
-    // }
-    // pcdPolyCentersT->PaintUniformColor(Eigen::Vector3d(1., 0., 0.));
-    // vis->AddGeometry(pcdPolyCentersT);
-
-    // // draw projected points
-    // ctrs->PaintUniformColor(Eigen::Vector3d(0., 1., 0.));
-    // vis->AddGeometry(ctrs);
-
     // draw all split poly
     for (auto& poly : this->m_FacePolygons)
     {
@@ -309,40 +194,239 @@ namespace tslam
         // original
         /////////////////////////////
 
-        open3d::geometry::KDTreeFlann kdtree;
-        kdtree.SetGeometry(open3d::geometry::PointCloud(this->m_Timber->getTagsCtrs()));
+        // open3d::geometry::KDTreeFlann kdtree;
+        // kdtree.SetGeometry(open3d::geometry::PointCloud(this->m_Timber->getTagsCtrs()));
 
+        // std::vector<int> indices;
+        // std::vector<double> distances;
+        // int knn = 2;
+
+        // for (int i = 0; i < this->m_Timber->getPlaneTags().size(); i++)
+        // {
+        //     // TODO: test
+        //     if (this->m_Timber->getPlaneTags()[i].getType() != TSRTagType::Unknown)
+        //         continue;
+
+        //     kdtree.SearchKNN(this->m_Timber->getPlaneTags()[i].getCenter(), knn, indices, distances);
+
+        //     double angle = tslam::TSVector::angleBetweenVectors(
+        //         this->m_Timber->getPlaneTags()[i].getNormal(),
+        //         this->m_Timber->getPlaneTags()[indices[1]].getNormal());
+            
+        //     // print angle
+        //     std::cout << "angle: " << angle << std::endl;
+
+        //     if (angle < this->m_CreaseAngleThreshold)
+        //     {
+        //         this->m_Timber->getPlaneTags()[i].setType(TSRTagType::Side);
+        //     }
+        //     else
+        //     {
+        //         this->m_Timber->getPlaneTags()[i].setType(TSRTagType::Edge);
+        //         this->m_Timber->getPlaneTags()[indices[1]].setType(TSRTagType::Edge);  // TODO: test
+        //     }
+        // }
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // test 0
+        ///////////////////////////////////////////////////////////////////////////////////////
+
+        auto ctrsCopy = this->m_Timber->getTagsCtrs();
+        auto tagsCopy = this->m_Timber->getPlaneTags();
+        std::vector<TSRTag> tagsOut = {};
+
+        // implement a custom made clustering technique to euclidean cluster the points in ctrsCopy
+
+
+        // create a vector with 10 hardcoded colors
+        open3d::geometry::KDTreeFlann kdtree;
+        kdtree.SetGeometry(ctrsCopy);
         std::vector<int> indices;
         std::vector<double> distances;
-        int knn = 2;
+        uint knn = 2;
+        uint faceIdx = 1;
+        uint idx = 0;
+        uint nextIdx = 0;
 
-        for (int i = 0; i < this->m_Timber->getPlaneTags().size(); i++)
+        do
         {
-            // TODO: test
-            if (this->m_Timber->getPlaneTags()[i].getType() != TSRTagType::Unknown)
-                continue;
-
-            kdtree.SearchKNN(this->m_Timber->getPlaneTags()[i].getCenter(), knn, indices, distances);
+            kdtree.SetGeometry(ctrsCopy);
+            kdtree.SearchKNN(ctrsCopy.points_[idx], knn, indices, distances);
+            
+            nextIdx = indices[1];
+            std::cout << "idx: " << idx << std::endl;
+            std::cout << "nextIdx: " << nextIdx << std::endl;
 
             double angle = tslam::TSVector::angleBetweenVectors(
-                this->m_Timber->getPlaneTags()[i].getNormal(),
-                this->m_Timber->getPlaneTags()[indices[1]].getNormal());
-
+                tagsCopy[idx].getNormal(),
+                tagsCopy[nextIdx].getNormal());
+            
             if (angle < this->m_CreaseAngleThreshold)
             {
-                this->m_Timber->getPlaneTags()[i].setType(TSRTagType::Side);
+                tagsCopy[idx].setFaceIdx(faceIdx);
+
+                tagsOut.push_back(tagsCopy[idx]);
             }
-            else
+            else if (angle > this->m_CreaseAngleThreshold)
             {
-                this->m_Timber->getPlaneTags()[i].setType(TSRTagType::Edge);
-                this->m_Timber->getPlaneTags()[indices[1]].setType(TSRTagType::Edge);  // TODO: test
+                tagsCopy[idx].setFaceIdx(faceIdx);
+                faceIdx++;
+                tagsCopy[nextIdx].setFaceIdx(faceIdx);
+
+                tagsOut.push_back(tagsCopy[idx]);
+                tagsOut.push_back(tagsCopy[nextIdx]);
             }
-        }
+
+            tagsCopy.erase(tagsCopy.begin() + idx);
+            ctrsCopy.points_.erase(ctrsCopy.points_.begin() + idx);
+            idx = (nextIdx > idx) ? nextIdx - 1 : nextIdx;
+
+        } while(ctrsCopy.points_.size() > 0);
+
+        std::cout << "face color index: " << faceIdx << std::endl;
+        
+        this->m_Timber->setPlaneTags(tagsOut);
+
+        // ===================================================================================
+        // 
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // test 1
+        ///////////////////////////////////////////////////////////////////////////////////////
+
+        // // what do we want to do? -> group the tags by faces and take the extremitiy tags per each face
+        // /*
+        //     for each tag:
+        //         check the tag's closest tag by knn
+
+                
+        // */
+        
+        // auto ctrsCopy = this->m_Timber->getTagsCtrs();
+        // auto tagsCopy = this->m_Timber->getPlaneTags();
+
+        // std::cout << "tagsCopy size: " << tagsCopy.size() << std::endl;
+
+
+        // // create a kdtree
+        // open3d::geometry::KDTreeFlann kdtree;
+        // // kdtree.SetGeometry(ctrsCopy);
+        // std::vector<int> indices;
+        // std::vector<double> distances;
+        // int knn = 2;
+
+        // // create a vector with 10 hardcoded colors
+        // std::vector<Eigen::Vector3d> clrs;
+        // for (int i = 0; i < 10; i++)
+        // {
+        //     std::random_device rd;
+        //     std::mt19937 gen(rd());
+        //     std::uniform_real_distribution<> dis(0, 1);
+        //     Eigen::Vector3d color = Eigen::Vector3d(dis(gen), dis(gen), dis(gen));
+        //     clrs.push_back(color);
+        // }
+        
+
+
+        // uint idx = 0;
+        // uint nextIdx = 0;
+        // std::vector<uint> faceIndexes;
+        // uint faceIdx = 1;
+        // std::vector<TSRTag> tagsOut = {};
+
+
+        // do
+        // {
+        //     kdtree.SetGeometry(ctrsCopy);
+        //     kdtree.SearchKNN(tagsCopy[idx].getCenter(), knn, indices, distances);
+        //     nextIdx = indices[1];
+
+        //     // print indices
+        //     std::cout << "idx: " << idx << std::endl;
+        //     std::cout << "nextIdx: " << nextIdx << std::endl;
+
+        //     double angle = tslam::TSVector::angleBetweenVectors(
+        //         tagsCopy[idx].getNormal(),
+        //         tagsCopy[nextIdx].getNormal());
+            
+        //     if (angle < this->m_CreaseAngleThreshold 
+        //         || angle > 180 - this->m_CreaseAngleThreshold  // it can be for a) other side or b) close but flip normal
+        //         && tagsCopy[idx].getType() == TSRTagType::Unknown)
+        //     {
+                
+        //         tagsCopy[idx].setType(TSRTagType::Side);
+                
+        //         // face ==================================
+        //         tagsCopy[idx].setFaceIdx(faceIdx);
+        //         tagsCopy[idx].setColor(clrs[faceIdx]);
+        //         // =======================================
+
+        //         tagsOut.push_back(tagsCopy[idx]);
+
+        //         // tagsCopy.erase(tagsCopy.begin() + idx);
+        //         // ctrsCopy.points_.erase(ctrsCopy.points_.begin() + idx);
+
+        //         // idx = (nextIdx > idx) ? nextIdx - 1 : nextIdx;
+        //     }
+        //     else if (angle > this->m_CreaseAngleThreshold 
+        //             && angle < 180 - this->m_CreaseAngleThreshold
+        //             && tagsCopy[idx].getType() == TSRTagType::Unknown
+        //             )
+        //     {
+        //         // face ==================================
+        //         tagsCopy[idx].setFaceIdx(faceIdx);
+        //         tagsCopy[idx].setColor(clrs[faceIdx]);
+        //         faceIdx++;
+        //         tagsCopy[nextIdx].setFaceIdx(faceIdx);
+        //         tagsCopy[nextIdx].setColor(clrs[faceIdx]);
+        //         // =======================================
+
+        //         // b: crease
+        //         std::cout << ">>>>>>>>>>>>>>>>> CREASE" << std::endl;
+        //         tagsCopy[idx].setType(TSRTagType::Edge);
+        //         tagsCopy[nextIdx].setType(TSRTagType::Edge);
+
+        //         tagsOut.push_back(tagsCopy[idx]);
+        //         tagsOut.push_back(tagsCopy[nextIdx]);
+
+        //         // tagsCopy.erase(tagsCopy.begin() + idx);
+        //         // ctrsCopy.points_.erase(ctrsCopy.points_.begin() + idx);
+
+        //         // idx = (nextIdx > idx) ? nextIdx - 1 : nextIdx;
+
+        //         // tagsCopy.erase(tagsCopy.begin() + idx);
+        //         // ctrsCopy.points_.erase(ctrsCopy.points_.begin() + idx);
+
+        //         // idx = tagsCopy.size()-1;
+
+        //     }
+
+        //     tagsCopy.erase(tagsCopy.begin() + idx);
+        //     ctrsCopy.points_.erase(ctrsCopy.points_.begin() + idx);
+
+        //     idx = (nextIdx > idx) ? nextIdx - 1 : nextIdx;
+
+
+        //     std::cout << "size point " << ctrsCopy.points_.size() << std::endl;
+
+            
+
+
+
+        // } while (tagsCopy.size() != 0);
+
+        // std::cout << "face color index: " << faceIdx << std::endl;
+        // std::cout << "tagsOut size: " << tagsOut.size() << std::endl;
+
+        // this->m_Timber->setPlaneTags(tagsOut);
+
+        // std::cout << "POP" << std::endl;
 
         ///////////////////////////////////////////////////////////////////////////////////////
         // test with a different approach merging edge/sides detection and face mapping
         ///////////////////////////////////////////////////////////////////////////////////////
-        // this might probably be a timber.hh function
 
         // indices.clear();
         // distances.clear();

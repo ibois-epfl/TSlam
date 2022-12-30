@@ -9,12 +9,11 @@ int main()
 {
     // create timber object & read yml TSlam map
     std::shared_ptr<tslam::TSTimber> timberPtr = std::make_shared<tslam::TSTimber>();
-    timberPtr->setPlaneTagsFromYAML("/home/as/TSlam/src/reconstruction/long_map.yml");
-    // timberPtr->setPlaneTagsFromYAML("/home/as/TSlam/src/reconstruction/mid_map.yml");
+    // timberPtr->setPlaneTagsFromYAML("/home/as/TSlam/src/reconstruction/long_map.yml");
+    timberPtr->setPlaneTagsFromYAML("/home/as/TSlam/src/reconstruction/mid_map.yml");
     // timberPtr->setPlaneTagsFromYAML("/home/as/TSlam/src/reconstruction/small_map.yml");
 
-    std::cout << "TSlam: Geometric Solver Test" << std::endl;
-
+    
 
     // create geometric solver
     std::shared_ptr<tslam::TSGeometricSolver> solverPtr = std::make_shared<tslam::TSGeometricSolver>();
@@ -30,6 +29,8 @@ int main()
 
     // solve
     solverPtr->reconstruct();
+
+
 
     return 0;
 }
