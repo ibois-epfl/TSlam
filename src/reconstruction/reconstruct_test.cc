@@ -9,8 +9,8 @@ int main()
 {
     // create timber object & read yml TSlam map
     std::shared_ptr<tslam::TSTimber> timberPtr = std::make_shared<tslam::TSTimber>();
-    // timberPtr->setPlaneTagsFromYAML("/home/as/TSlam/src/reconstruction/long_map.yml");
-    timberPtr->setPlaneTagsFromYAML("/home/as/TSlam/src/reconstruction/mid_map.yml");
+    timberPtr->setPlaneTagsFromYAML("/home/as/TSlam/src/reconstruction/long_map.yml");
+    // timberPtr->setPlaneTagsFromYAML("/home/as/TSlam/src/reconstruction/mid_map.yml");
     // timberPtr->setPlaneTagsFromYAML("/home/as/TSlam/src/reconstruction/small_map.yml");
 
     

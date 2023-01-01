@@ -20,6 +20,7 @@ option(ENABLE_TESTING       "Enable testing for the TSlam reconstruction"       
 # TODO: add properties and flags to library
 # build shared lib
 file(GLOB tslamrec_srcs_base "*.cc")
+list(REMOVE_ITEM tslamrec_srcs_base "${CMAKE_CURRENT_SOURCE_DIR}/reconstruct_test.cc")  # TODO: test exe
 add_library(tslamrec STATIC)  # SHARED or STATIC
 target_sources(tslamrec PUBLIC ${tslamrec_srcs_base})
 find_package(Open3D REQUIRED)

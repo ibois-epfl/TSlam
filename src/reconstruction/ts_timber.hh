@@ -48,9 +48,17 @@ namespace tslam
             m_RTags = planeTags;
         };
 
+        void setTSRTagsStripes(std::vector<std::vector<tslam::TSRTag>> tagsStripes)
+        {
+            m_TSRTagsStripes.clear();
+            m_TSRTagsStripes = tagsStripes;
+        };
+
     public: __always_inline
         /// Get all the tags objects attached to the timber element.
         std::vector<tslam::TSRTag>& getPlaneTags() {return m_RTags; };
+        /// Get the tags organized in stripes.
+        std::vector<std::vector<tslam::TSRTag>>& getTSRTagsStripes() {return m_TSRTagsStripes; };
         /// Get the axis aligned box of the tags attached to the timber element.
         open3d::geometry::AxisAlignedBoundingBox& getAABB() {return m_AABB; };
         /// Get the point cloud of the tags' centers.
@@ -58,6 +66,8 @@ namespace tslam
 
     private:
         void compute() override;
+        /// It computes the tags' stripes and store them in a member variable.
+        void computeTSRTagStripes(double angleThreshold = 10.) {};  // TODO: implement
         /// It computes the axis aligned bounding box of the tags and store it in a member variable.
         void computeAABB();
         /// It computes the point cloud of the tags' centers and store it in a member variable.
@@ -66,6 +76,8 @@ namespace tslam
     private:
         /// m_RTags the tag objects sticked to the timber piece.
         std::vector<tslam::TSRTag> m_RTags;
+        /// m_TSRTagsStripes the tags organized in stripes.
+        std::vector<std::vector<tslam::TSRTag>> m_TSRTagsStripes;
         /// m_RtagsCtrs the point cloud constituted by the tags' centers.
         open3d::geometry::PointCloud m_RtagsCtrs;
         ///  m_AABB the axis aligned bounding box of the tags.

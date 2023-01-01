@@ -8,6 +8,7 @@
 
 namespace tslam
 {
+    // FIXME: this enums need to be renamed (e.g., extreme, body of stripe, etc.)
     enum TSRTagType
     {
         Unknown = 0,
@@ -75,6 +76,8 @@ namespace tslam
         Eigen::Vector3d& getCenter() {return m_Center; };
         TSPlane& getPlane() {return m_Plane; };
         Eigen::Vector3d& getNormal() {m_Normal = m_Plane.Normal; return m_Normal; };
+        Eigen::Vector3d& getAxisY() {m_AxisY = m_Plane.AxisY; return m_AxisY; };
+        Eigen::Vector3d& getAxisX() {m_AxisX = m_Plane.AxisX; return m_AxisX; };
         TSRTagType& getType() {return m_Type; };
         uint& getFaceIdx() {return m_FaceIdx; };
     
@@ -100,12 +103,49 @@ namespace tslam
         void setFaceIdx(uint faceIdx) {m_FaceIdx = faceIdx; };
 #endif
 
+    public: __always_inline
+        /**
+         * @brief Compute the distance between two tags
+         * 
+         * @param other tag
+         * @return double distance
+         */
+        double distance2Tag(TSRTag other)
+        {
+            // That is, given P1 = (x1,y1,z1) and P2 = (x2,y2,z2), the distance between P1 and P2 is given by d(P1,P2) = (x2 x1)2 + (y2 y1)2 + (z2 z1)2.
+            Eigen::Vector3d& p1 = this->m_Center;
+            Eigen::Vector3d& p2 = other.m_Center;
+
+            double dist = (p2.x() - p1.x()) * (p2.x() - p1.x())
+                          + (p2.y() - p1.y()) * (p2.y() - p1.y())
+                          + (p2.z() - p1.z()) * (p2.z() - p1.z());
+            return dist;
+        };
+        /**
+         * @brief Compute the distance between a point and the tag's center
+         * 
+         * @see distance(TSRTag other)
+         * @param p point
+         * @return double distance
+         */
+        double distance2Pt(Eigen::Vector3d p)
+        {
+            Eigen::Vector3d& p1 = this->m_Center;
+            double dist = (p.x() - p1.x()) * (p.x() - p1.x())
+                          + (p.y() - p1.y()) * (p.y() - p1.y())
+                          + (p.z() - p1.z()) * (p.z() - p1.z());
+            return dist;
+        };
+
     private:
         uint m_Id;
         std::vector<Eigen::Vector3d> m_Corners;
         TSPlane m_Plane;
         open3d::geometry::TriangleMesh m_PlaneMesh;
-        Eigen::Vector3d m_Normal;  ///< Normal vector of the plane NOT oriented (in(outwards))
+        /// Normal vector of the plane linked to the tag
+        Eigen::Vector3d m_Normal;
+        /// Axis X,Y of the plane linked to the tag
+        Eigen::Vector3d m_AxisX, m_AxisY;
         Eigen::Vector3d m_Center;
         TSRTagType m_Type;
         /// Index to identify the face on which the tag is stick to

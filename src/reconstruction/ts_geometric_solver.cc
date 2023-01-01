@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <iterator>
 #include <random>
+#include <array>
 
 // TODO: try to catch more sensitive creaeses
 // TODO: try a timber with notch and implement merging polygons at the end (when selecting
@@ -19,27 +20,17 @@ namespace tslam
     {
         this->rDetectCreasesTags();
 
-        // get the number of crease tags and side tags
-        int nCreaseTags = 0;
-        int nSideTags = 0;
-        for (auto& tag : this->m_Timber->getPlaneTags())
-        {
-            if (tag.isEdge())
-                nCreaseTags++;
-            else
-                nSideTags++;
-        }
-        std::cout << "nCreaseTags: " << nCreaseTags << std::endl;
-        std::cout << "nSideTags: " << nSideTags << std::endl;
-
-        // this->rIntersectTagPlnAABB();
-        // this->rCreatePolysurface();
+        this->rIntersectTagPlnAABB();
+        this->rCreatePolysurface();
         // this->rCreateMesh();  // TODO: to reactivate
 
 #ifdef TSLAM_REC_DEBUG
     // Debug visualizer
     open3d::visualization::Visualizer* vis(new open3d::visualization::Visualizer());
     vis->CreateVisualizerWindow("TSPlaneTags", 1920, 1080);
+
+    
+
 
     // create a vector with 10 hardcoded colors
     std::vector<Eigen::Vector3d> clrs;
@@ -62,7 +53,7 @@ namespace tslam
         //     planeTagsLineset1->PaintUniformColor(Eigen::Vector3d(0, 1, 0));
         // else
         //     planeTagsLineset1->PaintUniformColor(Eigen::Vector3d(1, 0, 0));
-        
+
         planeTagsLineset1->PaintUniformColor(clrs[tag.getFaceIdx()]);
 
         vis->AddGeometry(planeTagsLineset1);
@@ -90,65 +81,65 @@ namespace tslam
     // }
     // vis->AddGeometry(tagNormals);
 
-    // draw AABB
-    std::shared_ptr<open3d::geometry::LineSet> aabbLineset = std::make_shared<open3d::geometry::LineSet>();
+    // // draw AABB
+    // std::shared_ptr<open3d::geometry::LineSet> aabbLineset = std::make_shared<open3d::geometry::LineSet>();
 
-    // draw polygon segments3D 
-    for (auto& pg : this->m_PlnAABBPolygons)
-    {
-        std::vector<Eigen::Vector3d> pts = pg.getVertices();
-        for (int i = 0; i < pts.size(); i++)
-        {
-            std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
-            std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-            segLineset->points_.push_back(segm->Origin());
-            segLineset->points_.push_back(segm->EndPoint());
-            segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-            segLineset->PaintUniformColor(Eigen::Vector3d(0.5, 1, 0.5));
-            vis->AddGeometry(segLineset);
-        }
-    }
+    // // draw polygon segments3D
+    // for (auto& pg : this->m_PlnAABBPolygons)
+    // {
+    //     std::vector<Eigen::Vector3d> pts = pg.getVertices();
+    //     for (int i = 0; i < pts.size(); i++)
+    //     {
+    //         std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
+    //         std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+    //         segLineset->points_.push_back(segm->Origin());
+    //         segLineset->points_.push_back(segm->EndPoint());
+    //         segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    //         segLineset->PaintUniformColor(Eigen::Vector3d(0.5, 1, 0.5));
+    //         vis->AddGeometry(segLineset);
+    //     }
+    // }
 
-    // draw first intersection polygon centers
-    for (auto& fpoly : this->m_PlnAABBPolygons)
-    {
-        std::shared_ptr<open3d::geometry::PointCloud> pntCldPCtr = std::make_shared<open3d::geometry::PointCloud>();
-        pntCldPCtr->points_.push_back(fpoly.getCenter());
-        pntCldPCtr->PaintUniformColor(Eigen::Vector3d(0, 1, 1));
-        vis->AddGeometry(pntCldPCtr);
-    }
+    // // draw first intersection polygon centers
+    // for (auto& fpoly : this->m_PlnAABBPolygons)
+    // {
+    //     std::shared_ptr<open3d::geometry::PointCloud> pntCldPCtr = std::make_shared<open3d::geometry::PointCloud>();
+    //     pntCldPCtr->points_.push_back(fpoly.getCenter());
+    //     pntCldPCtr->PaintUniformColor(Eigen::Vector3d(0, 1, 1));
+    //     vis->AddGeometry(pntCldPCtr);
+    // }
 
-    // draw new merged planes centers
-    std::shared_ptr<open3d::geometry::PointCloud> pntCldNewPlanes = std::make_shared<open3d::geometry::PointCloud>();
-    for (auto& pg : this->m_MergedPolygons)
-    {
-        pntCldNewPlanes->points_.push_back(pg.getCenter());
-        pntCldNewPlanes->PaintUniformColor(Eigen::Vector3d(0.7, 0.3, 0.9));
-        vis->AddGeometry(pntCldNewPlanes);
-    }
+    // // draw new merged planes centers
+    // std::shared_ptr<open3d::geometry::PointCloud> pntCldNewPlanes = std::make_shared<open3d::geometry::PointCloud>();
+    // for (auto& pg : this->m_MergedPolygons)
+    // {
+    //     pntCldNewPlanes->points_.push_back(pg.getCenter());
+    //     pntCldNewPlanes->PaintUniformColor(Eigen::Vector3d(0.7, 0.3, 0.9));
+    //     vis->AddGeometry(pntCldNewPlanes);
+    // }
 
-    // draw new interesected polygons
-    for (auto& pg : this->m_MergedPolygons)
-    {
-        std::vector<Eigen::Vector3d> pts = pg.getVertices();
-        for (int i = 0; i < pts.size(); i++)
-        {
-            std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
-            std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-            segLineset->points_.push_back(segm->Origin());
-            segLineset->points_.push_back(segm->EndPoint());
-            segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-            segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-            segLineset->PaintUniformColor(Eigen::Vector3d(0., 0., 1.));
-            vis->AddGeometry(segLineset);
-        }
-    }
+    // // draw new interesected polygons
+    // for (auto& pg : this->m_MergedPolygons)
+    // {
+    //     std::vector<Eigen::Vector3d> pts = pg.getVertices();
+    //     for (int i = 0; i < pts.size(); i++)
+    //     {
+    //         std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
+    //         std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+    //         segLineset->points_.push_back(segm->Origin());
+    //         segLineset->points_.push_back(segm->EndPoint());
+    //         segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    //         segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+    //         segLineset->PaintUniformColor(Eigen::Vector3d(0., 0., 1.));
+    //         vis->AddGeometry(segLineset);
+    //     }
+    // }
 
     // draw all split poly
-    for (auto& poly : this->m_FacePolygons)
+    for (auto& poly : this->m_SplitPolygons)
     {
         std::vector<Eigen::Vector3d> pts = poly.getVertices();
         // random color
@@ -182,70 +173,31 @@ namespace tslam
     // pcdMeshCenters->PaintUniformColor(Eigen::Vector3d(1., 0., 0.));
     // vis->AddGeometry(pcdMeshCenters);
 
+
+
+
     vis->Run();
     vis->Close();
     vis->DestroyVisualizerWindow();
 #endif
     }
-
+    // TODO: clean out this function
     void TSGeometricSolver::rDetectCreasesTags()
     {
-        /////////////////////////////
-        // original
-        /////////////////////////////
-
-        // open3d::geometry::KDTreeFlann kdtree;
-        // kdtree.SetGeometry(open3d::geometry::PointCloud(this->m_Timber->getTagsCtrs()));
-
-        // std::vector<int> indices;
-        // std::vector<double> distances;
-        // int knn = 2;
-
-        // for (int i = 0; i < this->m_Timber->getPlaneTags().size(); i++)
-        // {
-        //     // TODO: test
-        //     if (this->m_Timber->getPlaneTags()[i].getType() != TSRTagType::Unknown)
-        //         continue;
-
-        //     kdtree.SearchKNN(this->m_Timber->getPlaneTags()[i].getCenter(), knn, indices, distances);
-
-        //     double angle = tslam::TSVector::angleBetweenVectors(
-        //         this->m_Timber->getPlaneTags()[i].getNormal(),
-        //         this->m_Timber->getPlaneTags()[indices[1]].getNormal());
-            
-        //     // print angle
-        //     std::cout << "angle: " << angle << std::endl;
-
-        //     if (angle < this->m_CreaseAngleThreshold)
-        //     {
-        //         this->m_Timber->getPlaneTags()[i].setType(TSRTagType::Side);
-        //     }
-        //     else
-        //     {
-        //         this->m_Timber->getPlaneTags()[i].setType(TSRTagType::Edge);
-        //         this->m_Timber->getPlaneTags()[indices[1]].setType(TSRTagType::Edge);  // TODO: test
-        //     }
-        // }
-
-
-        ///////////////////////////////////////////////////////////////////////////////////////
-        // test 0
-        ///////////////////////////////////////////////////////////////////////////////////////
+        // DIVIDE TAGS BY STRIPE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         auto ctrsCopy = this->m_Timber->getTagsCtrs();
         auto tagsCopy = this->m_Timber->getPlaneTags();
-        std::vector<TSRTag> tagsOut = {};
 
-        // implement a custom made clustering technique to euclidean cluster the points in ctrsCopy
+        std::vector<std::vector<TSRTag>> stripes = {};
+        std::vector<TSRTag> stripe = {};
 
-
-        // create a vector with 10 hardcoded colors
         open3d::geometry::KDTreeFlann kdtree;
         kdtree.SetGeometry(ctrsCopy);
         std::vector<int> indices;
         std::vector<double> distances;
         uint knn = 2;
-        uint faceIdx = 1;
+        uint faceIdx = 0;
         uint idx = 0;
         uint nextIdx = 0;
 
@@ -253,20 +205,18 @@ namespace tslam
         {
             kdtree.SetGeometry(ctrsCopy);
             kdtree.SearchKNN(ctrsCopy.points_[idx], knn, indices, distances);
-            
+
             nextIdx = indices[1];
-            std::cout << "idx: " << idx << std::endl;
-            std::cout << "nextIdx: " << nextIdx << std::endl;
 
             double angle = tslam::TSVector::angleBetweenVectors(
                 tagsCopy[idx].getNormal(),
                 tagsCopy[nextIdx].getNormal());
-            
+
             if (angle < this->m_CreaseAngleThreshold)
             {
                 tagsCopy[idx].setFaceIdx(faceIdx);
 
-                tagsOut.push_back(tagsCopy[idx]);
+                stripe.push_back(tagsCopy[idx]);
             }
             else if (angle > this->m_CreaseAngleThreshold)
             {
@@ -274,8 +224,10 @@ namespace tslam
                 faceIdx++;
                 tagsCopy[nextIdx].setFaceIdx(faceIdx);
 
-                tagsOut.push_back(tagsCopy[idx]);
-                tagsOut.push_back(tagsCopy[nextIdx]);
+                stripe.push_back(tagsCopy[idx]);
+                stripes.push_back(stripe);
+                stripe.clear();
+                stripe.push_back(tagsCopy[nextIdx]);
             }
 
             tagsCopy.erase(tagsCopy.begin() + idx);
@@ -284,230 +236,51 @@ namespace tslam
 
         } while(ctrsCopy.points_.size() > 0);
 
-        std::cout << "face color index: " << faceIdx << std::endl;
-        
-        this->m_Timber->setPlaneTags(tagsOut);
+        // add the last stripe
+        stripes.push_back(stripe);  //TODO: test to add again
 
-        // ===================================================================================
-        // 
+        // MArk THE EXTREMES OF THE STRIPE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        // TODO: check out if this method of finding the extremes is correct
+        for (auto& stripe : stripes)
+        {
+            // get the extremitiy tags
+            TSRTag& minTag = stripe.front();
+            TSRTag& maxTag = stripe.back();
+            for (auto& tag : stripe)
+            {
+                tag.setType(TSRTagType::Side);
+                if (tag.getCenter()(0) < minTag.getCenter()(0))
+                    minTag = tag;
+                if (tag.getCenter()(0) > maxTag.getCenter()(0))
+                    maxTag = tag;
+            }
+            minTag.setType(TSRTagType::Edge);
+            maxTag.setType(TSRTagType::Edge);
+        }
 
+        // TODO: test, merge stripes that belong to the same face
+        // merge stripes that belong to the same face
+        // to know if two stripes belong to the same face:
+        // how to check if two stripes belong to the same face?
+        // 1. check if the stripes are adjacent
+        // 2. check if the stripes have the same normal
 
-        ///////////////////////////////////////////////////////////////////////////////////////
-        // test 1
-        ///////////////////////////////////////////////////////////////////////////////////////
+        std::cout << "BEFORE: Number of stripes: " << stripes.size() << std::endl;  // DEBUG
 
-        // // what do we want to do? -> group the tags by faces and take the extremitiy tags per each face
-        // /*
-        //     for each tag:
-        //         check the tag's closest tag by knn
+        // TODO: test it here
 
-                
-        // */
-        
-        // auto ctrsCopy = this->m_Timber->getTagsCtrs();
-        // auto tagsCopy = this->m_Timber->getPlaneTags();
-
-        // std::cout << "tagsCopy size: " << tagsCopy.size() << std::endl;
-
-
-        // // create a kdtree
-        // open3d::geometry::KDTreeFlann kdtree;
-        // // kdtree.SetGeometry(ctrsCopy);
-        // std::vector<int> indices;
-        // std::vector<double> distances;
-        // int knn = 2;
-
-        // // create a vector with 10 hardcoded colors
-        // std::vector<Eigen::Vector3d> clrs;
-        // for (int i = 0; i < 10; i++)
-        // {
-        //     std::random_device rd;
-        //     std::mt19937 gen(rd());
-        //     std::uniform_real_distribution<> dis(0, 1);
-        //     Eigen::Vector3d color = Eigen::Vector3d(dis(gen), dis(gen), dis(gen));
-        //     clrs.push_back(color);
-        // }
-        
+        std::cout << "AFTER: Number of stripes: " << stripes.size() << std::endl;  // DEBUG
 
 
-        // uint idx = 0;
-        // uint nextIdx = 0;
-        // std::vector<uint> faceIndexes;
-        // uint faceIdx = 1;
-        // std::vector<TSRTag> tagsOut = {};
+        this->m_Timber->setTSRTagsStripes(stripes);  // TODO: temp, implement properly
 
 
-        // do
-        // {
-        //     kdtree.SetGeometry(ctrsCopy);
-        //     kdtree.SearchKNN(tagsCopy[idx].getCenter(), knn, indices, distances);
-        //     nextIdx = indices[1];
-
-        //     // print indices
-        //     std::cout << "idx: " << idx << std::endl;
-        //     std::cout << "nextIdx: " << nextIdx << std::endl;
-
-        //     double angle = tslam::TSVector::angleBetweenVectors(
-        //         tagsCopy[idx].getNormal(),
-        //         tagsCopy[nextIdx].getNormal());
-            
-        //     if (angle < this->m_CreaseAngleThreshold 
-        //         || angle > 180 - this->m_CreaseAngleThreshold  // it can be for a) other side or b) close but flip normal
-        //         && tagsCopy[idx].getType() == TSRTagType::Unknown)
-        //     {
-                
-        //         tagsCopy[idx].setType(TSRTagType::Side);
-                
-        //         // face ==================================
-        //         tagsCopy[idx].setFaceIdx(faceIdx);
-        //         tagsCopy[idx].setColor(clrs[faceIdx]);
-        //         // =======================================
-
-        //         tagsOut.push_back(tagsCopy[idx]);
-
-        //         // tagsCopy.erase(tagsCopy.begin() + idx);
-        //         // ctrsCopy.points_.erase(ctrsCopy.points_.begin() + idx);
-
-        //         // idx = (nextIdx > idx) ? nextIdx - 1 : nextIdx;
-        //     }
-        //     else if (angle > this->m_CreaseAngleThreshold 
-        //             && angle < 180 - this->m_CreaseAngleThreshold
-        //             && tagsCopy[idx].getType() == TSRTagType::Unknown
-        //             )
-        //     {
-        //         // face ==================================
-        //         tagsCopy[idx].setFaceIdx(faceIdx);
-        //         tagsCopy[idx].setColor(clrs[faceIdx]);
-        //         faceIdx++;
-        //         tagsCopy[nextIdx].setFaceIdx(faceIdx);
-        //         tagsCopy[nextIdx].setColor(clrs[faceIdx]);
-        //         // =======================================
-
-        //         // b: crease
-        //         std::cout << ">>>>>>>>>>>>>>>>> CREASE" << std::endl;
-        //         tagsCopy[idx].setType(TSRTagType::Edge);
-        //         tagsCopy[nextIdx].setType(TSRTagType::Edge);
-
-        //         tagsOut.push_back(tagsCopy[idx]);
-        //         tagsOut.push_back(tagsCopy[nextIdx]);
-
-        //         // tagsCopy.erase(tagsCopy.begin() + idx);
-        //         // ctrsCopy.points_.erase(ctrsCopy.points_.begin() + idx);
-
-        //         // idx = (nextIdx > idx) ? nextIdx - 1 : nextIdx;
-
-        //         // tagsCopy.erase(tagsCopy.begin() + idx);
-        //         // ctrsCopy.points_.erase(ctrsCopy.points_.begin() + idx);
-
-        //         // idx = tagsCopy.size()-1;
-
-        //     }
-
-        //     tagsCopy.erase(tagsCopy.begin() + idx);
-        //     ctrsCopy.points_.erase(ctrsCopy.points_.begin() + idx);
-
-        //     idx = (nextIdx > idx) ? nextIdx - 1 : nextIdx;
-
-
-        //     std::cout << "size point " << ctrsCopy.points_.size() << std::endl;
-
-            
-
-
-
-        // } while (tagsCopy.size() != 0);
-
-        // std::cout << "face color index: " << faceIdx << std::endl;
-        // std::cout << "tagsOut size: " << tagsOut.size() << std::endl;
-
-        // this->m_Timber->setPlaneTags(tagsOut);
-
-        // std::cout << "POP" << std::endl;
-
-        ///////////////////////////////////////////////////////////////////////////////////////
-        // test with a different approach merging edge/sides detection and face mapping
-        ///////////////////////////////////////////////////////////////////////////////////////
-
-        // indices.clear();
-        // distances.clear();
-        // // knn = this->m_Timber->getPlaneTags().size();
-        // knn = 3;
-        
-        // bool isMapped = false;
-
-        // std::vector<TSRTag>& tags = this->m_Timber->getPlaneTags();
-
-        // uint faceIdx = 0;
-
-        // TSRTag& tag = this->m_Timber->getPlaneTags()[0];
-
-        // do
-        // {
-        //     if (tag.getType() != TSRTagType::Unknown)
-        //             continue;
-
-        //     // kdtree.SearchKNN(tag.getCenter(), knn, indices, distances);
-
-        //     // if (tags[indices[1]].getType() != TSRTagType::Unknown)
-
-
-
-
-        //     // exit condition check
-        //     isMapped = true;
-        //     for (auto& tag : this->m_Timber->getPlaneTags())
-        //     {
-        //         if (tag.getType() == TSRTagType::Unknown)
-        //         {
-        //             isMapped = false;
-        //             break;
-        //         }
-        //     }
-
-        // } while (!isMapped);
-        
-
-        /////////////////////////////
-        // test for mapping edges
-        /////////////////////////////
-
-        // we need to find which tags belong to the same face
-
-        // loop through all the tags
-        // for each edge tag, find the closest face tag
-        // we continue to find the closest tag to the last face tag untill we find an edge tag
-        // (optional?) if: the first edge tag and newly found tag have a similar normal, we have a face
-        // we mark the two tags as the same face tags
-        // probably a cleaning up mechanism is needed to avoid doubled planes too close to each other
-
-        // indices.clear();
-        // distances.clear();
-        // // knn = this->m_Timber->getPlaneTags().size();
-        // knn = 3;
-
-
-        // for (int i = 0; i < this->m_Timber->getPlaneTags().size(); i++)
-        // {
-        //     kdtree.SearchKNN(this->m_Timber->getPlaneTags()[i].getCenter(), knn, indices, distances);
-
-        //     // print indices
-        //     std::cout << "[DEBUG] indices: ";
-        //     for (auto& idx : indices)
-        //         std::cout << idx << " ";
-        //     std::cout << std::endl;
-
-        //     std::cout << "///////////////////////////////////////////////" << std::endl;
-
-        //     // print distances
-        //     std::cout << "[DEBUG] distances: ";
-        //     for (auto& dist : distances)
-        //         std::cout << dist << " ";
-        //     std::cout << std::endl;
-
-
-
-        //     // this->m_Timber->getPlaneTags()[i].setFaceIdx(i);
-        // }
+        // store the tags <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        std::vector<TSRTag> temp = {};
+        for (auto& stripe : stripes)
+            for (auto& tag : stripe)
+                temp.push_back(tag);
+        this->m_Timber->setPlaneTags(temp);  // TODO: temp, implement properly
 
     }
 
@@ -519,15 +292,127 @@ namespace tslam
 
         Eigen::Vector3d* outPtsPtr = new Eigen::Vector3d[3*6];
         std::vector<Eigen::Vector3d>* planeIntersections = new std::vector<Eigen::Vector3d>();
-        for (auto& t : this->m_Timber->getPlaneTags())
+
+
+
+        //======tempTest=========================================================================
+
+        // here we get all the planes of each stripe of tags
+        std::vector<TSPlane> planes = {};
+        for (auto& stripe : this->m_Timber->getTSRTagsStripes())
         {
-            // a. skip face tags
-            if (t.isSide()) continue;
+            // get the extremitiy tags
+            // TSRTag& minTag = stripe.front();
+            TSRTag& minTag = stripe.front();
+
+            // TSRTag& maxTag = stripe.back();
+            TSRTag& maxTag = stripe.back();
+
+            // compute the normal as the mean of the normals of the tags between the extremes
+            Eigen::Vector3d meanNormal = Eigen::Vector3d::Zero();
+            for (auto& tag : stripe)
+                meanNormal += tag.getNormal();
+            meanNormal /= stripe.size();
+
+            // fit plane through 2 points and a given normal
+            TSPlane meanPlane = TSPlane(meanNormal,
+                                        minTag.getCenter(),
+                                        maxTag.getCenter());
             
-            // b. caculate the intersection points
+            planes.push_back(meanPlane);
+        }
+
+        // we need to merge to much similar planes (too close to each other)
+        // average the planes if they are too close
+        // std::cout << "BEFORE: planes.size(): " << planes.size() << "\n";  // DEBUG
+        std::vector<TSPlane> tempPlns2Merge = {};
+
+        auto series = this->m_Timber->getTSRTagsStripes();
+        std::vector<TSRTag> sTemp = {};
+        
+
+        for (int i = 0; i < planes.size(); i++)
+        {
+            for (int j = i + 1; j < planes.size(); j++)
+            {
+                // std::cout << "distance: " <<  planes[i].distance(planes[j]) << "\n";  // DEBUG
+                if (planes[i].distance(planes[j]) < 5.2)
+                {
+                    // check if the normal of the two planes are similar
+                    if (planes[i].Normal.dot(planes[j].Normal) > 0.9)
+                    {
+                        // // ======================== test0 ========================
+                        // std::cout << "BEFORE: tempPlns2Merge size: " <<  tempPlns2Merge.size() << "\n";  // DEBUG
+                        // push the planes to the temp vector
+                        // tempPlns2Merge.push_back(planes[i]);
+                        // tempPlns2Merge.push_back(planes[j]);
+                        
+                        // FIXME: we need to merge the two stripes!
+
+                        // merge the two stripes and find the two more distant tags
+                        sTemp = series[i];
+
+                        std::cout << "BEFORE: size sTemp: " << sTemp.size() << "\n";  // DEBUG
+
+                        sTemp.insert(sTemp.end(), series[j].begin(), series[j].end());
+
+                        std::cout << "AFTER: size sTemp: " << sTemp.size() << "\n";  // DEBUG
+
+
+                        TSRTStripe sTemp2 = TSRTStripe(sTemp);
+                        std::cout << "SERIESOBJ: size sTemp: " << sTemp2.size() << "\n";  // DEBUG
+
+
+                        // mean normal FIXME: this has to be stripe class method
+                        Eigen::Vector3d meanNormal = Eigen::Vector3d::Zero();
+                        for (auto& tag : sTemp)
+                            meanNormal += tag.getNormal();
+                        meanNormal /= sTemp.size();
+
+                        // get the extremitiy tags
+                        sTemp2.reorderTags();
+
+                        TSRTag minTag = sTemp2.front();
+                        TSRTag maxTag = sTemp2.back();
+
+
+                        TSPlane avgPlane = TSPlane(meanNormal, 
+                                                   minTag.getCenter(), 
+                                                   maxTag.getCenter());
+
+                        // tempPlns2Merge.push_back(avgPlane);  // TEST/DEBUG
+                        // goto testend;  // TEST/DEBUG
+
+
+                        planes[i] = avgPlane;
+                        series.erase(series.begin() + j);  // TODO: test
+                        planes.erase(planes.begin() + j);
+                        j--;
+                        sTemp.clear();  // TODO: test
+
+
+                        // std::cout << "AFETR: tempPlns2Merge size: " <<  tempPlns2Merge.size() << "\n";  // DEBUG
+                    }
+                }
+            }
+        }
+        // testend:                  // TEST/DEBUG
+        // planes.clear();           // TEST/DEBUG
+        // planes = tempPlns2Merge;  // TEST/DEBUG
+        // std::cout << "AFTER: planes.size(): " << planes.size() << "\n";  // DEBUG
+
+
+        for (int i = 0; i < planes.size(); i++)
+        {
+            // TSRTag& minTag = stripe.front();
+            // TSRTag& maxTag = stripe.back();
+
+            // mean the min and max tags' planes
+            TSPlane meanPlane = planes[i];
+
             unsigned int outPtsCount;
-            tslam::TSPlane::plane2AABBSegmentIntersect(t.getPlane(),
-                                                       this->m_Timber->getAABB().min_bound_, 
+            tslam::TSPlane::plane2AABBSegmentIntersect(meanPlane,
+                                                       this->m_Timber->getAABB().min_bound_,
                                                        this->m_Timber->getAABB().max_bound_,
                                                        outPtsPtr,
                                                        outPtsCount);
@@ -539,15 +424,81 @@ namespace tslam
                 planeIntersections->push_back(outPtsPtr[i]);
             }
 
-            TSPolygon tempPoly = TSPolygon(*planeIntersections, t.getPlane());
+            TSPolygon tempPoly = TSPolygon(*planeIntersections, meanPlane);
             tempPoly.reorderClockwisePoints();
             this->m_PlnAABBPolygons.push_back(tempPoly);
         }
         delete outPtsPtr;
         delete planeIntersections;
 
-        // c. mean the polygons into new one 
-        this->rMeanPolygonPlanes();
+
+
+
+        //======working=========================================================================
+
+
+        // for (auto& stripe : this->m_Timber->getTSRTagsStripes())
+        // {
+        //     TSRTag& minTag = stripe.front();
+        //     TSRTag& maxTag = stripe.back();
+
+        //     // mean the min and max tags' planes
+        //     TSPlane meanPlane = TSPlane(minTag.getNormal(), minTag.getCenter(), maxTag.getCenter());
+
+        //     unsigned int outPtsCount;
+        //     tslam::TSPlane::plane2AABBSegmentIntersect(meanPlane,
+        //                                                this->m_Timber->getAABB().min_bound_,
+        //                                                this->m_Timber->getAABB().max_bound_,
+        //                                                outPtsPtr,
+        //                                                outPtsCount);
+        //     // b. save the result into a polygon
+        //     planeIntersections->reserve(outPtsCount);
+        //     planeIntersections->clear();
+        //     for (unsigned int i = 0; i < outPtsCount; i++)
+        //     {
+        //         planeIntersections->push_back(outPtsPtr[i]);
+        //     }
+
+        //     TSPolygon tempPoly = TSPolygon(*planeIntersections, meanPlane);
+        //     tempPoly.reorderClockwisePoints();
+        //     this->m_PlnAABBPolygons.push_back(tempPoly);
+        // }
+        // delete outPtsPtr;
+        // delete planeIntersections;
+
+
+        //======oRIGINAL=========================================================================
+        // for (auto& t : this->m_Timber->getPlaneTags())
+        // {
+        //     // a. skip face tags
+        //     if (t.isSide()) continue;
+
+        //     // b. caculate the intersection points
+        //     unsigned int outPtsCount;
+        //     tslam::TSPlane::plane2AABBSegmentIntersect(t.getPlane(),
+        //                                                this->m_Timber->getAABB().min_bound_,
+        //                                                this->m_Timber->getAABB().max_bound_,
+        //                                                outPtsPtr,
+        //                                                outPtsCount);
+        //     // b. save the result into a polygon
+        //     planeIntersections->reserve(outPtsCount);
+        //     planeIntersections->clear();
+        //     for (unsigned int i = 0; i < outPtsCount; i++)
+        //     {
+        //         planeIntersections->push_back(outPtsPtr[i]);
+        //     }
+
+        //     TSPolygon tempPoly = TSPolygon(*planeIntersections, t.getPlane());
+        //     tempPoly.reorderClockwisePoints();
+        //     this->m_PlnAABBPolygons.push_back(tempPoly);
+        // }
+        // delete outPtsPtr;
+        // delete planeIntersections;
+        //========================================================================================
+
+        // c. mean the polygons into new one
+        // this->rMeanPolygonPlanes();
+        this->m_MergedPolygons = this->m_PlnAABBPolygons;  // TODO: test
 
         // d. intersect the new polygons with the timber
         this->rIntersectMeanPolygonPlnAABB();
@@ -576,7 +527,7 @@ namespace tslam
             int k = 0;
             meanPt = {0,0,0};
             meanNorm = {0,0,0};
-            
+
             for (int j=0; j < indices.size(); j++)
             {
                 // check if the index has already been merged
@@ -616,7 +567,7 @@ namespace tslam
             // a. caculate the intersection points
             unsigned int outPtsCount2;
             tslam::TSPlane::plane2AABBSegmentIntersect(mpoly.getLinkedPlane(),
-                                                       this->m_Timber->getAABB().min_bound_, 
+                                                       this->m_Timber->getAABB().min_bound_,
                                                        this->m_Timber->getAABB().max_bound_,
                                                        outPtsPtr2,
                                                        outPtsCount2);

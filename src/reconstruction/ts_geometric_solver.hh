@@ -2,6 +2,7 @@
 
 #include "ts_timber.hh"
 #include "ts_geo_util.hh"
+#include "ts_rtstripe.hh"
 
 #include <Eigen/Core>
 
@@ -44,6 +45,7 @@ namespace tslam
 
     private:  ///< reconstruction methods
         /// (a)
+        // FIXME: rename or move it to the timber class (?)
         /**
          * @brief The function detect the tags creases of the timber piece. It builds a ktree of the tags and by
          * k-nearest neighbor search it finds the nearest tags to each tag. Then it computes the angle between

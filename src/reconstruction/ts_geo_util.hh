@@ -21,12 +21,81 @@ namespace tslam
     struct TSPlane
     {
         TSPlane() {};
+        /**
+         * @brief Construct a new TSPlane object with the euclidean equation of a plane
+         * 
+         * @param a the a coefficient of the plane equation
+         * @param b the b coefficient of the plane equation
+         * @param c the c coefficient of the plane equation
+         * @param d the d coefficient of the plane equation
+         */
         TSPlane(double a, double b, double c, double d)
             : A(a), B(b), C(c), D(d), Normal(Eigen::Vector3d(a, b, c)), Center(Eigen::Vector3d(-a*d, -b*d, -c*d))
-        {};
+        {
+            this->extractAxes();
+        };
+        /**
+         * @brief Construct a new TSPlane object with a normal and a center
+         * 
+         * @param normal the normal of the plane
+         * @param center the center of the plane
+         */
         TSPlane(Eigen::Vector3d normal, Eigen::Vector3d center)
             : A(normal(0)), B(normal(1)), C(normal(2)), D(normal.dot(center)), Normal(normal), Center(center)
-        {};
+        {
+            this->extractAxes();
+        };
+
+        /**
+         * @brief Construct a new TSPlane object with 3 points
+         * 
+         * @param p1 the first point
+         * @param p2 the second point
+         * @param p3 the third point
+         * @param placeholder a placeholder to distinguish this constructor from the one with 3 points and a normal
+         */
+        TSPlane(Eigen::Vector3d p1, Eigen::Vector3d p2, Eigen::Vector3d p3, bool placeholder)
+        {
+            Eigen::Vector3d v1 = p2 - p1;
+            this->AxisX = v1;
+            Eigen::Vector3d v2 = p3 - p1;
+            this->AxisY = v2;
+            Eigen::Vector3d normal = v1.cross(v2);
+            normal.normalize();
+            this->A = normal(0);
+            this->B = normal(1);
+            this->C = normal(2);
+            this->D = normal.dot(p1);
+            this->Normal = normal;
+            this->Center = p1;
+        };
+        /**
+         * @brief Construct a plane passing through 2 points and a given normal
+         * 
+         * @param normal the normal of the plane
+         * @param pt1 first point as center of the plane
+         * @param pt2 second point to define the plane
+         */
+        TSPlane(Eigen::Vector3d normal, Eigen::Vector3d pt1, Eigen::Vector3d pt2)
+        {
+            Eigen::Vector3d v1 = pt2 - pt1;
+            this->AxisX = v1;
+            Eigen::Vector3d vec2 = normal.cross(v1);
+            vec2.normalize();
+            Eigen::Vector3d pt3 = pt1 + vec2;
+            Eigen::Vector3d v2 = pt3 - pt1;
+            this->AxisY = v2;
+            
+            Eigen::Vector3d normal2 = v1.cross(v2);
+            normal2.normalize();
+            this->A = normal2(0);
+            this->B = normal2(1);
+            this->C = normal2(2);
+            this->D = normal2.dot(pt1);
+            this->Normal = normal2;
+            this->Center = pt1;
+
+        };
         ~TSPlane() = default;
     
     public: __always_inline
@@ -57,7 +126,18 @@ namespace tslam
          */
         double distance(Eigen::Vector3d point)
         {
-            return this->Normal.dot(point - this->Center);
+            return std::fabs(this->Normal.dot(point - this->Center));
+        };
+        /**
+         * @brief Compute the distance between two planes
+         * 
+         * @param plane the plane to compute the distance
+         * @see distance(Eigen::Vector3d point)
+         * @return double the distance
+         */
+        double distance(TSPlane& plane)
+        {
+            return std::fabs(this->Normal.dot(plane.Center - this->Center));
         };
         /**
          * @brief Project a point on the plane.
@@ -177,25 +257,6 @@ namespace tslam
             if (plane.A * orig.x() + plane.B * orig.y() + plane.C * orig.z() + plane.D == 0.f)
                 out_points[out_point_count++] = orig;
         }
-        // TODO: to test
-        /**
-         * @brief Average two planes together
-         * 
-         * @param plane the plane to average with
-         * 
-         * @return TSPlane the averaged plane
-         */
-        TSPlane averagePlane(const TSPlane &plane)
-        {
-            TSPlane outPln;
-            outPln.Normal = (this->Normal + plane.Normal).normalized();
-            outPln.Center = (this->Center + plane.Center) / 2.f;
-            outPln.A = outPln.Normal.x();
-            outPln.B = outPln.Normal.y();
-            outPln.C = outPln.Normal.z();
-            outPln.D = outPln.A * outPln.Center.x() + outPln.B * outPln.Center.y() + outPln.C * outPln.Center.z();
-            return outPln;
-        }
 
     public: __always_inline
         /**
@@ -211,7 +272,34 @@ namespace tslam
         };
 
     public:
+        /// Extract the two axes of the plane
+        void extractAxes()
+        {
+            Eigen::Vector3d axisX, axisY;
+            if (std::abs(this->Normal(0)) > std::abs(this->Normal(1)))
+            {
+                // Normal.x or Normal.z is the largest magnitude component, swap them
+                double invLen = 1.0 / std::sqrt(this->Normal(0) * this->Normal(0) + this->Normal(2) * this->Normal(2));
+                axisX(0) = -this->Normal(2) * invLen;
+                axisX(1) = 0.0;
+                axisX(2) = +this->Normal(0) * invLen;
+            }
+            else
+            {
+                // Normal.y or Normal.z is the largest magnitude component, swap them
+                double invLen = 1.0 / std::sqrt(this->Normal(1) * this->Normal(1) + this->Normal(2) * this->Normal(2));
+                axisX(0) = 0.0;
+                axisX(1) = +this->Normal(2) * invLen;
+                axisX(2) = -this->Normal(1) * invLen;
+            }
+            axisY = this->Normal.cross(axisX);
+            this->AxisX = axisX;
+            this->AxisY = axisY;
+        }
+
+    public:
         Eigen::Vector3d Normal;
+        Eigen::Vector3d AxisX, AxisY;
         Eigen::Vector3d Center;
         double A, B, C, D;  ///< eq: ax+by+cz=d
     };
@@ -224,6 +312,12 @@ namespace tslam
         {
             double angle = std::acos(v1.dot(v2) / (v1.norm() * v2.norm()));
             return (angle * 180 / M_PI);
+        }
+        
+        // TODO: test me
+        static double distance(const Eigen::Vector3d &a, const Eigen::Vector3d &b)
+        {
+            return std::sqrt(std::pow(a(0) - b(0), 2) + std::pow(a(1) - b(1), 2) + std::pow(a(2) - b(2), 2));
         }
     };
 
