@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ts_rtag.hh"
+#include "ts_rtstripe.hh"
 
 #include <open3d/Open3D.h>
 #include <Eigen/Core>
@@ -48,17 +49,27 @@ namespace tslam
             m_RTags = planeTags;
         };
 
-        void setTSRTagsStripes(std::vector<std::vector<tslam::TSRTag>> tagsStripes)
+        void setTSRTagsStripes(std::vector<std::shared_ptr<TSRTStripe>> tagsStripes)
         {
             m_TSRTagsStripes.clear();
             m_TSRTagsStripes = tagsStripes;
+
+            // FIXME: replace this when m_RTAGS erased
+            m_RTags.clear();
+            for (auto& stripe : m_TSRTagsStripes)
+            {
+                for (auto& tag : *stripe)
+                {
+                    m_RTags.push_back(tag);
+                }
+            }
         };
 
     public: __always_inline
         /// Get all the tags objects attached to the timber element.
         std::vector<tslam::TSRTag>& getPlaneTags() {return m_RTags; };
         /// Get the tags organized in stripes.
-        std::vector<std::vector<tslam::TSRTag>>& getTSRTagsStripes() {return m_TSRTagsStripes; };
+        std::vector<std::shared_ptr<TSRTStripe>>& getTSRTagsStripes() {return m_TSRTagsStripes; };
         /// Get the axis aligned box of the tags attached to the timber element.
         open3d::geometry::AxisAlignedBoundingBox& getAABB() {return m_AABB; };
         /// Get the point cloud of the tags' centers.
@@ -75,9 +86,9 @@ namespace tslam
 
     private:
         /// m_RTags the tag objects sticked to the timber piece.
-        std::vector<tslam::TSRTag> m_RTags;
+        std::vector<tslam::TSRTag> m_RTags;  // FIXME: this should be the stripe and erase it
         /// m_TSRTagsStripes the tags organized in stripes.
-        std::vector<std::vector<tslam::TSRTag>> m_TSRTagsStripes;
+        std::vector<std::shared_ptr<TSRTStripe>> m_TSRTagsStripes;
         /// m_RtagsCtrs the point cloud constituted by the tags' centers.
         open3d::geometry::PointCloud m_RtagsCtrs;
         ///  m_AABB the axis aligned bounding box of the tags.

@@ -20,7 +20,7 @@ namespace tslam
     {
         this->rDetectCreasesTags();
 
-        this->rIntersectTagPlnAABB();
+        this->rIntersectStripeTagPlnAABB();
         this->rCreatePolysurface();
         // this->rCreateMesh();  // TODO: to reactivate
 
@@ -139,7 +139,7 @@ namespace tslam
     // }
 
     // draw all split poly
-    for (auto& poly : this->m_SplitPolygons)
+    for (auto& poly : this->m_FacePolygons)
     {
         std::vector<Eigen::Vector3d> pts = poly.getVertices();
         // random color
@@ -181,17 +181,17 @@ namespace tslam
     vis->DestroyVisualizerWindow();
 #endif
     }
-    // TODO: clean out this function
     void TSGeometricSolver::rDetectCreasesTags()
     {
-        // DIVIDE TAGS BY STRIPE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
+        // copy tags for destructive operations
         auto ctrsCopy = this->m_Timber->getTagsCtrs();
         auto tagsCopy = this->m_Timber->getPlaneTags();
 
-        std::vector<std::vector<TSRTag>> stripes = {};
-        std::vector<TSRTag> stripe = {};
+        // output stripes
+        std::vector<std::shared_ptr<TSRTStripe>> stripes = {};
+        std::shared_ptr<TSRTStripe> stripe = std::make_shared<TSRTStripe>();
 
+        // properties for kdtree
         open3d::geometry::KDTreeFlann kdtree;
         kdtree.SetGeometry(ctrsCopy);
         std::vector<int> indices;
@@ -203,33 +203,39 @@ namespace tslam
 
         do
         {
+            // refresh the new kdtree
             kdtree.SetGeometry(ctrsCopy);
-            kdtree.SearchKNN(ctrsCopy.points_[idx], knn, indices, distances);
 
+            // find the nearest neighbor
+            kdtree.SearchKNN(ctrsCopy.points_[idx], knn, indices, distances);
             nextIdx = indices[1];
 
+            // compute the angle between the two tags
             double angle = tslam::TSVector::angleBetweenVectors(
                 tagsCopy[idx].getNormal(),
                 tagsCopy[nextIdx].getNormal());
 
+            // (a) face: if the angle is below the threshold
             if (angle < this->m_CreaseAngleThreshold)
             {
                 tagsCopy[idx].setFaceIdx(faceIdx);
-
-                stripe.push_back(tagsCopy[idx]);
+                stripe->push_back(tagsCopy[idx]);
             }
+            // (b) crease: if the angle is above the threshold
             else if (angle > this->m_CreaseAngleThreshold)
             {
                 tagsCopy[idx].setFaceIdx(faceIdx);
                 faceIdx++;
                 tagsCopy[nextIdx].setFaceIdx(faceIdx);
 
-                stripe.push_back(tagsCopy[idx]);
-                stripes.push_back(stripe);
-                stripe.clear();
-                stripe.push_back(tagsCopy[nextIdx]);
+                stripe->push_back(tagsCopy[idx]);
+                std::shared_ptr<TSRTStripe> stripeCopy = std::make_shared<TSRTStripe>(*stripe);
+                stripes.push_back(stripeCopy);
+                stripe->clear();
+                stripe->push_back(tagsCopy[nextIdx]);
             }
 
+            // get rid of the current tag
             tagsCopy.erase(tagsCopy.begin() + idx);
             ctrsCopy.points_.erase(ctrsCopy.points_.begin() + idx);
             idx = (nextIdx > idx) ? nextIdx - 1 : nextIdx;
@@ -237,87 +243,33 @@ namespace tslam
         } while(ctrsCopy.points_.size() > 0);
 
         // add the last stripe
-        stripes.push_back(stripe);  //TODO: test to add again
+        stripes.push_back(stripe);
 
-        // MArk THE EXTREMES OF THE STRIPE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        // TODO: check out if this method of finding the extremes is correct
+        // reorder the tags on each stripe
         for (auto& stripe : stripes)
-        {
-            // get the extremitiy tags
-            TSRTag& minTag = stripe.front();
-            TSRTag& maxTag = stripe.back();
-            for (auto& tag : stripe)
-            {
-                tag.setType(TSRTagType::Side);
-                if (tag.getCenter()(0) < minTag.getCenter()(0))
-                    minTag = tag;
-                if (tag.getCenter()(0) > maxTag.getCenter()(0))
-                    maxTag = tag;
-            }
-            minTag.setType(TSRTagType::Edge);
-            maxTag.setType(TSRTagType::Edge);
-        }
+            stripe->reorderTags();
 
-        // TODO: test, merge stripes that belong to the same face
-        // merge stripes that belong to the same face
-        // to know if two stripes belong to the same face:
-        // how to check if two stripes belong to the same face?
-        // 1. check if the stripes are adjacent
-        // 2. check if the stripes have the same normal
-
-        std::cout << "BEFORE: Number of stripes: " << stripes.size() << std::endl;  // DEBUG
-
-        // TODO: test it here
-
-        std::cout << "AFTER: Number of stripes: " << stripes.size() << std::endl;  // DEBUG
-
-
-        this->m_Timber->setTSRTagsStripes(stripes);  // TODO: temp, implement properly
-
-
-        // store the tags <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        std::vector<TSRTag> temp = {};
-        for (auto& stripe : stripes)
-            for (auto& tag : stripe)
-                temp.push_back(tag);
-        this->m_Timber->setPlaneTags(temp);  // TODO: temp, implement properly
-
+        // store the stripes
+        this->m_Timber->setTSRTagsStripes(stripes);
     }
 
-    void TSGeometricSolver::rIntersectTagPlnAABB()
+    void TSGeometricSolver::rIntersectStripeTagPlnAABB()
     {
+        // scale the AABB
         this->m_Timber->scaleAABB(this->m_AABBScaleFactor);
 
+        // FIXME: the profiler needs to be implemented properly
         this->timeStart("[PROFILER]: intersect planes with AABB");  // TODO: implement true Profiler
 
-        Eigen::Vector3d* outPtsPtr = new Eigen::Vector3d[3*6];
-        std::vector<Eigen::Vector3d>* planeIntersections = new std::vector<Eigen::Vector3d>();
-
-
-
-        //======tempTest=========================================================================
-
+        // // TODO: DOWN could go into timber when parsing ======================================================
         // here we get all the planes of each stripe of tags
         std::vector<TSPlane> planes = {};
         for (auto& stripe : this->m_Timber->getTSRTagsStripes())
         {
-            // get the extremitiy tags
-            // TSRTag& minTag = stripe.front();
-            TSRTag& minTag = stripe.front();
-
-            // TSRTag& maxTag = stripe.back();
-            TSRTag& maxTag = stripe.back();
-
-            // compute the normal as the mean of the normals of the tags between the extremes
-            Eigen::Vector3d meanNormal = Eigen::Vector3d::Zero();
-            for (auto& tag : stripe)
-                meanNormal += tag.getNormal();
-            meanNormal /= stripe.size();
-
             // fit plane through 2 points and a given normal
-            TSPlane meanPlane = TSPlane(meanNormal,
-                                        minTag.getCenter(),
-                                        maxTag.getCenter());
+            TSPlane meanPlane = TSPlane(stripe->getNormal(),
+                                        stripe->front().getCenter(),
+                                        stripe->back().getCenter());
             
             planes.push_back(meanPlane);
         }
@@ -328,85 +280,45 @@ namespace tslam
         std::vector<TSPlane> tempPlns2Merge = {};
 
         auto series = this->m_Timber->getTSRTagsStripes();
-        std::vector<TSRTag> sTemp = {};
-        
+        // std::vector<TSRTag> sTemp = {};
+        std::shared_ptr<TSRTStripe> sTemp = std::make_shared<TSRTStripe>();
 
         for (int i = 0; i < planes.size(); i++)
         {
             for (int j = i + 1; j < planes.size(); j++)
             {
                 // std::cout << "distance: " <<  planes[i].distance(planes[j]) << "\n";  // DEBUG
-                if (planes[i].distance(planes[j]) < 5.2)
+                if (planes[i].distance(planes[j]) < this->m_MaxPlnDist2Merge)
                 {
                     // check if the normal of the two planes are similar
-                    if (planes[i].Normal.dot(planes[j].Normal) > 0.9)
+                    std::cout << "angle: " << planes[i].Normal.dot(planes[j].Normal) << "\n";
+                    if (planes[i].Normal.dot(planes[j].Normal) > this->m_MaxPlnAngle2Merge)
                     {
-                        // // ======================== test0 ========================
-                        // std::cout << "BEFORE: tempPlns2Merge size: " <<  tempPlns2Merge.size() << "\n";  // DEBUG
-                        // push the planes to the temp vector
-                        // tempPlns2Merge.push_back(planes[i]);
-                        // tempPlns2Merge.push_back(planes[j]);
-                        
-                        // FIXME: we need to merge the two stripes!
+                        // merge the two stripes
+                        *sTemp += *series[i];
 
-                        // merge the two stripes and find the two more distant tags
-                        sTemp = series[i];
-
-                        std::cout << "BEFORE: size sTemp: " << sTemp.size() << "\n";  // DEBUG
-
-                        sTemp.insert(sTemp.end(), series[j].begin(), series[j].end());
-
-                        std::cout << "AFTER: size sTemp: " << sTemp.size() << "\n";  // DEBUG
-
-
-                        TSRTStripe sTemp2 = TSRTStripe(sTemp);
-                        std::cout << "SERIESOBJ: size sTemp: " << sTemp2.size() << "\n";  // DEBUG
-
-
-                        // mean normal FIXME: this has to be stripe class method
-                        Eigen::Vector3d meanNormal = Eigen::Vector3d::Zero();
-                        for (auto& tag : sTemp)
-                            meanNormal += tag.getNormal();
-                        meanNormal /= sTemp.size();
-
-                        // get the extremitiy tags
-                        sTemp2.reorderTags();
-
-                        TSRTag minTag = sTemp2.front();
-                        TSRTag maxTag = sTemp2.back();
-
-
-                        TSPlane avgPlane = TSPlane(meanNormal, 
-                                                   minTag.getCenter(), 
-                                                   maxTag.getCenter());
-
-                        // tempPlns2Merge.push_back(avgPlane);  // TEST/DEBUG
-                        // goto testend;  // TEST/DEBUG
-
+                        // average the two planes of the new stripe FIXME: this can become a function of stripe
+                        TSPlane avgPlane = TSPlane(sTemp->getNormal(), 
+                                                   sTemp->front().getCenter(), 
+                                                   sTemp->back().getCenter());
 
                         planes[i] = avgPlane;
-                        series.erase(series.begin() + j);  // TODO: test
+                        series.erase(series.begin() + j);
                         planes.erase(planes.begin() + j);
                         j--;
-                        sTemp.clear();  // TODO: test
-
-
-                        // std::cout << "AFETR: tempPlns2Merge size: " <<  tempPlns2Merge.size() << "\n";  // DEBUG
+                        sTemp->clear();
                     }
                 }
             }
         }
-        // testend:                  // TEST/DEBUG
-        // planes.clear();           // TEST/DEBUG
-        // planes = tempPlns2Merge;  // TEST/DEBUG
-        // std::cout << "AFTER: planes.size(): " << planes.size() << "\n";  // DEBUG
+        // // TODO: UP could go into timber when parsing ======================================================
 
 
+        // intersect the planes with the timber's AABB
+        Eigen::Vector3d* outPtsPtr = new Eigen::Vector3d[3*6];
+        std::vector<Eigen::Vector3d>* planeIntersections = new std::vector<Eigen::Vector3d>();
         for (int i = 0; i < planes.size(); i++)
         {
-            // TSRTag& minTag = stripe.front();
-            // TSRTag& maxTag = stripe.back();
-
             // mean the min and max tags' planes
             TSPlane meanPlane = planes[i];
 
@@ -431,74 +343,9 @@ namespace tslam
         delete outPtsPtr;
         delete planeIntersections;
 
-
-
-
-        //======working=========================================================================
-
-
-        // for (auto& stripe : this->m_Timber->getTSRTagsStripes())
-        // {
-        //     TSRTag& minTag = stripe.front();
-        //     TSRTag& maxTag = stripe.back();
-
-        //     // mean the min and max tags' planes
-        //     TSPlane meanPlane = TSPlane(minTag.getNormal(), minTag.getCenter(), maxTag.getCenter());
-
-        //     unsigned int outPtsCount;
-        //     tslam::TSPlane::plane2AABBSegmentIntersect(meanPlane,
-        //                                                this->m_Timber->getAABB().min_bound_,
-        //                                                this->m_Timber->getAABB().max_bound_,
-        //                                                outPtsPtr,
-        //                                                outPtsCount);
-        //     // b. save the result into a polygon
-        //     planeIntersections->reserve(outPtsCount);
-        //     planeIntersections->clear();
-        //     for (unsigned int i = 0; i < outPtsCount; i++)
-        //     {
-        //         planeIntersections->push_back(outPtsPtr[i]);
-        //     }
-
-        //     TSPolygon tempPoly = TSPolygon(*planeIntersections, meanPlane);
-        //     tempPoly.reorderClockwisePoints();
-        //     this->m_PlnAABBPolygons.push_back(tempPoly);
-        // }
-        // delete outPtsPtr;
-        // delete planeIntersections;
-
-
-        //======oRIGINAL=========================================================================
-        // for (auto& t : this->m_Timber->getPlaneTags())
-        // {
-        //     // a. skip face tags
-        //     if (t.isSide()) continue;
-
-        //     // b. caculate the intersection points
-        //     unsigned int outPtsCount;
-        //     tslam::TSPlane::plane2AABBSegmentIntersect(t.getPlane(),
-        //                                                this->m_Timber->getAABB().min_bound_,
-        //                                                this->m_Timber->getAABB().max_bound_,
-        //                                                outPtsPtr,
-        //                                                outPtsCount);
-        //     // b. save the result into a polygon
-        //     planeIntersections->reserve(outPtsCount);
-        //     planeIntersections->clear();
-        //     for (unsigned int i = 0; i < outPtsCount; i++)
-        //     {
-        //         planeIntersections->push_back(outPtsPtr[i]);
-        //     }
-
-        //     TSPolygon tempPoly = TSPolygon(*planeIntersections, t.getPlane());
-        //     tempPoly.reorderClockwisePoints();
-        //     this->m_PlnAABBPolygons.push_back(tempPoly);
-        // }
-        // delete outPtsPtr;
-        // delete planeIntersections;
-        //========================================================================================
-
         // c. mean the polygons into new one
-        // this->rMeanPolygonPlanes();
-        this->m_MergedPolygons = this->m_PlnAABBPolygons;  // TODO: test
+        // this->rMeanPolygonPlanes();                     // FIXME: this is no more needed, erase
+        this->m_MergedPolygons = this->m_PlnAABBPolygons;  // FIXME: refactor me!!
 
         // d. intersect the new polygons with the timber
         this->rIntersectMeanPolygonPlnAABB();

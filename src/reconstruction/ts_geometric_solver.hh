@@ -45,13 +45,11 @@ namespace tslam
 
     private:  ///< reconstruction methods
         /// (a)
-        // FIXME: rename or move it to the timber class (?)
         /**
-         * @brief The function detect the tags creases of the timber piece. It builds a ktree of the tags and by
-         * k-nearest neighbor search it finds the nearest tags to each tag. Then it computes the angle between
-         * the normals of the tags and if the angle is smaller than a threshold it is considered a crease.
+         * @brief The function seperate the tags in stripes belonging to the same face by detecting faces or creases.
          * 
          */
+        // FIXME: rename me appropiately, e.g. detectCreases (sub-function: parse tags in stripes)
         void rDetectCreasesTags();
         
         /// (b)
@@ -61,7 +59,7 @@ namespace tslam
          * intersected polygons centers get a new one per family and re-intersecting it with the AABB).
          * 
          */
-        void rIntersectTagPlnAABB();
+        void rIntersectStripeTagPlnAABB();
             /**
              * @brief The function merge polygons/planes that are similar in orientation and close to 
              * each  other. It builds a ktree of the polygons centers and group the "close" polygons' centers.
@@ -145,7 +143,9 @@ namespace tslam
     public: __always_inline  ///< Setters for solver parameters
         void setTimber(std::shared_ptr<TSTimber> timber){m_Timber = timber; check4PlaneTags();};
         void setCreaseAngleThreshold(double crease_angle_threshold){m_CreaseAngleThreshold = crease_angle_threshold;};
-        void setMinPolyDist(double min_poly_dist){m_MinPolyDist = min_poly_dist;};
+        void setMinPolyDist(double min_poly_dist){m_MinPolyDist = min_poly_dist;};  // FIXME: to erase
+        void setMaxPlnDist2Merge(double max_pln_dist){m_MaxPlnDist2Merge = max_pln_dist;};
+        void setMaxPlnAngle2Merge(double max_pln_angle){m_MaxPlnAngle2Merge = max_pln_angle;};
         void setAABBScaleFactor(double aabb_scale_factor){m_AABBScaleFactor = aabb_scale_factor;};
         void setMaxPolyTagDist(double max_poly_dist){m_MaxPolyTagDist = max_poly_dist;};
 
@@ -172,9 +172,13 @@ namespace tslam
         /// The scale factor for scaleing up the AABB of the timber element
         double m_AABBScaleFactor;
         /// The minimum distance between two polygons' centers to be merged
-        double m_MinPolyDist;
+        double m_MinPolyDist;  //FIXME: to erase, no more needed
         /// The maximal distance between a polygon and a tag to be considered as a candidate face in meters (0.03 ~3cm)
         double m_MaxPolyTagDist;
+        /// The maximal distance between planes of stripes to be eligible for merging
+        double m_MaxPlnDist2Merge;
+        /// The maximal angle difference in radians between two planes' normals to be eligible for merging
+        double m_MaxPlnAngle2Merge;
 
     protected:  ///< Solver internal variables
         /// Vector of polygons issued of tags' planes-AABB intersections

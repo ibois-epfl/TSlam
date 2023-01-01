@@ -8,9 +8,11 @@
 
 namespace tslam
 {
+    /// Stripe of tags
     class TSRTStripe : public TSCompute
     {
     public:
+        TSRTStripe() = default;
         TSRTStripe(std::vector<TSRTag> tags);
         ~TSRTStripe() = default;
 
@@ -20,7 +22,13 @@ namespace tslam
         void reorderTags();
 
         inline double getLength() {return m_Length; };
+        inline Eigen::Vector3d& getAxisX() {return m_AxisX; };
+        inline Eigen::Vector3d& getAxisY() {return m_AxisY; };
+        inline Eigen::Vector3d& getNormal() {return m_Normal; };
 
+    public:  ///< Modified accessors / vector mutators
+        inline void clear() {m_Tags.clear(); };
+        inline void push_back(TSRTag& tag) {m_Tags.push_back(tag);};
         inline TSRTag& front() {return m_Tags.front(); };
         inline TSRTag& back() {return m_Tags.back(); };
         inline TSRTag& operator[](int i) {return m_Tags[i]; };
@@ -30,6 +38,15 @@ namespace tslam
             for (auto& tag : stripe.m_Tags)
                 os << tag << std::endl;
             return os;
+        };
+        inline std::vector<TSRTag>::iterator begin() {return m_Tags.begin(); };
+        inline std::vector<TSRTag>::iterator end() {return m_Tags.end(); };
+        inline TSRTStripe& operator+=(TSRTStripe& stripe)
+        {
+            for (auto& tag : stripe.m_Tags)
+                this->m_Tags.push_back(tag);
+            this->reorderTags();
+            return *this;
         };
     
     private:
@@ -42,13 +59,13 @@ namespace tslam
         Eigen::Vector3d computeAverageXAxis();
         /// Compute the y axis of the stripe (shortest edge)
         Eigen::Vector3d computeAverageYAxis();
-        
 
     private:
-        std::vector<TSRTag> m_Tags;
+        /// The tags of the stripe
+        std::vector<TSRTag> m_Tags = {};
+        /// The length of the stripe (longest edge)
         double m_Length;
-        Eigen::Vector3d m_AxisX;
-        Eigen::Vector3d m_AxisY;
-        Eigen::Vector3d m_Normal;
+        /// The average normal, axis x and axis y of the stripe's tags
+        Eigen::Vector3d m_Normal, m_AxisY, m_AxisX;
     };
 }

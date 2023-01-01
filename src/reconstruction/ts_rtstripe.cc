@@ -10,7 +10,7 @@ namespace tslam
     TSRTStripe::TSRTStripe(std::vector<TSRTag> tags)
     {
         this->m_Tags = tags;
-        this->compute();
+        this->reorderTags();
     };
 
     void TSRTStripe::compute()
@@ -19,7 +19,6 @@ namespace tslam
         this->m_Normal = this->computeAverageNormal();
         this->m_AxisX = this->computeAverageXAxis();
         this->m_AxisY = this->computeAverageYAxis();
-        this->reorderTags();
     };
     double TSRTStripe::computeLength()
     {
@@ -30,7 +29,6 @@ namespace tslam
             if (dist > length)
                 length = dist;
         }
-        std::cout << "Stripe length: " << length << std::endl;
         return length;
     };
     Eigen::Vector3d TSRTStripe::computeAverageNormal()
@@ -60,6 +58,9 @@ namespace tslam
 
     void TSRTStripe::reorderTags()
     {
+        // to be sure that the stripe's properties are filled
+        this->compute();
+
         // determine reference point on the x axis direction out of the stripe length
         Eigen::Vector3d ptRef = Eigen::Vector3d::Zero();
         ptRef = this->m_Tags[0].getCenter();
@@ -69,5 +70,9 @@ namespace tslam
         std::sort(this->m_Tags.begin(), this->m_Tags.end(), [ptRef] (TSRTag& a, TSRTag& b) {
             return (a.distance2Pt(ptRef) < b.distance2Pt(ptRef));
         });
+
+        // set the flag of the extremity tags
+        this->m_Tags.front().setType(TSRTagType::Edge);
+        this->m_Tags.back().setType(TSRTagType::Edge);
     };
 }
