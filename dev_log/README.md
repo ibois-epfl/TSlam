@@ -218,3 +218,13 @@ Ideally, this has to be done with a series of very different geometries to test 
 > gmake: *** [Makefile:91: all] Error 2
 > ```
 > To overcome this we decided to go for the header only library doctest.
+
+
+### Reconstruction - refinement for the volume reconstruction
+The main base code is over but some things are left to do (see `TODO.md` updated list). The major achievement is the precision at which faces of the timber are detected now. Of course this will need some adaptations once we will test with the generated synthetic data.
+
+*The new overhaul reconstruction and modified gsolver:*
+![](./newgsolver.png)
+
+*The precise face matching of the reconstructed mesh:"
+![](./precisetag.png)

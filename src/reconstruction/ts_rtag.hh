@@ -8,12 +8,11 @@
 
 namespace tslam
 {
-    // FIXME: this enums need to be renamed (e.g., extreme, body of stripe, etc.)
+    /// TSRTagType enum class for classify tags in stripes (extremes or not)
     enum TSRTagType
     {
         Unknown = 0,
         Edge = 1,
-        Side = 2
     };
     
     /// TSRTag class responsible for storing the plane information.
@@ -47,7 +46,6 @@ namespace tslam
 
     public:
         inline bool isEdge() {return (m_Type==TSRTagType::Edge) ? true : false; };
-        inline bool isSide() {return (m_Type==TSRTagType::Side) ? true : false; };
 
     public:
         /**
@@ -84,7 +82,6 @@ namespace tslam
     public: __always_inline
         bool isUnknown() const {return (m_Type==TSRTagType::Unknown) ? true : false; };
         bool isEdge() const {return (m_Type==TSRTagType::Edge) ? true : false; };
-        bool isSide() const {return (m_Type==TSRTagType::Side) ? true : false; };
         
     private:
         /// Compute the intrinsic properties from the corners and it sets the obj members.
@@ -94,14 +91,8 @@ namespace tslam
         void computeOpen3dMesh();
     
     public: __always_inline
-#ifdef TSLAM_REC_DEBUG
         void setColor(Eigen::Vector3d clr) {m_Color = clr; };
         Eigen::Vector3d& getColor() {return m_Color; };
-#else
-        void setColor(Eigen::Vector3d clr) {return;};
-        Eigen::Vector3d getColor() {return Eigen::Vector3d(0,0,0);};
-        void setFaceIdx(uint faceIdx) {m_FaceIdx = faceIdx; };
-#endif
 
     public: __always_inline
         /**
@@ -150,9 +141,7 @@ namespace tslam
         TSRTagType m_Type;
         /// Index to identify the face on which the tag is stick to
         uint m_FaceIdx;
-
-#ifdef TSLAM_REC_DEBUG
+        /// Color of the tag for visualizer
         Eigen::Vector3d m_Color;
-#endif
     };
 }

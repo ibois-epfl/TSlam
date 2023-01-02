@@ -2,6 +2,7 @@
 
 #include "ts_compute.hh"
 #include "ts_rtag.hh"
+#include "ts_geo_util.hh"
 
 #include <array>
 
@@ -21,10 +22,16 @@ namespace tslam
         /// Reorde the tags based on the axis of the stripe (longest edge)
         void reorderTags();
 
-        inline double getLength() {return m_Length; };
-        inline Eigen::Vector3d& getAxisX() {return m_AxisX; };
-        inline Eigen::Vector3d& getAxisY() {return m_AxisY; };
-        inline Eigen::Vector3d& getNormal() {return m_Normal; };
+    public: __always_inline  ///< Accessors
+        double getLength() {return m_Length; };
+        Eigen::Vector3d& getAxisX() {return m_AxisX; };
+        Eigen::Vector3d& getAxisY() {return m_AxisY; };
+        Eigen::Vector3d& getNormal() {return m_Normal; };
+        TSPlane getMeanPlane() {return m_MeanPlane; };
+        std::vector<TSRTag>& getTags() {return m_Tags; };
+
+    public:  ///< Setters
+        inline void setMeanPlane(TSPlane plane) {m_MeanPlane = plane; };
 
     public:  ///< Modified accessors / vector mutators
         inline void clear() {m_Tags.clear(); };
@@ -59,6 +66,8 @@ namespace tslam
         Eigen::Vector3d computeAverageXAxis();
         /// Compute the y axis of the stripe (shortest edge)
         Eigen::Vector3d computeAverageYAxis();
+        /// Compute the mean plane of the stripe
+        TSPlane computeMeanPlane();
 
     private:
         /// The tags of the stripe
@@ -67,5 +76,7 @@ namespace tslam
         double m_Length;
         /// The average normal, axis x and axis y of the stripe's tags
         Eigen::Vector3d m_Normal, m_AxisY, m_AxisX;
+        /// The associated plane with the stripe passing through the extremes and the average normal
+        TSPlane m_MeanPlane;
     };
 }

@@ -54,7 +54,7 @@ namespace tslam
             m_TSRTagsStripes.clear();
             m_TSRTagsStripes = tagsStripes;
 
-            // FIXME: replace this when m_RTAGS erased
+            // replace tags with the ones containes in the stripes
             m_RTags.clear();
             for (auto& stripe : m_TSRTagsStripes)
             {
@@ -77,8 +77,6 @@ namespace tslam
 
     private:
         void compute() override;
-        /// It computes the tags' stripes and store them in a member variable.
-        void computeTSRTagStripes(double angleThreshold = 10.) {};  // TODO: implement
         /// It computes the axis aligned bounding box of the tags and store it in a member variable.
         void computeAABB();
         /// It computes the point cloud of the tags' centers and store it in a member variable.
@@ -86,7 +84,7 @@ namespace tslam
 
     private:
         /// m_RTags the tag objects sticked to the timber piece.
-        std::vector<tslam::TSRTag> m_RTags;  // FIXME: this should be the stripe and erase it
+        std::vector<tslam::TSRTag> m_RTags;
         /// m_TSRTagsStripes the tags organized in stripes.
         std::vector<std::shared_ptr<TSRTStripe>> m_TSRTagsStripes;
         /// m_RtagsCtrs the point cloud constituted by the tags' centers.

@@ -135,7 +135,7 @@ namespace tslam
          * @see distance(Eigen::Vector3d point)
          * @return double the distance
          */
-        double distance(TSPlane& plane)
+        double distance(TSPlane plane)
         {
             return std::fabs(this->Normal.dot(plane.Center - this->Center));
         };
@@ -308,13 +308,25 @@ namespace tslam
     struct TSVector
     {
     public: __always_inline
+        /**
+         * @brief Get the angle between two vectors
+         * 
+         * @param v1 the first vector
+         * @param v2 the second vector
+         * @return double the angle between the two vectors
+         */
         static double angleBetweenVectors(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2)
         {
             double angle = std::acos(v1.dot(v2) / (v1.norm() * v2.norm()));
             return (angle * 180 / M_PI);
         }
-        
-        // TODO: test me
+        /**
+         * @brief Get the distance between two points
+         * 
+         * @param a the first point
+         * @param b the second point
+         * @return double the distance between the two points
+         */
         static double distance(const Eigen::Vector3d &a, const Eigen::Vector3d &b)
         {
             return std::sqrt(std::pow(a(0) - b(0), 2) + std::pow(a(1) - b(1), 2) + std::pow(a(2) - b(2), 2));
@@ -906,7 +918,7 @@ namespace tslam
             this->compute();
         };
         /// Compare two polygons centers and return true if they are equal
-        bool areCentersEqual(TSPolygon& other, float eps = 1e-3)
+        bool areCentersEqual(TSPolygon& other, float eps = 1e-5)
         {
             return this->m_Center.isApprox(other.m_Center, eps);
         }

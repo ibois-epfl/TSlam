@@ -6,7 +6,6 @@
 
 #include <Eigen/Core>
 
-// FIXME: the averaging of the planes is not accurate enough
 
 namespace tslam
 {
@@ -17,40 +16,49 @@ namespace tslam
     class TSGeometricSolver
     {
     public:
-        TSGeometricSolver() 
+        TSGeometricSolver()
         {
             m_CreaseAngleThreshold=10.0;
-            m_MinPolyDist=3.0;
             m_AABBScaleFactor=2.0;
+            m_MaxPlnDist2Merge=5.2;
+            m_MaxPlnAngle2Merge=0.9;
             m_MaxPolyTagDist=0.5;
         };
         ~TSGeometricSolver() = default;
 
-        // TODO: update solver steps
-        /** 
-         * @brief Ths function reconstruct a mesh from the TSlam map composed by Tags.
-         * 0. remove duplicate tags from map
-         * 1. detect the creases of the timber piece by proximity search and angle 
-         * difference between tags'normals
-         * 2. intersect selected planes with AABB
-         * 3. merge similar planes
-         * 4. intersect planes(intersected polygons) with each other and generate new polygons
-         * 5. keep only the polygons with tags' corner points inside them
-         * 6. join the polygons into a mesh
-         * 7. check mesh for watertightness and manifoldness
-         * (8. get only the contours and not the inner polygons)
-         * 
-        */
+        /// The main function responsible for the reconstruction
         void reconstruct();
 
     private:  ///< reconstruction methods
         /// (a)
         /**
-         * @brief The function seperate the tags in stripes belonging to the same face by detecting faces or creases.
+         * @brief The function parse the tags following the detected creases of the timber piece. Tags are stored
+         * in stripes (vector of tags) and the stripes are stored in a vector of stripes. To detect the faces we 
+         * run a proximity search between the tags and we compute the angle between the normals of the tags. If the
+         * angle is below a threshold we consider the tags as belonging to the same face. We also refine the stripes
+         * subdivision by averaging their planes and merge similar stripes based on too close and too similar normal
+         * angles planes. Once out each stripe has a plane associated passing through the extremes of the stripe and
+         * defined by the average normal of all tags' normals in the stripe. The planes (without doubles) associated
+         * to each stripe will be used in the next step to intersect the stripes with the AABB of the timber piece.
          * 
          */
-        // FIXME: rename me appropiately, e.g. detectCreases (sub-function: parse tags in stripes)
-        void rDetectCreasesTags();
+        void rDetectFacesStripes();
+            /**
+             * @brief Parse the tags into stripes. We compare the tags by proximity and we compute the angle between
+             * the normals of the tags. If the angle is below a threshold we consider the tags as belonging to the same
+             * stripe. The stripes are stored in a vector of stripes. There are still stripes with similar planes. This 
+             * is why in the next steps we refine them by merging those with similar planes.
+             * 
+             * @param stripes the vector of stripes
+             */
+            void rParseTags2Stripes(std::vector<std::shared_ptr<TSRTStripe>>& stripes);
+            /**
+             * @brief We merge similar stripes based on their planes. The planes are similar if they are too close
+             * and too similar in orientation. The merging is done by averaging the planes normals and computing the
+             * 
+             * @param stripes the vector of stripes
+             */
+            void rRefineStripesByPlanes(std::vector<std::shared_ptr<TSRTStripe>>& stripes);
         
         /// (b)
         /** 
@@ -96,25 +104,17 @@ namespace tslam
                                 std::vector<TSPolygon>& splitPolygons,
                                 std::vector<TSSegment>& segments);
             /**
-             * @brief This unit selects the best candidates polygons to compose the mesh's faces.
-            To do this selection we do the following:
-            for each set of split polygons:
-                for each polygon:
-                    for each tag:
-                        get the distance to the polygon's plane
-                        if distance is less than a threshold:
-                            project tag center to polygon's plane
-                            if tag is inside polygon:
-                                add polygon to face
-                                break
+             * @brief This unit selects the best candidates polygons to compose the mesh's faces. To do so
+             * it takes each plane of polygons, projects the closest points to it and test if they are inside.
+             * If they are inside the polygon is selected as a candidate face.
             * 
             * @param polygons[in] the polygons to select
             * @param splitPolygons[out] the selected polygons
             * @param tolerance[in] the tolerance to select the polygons
             */
             void rSelectFacePolygons(std::vector<TSPolygon>& polygons,
-                                    std::vector<TSPolygon>& facePolygons,
-                                    double tolerance);
+                                     std::vector<TSPolygon>& facePolygons,
+                                     double tolerance);
 
         /// (d)
         /**
@@ -143,27 +143,72 @@ namespace tslam
     public: __always_inline  ///< Setters for solver parameters
         void setTimber(std::shared_ptr<TSTimber> timber){m_Timber = timber; check4PlaneTags();};
         void setCreaseAngleThreshold(double crease_angle_threshold){m_CreaseAngleThreshold = crease_angle_threshold;};
-        void setMinPolyDist(double min_poly_dist){m_MinPolyDist = min_poly_dist;};  // FIXME: to erase
         void setMaxPlnDist2Merge(double max_pln_dist){m_MaxPlnDist2Merge = max_pln_dist;};
         void setMaxPlnAngle2Merge(double max_pln_angle){m_MaxPlnAngle2Merge = max_pln_angle;};
         void setAABBScaleFactor(double aabb_scale_factor){m_AABBScaleFactor = aabb_scale_factor;};
         void setMaxPolyTagDist(double max_poly_dist){m_MaxPolyTagDist = max_poly_dist;};
+        
+        void setShowVisualizer(bool showVisualizer){m_ShowVisualizer = showVisualizer;};
+        void setSolverVisualizerParams(bool drawTags = true,
+                                       bool drawTagTypes = true,
+                                       bool drawTagNormals = false,
+                                       bool drawAabb = true,
+                                       bool drawSplittingSegments = false,
+                                       bool drawSplitPoly = true,
+                                       bool drawFinalMesh = true)
+        {
+            m_DrawTags = drawTags;
+            m_DrawTagTypes = drawTagTypes;
+            m_DrawTagNormals = drawTagNormals;
+            m_DrawAabb = drawAabb;
+            m_DrawSplittingSegments = drawSplittingSegments;
+            m_DrawSplitPoly = drawSplitPoly;
+            m_DrawFinalMesh = drawFinalMesh;
+        };
 
     private:  ///< utility funcs
-            /** 
-             * @brief check4PlaneTags checks if the timber object has plane tags
-             * 
-             * @return true if the timber object has plane tags
-             * @return false if the timber object has no plane tags
-             */
-            bool check4PlaneTags();
-
+        /** 
+         * @brief check4PlaneTags checks if the timber object has plane tags
+         * 
+         * @return true if the timber object has plane tags
+         * @return false if the timber object has no plane tags
+         */
+        bool check4PlaneTags();
+        
     private:  ///< I/O funcs
-            /**
-             * @brief Export the timber mesh to a .ply file locally.
-             * 
-             */
-            void exportMesh2PLY();  // TODO: implement
+        /**
+         * @brief Export the timber mesh to a .ply file locally.
+         * 
+         */
+        void exportMesh2PLY();  // TODO: implement
+    
+    private:  ///< Visualizer
+        /// visualize the results of the timber reconstruction
+        void visualize(bool showVisualizer,
+                       bool drawTags,
+                       bool drawTagTypes,
+                       bool drawTagNormals,
+                       bool drawAabb,
+                       bool drawSplittingSegments,
+                       bool drawSplitPoly,
+                       bool drawFinalMesh);
+        /// Show the visulier
+        bool m_ShowVisualizer;
+        /// Show the tags as wireframe
+        bool m_DrawTags;
+        /// Show the tags' types (edges)
+        bool m_DrawTagTypes;
+        /// Show the tags' normals
+        bool m_DrawTagNormals;
+        /// Show the Axis-Aligned Bounding Box (AABB) of the timber element
+        bool m_DrawAabb;
+        /// Show the splitting segments for each intersected polygon
+        bool m_DrawSplittingSegments;
+        /// Show the polygons after splitting
+        bool m_DrawSplitPoly;
+        /// Show the timber volume after merging into a mesh
+        bool m_DrawFinalMesh;
+    
     private:  ///< Solver parameters for user's tuning
         /// The timber element to reconstruct
         std::shared_ptr<tslam::TSTimber> m_Timber;
@@ -171,8 +216,6 @@ namespace tslam
         double m_CreaseAngleThreshold;
         /// The scale factor for scaleing up the AABB of the timber element
         double m_AABBScaleFactor;
-        /// The minimum distance between two polygons' centers to be merged
-        double m_MinPolyDist;  //FIXME: to erase, no more needed
         /// The maximal distance between a polygon and a tag to be considered as a candidate face in meters (0.03 ~3cm)
         double m_MaxPolyTagDist;
         /// The maximal distance between planes of stripes to be eligible for merging
@@ -183,8 +226,6 @@ namespace tslam
     protected:  ///< Solver internal variables
         /// Vector of polygons issued of tags' planes-AABB intersections
         std::vector<TSPolygon> m_PlnAABBPolygons;
-        /// Vector of merged close and similar polygons
-        std::vector<TSPolygon> m_MergedPolygons;
         /// Vector of splitting segments out of main polygons' intersection
         std::vector<TSSegment> m_SplitSegments;
         /// Vector of split polygons
