@@ -68,19 +68,6 @@ namespace tslam
          * 
          */
         void rIntersectStripeTagPlnAABB();
-            /**
-             * @brief The function merge polygons/planes that are similar in orientation and close to 
-             * each  other. It builds a ktree of the polygons centers and group the "close" polygons' centers.
-             * A new center and a new normal are computed and a new plane is created.
-             * 
-             */
-            void rMeanPolygonPlanes();
-            /**
-             * @brief The function mean the previous similar polygons'planes and recompute the
-             * intersection of the mean planes with the AABB to obtain new polygons.
-             * 
-             */
-            void rIntersectMeanPolygonPlnAABB();
         
         /// (c)
         /// Create the polysurface (list of polygons) that describes the timber solid volume
@@ -147,7 +134,10 @@ namespace tslam
         void setMaxPlnAngle2Merge(double max_pln_angle){m_MaxPlnAngle2Merge = max_pln_angle;};
         void setAABBScaleFactor(double aabb_scale_factor){m_AABBScaleFactor = aabb_scale_factor;};
         void setMaxPolyTagDist(double max_poly_dist){m_MaxPolyTagDist = max_poly_dist;};
-        
+
+        void setDirOut(const std::string& dir){this->m_DirOut = dir;};
+        void setFilenameOut(const std::string& name){this->m_FilenameOut = name;};
+
         void setShowVisualizer(bool showVisualizer){m_ShowVisualizer = showVisualizer;};
         void setSolverVisualizerParams(bool drawTags = true,
                                        bool drawTagTypes = true,
@@ -180,7 +170,11 @@ namespace tslam
          * @brief Export the timber mesh to a .ply file locally.
          * 
          */
-        void exportMesh2PLY();  // TODO: implement
+        void exportMesh2PLY(std::string& dir, std::string& name);
+        /// Directory to save the timber mesh
+        std::string m_DirOut;
+        /// Name of the timber mesh
+        std::string m_FilenameOut;
     
     private:  ///< Visualizer
         /// visualize the results of the timber reconstruction

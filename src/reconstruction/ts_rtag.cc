@@ -136,6 +136,11 @@ namespace tslam
                 Eigen::Vector3d C(xCF, yCF, zCF);
                 Eigen::Vector3d D(xDF, yDF, zDF);
 
+                // std::cout << "A: " << A << std::endl;  // <<<<<<< DEBUG
+                // std::cout << "B: " << B << std::endl;  // <<<<<<< DEBUG
+                // std::cout << "C: " << C << std::endl;  // <<<<<<< DEBUG
+                // std::cout << "D: " << D << std::endl;  // <<<<<<< DEBUG
+
                 // fill TSRTag's info
                 tag.setType(TSRTagType::Unknown);
                 tag.setCorners(A, B, C, D);

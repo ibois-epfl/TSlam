@@ -16,9 +16,9 @@ namespace tslam
     void TSGeometricSolver::reconstruct()
     {
         this->rDetectFacesStripes();
-        this->rIntersectStripeTagPlnAABB();
-        this->rCreatePolysurface();
-        this->rCreateMesh();
+        // this->rIntersectStripeTagPlnAABB();
+        // this->rCreatePolysurface();
+        // this->rCreateMesh();
 
         this->visualize(this->m_ShowVisualizer,
                         this->m_DrawTags,
@@ -28,6 +28,8 @@ namespace tslam
                         this->m_DrawSplittingSegments,
                         this->m_DrawSplitPoly,
                         this->m_DrawFinalMesh);
+        
+        // this->exportMesh2PLY(this->m_DirOut, this->m_FilenameOut);  // FIXME: this might not be 
     }
 
     void TSGeometricSolver::visualize(bool showVisualizer,
@@ -44,6 +46,20 @@ namespace tslam
             return;
         open3d::visualization::Visualizer* vis(new open3d::visualization::Visualizer());
         vis->CreateVisualizerWindow("TSPlaneTags", 1920, 1080);
+
+        ///////////// <<<<<<<<<<<<<<<<<<< DEBUG <<<<<<<<<<<<<<<<<<< ///////////////
+
+        // for (auto& tag : this->m_Timber->getPlaneTags())
+        // {
+        //     open3d::geometry::TriangleMesh tagBase = tag.getOpen3dMesh();
+        //     auto planeTagsLineset1 = open3d::geometry::LineSet::CreateFromTriangleMesh(tagBase);
+        //     planeTagsLineset1->PaintUniformColor(Eigen::Vector3d(0, 1, 0));
+
+        //     vis->AddGeometry(planeTagsLineset1);
+        // }
+
+
+        ///////////// >>>>>>>>>>>>>>>>>>> DEBUG >>>>>>>>>>>>>>>>>>> ///////////////
         
         if (drawTags)
         {
@@ -177,7 +193,6 @@ namespace tslam
         auto tagsCopy = this->m_Timber->getPlaneTags();
 
         // output stripes
-        // std::vector<std::shared_ptr<TSRTStripe>> stripes = {};
         std::shared_ptr<TSRTStripe> stripe = std::make_shared<TSRTStripe>();
 
         // properties for kdtree
@@ -480,4 +495,11 @@ namespace tslam
         else
             return false;
     }
+
+    void TSGeometricSolver::exportMesh2PLY(std::string& dir, std::string& name)
+    {
+        std::string plyName = dir + name;
+        open3d::io::WriteTriangleMesh(plyName, this->m_MeshOut);
+    }
+
 }
