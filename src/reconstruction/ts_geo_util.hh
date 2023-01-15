@@ -906,32 +906,118 @@ namespace tslam
                 center += m_Vertices[i];
             center /= (float)m_Vertices.size();
 
-            // sort the points in a clockwise order also for the case of plane.A < 0.f
-            // (the plane is not normalized)
-            std::sort(m_Vertices.begin(),m_Vertices.end(),
+            // (a) parallel to XY plane
+            if (m_LinkedPlane.A == 0.f && m_LinkedPlane.B == 0.f)
+            {
+                int minYIndex = 0;
+                for (unsigned i = 1; i < m_Vertices.size(); ++i)
+                {
+                    if (m_Vertices[i](1) < m_Vertices[minYIndex](1))
+                        minYIndex = i;
+                }
+
+                std::sort(m_Vertices.begin(),m_Vertices.end(),
+                      [&](const Eigen::Vector3d& a, 
+                      const Eigen::Vector3d& b) -> bool
+                      {
+                          Eigen::Vector3d aVec = a - center;
+                          Eigen::Vector3d bVec = b - center;
+
+                          float aAngle = atan2(aVec(1), aVec(0));
+                          float bAngle = atan2(bVec(1), bVec(0));
+
+                          if (aAngle == bAngle)
+                          {
+                              float aDist = aVec.norm();
+                              float bDist = bVec.norm();
+
+                              if (aDist == bDist)
+                                  return a(0) < b(0);
+                              else
+                                  return aDist < bDist;
+                          }
+                          else
+                              return aAngle < bAngle;
+                      });
+            }
+            // (b) parallel to XZ plane
+            else if (m_LinkedPlane.A == 0.f && m_LinkedPlane.C == 0.f)
+            {
+                int minZIndex = 0;
+                for (unsigned i = 1; i < m_Vertices.size(); ++i)
+                {
+                    if (m_Vertices[i](2) < m_Vertices[minZIndex](2))
+                        minZIndex = i;
+                }
+
+                std::sort(m_Vertices.begin(),m_Vertices.end(),
                       [&](const Eigen::Vector3d& a, 
                       const Eigen::Vector3d& b)
+                {
+                    float angle_a = std::atan2(a(2) - m_Vertices[minZIndex](2),
+                                                a(0) - m_Vertices[minZIndex](0));
+                    float angle_b = std::atan2(b(2) - m_Vertices[minZIndex](2),
+                                                b(0) - m_Vertices[minZIndex](0));
+                    if (angle_a == angle_b)
+                    {
+                        float dist_a = (a - center).norm();
+                        float dist_b = (b - center).norm();
+                        if (dist_a == dist_b)
+                            return a(0) < b(0);
+                        else
+                            return dist_a < dist_b;
+                    }
+                    else
+                        return angle_a < angle_b;
+                });
+            }
+            // (c) parallel to YZ plane
+            else if (m_LinkedPlane.B == 0.f && m_LinkedPlane.C == 0.f)
             {
-                Eigen::Vector3d a_center = a - center;
-                Eigen::Vector3d b_center = b - center;
-                float angle_a = std::atan2(a_center(1) * m_LinkedPlane.A - a_center(0) * m_LinkedPlane.B,
-                                            a_center(0) * m_LinkedPlane.A + a_center(1) * m_LinkedPlane.B);
-                float angle_b = std::atan2(b_center(1) * m_LinkedPlane.A - b_center(0) * m_LinkedPlane.B,
-                                            b_center(0) * m_LinkedPlane.A + b_center(1) * m_LinkedPlane.B);
-                return angle_a < angle_b;
-            });
+                int minZIndex = 0;
+                for (unsigned i = 1; i < m_Vertices.size(); ++i)
+                {
+                    if (m_Vertices[i](2) < m_Vertices[minZIndex](2))
+                        minZIndex = i;
+                }
 
-            // // sort the points in a clockwise order
-            // std::sort(m_Vertices.begin(),m_Vertices.end(),
-            //           [&](const Eigen::Vector3d& a, 
-            //           const Eigen::Vector3d& b)
-            // {
-            //     Eigen::Vector3d a_center = a - center;
-            //     Eigen::Vector3d b_center = b - center;
-            //     float angle_a = std::atan2(a_center(1), a_center(0));
-            //     float angle_b = std::atan2(b_center(1), b_center(0));
-            //     return angle_a < angle_b;
-            // });
+                std::sort(m_Vertices.begin(),m_Vertices.end(),
+                      [&](const Eigen::Vector3d& a, 
+                      const Eigen::Vector3d& b)
+                {
+                    float angle_a = std::atan2(a(2) - m_Vertices[minZIndex](2),
+                                                a(1) - m_Vertices[minZIndex](1));
+                    float angle_b = std::atan2(b(2) - m_Vertices[minZIndex](2),
+                                                b(1) - m_Vertices[minZIndex](1));
+                    if (angle_a == angle_b)
+                    {
+                        float dist_a = (a - center).norm();
+                        float dist_b = (b - center).norm();
+                        if (dist_a == dist_b)
+                            return a(1) < b(1);
+                        else
+                            return dist_a < dist_b;
+                    }
+                    else
+                        return angle_a < angle_b;
+                });
+            }
+            // (d) not parallel to any world plane
+            else
+            {
+                std::sort(m_Vertices.begin(),m_Vertices.end(),
+                      [&](const Eigen::Vector3d& a, 
+                      const Eigen::Vector3d& b)
+                {
+                    Eigen::Vector3d a_center = a - center;
+                    Eigen::Vector3d b_center = b - center;
+                    float angle_a = std::atan2(a_center(1) * m_LinkedPlane.A - a_center(0) * m_LinkedPlane.B,
+                                                a_center(0) * m_LinkedPlane.A + a_center(1) * m_LinkedPlane.B);
+                    float angle_b = std::atan2(b_center(1) * m_LinkedPlane.A - b_center(0) * m_LinkedPlane.B,
+                                                b_center(0) * m_LinkedPlane.A + b_center(1) * m_LinkedPlane.B);
+                    return angle_a < angle_b;
+                });
+            }
 
             this->compute();
         };
