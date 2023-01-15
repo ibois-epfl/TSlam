@@ -73,6 +73,10 @@ namespace tslam
         /// Create the polysurface (list of polygons) that describes the timber solid volume
         void rCreatePolysurface();
             // TODO: testing new approach
+            void rIntersectSplittingSegments(std::vector<TSSegment> &segments,
+                                             std::vector<TSPolygon> &polygons);
+            void rIntersectPolygons2(std::vector<TSPolygon> &polygons,
+                                     std::vector<std::vector<TSSegment>> &segments);
             /**
              * @brief Obtain a vector of segments connecting the detected intersections of the AABB-generated polygons.
              * 
@@ -228,6 +232,9 @@ namespace tslam
         std::vector<TSPolygon> m_PlnAABBPolygons;
         /// Vector of splitting segments out of main polygons' intersection
         std::vector<TSSegment> m_SplitSegments;
+        // TODO: test new data structure
+        /// Vector of vectors of splitting segments grouped by planes
+        std::vector<std::vector<TSSegment>> m_SplitSegmentsGrouped;
         /// Vector of split polygons
         std::vector<TSPolygon> m_SplitPolygons;
         /// Face polygons to create the mesh

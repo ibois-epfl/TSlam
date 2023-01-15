@@ -324,7 +324,9 @@ namespace tslam
 
     void TSGeometricSolver::rCreatePolysurface()
     {
-        this->rIntersectPolygons(this->m_PlnAABBPolygons, this->m_SplitSegments);
+        // this->rIntersectPolygons(this->m_PlnAABBPolygons, this->m_SplitSegments);
+        this->rIntersectPolygons2(this->m_PlnAABBPolygons, this->m_SplitSegmentsGrouped);
+
 
         this->rIntersectSplittingSegments(this->m_SplitSegments, this->m_FacePolygons);
 
@@ -336,6 +338,52 @@ namespace tslam
                                   this->m_FacePolygons,
                                   this->m_MaxPolyTagDist);
     }
+    //TODO: testing new approach
+    void TSGeometricSolver::rIntersectSplittingSegments(std::vector<TSSegment>& segments,
+                                                        std::vector<TSPolygon>& polygons)
+    {
+        for (auto& segA : segments)
+        {
+            for (auto& segB : segments)
+            {
+                TSPolygon poly;
+            }
+        }
+    }
+    void TSGeometricSolver::rIntersectPolygons2(std::vector<TSPolygon> &polygons,
+                                               std::vector<std::vector<TSSegment>> &segmentsGrouped)
+    {
+        std::vector<TSSegment> tempSegments;
+        for (auto& polyA : polygons)
+        {
+            for (auto& polyB : polygons)
+            {
+                TSSegment seg;
+                bool isIntersect = false;
+                isIntersect = polyA.intersectPolygon(polyB, seg);
+
+                // check the segments are unique
+                for (auto& s : tempSegments)
+                {
+                    if (s == seg)
+                    {
+                        isIntersect = false;
+                        break;
+                    }
+                }
+                if (isIntersect) tempSegments.push_back(seg);
+            }
+
+            if (tempSegments.size() > 0)
+            {
+                segmentsGrouped.push_back(tempSegments);
+                tempSegments.clear();
+            }
+        }
+    }
+
+
+
     void TSGeometricSolver::rIntersectPolygons(std::vector<TSPolygon> &polygons,
                                                std::vector<TSSegment> &segments)
     {
