@@ -29,10 +29,10 @@ int main()
     // set solver's parameters
     solverPtr->setTimber(timberPtr);
     solverPtr->setCreaseAngleThreshold(5.0);   ///< default: 10.0
-    solverPtr->setMaxPlnDist2Merge(5.2);     ///< default: 5.2
-    solverPtr->setMaxPlnAngle2Merge(0.9);
-    solverPtr->setAABBScaleFactor(4.0);    ///< default: 2.0
-    solverPtr->setMaxPolyTagDist(1e-5);    ///< default: 0.03
+    solverPtr->setMaxPlnDist2Merge(5.2);       ///< default: 5.2
+    solverPtr->setMaxPlnAngle2Merge(0.9);      ///< default: 0.9
+    solverPtr->setAABBScaleFactor(4.0);        ///< default: 2.0
+    solverPtr->setMaxPolyTagDist(1e-5);        ///< default: 1e-5
 
     // set solver's visualizer parameters
     solverPtr->setShowVisualizer(true);
@@ -40,8 +40,10 @@ int main()
                                          /*drawTagTypes*/           true,
                                          /*drawTagNormals*/         false,
                                          /*drawAabb*/               true,
+                                         /*drawIntersectedPoly*/    false,
                                          /*drawSplittingSegments*/  true,
-                                         /*drawSplitPoly*/          true,
+                                         /*drawSplitPoly*/          false,
+                                         /*drawSelectedPolyFace*/   // TODO: implement
                                          /*drawFinalMesh*/          false
                                          );
     

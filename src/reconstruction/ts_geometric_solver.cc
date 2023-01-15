@@ -25,6 +25,7 @@ namespace tslam
                         this->m_DrawTagTypes,
                         this->m_DrawTagNormals,
                         this->m_DrawAabb,
+                        this->m_DrawIntersectedPoly,
                         this->m_DrawSplittingSegments,
                         this->m_DrawSplitPoly,
                         this->m_DrawFinalMesh);
@@ -37,6 +38,7 @@ namespace tslam
                                       bool drawTagTypes,
                                       bool drawTagNormals,
                                       bool drawAabb,
+                                      bool drawIntersectedPoly,
                                       bool drawSplittingSegments,
                                       bool drawSplitPoly,
                                       bool drawFinalMesh)
@@ -47,20 +49,6 @@ namespace tslam
         open3d::visualization::Visualizer* vis(new open3d::visualization::Visualizer());
         vis->CreateVisualizerWindow("TSPlaneTags", 1920, 1080);
 
-        ///////////// <<<<<<<<<<<<<<<<<<< DEBUG <<<<<<<<<<<<<<<<<<< ///////////////
-
-        // for (auto& tag : this->m_Timber->getPlaneTags())
-        // {
-        //     open3d::geometry::TriangleMesh tagBase = tag.getOpen3dMesh();
-        //     auto planeTagsLineset1 = open3d::geometry::LineSet::CreateFromTriangleMesh(tagBase);
-        //     planeTagsLineset1->PaintUniformColor(Eigen::Vector3d(0, 1, 0));
-
-        //     vis->AddGeometry(planeTagsLineset1);
-        // }
-
-
-        ///////////// >>>>>>>>>>>>>>>>>>> DEBUG >>>>>>>>>>>>>>>>>>> ///////////////
-        
         if (drawTags)
         {
             std::vector<Eigen::Vector3d> clrs;
@@ -111,7 +99,7 @@ namespace tslam
         if (drawAabb)
             std::shared_ptr<open3d::geometry::LineSet> aabbLineset = std::make_shared<open3d::geometry::LineSet>();
 
-        if (drawSplittingSegments)
+        if (drawIntersectedPoly)
         {
             for (auto& pg : this->m_PlnAABBPolygons)
             {
@@ -130,10 +118,25 @@ namespace tslam
                 }
             }
         }
+
+        if (drawSplittingSegments)
+        {
+            for (auto& segm : this->m_SplitSegments)
+            {
+                std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
+                segLineset->points_.push_back(segm.P1);
+                segLineset->points_.push_back(segm.P2);
+                segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+                segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+                segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+                segLineset->PaintUniformColor(Eigen::Vector3d(1., 0., 1));
+                vis->AddGeometry(segLineset);
+            }
+        }
         
         if (drawSplitPoly)
         {
-            for (auto& poly : this->m_FacePolygons)
+            for (auto& poly : this->m_SplitPolygons)
             {
                 std::vector<Eigen::Vector3d> pts = poly.getVertices();
                 std::random_device rd;
@@ -323,9 +326,11 @@ namespace tslam
     {
         this->rIntersectPolygons(this->m_PlnAABBPolygons, this->m_SplitSegments);
 
-        this->rSplitPolygons(this->m_PlnAABBPolygons,
-                             this->m_SplitPolygons,
-                             this->m_SplitSegments);
+        this->rIntersectSplittingSegments(this->m_SplitSegments, this->m_FacePolygons);
+
+        // this->rSplitPolygons(this->m_PlnAABBPolygons,
+        //                      this->m_SplitPolygons,
+        //                      this->m_SplitSegments);
 
         this->rSelectFacePolygons(this->m_SplitPolygons,
                                   this->m_FacePolygons,
@@ -374,10 +379,12 @@ namespace tslam
                 for (int i = 0; i < splitPolygons.size(); i++)
                 {
                     NSubSplit = 0;
-
                     for (auto& seg : segments)
                     {
                         isSubSplitVT = splitPolygons[i].splitPolygon(seg, subTuplePolys);
+
+                        if (isSubSplitVT == true)
+                            std::cout << "isSubSplitVT: " << isSubSplitVT << std::endl;
 
                         if (isSubSplitVT)
                         {

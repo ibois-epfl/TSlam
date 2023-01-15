@@ -72,6 +72,7 @@ namespace tslam
         /// (c)
         /// Create the polysurface (list of polygons) that describes the timber solid volume
         void rCreatePolysurface();
+            // TODO: testing new approach
             /**
              * @brief Obtain a vector of segments connecting the detected intersections of the AABB-generated polygons.
              * 
@@ -143,6 +144,7 @@ namespace tslam
                                        bool drawTagTypes = true,
                                        bool drawTagNormals = false,
                                        bool drawAabb = true,
+                                       bool drawIntersectedPoly = true,
                                        bool drawSplittingSegments = false,
                                        bool drawSplitPoly = true,
                                        bool drawFinalMesh = true)
@@ -151,6 +153,7 @@ namespace tslam
             m_DrawTagTypes = drawTagTypes;
             m_DrawTagNormals = drawTagNormals;
             m_DrawAabb = drawAabb;
+            m_DrawIntersectedPoly = drawIntersectedPoly;
             m_DrawSplittingSegments = drawSplittingSegments;
             m_DrawSplitPoly = drawSplitPoly;
             m_DrawFinalMesh = drawFinalMesh;
@@ -183,6 +186,7 @@ namespace tslam
                        bool drawTagTypes,
                        bool drawTagNormals,
                        bool drawAabb,
+                       bool drawIntersectedPoly,
                        bool drawSplittingSegments,
                        bool drawSplitPoly,
                        bool drawFinalMesh);
@@ -196,6 +200,8 @@ namespace tslam
         bool m_DrawTagNormals;
         /// Show the Axis-Aligned Bounding Box (AABB) of the timber element
         bool m_DrawAabb;
+        /// Draw the intersect polygons with the AABB
+        bool m_DrawIntersectedPoly;
         /// Show the splitting segments for each intersected polygon
         bool m_DrawSplittingSegments;
         /// Show the polygons after splitting
