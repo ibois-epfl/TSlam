@@ -67,7 +67,7 @@ namespace tslam
 
     public: __always_inline
         /// Get all the tags objects attached to the timber element.
-        std::vector<tslam::TSRTag>& getPlaneTags() {return m_RTags; };
+        std::vector<tslam::TSRTag> getPlaneTags() {return m_RTags; };  // FIXME: obliged to not return ref
         /// Get the tags organized in stripes.
         std::vector<std::shared_ptr<TSRTStripe>>& getTSRTagsStripes() {return m_TSRTagsStripes; };
         /// Get the axis aligned box of the tags attached to the timber element.

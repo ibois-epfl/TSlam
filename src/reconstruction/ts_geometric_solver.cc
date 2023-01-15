@@ -16,8 +16,8 @@ namespace tslam
     void TSGeometricSolver::reconstruct()
     {
         this->rDetectFacesStripes();
-        // this->rIntersectStripeTagPlnAABB();
-        // this->rCreatePolysurface();
+        this->rIntersectStripeTagPlnAABB();
+        this->rCreatePolysurface();
         // this->rCreateMesh();
 
         this->visualize(this->m_ShowVisualizer,
@@ -210,7 +210,7 @@ namespace tslam
             // refresh the new kdtree
             kdtree.SetGeometry(*ctrsCopyPtr);
 
-            // find the nearest neighbor
+            // find the nearest neighborh
             kdtree.SearchKNN(ctrsCopyPtr->points_[idx], knn, indices, distances);
             nextIdx = indices[1];
 
@@ -218,7 +218,7 @@ namespace tslam
             double angle = tslam::TSVector::angleBetweenVectors(
                 tagsCopy[idx].getNormal(),
                 tagsCopy[nextIdx].getNormal());
-
+            
             // (a) face: if the angle is below the threshold
             if (angle < this->m_CreaseAngleThreshold)
             {
@@ -233,8 +233,10 @@ namespace tslam
                 tagsCopy[nextIdx].setFaceIdx(faceIdx);
 
                 stripe->push_back(tagsCopy[idx]);
+                
                 std::shared_ptr<TSRTStripe> stripeCopy = std::make_shared<TSRTStripe>(*stripe);
                 stripes.push_back(stripeCopy);
+
                 stripe->clear();
                 stripe->push_back(tagsCopy[nextIdx]);
             }
@@ -242,6 +244,8 @@ namespace tslam
             // get rid of the current tag
             tagsCopy.erase(tagsCopy.begin() + idx);
             ctrsCopyPtr->points_.erase(ctrsCopyPtr->points_.begin() + idx);
+
+            // set the next index as the current index
             idx = (nextIdx > idx) ? nextIdx - 1 : nextIdx;
 
         } while(ctrsCopyPtr->points_.size() > 0);

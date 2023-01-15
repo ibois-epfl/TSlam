@@ -318,6 +318,8 @@ namespace tslam
         static double angleBetweenVectors(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2)
         {
             double angle = std::acos(v1.dot(v2) / (v1.norm() * v2.norm()));
+            if (std::isnan(angle))
+                return 0.0;
             return (angle * 180 / M_PI);
         }
         /**
@@ -361,7 +363,6 @@ namespace tslam
         };
 
     public: __always_inline
-        // TODO: set the tolerance as aparameter (1e-5)?
         /// it checks if a point is on a segment, also when the point is on the start or end of the segment
         bool isPointOnSegment(Eigen::Vector3d point) const
         {
@@ -464,10 +465,16 @@ namespace tslam
             else return false;
         };
         /** 
-         * @brief It extends the segment to a given length
+         * @brief It intersects two segments and returns the intersection point
          * 
-         * @param length the length to extend the segment
+         * @param other[in] the other segment
+         * @see intersect(const TSSegment& other, Eigen::Vector3d& intersection) const
          */
+        bool intersect(const TSSegment& other) const
+        {
+            Eigen::Vector3d tempIntersectPt;
+            return this->intersect(other, tempIntersectPt);
+        };
         void extend(double length)
         {
             Eigen::Vector3d dir = this->getDirection();
@@ -893,9 +900,8 @@ namespace tslam
         /// Reorder the polygon vertices in a clockwise order based on graham scan algorithm
         void reorderClockwisePoints()
         {
-            Eigen::Vector3d center = Eigen::Vector3d(0.f, 0.f, 0.f);
-
             // compute the center of the polygon
+            Eigen::Vector3d center = Eigen::Vector3d(0.f, 0.f, 0.f);
             for  (unsigned i = 0; i < m_Vertices.size(); ++i)
                 center += m_Vertices[i];
             center /= (float)m_Vertices.size();
@@ -914,6 +920,18 @@ namespace tslam
                                             b_center(0) * m_LinkedPlane.A + b_center(1) * m_LinkedPlane.B);
                 return angle_a < angle_b;
             });
+
+            // // sort the points in a clockwise order
+            // std::sort(m_Vertices.begin(),m_Vertices.end(),
+            //           [&](const Eigen::Vector3d& a, 
+            //           const Eigen::Vector3d& b)
+            // {
+            //     Eigen::Vector3d a_center = a - center;
+            //     Eigen::Vector3d b_center = b - center;
+            //     float angle_a = std::atan2(a_center(1), a_center(0));
+            //     float angle_b = std::atan2(b_center(1), b_center(0));
+            //     return angle_a < angle_b;
+            // });
 
             this->compute();
         };
