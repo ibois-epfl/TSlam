@@ -693,7 +693,7 @@ namespace tslam
     public: __always_inline
         void addVertex(Eigen::Vector3d point) {m_Vertices.push_back(point); compute(); };
         void removeVertex(uint i) {m_Vertices.erase(m_Vertices.begin() + i); compute(); };
-        void addSegment(TSSegment segment) {m_Segments.push_back(segment); };  // FIXME: problems with vertices storage
+        // void addSegment(TSSegment segment) {m_Segments.push_back(segment); };  // FIXME: problems with vertices not usable
         void setVertices(std::vector<Eigen::Vector3d> points) {m_Vertices = points; compute(); };
         void setLinkedPlane(TSPlane linkedPlane) {m_LinkedPlane = linkedPlane; };
 
@@ -1020,6 +1020,7 @@ namespace tslam
             {
                 Eigen::Vector3d a_center = a - this->m_Center;
                 Eigen::Vector3d b_center = b - this->m_Center;
+                // TODO: test without "m_LinkedPlane.A or B"
                 float angleA = std::atan2(a_center(1) * m_LinkedPlane.A - a_center(0) * m_LinkedPlane.B,
                                             a_center(0) * m_LinkedPlane.A + a_center(1) * m_LinkedPlane.B);
                 float angleB = std::atan2(b_center(1) * m_LinkedPlane.A - b_center(0) * m_LinkedPlane.B,
