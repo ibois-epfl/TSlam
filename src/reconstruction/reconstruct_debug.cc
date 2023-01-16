@@ -15,13 +15,15 @@ int main()
         "/home/as/TSlam/src/reconstruction/tests/test_data/synth_notch_xlong.yml",               // 4
         "/home/as/TSlam/src/reconstruction/tests/test_data/synth_copy_mid_map.yml",              // 5
         "/home/as/TSlam/src/reconstruction/tests/test_data/synth_long_no_ruptures.yml",          // 6
-        "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_a.yml",       // 7
-        "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_b.yml"        // 8
+        "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_h.yml",       // 7
+        "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_v.yml",       // 8
+        "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_v_not_symmetrical.yml",        // 9
+        "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_h_rot.yml"        // 10
         };
 
     // create timber object & read yml TSlam map
     std::shared_ptr<tslam::TSTimber> timberPtr = std::make_shared<tslam::TSTimber>();
-    timberPtr->setPlaneTagsFromYAML(testData[7]);
+    timberPtr->setPlaneTagsFromYAML(testData[9]);
 
     // create geometric solver
     std::shared_ptr<tslam::TSGeometricSolver> solverPtr = std::make_shared<tslam::TSGeometricSolver>();
@@ -32,18 +34,18 @@ int main()
     solverPtr->setMaxPlnDist2Merge(5.2);       ///< default: 5.2
     solverPtr->setMaxPlnAngle2Merge(0.9);      ///< default: 0.9
     solverPtr->setAABBScaleFactor(4.0);        ///< default: 2.0
-    solverPtr->setMaxPolyTagDist(1e-5);        ///< default: 1e-5
+    solverPtr->setMaxPolyTagDist(1e-5);        ///< default: 1e-5  FIXME: change to tolerance
 
     // set solver's visualizer parameters
     solverPtr->setShowVisualizer(true);
     solverPtr->setSolverVisualizerParams(/*drawTags*/               true,
                                          /*drawTagTypes*/           true,
                                          /*drawTagNormals*/         false,
-                                         /*drawAabb*/               true,
+                                         /*drawAabb*/               false,
                                          /*drawIntersectedPoly*/    false,
-                                         /*drawSplittingSegments*/  true,
-                                         /*drawSplitPoly*/          false,
-                                         /*drawSelectedPolyFace*/   // TODO: implement
+                                         /*drawSplittingSegments*/  false,
+                                         /*drawSplitPoly*/          false,  // FIXME: not needed, erase var
+                                         /*drawSelectedFace*/       true,
                                          /*drawFinalMesh*/          false
                                          );
     

@@ -72,29 +72,23 @@ namespace tslam
         /// (c)
         /// Create the polysurface (list of polygons) that describes the timber solid volume
         void rCreatePolysurface();
-            // TODO: testing new approach
-            void rIntersectSplittingSegments(std::vector<TSSegment> &segments,
-                                             std::vector<TSPolygon> &polygons);
-            void rIntersectPolygons2(std::vector<TSPolygon> &polygons,
-                                     std::vector<std::vector<TSSegment>> &segments);
             /**
              * @brief Obtain a vector of segments connecting the detected intersections of the AABB-generated polygons.
              * 
              * @param polygons[in] the polygons to intersect
-             * @param segments[out] the segments connecting polygon's detected intersections
+             * @param segments[out] the segments connecting polygon's detected intersections grouped by plane
              */
             void rIntersectPolygons(std::vector<TSPolygon> &polygons,
-                                    std::vector<TSSegment> &segments);
+                                    std::vector<std::vector<TSSegment>> &segmentsGrouped);
             /**
-             * @brief Split the polygons into smaller ones with the intersecting segments.
+             * @brief Split the segments among them. This allows to obtain the polygons describing multiple faces.
+             *  The found polygons still need to be selected for candidate faces of the acutal timber piece.
              * 
-             * @param polygons[in] the polygons to split
-             * @param splitPolygons[out] the split polygons
-             * @param segments[in] the segments to split the polygons
+             * @param segmentsGrouped[out] the segments connecting polygon's detected intersections grouped by plane
+             * @param polygons[in] the polygons to intersect
              */
-            void rSplitPolygons(std::vector<TSPolygon>& polygons,
-                                std::vector<TSPolygon>& splitPolygons,
-                                std::vector<TSSegment>& segments);
+            void rIntersectSplittingSegments(std::vector<std::vector<TSSegment>> &segmentsGrouped,
+                                             std::vector<TSPolygon> &polygons);
             /**
              * @brief This unit selects the best candidates polygons to compose the mesh's faces. To do so
              * it takes each plane of polygons, projects the closest points to it and test if they are inside.
@@ -151,6 +145,7 @@ namespace tslam
                                        bool drawIntersectedPoly = true,
                                        bool drawSplittingSegments = false,
                                        bool drawSplitPoly = true,
+                                       bool drawSelectedFace = true,
                                        bool drawFinalMesh = true)
         {
             m_DrawTags = drawTags;
@@ -160,6 +155,7 @@ namespace tslam
             m_DrawIntersectedPoly = drawIntersectedPoly;
             m_DrawSplittingSegments = drawSplittingSegments;
             m_DrawSplitPoly = drawSplitPoly;
+            m_DrawSelectedFace = drawSelectedFace;
             m_DrawFinalMesh = drawFinalMesh;
         };
 
@@ -193,6 +189,7 @@ namespace tslam
                        bool drawIntersectedPoly,
                        bool drawSplittingSegments,
                        bool drawSplitPoly,
+                       bool drawSelectedFace,
                        bool drawFinalMesh);
         /// Show the visulier
         bool m_ShowVisualizer;
@@ -210,6 +207,8 @@ namespace tslam
         bool m_DrawSplittingSegments;
         /// Show the polygons after splitting
         bool m_DrawSplitPoly;
+        /// Show the selected face polygons
+        bool m_DrawSelectedFace;
         /// Show the timber volume after merging into a mesh
         bool m_DrawFinalMesh;
     
