@@ -407,6 +407,62 @@ namespace tslam
         
         std::vector<Eigen::Vector3d> intersectionPts;
 
+        //////////////////// ATTEMPT 2 ////////////////////
+
+
+        // find all the intersection points
+        for (int i = 0; i < segmentsGrouped.size(); i++)
+        {
+            for (auto& segA : segmentsGrouped[i])
+            {
+                for (auto& segB : allSegments)
+                {
+                    if (segA == segB) continue;
+
+                    bool isIntersect = false;
+                    Eigen::Vector3d intersectionPt;
+                    isIntersect = segA.intersect(segB, intersectionPt);
+
+                    if (isIntersect)
+                    {
+                        // check the intersection point is unique
+                        bool isUnique = true;
+                        for (auto& pt : intersectionPts)
+                        {
+                            if (pt.isApprox(intersectionPt, 1e-6))
+                            {
+                                isUnique = false;
+                                break;
+                            }
+                        }
+                        if (isUnique) intersectionPts.push_back(intersectionPt);
+                    }
+                }
+            }
+
+            // create a polygon from the intersection points
+            if (intersectionPts.size() > 0)
+            {
+                // obtain all the minimum are polygons from the intersection points
+                for (int j = 0; j < intersectionPts.size(); j++)
+                {
+                    std::vector<Eigen::Vector3d> tempPts;
+                    tempPts.push_back(intersectionPts[j]);
+                    for (int k = j + 1; k < intersectionPts.size(); k++)
+                    {
+                        tempPts.push_back(intersectionPts[k]);
+                        TSPolygon tempPoly = TSPolygon(tempPts, this->m_PlnAABBPolygons[i].getLinkedPlane());
+                        tempPoly.reorderClockwisePoints();
+                        polygons.push_back(tempPoly);
+                        tempPts.pop_back();
+                    }
+                }
+                intersectionPts.clear();
+            }
+        }
+
+        //////////////////// ATTEMPT 1 ////////////////////
+
         for (int i = 0; i < segmentsGrouped.size(); i++)
         {
             for (auto& segA : segmentsGrouped[i])
