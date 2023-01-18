@@ -24,18 +24,19 @@ int main()
 
     // create timber object & read yml TSlam map
     std::shared_ptr<tslam::TSTimber> timberPtr = std::make_shared<tslam::TSTimber>();
-    timberPtr->setPlaneTagsFromYAML(testData[11]);
+    timberPtr->setPlaneTagsFromYAML(testData[4]);
 
     // create geometric solver
     std::shared_ptr<tslam::TSGeometricSolver> solverPtr = std::make_shared<tslam::TSGeometricSolver>();
 
     // set solver's parameters
     solverPtr->setTimber(timberPtr);
-    solverPtr->setCreaseAngleThreshold(5.0);   ///< default: 10.0
-    solverPtr->setMaxPlnDist2Merge(5.2);       ///< default: 5.2
-    solverPtr->setMaxPlnAngle2Merge(0.9);      ///< default: 0.9
+    solverPtr->setCreaseAngleThreshold(5.0);   ///< default: 10.0 deg
+    solverPtr->setMaxPlnDist2Merge(1.0);       ///< default: 1.0 deg
+    solverPtr->setMaxPlnAngle2Merge(0.9);      ///< default: 0.9 --> 0.9 / 0.5 = 4.5 mm
     solverPtr->setAABBScaleFactor(4.0);        ///< default: 2.0
-    solverPtr->setMaxPolyTagDist(1e-5);        ///< default: 1e-5  FIXME: change to tolerance
+    solverPtr->setMaxPolyTagDist(1e-5);        ///< default: 1e-5
+    solverPtr->setEPS(1e-5);                   ///< default: 1e-5  TODO: in geo util funcs() expose and pass the tolerance
 
     // set solver's visualizer parameters
     solverPtr->setShowVisualizer(true);
@@ -43,9 +44,9 @@ int main()
                                          /*drawTagTypes*/           true,
                                          /*drawTagNormals*/         false,
                                          /*drawAabb*/               false,
-                                         /*drawIntersectedPoly*/    true,
+                                         /*drawIntersectedPoly*/    false,
                                          /*drawSplittingSegments*/  true,
-                                         /*drawSelectedFace*/       false,
+                                         /*drawSelectedFace*/       true,
                                          /*drawFinalMesh*/          false
                                          );
     

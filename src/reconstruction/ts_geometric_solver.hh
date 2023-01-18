@@ -23,6 +23,7 @@ namespace tslam
             m_MaxPlnDist2Merge=5.2;
             m_MaxPlnAngle2Merge=0.9;
             m_MaxPolyTagDist=0.5;
+            m_EPS=1e-05;
         };
         ~TSGeometricSolver() = default;
 
@@ -55,6 +56,7 @@ namespace tslam
             /**
              * @brief We merge similar stripes based on their planes. The planes are similar if they are too close
              * and too similar in orientation. The merging is done by averaging the planes normals and computing the
+             * new plane passing through the extremes of the stripe.
              * 
              * @param stripes the vector of stripes
              */
@@ -133,6 +135,7 @@ namespace tslam
         void setMaxPlnAngle2Merge(double max_pln_angle){m_MaxPlnAngle2Merge = max_pln_angle;};
         void setAABBScaleFactor(double aabb_scale_factor){m_AABBScaleFactor = aabb_scale_factor;};
         void setMaxPolyTagDist(double max_poly_dist){m_MaxPolyTagDist = max_poly_dist;};
+        void setEPS(double eps){m_EPS = eps;};
 
         void setDirOut(const std::string& dir){this->m_DirOut = dir;};
         void setFilenameOut(const std::string& name){this->m_FilenameOut = name;};
@@ -218,15 +221,16 @@ namespace tslam
         double m_MaxPolyTagDist;
         /// The maximal distance between planes of stripes to be eligible for merging
         double m_MaxPlnDist2Merge;
-        /// The maximal angle difference in radians between two planes' normals to be eligible for merging
+        /// The maximal angle difference in degs between two planes'normals' angle to be eligible for merging
         double m_MaxPlnAngle2Merge;
+        /// The tolerance for all the computation (e.g. for the intersections)
+        double m_EPS;
 
     protected:  ///< Solver internal variables
         /// Vector of polygons issued of tags' planes-AABB intersections
         std::vector<TSPolygon> m_PlnAABBPolygons;
         /// Vector of splitting segments out of main polygons' intersection
         std::vector<TSSegment> m_SplitSegments;
-        // TODO: test new data structure
         /// Vector of vectors of splitting segments grouped by planes
         std::vector<std::vector<TSSegment>> m_SplitSegmentsGrouped;
         /// Vector of split polygons
@@ -236,7 +240,7 @@ namespace tslam
         /// The timber mesh
         open3d::geometry::TriangleMesh m_MeshOut;
 
-    private:  ///< Profiler
+    private:  ///< Profiler  // TODO: this needs to be implemented (mayybe for the all tslam)
 #ifdef TSLAM_REC_PROFILER
         inline void timeStart(const char* msg)
         {

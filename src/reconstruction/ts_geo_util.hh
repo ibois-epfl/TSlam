@@ -14,6 +14,7 @@
 
 #include <open3d/Open3D.h>
 
+//TODO: all raw pointers for the intersections and other should be replace with smart pointers
 
 namespace tslam
 {

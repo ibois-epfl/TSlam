@@ -280,8 +280,12 @@ namespace tslam
         {
             for (int j = i + 1; j < stripes.size(); j++)
             {
+                double dist = stripes[i]->getMeanPlane().distance(stripes[j]->getMeanPlane());
+                double angle = stripes[i]->getMeanPlane().Normal.dot(stripes[j]->getMeanPlane().Normal);
+                double angleDeg = acos(angle) * 180. / M_PI;
+
                 if (stripes[i]->getMeanPlane().distance(stripes[j]->getMeanPlane()) < this->m_MaxPlnDist2Merge &&
-                    stripes[i]->getMeanPlane().Normal.dot(stripes[j]->getMeanPlane().Normal) > this->m_MaxPlnAngle2Merge
+                    (angleDeg < this->m_MaxPlnAngle2Merge || angleDeg > 180 - this->m_MaxPlnAngle2Merge)
                     )
                 {
                     *stripes[i] += *stripes[j];
@@ -304,9 +308,6 @@ namespace tslam
         // scale the AABB
         this->m_Timber->scaleAABB(this->m_AABBScaleFactor);
 
-        // FIXME: the profiler needs to be implemented properly
-        this->timeStart("[PROFILER]: intersect planes with AABB");  // TODO: implement true Profiler
-
         // intersect the planes with the timber's AABB
         Eigen::Vector3d* outPtsPtr = new Eigen::Vector3d[3*6];
         std::vector<Eigen::Vector3d>* planeIntersections = new std::vector<Eigen::Vector3d>();
@@ -326,7 +327,7 @@ namespace tslam
             for (unsigned int i = 0; i < outPtsCount; i++)
                 planeIntersections->push_back(outPtsPtr[i]);
 
-            // if (i==4)  // DEBUG  i.e. 4 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            // if (i==2)  // DEBUG  i.e. 4 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             // {
                 TSPolygon tempPoly = TSPolygon(*planeIntersections, this->m_Timber->getTSRTagsStripes()[i]->getMeanPlane());
                 tempPoly.reorderClockwisePoints();
@@ -336,7 +337,18 @@ namespace tslam
         delete outPtsPtr;
         delete planeIntersections;
 
-        this->timeEnd();  // TODO: implement true profiler
+        // delete duplicates from the polygons list (e.g. double stripes on the same plane for synthetic data)
+        for (int i = 0; i < this->m_PlnAABBPolygons.size(); i++)
+        {
+            for (int j = i + 1; j < this->m_PlnAABBPolygons.size(); j++)
+            {
+                if (this->m_PlnAABBPolygons[i] == this->m_PlnAABBPolygons[j])
+                {
+                    this->m_PlnAABBPolygons.erase(this->m_PlnAABBPolygons.begin() + j);
+                    j--;
+                }
+            }
+        }
     }
 
     void TSGeometricSolver::rCreatePolysurface()
@@ -385,6 +397,8 @@ namespace tslam
                                                         std::vector<TSPolygon>& polygons)
     {
         std::cout << "<<<<<<<<<< rIntersectSplittingSegments >>>>>>>>>>" << std::endl;  // DEBUG
+        // TODO: find a way to obtain all minimum area polygons from the segments's intersections
+
         // store all the segments in a single vector
         std::vector<TSSegment> allSegments;
         for (auto& segGroup : segmentsGrouped)
@@ -393,7 +407,6 @@ namespace tslam
         
         std::vector<Eigen::Vector3d> intersectionPts;
 
-            
         for (int i = 0; i < segmentsGrouped.size(); i++)
         {
             for (auto& segA : segmentsGrouped[i])
