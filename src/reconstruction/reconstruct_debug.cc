@@ -18,12 +18,13 @@ int main()
         "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_h.yml",       // 7
         "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_v.yml",       // 8
         "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_v_not_symmetrical.yml",        // 9
-        "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_h_rot.yml"        // 10
+        "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_h_rot.yml",        // 10
+        "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_v_double_stripes.yml"        // 11
         };
 
     // create timber object & read yml TSlam map
     std::shared_ptr<tslam::TSTimber> timberPtr = std::make_shared<tslam::TSTimber>();
-    timberPtr->setPlaneTagsFromYAML(testData[9]);
+    timberPtr->setPlaneTagsFromYAML(testData[11]);
 
     // create geometric solver
     std::shared_ptr<tslam::TSGeometricSolver> solverPtr = std::make_shared<tslam::TSGeometricSolver>();
@@ -42,10 +43,9 @@ int main()
                                          /*drawTagTypes*/           true,
                                          /*drawTagNormals*/         false,
                                          /*drawAabb*/               false,
-                                         /*drawIntersectedPoly*/    false,
-                                         /*drawSplittingSegments*/  false,
-                                         /*drawSplitPoly*/          false,  // FIXME: not needed, erase var
-                                         /*drawSelectedFace*/       true,
+                                         /*drawIntersectedPoly*/    true,
+                                         /*drawSplittingSegments*/  true,
+                                         /*drawSelectedFace*/       false,
                                          /*drawFinalMesh*/          false
                                          );
     

@@ -27,7 +27,6 @@ namespace tslam
                         this->m_DrawAabb,
                         this->m_DrawIntersectedPoly,
                         this->m_DrawSplittingSegments,
-                        this->m_DrawSplitPoly,
                         this->m_DrawSelectedFace,
                         this->m_DrawFinalMesh);
         
@@ -41,7 +40,6 @@ namespace tslam
                                       bool drawAabb,
                                       bool drawIntersectedPoly,
                                       bool drawSplittingSegments,
-                                      bool drawSplitPoly,
                                       bool drawSelectedFaces,
                                       bool drawFinalMesh)
     {
@@ -172,28 +170,6 @@ namespace tslam
             }
         }
         
-        if (drawSplitPoly)
-        {
-            for (auto& poly : this->m_SplitPolygons)
-            {
-                std::vector<Eigen::Vector3d> pts = poly.getVertices();
-                std::random_device rd;
-                std::mt19937 gen(rd());
-                std::uniform_real_distribution<> dis(0, 1);
-                Eigen::Vector3d color = Eigen::Vector3d(dis(gen), dis(gen), dis(gen));
-                for (int i = 0; i < pts.size(); i++)
-                {
-                    std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
-                    std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-                    segLineset->points_.push_back(segm->Origin());
-                    segLineset->points_.push_back(segm->EndPoint());
-                    segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-                    segLineset->PaintUniformColor(color);
-                    vis->AddGeometry(segLineset);
-                }
-            }
-        }
-
         if (drawFinalMesh)
         {
             std::shared_ptr<open3d::geometry::TriangleMesh> mesh = std::make_shared<open3d::geometry::TriangleMesh>(this->m_MeshOut);
@@ -459,7 +435,6 @@ namespace tslam
                 intersectionPts.clear();
                 // }
                 
-                // if (i==0) return;  // DEBUG
                 intersectionPts.clear();  // DEBUG
 
             }

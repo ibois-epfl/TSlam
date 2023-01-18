@@ -144,7 +144,6 @@ namespace tslam
                                        bool drawAabb = true,
                                        bool drawIntersectedPoly = true,
                                        bool drawSplittingSegments = false,
-                                       bool drawSplitPoly = true,
                                        bool drawSelectedFace = true,
                                        bool drawFinalMesh = true)
         {
@@ -154,7 +153,6 @@ namespace tslam
             m_DrawAabb = drawAabb;
             m_DrawIntersectedPoly = drawIntersectedPoly;
             m_DrawSplittingSegments = drawSplittingSegments;
-            m_DrawSplitPoly = drawSplitPoly;
             m_DrawSelectedFace = drawSelectedFace;
             m_DrawFinalMesh = drawFinalMesh;
         };
@@ -188,7 +186,6 @@ namespace tslam
                        bool drawAabb,
                        bool drawIntersectedPoly,
                        bool drawSplittingSegments,
-                       bool drawSplitPoly,
                        bool drawSelectedFace,
                        bool drawFinalMesh);
         /// Show the visulier
@@ -205,8 +202,6 @@ namespace tslam
         bool m_DrawIntersectedPoly;
         /// Show the splitting segments for each intersected polygon
         bool m_DrawSplittingSegments;
-        /// Show the polygons after splitting
-        bool m_DrawSplitPoly;
         /// Show the selected face polygons
         bool m_DrawSelectedFace;
         /// Show the timber volume after merging into a mesh

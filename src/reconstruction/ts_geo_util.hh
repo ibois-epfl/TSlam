@@ -45,7 +45,6 @@ namespace tslam
         {
             this->extractAxes();
         };
-        // FIXME: fix the overload of the constructor (replace the placeholder)
         /**
          * @brief Construct a new TSPlane object with 3 points
          * 
@@ -98,7 +97,7 @@ namespace tslam
         };
         ~TSPlane() = default;
     
-    public: __always_inline
+    public: __always_inline  ///< modified ops
         bool operator!=(const TSPlane& other) const
         {
             if (this->Normal.isApprox(other.Normal, 1e-5) && this->Center.isApprox(other.Center, 1e-5))
@@ -117,7 +116,7 @@ namespace tslam
             return os;
         };
     
-    public: __always_inline
+    public: __always_inline  ///< custom funcs
         /**
          * @brief It computes the distance between a point and the plane
          * 
@@ -150,8 +149,8 @@ namespace tslam
             Eigen::Vector3d pt =  point - this->distance(point) * this->Normal;
             return pt;
         };
-        //TODO: to test
-        void rotateByMatrix(Eigen::Matrix3d& mat)
+        /// Apply a transformation to the plane
+        void transform(Eigen::Matrix3d& mat)
         {
             Eigen::Vector3d normal = mat * this->Normal;
             Eigen::Vector3d center = mat * this->Center;
@@ -162,9 +161,32 @@ namespace tslam
             this->C = normal(2);
             this->D = normal.dot(center);
         };
+        /// Extract the two axes of the plane
+        void extractAxes()
+        {
+            Eigen::Vector3d axisX, axisY;
+            if (std::abs(this->Normal(0)) > std::abs(this->Normal(1)))
+            {
+                // Normal.x or Normal.z is the largest magnitude component, swap them
+                double invLen = 1.0 / std::sqrt(this->Normal(0) * this->Normal(0) + this->Normal(2) * this->Normal(2));
+                axisX(0) = -this->Normal(2) * invLen;
+                axisX(1) = 0.0;
+                axisX(2) = +this->Normal(0) * invLen;
+            }
+            else
+            {
+                // Normal.y or Normal.z is the largest magnitude component, swap them
+                double invLen = 1.0 / std::sqrt(this->Normal(1) * this->Normal(1) + this->Normal(2) * this->Normal(2));
+                axisX(0) = 0.0;
+                axisX(1) = +this->Normal(2) * invLen;
+                axisX(2) = -this->Normal(1) * invLen;
+            }
+            axisY = this->Normal.cross(axisX);
+            this->AxisX = axisX;
+            this->AxisY = axisY;
+        }
 
-
-    public: __always_inline
+    public: __always_inline  ///< intersect funcs
         /** 
          * @brief It checks if there is intersection between a ray and a plane following the:
          * Plane: ax+by+cz=d
@@ -273,7 +295,7 @@ namespace tslam
                 out_points[out_point_count++] = orig;
         }
 
-    public: __always_inline
+    public: __always_inline  ///< bool funcs
         /**
          * @brief Check if the point is on the plane
          * 
@@ -285,47 +307,8 @@ namespace tslam
         {
             return (this->Normal.dot(point - this->Center) < 1e-5);
         };
-        // TODO: dev, not tested
-        /**
-         * @brief Check if the plane is parallel to another plane
-         * 
-         * @param normal the normal of the other plane
-         * @return true if the plane is parallel to the other plane
-         * @return false if the plane is not parallel to the other plane
-         */
-        bool isParallelToPlane(Eigen::Vector3d normal)
-        {
-            // detect if the two normals are parallel with tolerance, also in case of axis X, Y or Z
-            return (std::abs(this->Normal.dot(normal)) > 0.999999);
-        };
 
-    public:
-        /// Extract the two axes of the plane
-        void extractAxes()
-        {
-            Eigen::Vector3d axisX, axisY;
-            if (std::abs(this->Normal(0)) > std::abs(this->Normal(1)))
-            {
-                // Normal.x or Normal.z is the largest magnitude component, swap them
-                double invLen = 1.0 / std::sqrt(this->Normal(0) * this->Normal(0) + this->Normal(2) * this->Normal(2));
-                axisX(0) = -this->Normal(2) * invLen;
-                axisX(1) = 0.0;
-                axisX(2) = +this->Normal(0) * invLen;
-            }
-            else
-            {
-                // Normal.y or Normal.z is the largest magnitude component, swap them
-                double invLen = 1.0 / std::sqrt(this->Normal(1) * this->Normal(1) + this->Normal(2) * this->Normal(2));
-                axisX(0) = 0.0;
-                axisX(1) = +this->Normal(2) * invLen;
-                axisX(2) = -this->Normal(1) * invLen;
-            }
-            axisY = this->Normal.cross(axisX);
-            this->AxisX = axisX;
-            this->AxisY = axisY;
-        }
-
-    public:
+    public:  ///< class members
         Eigen::Vector3d Normal;
         Eigen::Vector3d AxisX, AxisY;
         Eigen::Vector3d Center;
@@ -335,7 +318,7 @@ namespace tslam
     /// Struct interface for vector utility function
     struct TSVector
     {
-    public: __always_inline
+    public: __always_inline  ///< utility static funcs
         /**
          * @brief Get the angle between two vectors
          * 
@@ -362,7 +345,7 @@ namespace tslam
             return std::sqrt(std::pow(a(0) - b(0), 2) + std::pow(a(1) - b(1), 2) + std::pow(a(2) - b(2), 2));
         }
 
-    public: __always_inline
+    public: __always_inline  ///< custom WorldAxis
         /**
          * @brief Get the X axis
          * 
@@ -392,7 +375,7 @@ namespace tslam
         {};
         ~TSSegment() = default;
     
-    public: __always_inline
+    public: __always_inline  ///< modified ops
         bool operator!=(const TSSegment& other) const
         {
             if (this->P1.isApprox(other.P1) && this->P2.isApprox(other.P2)
@@ -410,7 +393,7 @@ namespace tslam
             return os;
         };
 
-    public: __always_inline
+    public: __always_inline  ///< bool checks
         /// it checks if a point is on a segment, also when the point is on the start or end of the segment
         bool isPointOnSegment(Eigen::Vector3d point) const
         {
@@ -439,7 +422,7 @@ namespace tslam
             return this->intersect(other, tempIntersectPt);
         }
 
-    public: __always_inline
+    public: __always_inline  ///< getters
         Eigen::Vector3d getDirection() const { return (this->P2 - this->P1).normalized(); };
         Eigen::Vector3d getCenter() const { return (this->P1 + this->P2) / 2.0; };
         Eigen::Vector3d getMidPoint()
@@ -449,7 +432,7 @@ namespace tslam
             return midPoint;
         };
 
-    public: __always_inline
+    public: __always_inline  ///< custom funcs
         /**
          * @brief It computes the angle between two segments in degrees on a given plane
          * 
@@ -542,10 +525,9 @@ namespace tslam
         {
             this->compute();
         };
-        // TODO: to be tested
         ~TSPolygon() = default;
 
-    public: __always_inline
+    public: __always_inline   ///< modified ops
         bool operator==(const TSPolygon& other) const
         {
             ///< (a) check for number of vertices
@@ -584,10 +566,9 @@ namespace tslam
             os << "Polygon linked plane: " << polygon.m_LinkedPlane << std::endl;
             return os;
         };
-        uint size() {return m_Segments.size(); };
         TSSegment& operator[](uint i) {return m_Segments[i]; };
 
-    private: __always_inline
+    private: __always_inline  ///< compute properties
         void compute() override
         {
             this->computeVertices();
@@ -623,7 +604,6 @@ namespace tslam
             center /= m_Vertices.size();
             m_Center = center;
         };
-        // FIXME: problems with vertices storage
         void computeSegments()
         {
             m_Segments.clear();
@@ -657,25 +637,6 @@ namespace tslam
                 }
             }
 
-            // FIXME: attention!! this was originally ACTIVE, but it was causing problems with the vertices storage
-            // // FIXME: it's working but this has to be fixed, the order is not working segments>points
-            // /// (c) update vertices
-            // m_Vertices.clear();
-            // for (auto s : m_Segments)
-            // {
-            //     bool found = false;
-            //     for (auto p : m_Vertices)
-            //         if (p == s.P1)
-            //         {
-            //             found = true;
-            //             break;
-            //         }
-            //     if (!found)
-            //         m_Vertices.push_back(s.P1);
-            // }
-
-            // FIXME: see above
-            // update center
             this->computeCenter();
         }
         /// Compute the area of the polygon
@@ -690,14 +651,13 @@ namespace tslam
             this->m_Area = area;
         };
 
-    public: __always_inline
+    public: __always_inline  ///< vertices ops
         void addVertex(Eigen::Vector3d point) {m_Vertices.push_back(point); compute(); };
         void removeVertex(uint i) {m_Vertices.erase(m_Vertices.begin() + i); compute(); };
-        // void addSegment(TSSegment segment) {m_Segments.push_back(segment); };  // FIXME: problems with vertices not usable
         void setVertices(std::vector<Eigen::Vector3d> points) {m_Vertices = points; compute(); };
         void setLinkedPlane(TSPlane linkedPlane) {m_LinkedPlane = linkedPlane; };
 
-    public:__always_inline
+    public:__always_inline  ///< getters
         std::vector<Eigen::Vector3d>& getVertices() {return m_Vertices; };
         uint getNumVertices() {return m_Vertices.size(); };
         Eigen::Vector3d& getVertex(uint i) {return m_Vertices[i]; };
@@ -723,8 +683,9 @@ namespace tslam
          */
         std::vector<TSSegment>& getSegments() {return m_Segments; };
         double getArea() {return m_Area; };
+        uint size() {return m_Segments.size(); };
 
-    public: __always_inline
+    public: __always_inline  ///< condition checks
         /**
          * @brief Check if a point is on the polygon by checking if it's on one of the polygon's segments.
          * 
@@ -813,8 +774,70 @@ namespace tslam
                 return true;
             return false;
         };
+        /// Compare two polygons centers and return true if they are equal
+        bool areCentersEqual(TSPolygon& other, float eps = 1e-5)
+        {
+            return this->m_Center.isApprox(other.m_Center, eps);
+        };
 
-    public: __always_inline
+    public: __always_inline  ///< transform funcs
+        /**
+         * @brief It transforms the polygon by an identity matrix
+         * 
+         * @param rotMat the identity matrix
+         */
+        void transform(Eigen::Matrix3d& rotMat)
+        {
+            for (auto& v : this->m_Vertices)
+            {
+                v = rotMat * v;
+            }
+            // apply the transform to the  linkedplane
+            this->m_LinkedPlane.transform(rotMat);
+            // recompute the polygon
+            this->compute();
+        };
+        /**
+         * @brief It rotates the polygon around the X axis
+         * 
+         * @param angle the rotation angle
+         * @return Eigen::Matrix3d the rotation matrix
+         */
+        Eigen::Matrix3d rotateByAxisX(double angle)
+        {
+            Eigen::Matrix3d rotMat;
+            rotMat = Eigen::AngleAxisd(angle, Eigen::Vector3d::UnitX());
+            this->transform(rotMat);
+            return rotMat;
+        };
+        /**
+         * @brief It rotates the polygon around the Y axis
+         * 
+         * @param angle the rotation angle
+         * @return Eigen::Matrix3d the rotation matrix
+         */
+        Eigen::Matrix3d rotateByAxisY(double angle)
+        {
+            Eigen::Matrix3d rotMat;
+            rotMat = Eigen::AngleAxisd(angle, Eigen::Vector3d::UnitY());
+            this->transform(rotMat);
+            return rotMat;
+        };
+        /**
+         * @brief It rotates the polygon around the Z axis
+         * 
+         * @param angle the rotation angle
+         * @return Eigen::Matrix3d the rotation matrix
+         */
+        Eigen::Matrix3d rotateByAxisZ(double angle)
+        {
+            Eigen::Matrix3d rotMat;
+            rotMat = Eigen::AngleAxisd(angle, Eigen::Vector3d::UnitZ());
+            this->transform(rotMat);
+            return rotMat;
+        };
+
+    public: __always_inline  ///< custom funcs
         /**
          * @brief It splits the polygon in two polygons given a segment.
          * ** NOTE **: the polygon must be convex and splitting is not working for segment's ends out of the polygon's contour.**
@@ -954,73 +977,31 @@ namespace tslam
             
             return true;
         }
-        
-        // TODO: ok , change naming
-        void rotateByMatrix(Eigen::Matrix3d& rotMat)
-        {
-            for (auto& v : this->m_Vertices)
-            {
-                v = rotMat * v;
-            }
-            // apply the transform to the  linkedplane
-            this->m_LinkedPlane.rotateByMatrix(rotMat);
-            // recompute the polygon
-            this->compute();
-        };
-        // TODO: document me
-        Eigen::Matrix3d rotateByAxisX(double angle)
-        {
-            Eigen::Matrix3d rotMat;
-            rotMat = Eigen::AngleAxisd(angle, Eigen::Vector3d::UnitX());
-            this->rotateByMatrix(rotMat);
-            return rotMat;
-        };
-        // TODO: document me
-        Eigen::Matrix3d rotateByAxisY(double angle)
-        {
-            Eigen::Matrix3d rotMat;
-            rotMat = Eigen::AngleAxisd(angle, Eigen::Vector3d::UnitY());
-            this->rotateByMatrix(rotMat);
-            return rotMat;
-        };
-        // TODO: document me
-        Eigen::Matrix3d rotateByAxisZ(double angle)
-        {
-            Eigen::Matrix3d rotMat;
-            rotMat = Eigen::AngleAxisd(angle, Eigen::Vector3d::UnitZ());
-            this->rotateByMatrix(rotMat);
-            return rotMat;
-        };
-        
-        /// Reorder the polygon vertices in a clockwise order based on graham scan algorithm
+        // TODO: in case the polygon is still orthogonal to the global coordinate system after the rotation, 
+        // the code needs to be reworked
+        /**
+         * @brief Reorder the polygon vertices in a clockwise order based on graham scan algorithm.
+         *      The geometry is first rotated by a small angle to avoid the case where the plane is 
+         *      orthogonal to the global coordinate system. It might still possible that after the
+         *      rotation the plane is still orthogonal to the global coordinate system. In this case
+         *      a warning is printed and code needs to be reworked.
+         * 
+         */
         void reorderClockwisePoints()
         {
-            // float TOL = 1e-05;
-
-            // generate a matrix describing a 45° degrees rotation on all axes
-
-            // // apply the inverse rotation matrix
-            // rotMat = rotMat.inverse();
-            // this->rotateByMatrix(rotMat);
+            // rotate to avoid corner case where the plane is orthogonal to the global coordinate system
             double rotAngle = 20;
-            // create a copy of the polygon
-            TSPolygon polyCopy = TSPolygon(*this);
-
             Eigen::Matrix3d matRotX = this->rotateByAxisX(rotAngle);
             Eigen::Matrix3d matRotY = this->rotateByAxisY(rotAngle);
             Eigen::Matrix3d matRotZ = this->rotateByAxisZ(rotAngle);
 
-            // TODO: we should be sure that we don't fall again on orthogonality
-
-            std::cout << "other plane" << std::endl;  // DEBUG <<<<<
-
+            // apply grham scanning
             std::sort(m_Vertices.begin(),m_Vertices.end(),
                   [&](const Eigen::Vector3d& a, 
                   const Eigen::Vector3d& b)
             {
                 Eigen::Vector3d a_center = a - this->m_Center;
                 Eigen::Vector3d b_center = b - this->m_Center;
-                // TODO: test without "m_LinkedPlane.A or B"
                 float angleA = std::atan2(a_center(1) * m_LinkedPlane.A - a_center(0) * m_LinkedPlane.B,
                                             a_center(0) * m_LinkedPlane.A + a_center(1) * m_LinkedPlane.B);
                 float angleB = std::atan2(b_center(1) * m_LinkedPlane.A - b_center(0) * m_LinkedPlane.B,
@@ -1028,206 +1009,15 @@ namespace tslam
                 return angleA < angleB;
             });
 
-            // // apply the inverse rotation matrix
+            // rotate back
             this->rotateByAxisZ(-rotAngle);
             this->rotateByAxisY(-rotAngle);
             this->rotateByAxisX(-rotAngle);
 
+            // recompute the polygon properties
             this->compute();
 
             return;
-
-
-
-
-
-            ////////////////////////////////////////////////////////////////////
-
-            
-
-            std::cout << "normal: " << m_LinkedPlane.Normal << std::endl;  // DEBUG
-            // print all vertices
-            for (auto& v : m_Vertices)
-                std::cout << "vertex" << v.transpose() << std::endl;  // DEBUG
-
-            // (a): polygon lies on XZ plane
-            if (this->m_LinkedPlane.isParallelToPlane(TSVector::AxisY()))
-            {
-                std::cout << "this is plane XZ" << std::endl;  // DEBUG <<<<<
-
-                // // round the vertices to 4 decimal places
-                // for (auto& v : m_Vertices)
-                // {
-                //     v(0) = std::round(v(0) * 10000) / 10000;
-                //     v(2) = std::round(v(2) * 10000) / 10000;
-                // }
-
-                // if (this->isRectangleOrthogonal2WorldPlanes())  // FIXME: is this enough? Shouldnt be orthongal and rect?
-                // {
-                //     std::cout << "this is a special" << std::endl;  // DEBUG <<<<<
-
-                //     for (int i = 0; this->m_Vertices.size() > 4; i++)
-                //     {
-                //         if (this->m_Vertices[i](1) == this->m_Vertices[i + 1](1) &&
-                //             this->m_Vertices[i](1) == this->m_Vertices[i + 2](1) &&
-                //             this->m_Vertices[i](1) == this->m_Vertices[i + 3](1))
-                //         {
-                //             this->m_Vertices.erase(this->m_Vertices.begin() + i + 1);
-                //             this->m_Vertices.erase(this->m_Vertices.begin() + i + 1);
-                //         }
-                //     }
-                // }
-
-                // (a.1): find the vertex with the minimum Z value
-                int minZIndex = 0;
-                for (unsigned i = 1; i < m_Vertices.size(); ++i)
-                {
-                    if (m_Vertices[i](2) < m_Vertices[minZIndex](2))
-                        minZIndex = i;
-                }
-
-                // (a.2): sort the vertices based on the angle they make with the vertex with the minimum Z value
-                std::sort(m_Vertices.begin(), m_Vertices.end(),
-                            [&](const Eigen::Vector3d& a, const Eigen::Vector3d& b) -> bool {
-                                float aAngle = std::atan2(a(2) - m_Vertices[minZIndex](2),
-                                                        a(0) - m_Vertices[minZIndex](0));
-                                float bAngle = std::atan2(b(2) - m_Vertices[minZIndex](2),
-                                                        b(0) - m_Vertices[minZIndex](0));
-
-                                if (aAngle < bAngle)
-                                    return true;
-                                else if (aAngle > bAngle)
-                                    return false;
-                                else
-                                {
-                                    float aDist = (a - m_Vertices[minZIndex]).norm();
-                                    float bDist = (b - m_Vertices[minZIndex]).norm();
-
-                                    if (aDist < bDist)
-                                        return true;
-                                    else
-                                        return false;
-                                }
-                            });
-            }
-            // (b): polygon lies on YZ plane
-            else if (this->m_LinkedPlane.isParallelToPlane(TSVector::AxisX()))
-            {
-                std::cout << "this is plane YZ" << std::endl;  // DEBUG <<<<<
-                if(this->isQuadrilateral())
-                {
-                    for (int i = 0; this->m_Vertices.size() > 4; i++)
-                    {
-                        if (this->m_Vertices[i](0) == this->m_Vertices[i + 1](0) &&
-                            this->m_Vertices[i](0) == this->m_Vertices[i + 2](0) &&
-                            this->m_Vertices[i](0) == this->m_Vertices[i + 3](0))
-                        {
-                            this->m_Vertices.erase(this->m_Vertices.begin() + i + 1);
-                            this->m_Vertices.erase(this->m_Vertices.begin() + i + 1);
-                        }
-                    }
-                }
-
-                int minZIndex = 0;
-                for (unsigned i = 1; i < m_Vertices.size(); ++i)
-                {
-                    if (m_Vertices[i](2) < m_Vertices[minZIndex](2))
-                        minZIndex = i;
-                }
-
-                std::sort(m_Vertices.begin(),m_Vertices.end(),
-                      [&](const Eigen::Vector3d& a, 
-                      const Eigen::Vector3d& b)
-                {
-                    float angle_a = std::atan2(a(2) - m_Vertices[minZIndex](2),
-                                                a(1) - m_Vertices[minZIndex](1));
-                    float angle_b = std::atan2(b(2) - m_Vertices[minZIndex](2),
-                                                b(1) - m_Vertices[minZIndex](1));
-                    if (angle_a == angle_b)
-                    {
-                        float dist_a = (a - this->m_Center).norm();
-                        float dist_b = (b - this->m_Center).norm();
-                        if (dist_a == dist_b)
-                            return a(1) < b(1);
-                        else
-                            return dist_a < dist_b;
-                    }
-                    else
-                        return angle_a < angle_b;
-                });
-            }
-            // (b): polygon lies on XY plane
-            else if (this->m_LinkedPlane.isParallelToPlane(TSVector::AxisZ()))
-            {
-                std::cout << "this is plane XY" << std::endl;  // DEBUG <<<<<
-
-                int minYIndex = 0;
-                for (unsigned i = 1; i < m_Vertices.size(); ++i)
-                {
-                    if (m_Vertices[i](1) < m_Vertices[minYIndex](1))
-                        minYIndex = i;
-                }
-
-                std::sort(m_Vertices.begin(),m_Vertices.end(),
-                      [&](const Eigen::Vector3d& a, 
-                      const Eigen::Vector3d& b) -> bool
-                      {
-                          float aAngle = std::atan2(a(1) - m_Vertices[minYIndex](1),
-                                                    a(0) - m_Vertices[minYIndex](0));
-                          float bAngle = std::atan2(b(1) - m_Vertices[minYIndex](1),
-                                                    b(0) - m_Vertices[minYIndex](0));
-
-                          if (aAngle == bAngle)
-                          {
-                              float aDist = (a - this->m_Center).norm();
-                              float bDist = (b - this->m_Center).norm();
-                              if (aDist == bDist)
-                                  return a(0) < b(0);
-                              else
-                                  return aDist < bDist;
-                          }
-                          else if (aAngle < 0.f && bAngle > 0.f)
-                              return false;
-                          else if (aAngle > 0.f && bAngle < 0.f)
-                              return true;
-                          else
-                              return aAngle < bAngle;
-                      });
-            }
-            // (c): other planes
-            else
-            {
-                std::cout << "other plane" << std::endl;  // DEBUG <<<<<
-
-                std::sort(m_Vertices.begin(),m_Vertices.end(),
-                      [&](const Eigen::Vector3d& a, 
-                      const Eigen::Vector3d& b)
-                {
-                    Eigen::Vector3d a_center = a - this->m_Center;
-                    Eigen::Vector3d b_center = b - this->m_Center;
-                    float angleA = std::atan2(a_center(1) * m_LinkedPlane.A - a_center(0) * m_LinkedPlane.B,
-                                                a_center(0) * m_LinkedPlane.A + a_center(1) * m_LinkedPlane.B);
-                    float angleB = std::atan2(b_center(1) * m_LinkedPlane.A - b_center(0) * m_LinkedPlane.B,
-                                                b_center(0) * m_LinkedPlane.A + b_center(1) * m_LinkedPlane.B);
-                    return angleA < angleB;
-                });
-            }
-
-            this->compute();
-
-            // inverse rotation
-
-            // this->rotateByAxisX(-rotAngle);
-            // this->rotateByAxisY(-rotAngle);
-            // this->rotateByAxisZ(-rotAngle);
-
-        };
-
-
-        /// Compare two polygons centers and return true if they are equal
-        bool areCentersEqual(TSPolygon& other, float eps = 1e-5)
-        {
-            return this->m_Center.isApprox(other.m_Center, eps);
         };
         /**
          * @brief It triangulate a convex polygon by groups of 3 vertices and alawys the first index as 0.
