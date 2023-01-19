@@ -91,6 +91,12 @@ namespace tslam
              */
             void rIntersectSplittingSegments(std::vector<std::vector<TSSegment>> &segmentsGrouped,
                                              std::vector<TSPolygon> &polygons);
+            // TODO: dev, testing it
+            void rSplitPolygons(std::vector<TSPolygon>& polygons,
+                                std::vector<TSPolygon>& splitPolygons,
+                                std::vector<TSSegment>& segments);
+            
+            
             /**
              * @brief This unit selects the best candidates polygons to compose the mesh's faces. To do so
              * it takes each plane of polygons, projects the closest points to it and test if they are inside.

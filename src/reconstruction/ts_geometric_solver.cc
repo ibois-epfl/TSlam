@@ -121,19 +121,6 @@ namespace tslam
 
         if (drawSplittingSegments)
         {
-            // TODO: clean the visualizer up for splitting segments
-            // for (auto& segm : this->m_SplitSegments)
-            // {
-            //     std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
-            //     segLineset->points_.push_back(segm.P1);
-            //     segLineset->points_.push_back(segm.P2);
-            //     segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
-            //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-            //     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-            //     segLineset->PaintUniformColor(Eigen::Vector3d(1., 0., 1));
-            //     vis->AddGeometry(segLineset);
-            // }
-
             for (auto& segmGroup : this->m_SplitSegmentsGrouped)
             {
                 std::shared_ptr<open3d::geometry::LineSet> segLineset = std::make_shared<open3d::geometry::LineSet>();
@@ -154,6 +141,9 @@ namespace tslam
         {
             for (auto& pg : this->m_FacePolygons)
             {
+                // assign a random color to each face
+                Eigen::Vector3d color = Eigen::Vector3d((double)rand() / RAND_MAX, (double)rand() / RAND_MAX, (double)rand() / RAND_MAX);
+
                 std::vector<Eigen::Vector3d> pts = pg.getVertices();
                 for (int i = 0; i < pts.size(); i++)
                 {
@@ -164,7 +154,7 @@ namespace tslam
                     segLineset->lines_.push_back(Eigen::Vector2i(0, 1));
                     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
                     segLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-                    segLineset->PaintUniformColor(Eigen::Vector3d(0.5, 1, 0.5));
+                    segLineset->PaintUniformColor(color);
                     vis->AddGeometry(segLineset);
                 }
             }
@@ -356,7 +346,15 @@ namespace tslam
         this->rIntersectPolygons(this->m_PlnAABBPolygons, this->m_SplitSegmentsGrouped);
 
 
-        this->rIntersectSplittingSegments(this->m_SplitSegmentsGrouped, this->m_SplitPolygons);
+        this->rIntersectSplittingSegments(this->m_SplitSegmentsGrouped, this->m_SplitPolygons);  // ORI
+
+        std::cout << "size of split polygons: " << this->m_SplitPolygons.size() << std::endl;  // DEBUG
+
+        // // get all segments in a vector
+        // std::vector<TSSegment> allSegments;
+        // for (auto& segs : this->m_SplitSegmentsGrouped)
+        //     allSegments.insert(allSegments.end(), segs.begin(), segs.end());
+        // this->rSplitPolygons(this->m_PlnAABBPolygons, this->m_SplitPolygons, allSegments);
 
         this->rSelectFacePolygons(this->m_SplitPolygons,
                                   this->m_FacePolygons,
@@ -395,7 +393,6 @@ namespace tslam
         }
 
         // (*b) intersect the segments among themselves and if they have only one intersection point discard them
-        // auto segmentsGroupedTemp = segmentsGrouped;
         for (auto& segGroup : segmentsGrouped)
         {
             for (uint i = 0; i < segGroup.size(); i++)
@@ -435,110 +432,292 @@ namespace tslam
     {
         std::cout << "<<<<<<<<<< rIntersectSplittingSegments >>>>>>>>>>" << std::endl;  // DEBUG
         // TODO: find a way to obtain all minimum area polygons from the segments's intersections
-
-        // store all the segments in a single vector
-        std::vector<TSSegment> allSegments;
-        for (auto& segGroup : segmentsGrouped)
-            for (auto& seg : segGroup)
-                allSegments.push_back(seg);
         
-        std::vector<Eigen::Vector3d> intersectionPts;
+        // uint __EXTERN = 0;
+        // uint __INTERN = 1;
+        // uint __NONE = 2;
+        // a vector of maps
+        // //      idx seg            pt's segs                pt coords
+        // std::map<uint, std::tuple<std::array<uint, 2>>, Eigen::Vector3d> ptsMap = {};
 
-        //////////////////// ATTEMPT 2 ////////////////////
+        //  seg pt          pt's segs   pt coords
+        std::vector<std::tuple<std::array<uint, 2>, Eigen::Vector3d>> ptsScan;
+
+        std::vector<Eigen::Vector3d> pts_temp;
+        std::vector<std::array<uint, 2>> segsIdx_temp;
 
 
-        // find all the intersection points
-        for (int i = 0; i < segmentsGrouped.size(); i++)
+        
+        for (uint i = 0; i < segmentsGrouped.size(); i++)
         {
-            for (auto& segA : segmentsGrouped[i])
+            
+            auto& segsGroup = segmentsGrouped[i];
+
+            ptsScan.clear();  // TEST
+
+            // (a) segs x segs
+            for(uint k = 0; k < segsGroup.size(); k++)
             {
-                for (auto& segB : allSegments)
+                pts_temp.clear();  // TEST
+                segsIdx_temp.clear();  // TEST
+
+                // (a.1) intersect one segment with all the others
+                for (uint j = 0; j < segsGroup.size(); j++)
                 {
-                    if (segA == segB) continue;
+                    if (i == j) continue;
 
                     bool isIntersect = false;
-                    Eigen::Vector3d intersectionPt;
-                    isIntersect = segA.intersect(segB, intersectionPt);
+                    Eigen::Vector3d interPt;
+                    isIntersect = segsGroup[k].intersect(segsGroup[j], interPt);
 
                     if (isIntersect)
                     {
-                        // check the intersection point is unique
                         bool isUnique = true;
-                        for (auto& pt : intersectionPts)
+                        for (auto& pt : pts_temp)
                         {
-                            if (pt.isApprox(intersectionPt, 1e-6))
+                            if (pt.isApprox(interPt, this->m_EPS))
                             {
                                 isUnique = false;
                                 break;
                             }
                         }
-                        if (isUnique) intersectionPts.push_back(intersectionPt);
+                        if (isUnique)
+                        {
+                            pts_temp.push_back(interPt);  // TEST
+                            std::array<uint, 2> segsIdx = {k, j};
+                            segsIdx_temp.push_back(segsIdx);  // TEST
+                        }
                     }
                 }
+
+                // (b) order the intersection points and the segsIdx by distance from the seg's origin
+                // and apply the same sorting to the segsIdx arrays
+                if (pts_temp.size() == 0)
+                    continue;
+
+                // std::cout << "BEFORE SORTING" << std::endl;  // DEBUG
+                // std::cout << "origin coords: " << segsGroup[k].P1.transpose() << std::endl;  // DEBUG
+                // for (auto& pt : pts_temp)
+                //     std::cout << "pt: " << pt.transpose() << std::endl;  // DEBUG
+                
+                auto& segOrigin = segsGroup[k].P1;
+                std::sort(pts_temp.begin(), pts_temp.end(),
+                        [&segOrigin](const Eigen::Vector3d& a, const Eigen::Vector3d& b)
+                        {
+                            return (a - segOrigin).norm() < (b - segOrigin).norm();
+                        });
+                
+                std::vector<std::array<uint, 2>> segsIdx_temp_sorted;
+                for (auto& pt : pts_temp)
+                {
+                    for (uint i = 0; i < segsIdx_temp.size(); i++)
+                    {
+                        if (pt.isApprox(pts_temp[i], this->m_EPS))
+                        {
+                            segsIdx_temp_sorted.push_back(segsIdx_temp[i]);
+                            break;
+                        }
+                    }
+                }
+                assert(segsIdx_temp_sorted.size() == pts_temp.size());
+                segsIdx_temp = segsIdx_temp_sorted;
+
+                std::cout << "--- size of pts_temp: " << pts_temp.size() << std::endl;  // DEBUG
+
+
+                // std::cout << "AFTER SORTING" << std::endl;  // DEBUG
+                // for (auto& pt : pts_temp)
+                //     std::cout << "pt: " << pt.transpose() << std::endl;  // DEBUG
+
+
+                
+
+                // (c) store the sorted vectors in the ptsScan vector
+                for (uint y = 0; y < pts_temp.size(); y++)
+                    ptsScan.push_back(std::make_tuple(segsIdx_temp[y], pts_temp[y]));
+
+
+                
+
+                std::cout << "next seg id: " << k << "-------------------" << std::endl;  // DEBUG
             }
 
-            std::cout << "intersectionPts.size() = " << intersectionPts.size() << std::endl;  // DEBUG
-            std::cout << "--------------------------------------------------" << std::endl;  // DEBUG
-
-            // create a polygon from the intersection points
-            if (intersectionPts.size() > 0)
+            // (*) remove duplicate points in ptsScan (cleaning) - TODO: find the cause
+            std::vector<std::tuple<std::array<uint, 2>, Eigen::Vector3d>> ptsScan_temp;
+            for (auto& pt : ptsScan)
             {
-                TSPolygon tempPoly = TSPolygon(intersectionPts, this->m_Timber->getTSRTagsStripes()[i]->getMeanPlane());
+                bool isUnique = true;
+                for (auto& pt2 : ptsScan_temp)
+                {
+                    if (std::get<1>(pt).isApprox(std::get<1>(pt2), this->m_EPS))
+                    {
+                        isUnique = false;
+                        break;
+                    }
+                }
+                if (isUnique)
+                    ptsScan_temp.push_back(pt);
+            }
+            ptsScan = ptsScan_temp;
+
+            ///////////////////////////////////////////////////////////////////////
+            // where the magic happens
+
+            std::cout << "number of inter points in map: " << ptsScan.size() << std::endl;  // DEBUG
+            
+            if (ptsScan.size() <= 2)
+                continue;
+            else if(ptsScan.size() <= 4)
+            {
+                // TEST: get all the points from ptsScan
+                std::vector<Eigen::Vector3d> pts_temp2;
+                for (auto& pt : ptsScan)
+                {
+                    pts_temp2.push_back(std::get<1>(pt));
+                }
+
+                TSPolygon tempPoly = TSPolygon(pts_temp2, this->m_PlnAABBPolygons[i].getLinkedPlane());
                 tempPoly.reorderClockwisePoints();
                 polygons.push_back(tempPoly);
+            }
+            else if (ptsScan.size() >= 6)
+            {
+                // print all the values in ptsScan
+                for (auto& pt : ptsScan)
+                {
+                    // //  seg pt          pt's segs   pt coords
+                    // std::vector<std::tuple<std::array<uint, 2>, Eigen::Vector3d>> ptsScan;
 
-                intersectionPts.clear();
+                    std::cout << "pt: " << std::get<1>(pt).transpose() << std::endl;  // DEBUG
+                    std::cout << "segsIdx: " << std::get<0>(pt)[0] << ", " << std::get<0>(pt)[1] << std::endl;  // DEBUG
+                }
+
+                int i = 0;
+                std::vector<uint> visitedPtsIdx;
+
+                do
+                {
+                    // register current index
+                    if (std::find(visitedPtsIdx.begin(), visitedPtsIdx.end(), i) != visitedPtsIdx.end())
+                    {
+                        i++;
+                        continue;
+                    }
+                    visitedPtsIdx.push_back(i);
+
+                    // (1) first pt: pick idx
+                    Eigen::Vector3d& pt0 = std::get<1>(ptsScan[i]);
+
+                    // (2) second pt: get the closest point on the same segment
+                    visitedPtsIdx.push_back(i+1);
+                    Eigen::Vector3d pt1 = std::get<1>(ptsScan[i+1]);
+
+                    uint nextPtSegmentIdx = std::get<0>(ptsScan[i])[1];
+
+                    // (2) get the second point on a different segment
+                    // Eigen::Vector3d pt1 = std::get<1>(ptsScan[nextPtIdx]);
+
+
+                    // update counter
+                    i++;
+                } while (ptsScan.size() == visitedPtsIdx.size());
+
+                // (a) get the first point
+                Eigen::Vector3d& pt0 = std::get<1>(ptsScan[0]);
+                std::array<uint, 2>& segsIdx0 = std::get<0>(ptsScan[0]);
+
+                // (b) get the second point
+
+
             }
         }
-
-        //////////////////// ATTEMPT 1 ////////////////////
-
-    //     for (int i = 0; i < segmentsGrouped.size(); i++)
-    //     {
-    //         for (auto& segA : segmentsGrouped[i])
-    //         {
-    //             for (auto& segB : allSegments)
-    //             {
-    //                 if (segA == segB) continue;
-
-    //                 bool isIntersect = false;
-    //                 Eigen::Vector3d intersectionPt;
-    //                 isIntersect = segA.intersect(segB, intersectionPt);
-
-    //                 if (isIntersect)
-    //                 {
-    //                     // check the intersection point is unique
-    //                     bool isUnique = true;
-    //                     for (auto& pt : intersectionPts)
-    //                     {
-    //                         if (pt.isApprox(intersectionPt, 1e-6))
-    //                         {
-    //                             isUnique = false;
-    //                             break;
-    //                         }
-    //                     }
-    //                     if (isUnique) intersectionPts.push_back(intersectionPt);
-    //                 }
-
-    //             }
-    //         }
-
-    //         // create a polygon from the intersection points
-    //         if (intersectionPts.size() > 0)
-    //         {
-    //             // if (i==4)  // DEBUG
-    //             // {
-    //             TSPolygon tempPoly = TSPolygon(intersectionPts, this->m_PlnAABBPolygons[i].getLinkedPlane());
-    //             tempPoly.reorderClockwisePoints();
-    //             polygons.push_back(tempPoly);
-    //             intersectionPts.clear();
-    //             // }
-                
-    //             intersectionPts.clear();  // DEBUG
-
-    //         }
-    //     }
     }
+    // TODO: test, dev
+    void TSGeometricSolver::rSplitPolygons(std::vector<TSPolygon>& polygons,
+                                           std::vector<TSPolygon>& splitPolygons,
+                                           std::vector<TSSegment>& segments)
+    {
+        for (auto& poly : polygons)
+        {
+            splitPolygons.push_back(poly);
+            // std::vector<TSPolygon> splitPolygons = {poly};
+            std::vector<TSPolygon> tempSplitPolygons;
+            std::tuple<TSPolygon, TSPolygon> subTuplePolys;
+
+            bool isSubSplitVT;
+            bool isUnique = true;
+            uint NSubSplit = 0;
+
+            do
+            {
+                for (int i = 0; i < splitPolygons.size(); i++)
+                {
+                    NSubSplit = 0;
+
+                    for (auto& seg : segments)
+                    {
+                        isSubSplitVT = splitPolygons[i].splitPolygon(seg, subTuplePolys);
+
+                        if (isSubSplitVT)
+                        {
+                            NSubSplit++;
+
+                            TSPolygon polySplitA = std::get<0>(subTuplePolys);
+                            TSPolygon polySplitB = std::get<1>(subTuplePolys);
+
+                            isUnique = true;
+                            for (auto& poly : tempSplitPolygons)
+                            {
+                                if (poly == polySplitA)
+                                {
+                                    isUnique = false;
+                                    break;
+                                }
+                            }
+                            if (isUnique)
+                                tempSplitPolygons.push_back(polySplitA);
+
+                            isUnique = true;
+                            for (auto& poly : tempSplitPolygons)
+                            {
+                                if (poly == polySplitB)
+                                {
+                                    isUnique = false;
+                                    break;
+                                }
+                            }
+                            if (isUnique)
+                                tempSplitPolygons.push_back(polySplitB);
+                        }
+                    }
+
+                    if (NSubSplit == 0)
+                    {
+                        isUnique = true;
+                        for (auto& poly : tempSplitPolygons)
+                        {
+                            if (poly == splitPolygons[i])
+                            {
+                                isUnique = false;
+                                break;
+                            }
+                        }
+                        if (isUnique)
+                            tempSplitPolygons.push_back(splitPolygons[i]);
+                    }
+                }
+
+                splitPolygons.clear();
+                if (tempSplitPolygons.size() > 0)
+                    for (auto& tpoly : tempSplitPolygons)
+                        splitPolygons.emplace_back(tpoly);
+                tempSplitPolygons.clear();
+
+            } while (NSubSplit > 0);
+        }
+    }
+    
+    
     void TSGeometricSolver::rSelectFacePolygons(std::vector<TSPolygon>& polygons,
                                                 std::vector<TSPolygon>& facePolygons,
                                                 double tolerance)

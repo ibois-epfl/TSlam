@@ -24,7 +24,7 @@ int main()
 
     // create timber object & read yml TSlam map
     std::shared_ptr<tslam::TSTimber> timberPtr = std::make_shared<tslam::TSTimber>();
-    timberPtr->setPlaneTagsFromYAML(testData[4]);
+    timberPtr->setPlaneTagsFromYAML(testData[4]);  // 4
 
     // create geometric solver
     std::shared_ptr<tslam::TSGeometricSolver> solverPtr = std::make_shared<tslam::TSGeometricSolver>();
@@ -45,7 +45,7 @@ int main()
                                          /*drawTagNormals*/         false,
                                          /*drawAabb*/               false,
                                          /*drawIntersectedPoly*/    false,
-                                         /*drawSplittingSegments*/  true,
+                                         /*drawSplittingSegments*/  false,
                                          /*drawSelectedFace*/       true,
                                          /*drawFinalMesh*/          false
                                          );

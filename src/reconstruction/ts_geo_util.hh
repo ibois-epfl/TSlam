@@ -186,8 +186,8 @@ namespace tslam
             this->AxisX = axisX;
             this->AxisY = axisY;
         }
-
-    public: __always_inline  ///< intersect funcs
+    
+    public: __always_inline  ///< static funcs
         /** 
          * @brief It checks if there is intersection between a ray and a plane following the:
          * Plane: ax+by+cz=d
@@ -837,6 +837,30 @@ namespace tslam
             this->transform(rotMat);
             return rotMat;
         };
+        // //TODO: test not checkde
+        // /// Flat the polygon to the XY plane
+        // void projectWorldXY()
+        // {
+        //     // project the polygon on the XY plane
+        //     for (auto& v : this->m_Vertices)
+        //     {
+        //         v(2) = 0;
+        //     }
+        //     // recompute the polygon
+        //     this->compute();
+        // };
+        // //TODO: test not checkde
+        // // Flat the polygon to the closest World plane (XY, XZ, YZ)
+        // void projectWorldPlane()
+        // {
+        //     // project the polygon on the closest plane
+        //     for (auto& v : this->m_Vertices)
+        //     {
+        //         v = this->m_LinkedPlane.projectPoint(v);
+        //     }
+        //     // recompute the polygon
+        //     this->compute();
+        // };
 
     public: __always_inline  ///< custom funcs
         /**
@@ -978,7 +1002,7 @@ namespace tslam
             
             return true;
         }
-        // TODO: in case the polygon is still orthogonal to the global coordinate system after the rotation, 
+        // FIXME: in case the polygon is still orthogonal to the global coordinate system after the rotation, 
         // the code needs to be reworked
         /**
          * @brief Reorder the polygon vertices in a clockwise order based on graham scan algorithm.
@@ -1096,4 +1120,5 @@ namespace tslam
         /// the polygon's area
         double m_Area;
     };
+
 }
