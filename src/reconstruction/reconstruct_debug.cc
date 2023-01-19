@@ -44,9 +44,9 @@ int main()
                                          /*drawTagTypes*/           true,
                                          /*drawTagNormals*/         false,
                                          /*drawAabb*/               false,
-                                         /*drawIntersectedPoly*/    true,
-                                         /*drawSplittingSegments*/  true,
-                                         /*drawSelectedFace*/       false,
+                                         /*drawIntersectedPoly*/    false,
+                                         /*drawSplittingSegments*/  false,
+                                         /*drawSelectedFace*/       true,
                                          /*drawFinalMesh*/          false
                                          );
     
