@@ -448,8 +448,6 @@ namespace tslam
 
 
         // find all the intersection points
-        std::vector<Eigen::Vector3d> intersectionPts;
-
         for (int i = 0; i < segmentsGrouped.size(); i++)
         {
             for (auto& segA : segmentsGrouped[i])
@@ -485,86 +483,9 @@ namespace tslam
             // create a polygon from the intersection points
             if (intersectionPts.size() > 0)
             {
-                // subdivide the larger polygons into smaller ones 
-                if (intersectionPts.size() >= 4)
-                {
-                    // check if the number of intersection points is even
-                    if (intersectionPts.size() % 2 != 0)
-                    {
-                        std::cout << "[ERROR]: the number of intersection points is not even" << std::endl;
-                        return;
-                    }
-
-                    // find the two points that are the farthest from each other
-                    double maxDist = 0;
-                    Eigen::Vector3d ptA, ptB;
-                    for (int i = 0; i < intersectionPts.size(); i++)
-                    {
-                        for (int j = i + 1; j < intersectionPts.size(); j++)
-                        {
-                            double dist = (intersectionPts[i] - intersectionPts[j]).norm();
-                            if (dist > maxDist)
-                            {
-                                maxDist = dist;
-                                ptA = intersectionPts[i];
-                                ptB = intersectionPts[j];
-                            }
-                        }
-                    }
-
-                    // find the two points that are the farthest from ptA
-                    double maxDistA = 0;
-                    Eigen::Vector3d ptC, ptD;
-                    for (int i = 0; i < intersectionPts.size(); i++)
-                    {
-                        double dist = (ptA - intersectionPts[i]).norm();
-                        if (dist > maxDistA)
-                        {
-                            maxDistA = dist;
-                            ptC = intersectionPts[i];
-                        }
-                    }
-
-                    // find the two points that are the farthest from ptB
-                    double maxDistB = 0;
-                    for (int i = 0; i < intersectionPts.size(); i++)
-                    {
-                        double dist = (ptB - intersectionPts[i]).norm();
-                        if (dist > maxDistB)
-                        {
-                            maxDistB = dist;
-                            ptD = intersectionPts[i];
-                        }
-                    }
-
-                    // create two polygons
-                    std::vector<Eigen::Vector3d> polygonPts1, polygonPts2;
-                    polygonPts1.push_back(ptA);
-                    polygonPts1.push_back(ptC);
-                    polygonPts1.push_back(ptD);
-                    polygonPts1.push_back(ptB);
-
-                    polygonPts2.push_back(ptC);
-                    polygonPts2.push_back(ptA);
-                    polygonPts2.push_back(ptB);
-                    polygonPts2.push_back(ptD);
-
-                    TSPolygon tempPoly1 = TSPolygon(polygonPts1, this->m_Timber->getTSRTagsStripes()[i]->getMeanPlane());
-                    tempPoly1.reorderClockwisePoints();
-                    polygons.push_back(tempPoly1);
-
-                    TSPolygon tempPoly2 = TSPolygon(polygonPts2, this->m_Timber->getTSRTagsStripes()[i]->getMeanPlane());
-                    tempPoly2.reorderClockwisePoints();
-                    polygons.push_back(tempPoly2);
-
-
-                }
-                else
-                {
-                    TSPolygon tempPoly = TSPolygon(intersectionPts, this->m_Timber->getTSRTagsStripes()[i]->getMeanPlane());
-                    tempPoly.reorderClockwisePoints();
-                    polygons.push_back(tempPoly);
-                }
+                TSPolygon tempPoly = TSPolygon(intersectionPts, this->m_Timber->getTSRTagsStripes()[i]->getMeanPlane());
+                tempPoly.reorderClockwisePoints();
+                polygons.push_back(tempPoly);
 
                 intersectionPts.clear();
             }

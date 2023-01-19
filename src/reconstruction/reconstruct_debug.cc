@@ -34,7 +34,7 @@ int main()
     solverPtr->setCreaseAngleThreshold(5.0);   ///< default: 10.0 deg
     solverPtr->setMaxPlnDist2Merge(1.0);       ///< default: 1.0 deg
     solverPtr->setMaxPlnAngle2Merge(0.9);      ///< default: 0.9 --> 0.9 / 0.5 = 4.5 mm
-    solverPtr->setAABBScaleFactor(4.0);        ///< default: 2.0
+    solverPtr->setAABBScaleFactor(1.5f);        ///< default: 2.0
     solverPtr->setMaxPolyTagDist(1e-5);        ///< default: 1e-5
     solverPtr->setEPS(1e-5);                   ///< default: 1e-5  TODO: in geo util funcs() expose and pass the tolerance
 
@@ -45,7 +45,7 @@ int main()
                                          /*drawTagNormals*/         false,
                                          /*drawAabb*/               false,
                                          /*drawIntersectedPoly*/    false,
-                                         /*drawSplittingSegments*/  false,
+                                         /*drawSplittingSegments*/  true,
                                          /*drawSelectedFace*/       true,
                                          /*drawFinalMesh*/          false
                                          );
