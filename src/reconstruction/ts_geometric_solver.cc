@@ -356,7 +356,7 @@ namespace tslam
         this->rIntersectPolygons(this->m_PlnAABBPolygons, this->m_SplitSegmentsGrouped);
 
 
-        this->rIntersectSplittingSegments(this->m_SplitSegmentsGrouped, this->m_FacePolygons);
+        this->rIntersectSplittingSegments(this->m_SplitSegmentsGrouped, this->m_SplitPolygons);
 
         this->rSelectFacePolygons(this->m_SplitPolygons,
                                   this->m_FacePolygons,
@@ -365,6 +365,7 @@ namespace tslam
     void TSGeometricSolver::rIntersectPolygons(std::vector<TSPolygon> &polygons,
                                                std::vector<std::vector<TSSegment>> &segmentsGrouped)
     {
+        // (a) intersect polygons among themselves to find the splitting segments' extremes
         std::vector<TSSegment> tempSegments;
         for (auto& polyA : polygons)
         {
@@ -390,6 +391,42 @@ namespace tslam
             {
                 segmentsGrouped.push_back(tempSegments);
                 tempSegments.clear();
+            }
+        }
+
+        // (*b) intersect the segments among themselves and if they have only one intersection point discard them
+        // auto segmentsGroupedTemp = segmentsGrouped;
+        for (auto& segGroup : segmentsGrouped)
+        {
+            for (uint i = 0; i < segGroup.size(); i++)
+            {
+                std::vector<Eigen::Vector3d> intersectionPts;
+                for (auto& segB : segGroup)
+                {
+                    if (segGroup[i] == segB) continue;
+
+                    Eigen::Vector3d intersectionPt;
+                    bool isIntersect = false;
+                    isIntersect = segGroup[i].intersect(segB, intersectionPt);
+
+
+                    if (isIntersect)
+                    {
+                        intersectionPts.push_back(intersectionPt);
+                    }
+                }
+                if (intersectionPts.size() == 1)
+                {
+                    // discard the segment
+                    for (auto& seg : segGroup)
+                    {
+                        if (seg == segGroup[i])
+                        {
+                            segGroup.erase(segGroup.begin() + i);
+                            break;
+                        }
+                    }
+                }
             }
         }
     }
@@ -440,74 +477,77 @@ namespace tslam
                 }
             }
 
+            std::cout << "intersectionPts.size() = " << intersectionPts.size() << std::endl;  // DEBUG
+            std::cout << "--------------------------------------------------" << std::endl;  // DEBUG
+
             // create a polygon from the intersection points
             if (intersectionPts.size() > 0)
             {
-                // obtain all the minimum are polygons from the intersection points
-                for (int j = 0; j < intersectionPts.size(); j++)
+                // subdivide the larger polygons into smaller ones 
+                if (intersectionPts.size() > 4)
                 {
-                    std::vector<Eigen::Vector3d> tempPts;
-                    tempPts.push_back(intersectionPts[j]);
-                    for (int k = j + 1; k < intersectionPts.size(); k++)
-                    {
-                        tempPts.push_back(intersectionPts[k]);
-                        TSPolygon tempPoly = TSPolygon(tempPts, this->m_PlnAABBPolygons[i].getLinkedPlane());
-                        tempPoly.reorderClockwisePoints();
-                        polygons.push_back(tempPoly);
-                        tempPts.pop_back();
-                    }
+                    // compute the convex hull of the intersection points
+
+
                 }
+                else
+                {
+                    TSPolygon tempPoly = TSPolygon(intersectionPts, this->m_Timber->getTSRTagsStripes()[i]->getMeanPlane());
+                    tempPoly.reorderClockwisePoints();
+                    polygons.push_back(tempPoly);
+                }
+
                 intersectionPts.clear();
             }
         }
 
         //////////////////// ATTEMPT 1 ////////////////////
 
-        for (int i = 0; i < segmentsGrouped.size(); i++)
-        {
-            for (auto& segA : segmentsGrouped[i])
-            {
-                for (auto& segB : allSegments)
-                {
-                    if (segA == segB) continue;
+    //     for (int i = 0; i < segmentsGrouped.size(); i++)
+    //     {
+    //         for (auto& segA : segmentsGrouped[i])
+    //         {
+    //             for (auto& segB : allSegments)
+    //             {
+    //                 if (segA == segB) continue;
 
-                    bool isIntersect = false;
-                    Eigen::Vector3d intersectionPt;
-                    isIntersect = segA.intersect(segB, intersectionPt);
+    //                 bool isIntersect = false;
+    //                 Eigen::Vector3d intersectionPt;
+    //                 isIntersect = segA.intersect(segB, intersectionPt);
 
-                    if (isIntersect)
-                    {
-                        // check the intersection point is unique
-                        bool isUnique = true;
-                        for (auto& pt : intersectionPts)
-                        {
-                            if (pt.isApprox(intersectionPt, 1e-6))
-                            {
-                                isUnique = false;
-                                break;
-                            }
-                        }
-                        if (isUnique) intersectionPts.push_back(intersectionPt);
-                    }
+    //                 if (isIntersect)
+    //                 {
+    //                     // check the intersection point is unique
+    //                     bool isUnique = true;
+    //                     for (auto& pt : intersectionPts)
+    //                     {
+    //                         if (pt.isApprox(intersectionPt, 1e-6))
+    //                         {
+    //                             isUnique = false;
+    //                             break;
+    //                         }
+    //                     }
+    //                     if (isUnique) intersectionPts.push_back(intersectionPt);
+    //                 }
 
-                }
-            }
+    //             }
+    //         }
 
-            // create a polygon from the intersection points
-            if (intersectionPts.size() > 0)
-            {
-                // if (i==4)  // DEBUG
-                // {
-                TSPolygon tempPoly = TSPolygon(intersectionPts, this->m_PlnAABBPolygons[i].getLinkedPlane());
-                tempPoly.reorderClockwisePoints();
-                polygons.push_back(tempPoly);
-                intersectionPts.clear();
-                // }
+    //         // create a polygon from the intersection points
+    //         if (intersectionPts.size() > 0)
+    //         {
+    //             // if (i==4)  // DEBUG
+    //             // {
+    //             TSPolygon tempPoly = TSPolygon(intersectionPts, this->m_PlnAABBPolygons[i].getLinkedPlane());
+    //             tempPoly.reorderClockwisePoints();
+    //             polygons.push_back(tempPoly);
+    //             intersectionPts.clear();
+    //             // }
                 
-                intersectionPts.clear();  // DEBUG
+    //             intersectionPts.clear();  // DEBUG
 
-            }
-        }
+    //         }
+    //     }
     }
     void TSGeometricSolver::rSelectFacePolygons(std::vector<TSPolygon>& polygons,
                                                 std::vector<TSPolygon>& facePolygons,
