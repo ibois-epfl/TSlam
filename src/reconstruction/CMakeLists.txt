@@ -13,7 +13,7 @@ option(BUILD_TSLAMREC_API   "Build the TSlam reconstruction API, *no debug/ no p
 option(ENABLE_REC_PROFILER  "Enable profiling for the TSlam reconstruction"                             ON)
 option(ENABLE_REC_DEBUG     "Enable debug outputs (logs, visualizer) for the TSlam reconstruction"      ON)
 
-option(ENABLE_TESTING       "Enable testing for the TSlam reconstruction"                               ON)
+option(ENABLE_TESTING       "Enable testing for the TSlam reconstruction"                              OFF)
 
 #---------------------------------------------------------------------------------------------------------
 # library for tslam reconstruction
@@ -27,7 +27,9 @@ add_library(tslamrec SHARED)  # SHARED or STATIC
 target_sources(tslamrec PUBLIC ${tslamrec_srcs_base})
 find_package(Open3D REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-target_include_directories(tslamrec PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+# add_subdirectory(CGAL)
+# target_include_directories(tslamrec PUBLIC CGAL)
+target_include_directories(tslamrec PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/CGAL/include)
 target_link_libraries(tslamrec PUBLIC Open3D::Open3D)
 target_link_libraries(tslamrec PUBLIC Eigen3::Eigen)
 

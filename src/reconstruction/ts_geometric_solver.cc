@@ -431,206 +431,44 @@ namespace tslam
                                                         std::vector<TSPolygon>& polygons)
     {
         std::cout << "<<<<<<<<<< rIntersectSplittingSegments >>>>>>>>>>" << std::endl;  // DEBUG
-        // TODO: find a way to obtain all minimum area polygons from the segments's intersections
+
+        // // build an adjaceny graph of the segments's intersection points
+        // std::vector<std::vector<uint>> adjGraph;
+        // std::vector<Eigen::Vector3d> intersectionPts;
         
-        // uint __EXTERN = 0;
-        // uint __INTERN = 1;
-        // uint __NONE = 2;
-        // a vector of maps
-        // //      idx seg            pt's segs                pt coords
-        // std::map<uint, std::tuple<std::array<uint, 2>>, Eigen::Vector3d> ptsMap = {};
+        // for (auto& segGroup : segmentsGrouped)
+        // {
+        //     intersectionPts.clear();
+        //     for (uint i = 0; i < segGroup.size(); i++)
+        //     {
+        //         TSSegment& segA = segGroup[i];
 
-        //  seg pt          pt's segs   pt coords
-        std::vector<std::tuple<std::array<uint, 2>, Eigen::Vector3d>> ptsScan;
+        //         for (uint j = 0; j < segGroup.size(); j++)
+        //         {
+        //             TSSegment& segB = segGroup[j];
 
-        std::vector<Eigen::Vector3d> pts_temp;
-        std::vector<std::array<uint, 2>> segsIdx_temp;
+        //             if (i == j) continue;
+
+
+
+        //         }
+        //     }
+        // }
+
+        // // print the adjaceny graph
+        // for (uint i = 0; i < adjGraph.size(); i++)
+        // {
+        //     std::cout << "adjGraph[" << i << "]: ";
+        //     for (auto& adj : adjGraph[i])
+        //     {
+        //         std::cout << adj << ", ";
+        //     }
+        //     std::cout << std::endl;
+        // }
+
 
 
         
-        for (uint i = 0; i < segmentsGrouped.size(); i++)
-        {
-            
-            auto& segsGroup = segmentsGrouped[i];
-
-            ptsScan.clear();  // TEST
-
-            // (a) segs x segs
-            for(uint k = 0; k < segsGroup.size(); k++)
-            {
-                pts_temp.clear();  // TEST
-                segsIdx_temp.clear();  // TEST
-
-                // (a.1) intersect one segment with all the others
-                for (uint j = 0; j < segsGroup.size(); j++)
-                {
-                    if (i == j) continue;
-
-                    bool isIntersect = false;
-                    Eigen::Vector3d interPt;
-                    isIntersect = segsGroup[k].intersect(segsGroup[j], interPt);
-
-                    if (isIntersect)
-                    {
-                        bool isUnique = true;
-                        for (auto& pt : pts_temp)
-                        {
-                            if (pt.isApprox(interPt, this->m_EPS))
-                            {
-                                isUnique = false;
-                                break;
-                            }
-                        }
-                        if (isUnique)
-                        {
-                            pts_temp.push_back(interPt);  // TEST
-                            std::array<uint, 2> segsIdx = {k, j};
-                            segsIdx_temp.push_back(segsIdx);  // TEST
-                        }
-                    }
-                }
-
-                // (b) order the intersection points and the segsIdx by distance from the seg's origin
-                // and apply the same sorting to the segsIdx arrays
-                if (pts_temp.size() == 0)
-                    continue;
-
-                // std::cout << "BEFORE SORTING" << std::endl;  // DEBUG
-                // std::cout << "origin coords: " << segsGroup[k].P1.transpose() << std::endl;  // DEBUG
-                // for (auto& pt : pts_temp)
-                //     std::cout << "pt: " << pt.transpose() << std::endl;  // DEBUG
-                
-                auto& segOrigin = segsGroup[k].P1;
-                std::sort(pts_temp.begin(), pts_temp.end(),
-                        [&segOrigin](const Eigen::Vector3d& a, const Eigen::Vector3d& b)
-                        {
-                            return (a - segOrigin).norm() < (b - segOrigin).norm();
-                        });
-                
-                std::vector<std::array<uint, 2>> segsIdx_temp_sorted;
-                for (auto& pt : pts_temp)
-                {
-                    for (uint i = 0; i < segsIdx_temp.size(); i++)
-                    {
-                        if (pt.isApprox(pts_temp[i], this->m_EPS))
-                        {
-                            segsIdx_temp_sorted.push_back(segsIdx_temp[i]);
-                            break;
-                        }
-                    }
-                }
-                assert(segsIdx_temp_sorted.size() == pts_temp.size());
-                segsIdx_temp = segsIdx_temp_sorted;
-
-                std::cout << "--- size of pts_temp: " << pts_temp.size() << std::endl;  // DEBUG
-
-
-                // std::cout << "AFTER SORTING" << std::endl;  // DEBUG
-                // for (auto& pt : pts_temp)
-                //     std::cout << "pt: " << pt.transpose() << std::endl;  // DEBUG
-
-
-                
-
-                // (c) store the sorted vectors in the ptsScan vector
-                for (uint y = 0; y < pts_temp.size(); y++)
-                    ptsScan.push_back(std::make_tuple(segsIdx_temp[y], pts_temp[y]));
-
-
-                
-
-                std::cout << "next seg id: " << k << "-------------------" << std::endl;  // DEBUG
-            }
-
-            // (*) remove duplicate points in ptsScan (cleaning) - TODO: find the cause
-            std::vector<std::tuple<std::array<uint, 2>, Eigen::Vector3d>> ptsScan_temp;
-            for (auto& pt : ptsScan)
-            {
-                bool isUnique = true;
-                for (auto& pt2 : ptsScan_temp)
-                {
-                    if (std::get<1>(pt).isApprox(std::get<1>(pt2), this->m_EPS))
-                    {
-                        isUnique = false;
-                        break;
-                    }
-                }
-                if (isUnique)
-                    ptsScan_temp.push_back(pt);
-            }
-            ptsScan = ptsScan_temp;
-
-            ///////////////////////////////////////////////////////////////////////
-            // where the magic happens
-
-            std::cout << "number of inter points in map: " << ptsScan.size() << std::endl;  // DEBUG
-            
-            if (ptsScan.size() <= 2)
-                continue;
-            else if(ptsScan.size() <= 4)
-            {
-                // TEST: get all the points from ptsScan
-                std::vector<Eigen::Vector3d> pts_temp2;
-                for (auto& pt : ptsScan)
-                {
-                    pts_temp2.push_back(std::get<1>(pt));
-                }
-
-                TSPolygon tempPoly = TSPolygon(pts_temp2, this->m_PlnAABBPolygons[i].getLinkedPlane());
-                tempPoly.reorderClockwisePoints();
-                polygons.push_back(tempPoly);
-            }
-            else if (ptsScan.size() >= 6)
-            {
-                // print all the values in ptsScan
-                for (auto& pt : ptsScan)
-                {
-                    // //  seg pt          pt's segs   pt coords
-                    // std::vector<std::tuple<std::array<uint, 2>, Eigen::Vector3d>> ptsScan;
-
-                    std::cout << "pt: " << std::get<1>(pt).transpose() << std::endl;  // DEBUG
-                    std::cout << "segsIdx: " << std::get<0>(pt)[0] << ", " << std::get<0>(pt)[1] << std::endl;  // DEBUG
-                }
-
-                int i = 0;
-                std::vector<uint> visitedPtsIdx;
-
-                do
-                {
-                    // register current index
-                    if (std::find(visitedPtsIdx.begin(), visitedPtsIdx.end(), i) != visitedPtsIdx.end())
-                    {
-                        i++;
-                        continue;
-                    }
-                    visitedPtsIdx.push_back(i);
-
-                    // (1) first pt: pick idx
-                    Eigen::Vector3d& pt0 = std::get<1>(ptsScan[i]);
-
-                    // (2) second pt: get the closest point on the same segment
-                    visitedPtsIdx.push_back(i+1);
-                    Eigen::Vector3d pt1 = std::get<1>(ptsScan[i+1]);
-
-                    uint nextPtSegmentIdx = std::get<0>(ptsScan[i])[1];
-
-                    // (2) get the second point on a different segment
-                    // Eigen::Vector3d pt1 = std::get<1>(ptsScan[nextPtIdx]);
-
-
-                    // update counter
-                    i++;
-                } while (ptsScan.size() == visitedPtsIdx.size());
-
-                // (a) get the first point
-                Eigen::Vector3d& pt0 = std::get<1>(ptsScan[0]);
-                std::array<uint, 2>& segsIdx0 = std::get<0>(ptsScan[0]);
-
-                // (b) get the second point
-
-
-            }
-        }
     }
     // TODO: test, dev
     void TSGeometricSolver::rSplitPolygons(std::vector<TSPolygon>& polygons,
