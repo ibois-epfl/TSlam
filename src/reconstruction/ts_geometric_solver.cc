@@ -10,6 +10,8 @@
 #include <random>
 #include <array>
 
+// TODO: place in ts_geometric_solver.hh
+#include "ts_tassellation.hh"
 
 namespace tslam
 {
@@ -317,12 +319,12 @@ namespace tslam
             for (unsigned int i = 0; i < outPtsCount; i++)
                 planeIntersections->push_back(outPtsPtr[i]);
 
-            // if (i==2)  // DEBUG  i.e. 4 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-            // {
+            if (i==2)  // DEBUG  i.e. 4 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            {
                 TSPolygon tempPoly = TSPolygon(*planeIntersections, this->m_Timber->getTSRTagsStripes()[i]->getMeanPlane());
                 tempPoly.reorderClockwisePoints();
                 this->m_PlnAABBPolygons.push_back(tempPoly);
-            // }
+            }
         }
         delete outPtsPtr;
         delete planeIntersections;
@@ -349,16 +351,17 @@ namespace tslam
         this->rIntersectSplittingSegments(this->m_SplitSegmentsGrouped, this->m_SplitPolygons);  // ORI
 
         std::cout << "size of split polygons: " << this->m_SplitPolygons.size() << std::endl;  // DEBUG
+        this->m_FacePolygons = this->m_SplitPolygons;  // DEBUG
 
-        // // get all segments in a vector
-        // std::vector<TSSegment> allSegments;
-        // for (auto& segs : this->m_SplitSegmentsGrouped)
-        //     allSegments.insert(allSegments.end(), segs.begin(), segs.end());
-        // this->rSplitPolygons(this->m_PlnAABBPolygons, this->m_SplitPolygons, allSegments);
+        // // // get all segments in a vector
+        // // std::vector<TSSegment> allSegments;
+        // // for (auto& segs : this->m_SplitSegmentsGrouped)
+        // //     allSegments.insert(allSegments.end(), segs.begin(), segs.end());
+        // // this->rSplitPolygons(this->m_PlnAABBPolygons, this->m_SplitPolygons, allSegments);
 
-        this->rSelectFacePolygons(this->m_SplitPolygons,
-                                  this->m_FacePolygons,
-                                  this->m_MaxPolyTagDist);
+        // this->rSelectFacePolygons(this->m_SplitPolygons,
+        //                           this->m_FacePolygons,
+        //                           this->m_MaxPolyTagDist);
     }
     void TSGeometricSolver::rIntersectPolygons(std::vector<TSPolygon> &polygons,
                                                std::vector<std::vector<TSSegment>> &segmentsGrouped)
@@ -432,6 +435,12 @@ namespace tslam
     {
         std::cout << "<<<<<<<<<< rIntersectSplittingSegments >>>>>>>>>>" << std::endl;  // DEBUG
 
+        // first we need to do a plane-to-plane transformation for each polygon to World XY plane and reverse it after
+
+
+        std::shared_ptr<TSTassellation> tassellatorPtr = std::make_shared<TSTassellation>(TSTassellation());
+        tassellatorPtr->tassellate(segmentsGrouped, polygons);
+
         // // build an adjaceny graph of the segments's intersection points
         // std::vector<std::vector<uint>> adjGraph;
         // std::vector<Eigen::Vector3d> intersectionPts;
@@ -448,6 +457,9 @@ namespace tslam
         //             TSSegment& segB = segGroup[j];
 
         //             if (i == j) continue;
+
+        // DEBUG
+        // polygons.clear();
 
 
 
