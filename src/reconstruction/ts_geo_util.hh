@@ -150,6 +150,7 @@ namespace tslam
             Eigen::Vector3d pt =  point - this->distance(point) * this->Normal;
             return pt;
         };
+        // TODO: test me
         /// Apply a transformation to the plane
         void transform(Eigen::Matrix3d& mat)
         {
@@ -295,6 +296,28 @@ namespace tslam
             if (plane.A * orig.x() + plane.B * orig.y() + plane.C * orig.z() + plane.D == 0.f)
                 out_points[out_point_count++] = orig;
         }
+        // TODO: test me
+        static Eigen::Matrix3d getPlane2XYPlaneTransform(TSPlane source)
+        {
+            // compute the transform matrix from source plane to XY plane
+
+            // if (source.Normal == Eigen::Vector3d(0.f, 0.f, 1.f))
+            //     return Eigen::Matrix3d::Identity();
+            // else if (source.Normal == Eigen::Vector3d(0.f, 0.f, -1.f))
+            //     return Eigen::AngleAxisd(M_PI, Eigen::Vector3d(1.f, 0.f, 0.f)).toRotationMatrix();
+            // else
+            // {
+            //     Eigen::Vector3d axis = source.Normal.cross(Eigen::Vector3d(0.f, 0.f, 1.f));
+            //     axis.normalize();
+            //     float angle = acos(source.Normal.dot(Eigen::Vector3d(0.f, 0.f, 1.f)));
+            //     return Eigen::AngleAxisd(angle, axis).toRotationMatrix();
+            // }
+
+            Eigen::Vector3d axis = source.Normal.cross(Eigen::Vector3d(0.f, 0.f, 1.f));
+            axis.normalize();
+            float angle = acos(source.Normal.dot(Eigen::Vector3d(0.f, 0.f, 1.f)));
+            return Eigen::AngleAxisd(angle, axis).toRotationMatrix();
+        };
 
     public: __always_inline  ///< bool funcs
         /**
@@ -431,6 +454,33 @@ namespace tslam
             Eigen::Vector3d midPoint = Eigen::Vector3d::Zero();
             midPoint = (this->P1 + this->P2) / 2.0;
             return midPoint;
+        };
+
+    public: __always_inline  ///< transform
+        // TODO: test me
+        /**
+        * @brief It transforms the segment with a given transform matrix
+        * 
+        * @param transform the transform matrix
+        */
+        void transform(Eigen::Matrix3d transform)
+        {
+            this->P1 = transform * this->P1;
+            this->P2 = transform * this->P2;
+        };
+        // TODO: test me
+        /**
+         * @brief Apply a plane to planeXY transform to the segment
+         * 
+         * @param source source plane
+         * @param target target plane
+         * @return Eigen::Matrix3d returns the transform matrix
+         */
+        Eigen::Matrix3d plane2PlaneTransform(TSPlane source)
+        {
+            Eigen::Matrix3d mat = TSPlane::getPlane2XYPlaneTransform(source);
+            this->transform(mat);
+            return mat;
         };
 
     public: __always_inline  ///< custom funcs
@@ -837,29 +887,19 @@ namespace tslam
             this->transform(rotMat);
             return rotMat;
         };
-        // //TODO: test not checkde
-        // /// Flat the polygon to the XY plane
-        // void projectWorldXY()
+        // // TODO: to be tested
+        // /**
+        //  * @brief Apply a plane-to-plane transformation to the polygon
+        //  * 
+        //  * @param targetPlane the target plane
+        //  * 
+        //  * @return Eigen::Matrix3d the transformation matrix
+        //  */
+        // Eigen::Matrix3d plane2PlaneTransform(TSPlane& targetPlane)
         // {
-        //     // project the polygon on the XY plane
-        //     for (auto& v : this->m_Vertices)
-        //     {
-        //         v(2) = 0;
-        //     }
-        //     // recompute the polygon
-        //     this->compute();
-        // };
-        // //TODO: test not checkde
-        // // Flat the polygon to the closest World plane (XY, XZ, YZ)
-        // void projectWorldPlane()
-        // {
-        //     // project the polygon on the closest plane
-        //     for (auto& v : this->m_Vertices)
-        //     {
-        //         v = this->m_LinkedPlane.projectPoint(v);
-        //     }
-        //     // recompute the polygon
-        //     this->compute();
+        //     Eigen::Matrix3d mat = TSPlane::getPlane2XYPlaneTransform(this->m_LinkedPlane, targetPlane);
+        //     this->transform(mat);
+        //     return mat;
         // };
 
     public: __always_inline  ///< custom funcs

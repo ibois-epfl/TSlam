@@ -319,12 +319,12 @@ namespace tslam
             for (unsigned int i = 0; i < outPtsCount; i++)
                 planeIntersections->push_back(outPtsPtr[i]);
 
-            if (i==2)  // DEBUG  i.e. 4 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-            {
+            // if (i==2)  // DEBUG  i.e. 4 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            // {
                 TSPolygon tempPoly = TSPolygon(*planeIntersections, this->m_Timber->getTSRTagsStripes()[i]->getMeanPlane());
                 tempPoly.reorderClockwisePoints();
                 this->m_PlnAABBPolygons.push_back(tempPoly);
-            }
+            // }
         }
         delete outPtsPtr;
         delete planeIntersections;
@@ -348,7 +348,9 @@ namespace tslam
         this->rIntersectPolygons(this->m_PlnAABBPolygons, this->m_SplitSegmentsGrouped);
 
 
-        this->rIntersectSplittingSegments(this->m_SplitSegmentsGrouped, this->m_SplitPolygons);  // ORI
+        this->rIntersectSplittingSegments(this->m_PlnAABBPolygons,
+                                          this->m_SplitPolygons,
+                                          this->m_SplitSegmentsGrouped);
 
         std::cout << "size of split polygons: " << this->m_SplitPolygons.size() << std::endl;  // DEBUG
         this->m_FacePolygons = this->m_SplitPolygons;  // DEBUG
@@ -390,6 +392,7 @@ namespace tslam
 
             if (tempSegments.size() > 0)
             {
+                // if (segmentsGrouped.size() == 0)  // DEBUG <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                 segmentsGrouped.push_back(tempSegments);
                 tempSegments.clear();
             }
@@ -430,12 +433,25 @@ namespace tslam
             }
         }
     }
-    void TSGeometricSolver::rIntersectSplittingSegments(std::vector<std::vector<TSSegment>> &segmentsGrouped,
-                                                        std::vector<TSPolygon>& polygons)
+    void TSGeometricSolver::rIntersectSplittingSegments(std::vector<TSPolygon> &AabbPolygons,
+                                                        std::vector<TSPolygon> &polygons,
+                                                        std::vector<std::vector<TSSegment>> &segmentsGrouped)
     {
         std::cout << "<<<<<<<<<< rIntersectSplittingSegments >>>>>>>>>>" << std::endl;  // DEBUG
 
         // first we need to do a plane-to-plane transformation for each polygon to World XY plane and reverse it after
+
+        // TSPlane worldXYPlane = TSPlane(Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 1));
+
+        for (uint i = 0; i < segmentsGrouped.size(); i++)
+        {
+            auto& segs = segmentsGrouped[i];
+            for (auto& seg : segs)
+            {
+                // transform the segment to world XY plane
+                seg.plane2PlaneTransform(AabbPolygons[i].getLinkedPlane());
+            }
+        }
 
 
         std::shared_ptr<TSTassellation> tassellatorPtr = std::make_shared<TSTassellation>(TSTassellation());

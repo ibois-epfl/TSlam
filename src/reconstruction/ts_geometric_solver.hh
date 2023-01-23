@@ -86,11 +86,13 @@ namespace tslam
              * @brief Split the segments among them. This allows to obtain the polygons describing multiple faces.
              *  The found polygons still need to be selected for candidate faces of the acutal timber piece.
              * 
-             * @param segmentsGrouped[out] the segments connecting polygon's detected intersections grouped by plane
-             * @param polygons[in] the polygons to intersect
+             * @param AabbPolygons[in] the AABB-generated polygons
+             * @param polygons[out] the polygons to intersect
+             * @param segmentsGrouped[in] the segments connecting polygon's detected intersections grouped by plane
              */
-            void rIntersectSplittingSegments(std::vector<std::vector<TSSegment>> &segmentsGrouped,
-                                             std::vector<TSPolygon> &polygons);
+            void rIntersectSplittingSegments(std::vector<TSPolygon> &AabbPolygons,
+                                             std::vector<TSPolygon> &polygons,
+                                             std::vector<std::vector<TSSegment>> &segmentsGrouped);
             // TODO: dev, testing it
             void rSplitPolygons(std::vector<TSPolygon>& polygons,
                                 std::vector<TSPolygon>& splitPolygons,
@@ -103,7 +105,7 @@ namespace tslam
              * If they are inside the polygon is selected as a candidate face.
             * 
             * @param polygons[in] the polygons to select
-            * @param splitPolygons[out] the selected polygons
+            * @param facePolygons[out] the selected polygons
             * @param tolerance[in] the tolerance to select the polygons
             */
             void rSelectFacePolygons(std::vector<TSPolygon>& polygons,

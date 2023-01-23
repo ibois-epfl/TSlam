@@ -44,38 +44,38 @@ namespace tslam
             // TSPolygon& p = polygons[0];                             // DEBUG
             std::vector<TSSegment>& segments = segmentsGrouped[0];  // DEBUG
 
-            // // cvt to CGAL
-            // std::vector<Segment> cgalSegments;
-            // for (auto& s : segments)
-            //     cgalSegments.push_back(toCGALSegment(s));
+            // cvt to CGAL
+            std::vector<Segment> cgalSegments;
+            for (auto& s : segments)
+                cgalSegments.push_back(toCGALSegment(s));
 
             // // insert segments into arrangement by differiating between intersecting and non-intersecting segments
 
             
-            // Arrangement arr;
-            // Naive_pl pl(arr);
-            // for (auto& s : cgalSegments)
-            //     // TODO: we need to differentiate between intersecting and not intersecting segments see 4.1.5 CGAL doc
-            //     insert(arr, s, pl);
-            //     // insert_non_intersecting_curve(arr, s, pl);
-            // print_arrangement_size(arr);
+            Arrangement arr;
+            Naive_pl pl(arr);
+            for (auto& s : cgalSegments)
+                // TODO: we need to differentiate between intersecting and not intersecting segments see 4.1.5 CGAL doc
+                insert(arr, s, pl);
+                // insert_non_intersecting_curve(arr, s, pl);
+            print_arrangement_size(arr);
 
 
 
             /////////////////////////////////////////////////////////
-            Arrangement arr;
-            Naive_pl pl(arr);
-            Segment s1(Point(1, 0), Point(2, 4));
-            Segment s2(Point(5, 0), Point(5, 5));
-            Segment s3(Point(1, 0), Point(5, 3));
-            Segment s4(Point(0, 2), Point(6, 0));
-            Segment s5(Point(3, 0), Point(5, 5));
-            auto e = insert_non_intersecting_curve(arr, s1, pl);
-            insert_non_intersecting_curve(arr, s2, pl);
-            insert(arr, s3, Pl_result_type(e->source()));
-            insert(arr, s4, pl);
-            insert(arr, s5, pl);
-            print_arrangement_size(arr);
+            // Arrangement arr;
+            // Naive_pl pl(arr);
+            // Segment s1(Point(1, 0), Point(2, 4));
+            // Segment s2(Point(5, 0), Point(5, 5));
+            // Segment s3(Point(1, 0), Point(5, 3));
+            // Segment s4(Point(0, 2), Point(6, 0));
+            // Segment s5(Point(3, 0), Point(5, 5));
+            // auto e = insert_non_intersecting_curve(arr, s1, pl);
+            // insert_non_intersecting_curve(arr, s2, pl);
+            // insert(arr, s3, Pl_result_type(e->source()));
+            // insert(arr, s4, pl);
+            // insert(arr, s5, pl);
+            // print_arrangement_size(arr);
             /////////////////////////////////////////////////////////
 
             
@@ -127,32 +127,6 @@ namespace tslam
             }
 
 
-
-
-
-            
-
-
-            // throw std::runtime_error("TSTassellation::tassellate() not implemented yet.");
-            // TSPolygon p = toTSPolygon(f);
-            // polygons.push_back(p);
-
-
-            // for (auto& f : faces)
-            // {
-            //     // std::cout << "POPOOOOP" << std::endl;
-            //     if (f->is_unbounded())
-            //         continue;
-            //     polygons.push_back(toTSPolygon(f));
-            // }
-
-
-
-            // throw std::runtime_error("TSTassellation::tassellate() not implemented yet.");
-
-
-
-
         }
 
     public: __always_inline  ///< converstion funcs
@@ -165,17 +139,7 @@ namespace tslam
             double y2 = tsSegment.P2.y();
             return Segment(Point(x1, y1), Point(x2, y2));
         }
-        
-        TSPolygon toTSPolygon(const Face_const_handle& f)
-        {
-            TSPolygon outPolygon;
 
-            // get the vertices of the face
-
-
-            outPolygon.setLinkedPlane(TSPlane(0, 0, 0, 0));
-
-            return outPolygon;
-        }
+        // TODO: add here the polygon conversion
     };
 }
