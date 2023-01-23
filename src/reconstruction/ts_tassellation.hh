@@ -48,44 +48,21 @@ namespace tslam
             // std::vector<Segment> cgalSegments;
             // for (auto& s : segments)
             //     cgalSegments.push_back(toCGALSegment(s));
+
+            // // insert segments into arrangement by differiating between intersecting and non-intersecting segments
+
             
             // Arrangement arr;
             // Naive_pl pl(arr);
             // for (auto& s : cgalSegments)
+            //     // TODO: we need to differentiate between intersecting and not intersecting segments see 4.1.5 CGAL doc
             //     insert(arr, s, pl);
             //     // insert_non_intersecting_curve(arr, s, pl);
             // print_arrangement_size(arr);
 
-            // // compute all the faces
-            // std::vector<Face_const_handle> faces;
-            // for (auto f = arr.faces_begin(); f != arr.faces_end(); ++f)
-            // {
-            //     faces.push_back(f);
-            // }
-
-            // // std::cout << "length of faces: " << faces.size() << std::endl;
-            
-            // for (auto& f : faces)
-            // {
-            //     // std::cout << "POPOOOOP" << std::endl;
-            //     if (f->is_unbounded())
-            //         continue;
-            //     polygons.push_back(toTSPolygon(f));
-            // }
 
 
-
-            // std::cout << "POPOOOOP" << std::endl;
-
-
-            // print_face<Arrangement>(*f);
-
-            // convert the face to a polygon
-            // outPolygons.push_back(toTSPolygon(f));
-
-            // TODO: we need to differentiate between intersecting and not intersecting segments see 4.1.5 CGAL doc
-
-
+            /////////////////////////////////////////////////////////
             Arrangement arr;
             Naive_pl pl(arr);
             Segment s1(Point(1, 0), Point(2, 4));
@@ -99,6 +76,8 @@ namespace tslam
             insert(arr, s4, pl);
             insert(arr, s5, pl);
             print_arrangement_size(arr);
+            /////////////////////////////////////////////////////////
+
             
             // extract boundaries of the faces
             std::vector<Face_const_handle> faces;
@@ -128,6 +107,27 @@ namespace tslam
                     std::cout << p << " ";
                 std::cout << std::endl;
             }
+
+            // convert to TSPolygon
+            for (auto& v : vertices)
+            {
+                TSPolygon poly;
+
+                for (uint i = 0; i < v.size(); ++i)
+                {
+                    double x = CGAL::to_double(v[i].x());
+                    double y = CGAL::to_double(v[i].y());
+                    poly.addVertex(Eigen::Vector3d(x, y, 0));
+                }
+
+                poly.setLinkedPlane(TSPlane(0,0,1,0));
+                poly.reorderClockwisePoints();
+
+                polygons.push_back(poly);
+            }
+
+
+
 
 
             
