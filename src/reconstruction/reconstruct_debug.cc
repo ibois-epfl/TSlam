@@ -19,7 +19,7 @@ int main()
         "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_v.yml",       // 8
         "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_v_not_symmetrical.yml",        // 9
         "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_h_rot.yml",        // 10
-        "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_v_double_stripes.yml"        // 11
+        "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_v_double_stripes.yml"        // 11  TODO:: this is not working, have a look
         };
 
     // create timber object & read yml TSlam map
@@ -31,8 +31,8 @@ int main()
 
     // set solver's parameters
     solverPtr->setTimber(timberPtr);
-    solverPtr->setCreaseAngleThreshold(5.0);   ///< default: 10.0 deg
-    solverPtr->setMaxPlnDist2Merge(1.0);       ///< default: 1.0 deg
+    solverPtr->setCreaseAngleThreshold(2.0);   ///< default: 10.0 deg (?)
+    solverPtr->setMaxPlnDist2Merge(1.0);       ///< default: 1.0 deg FIXME: not used?
     solverPtr->setMaxPlnAngle2Merge(0.9);      ///< default: 0.9 --> 0.9 / 0.5 = 4.5 mm
     solverPtr->setAABBScaleFactor(1.5f);        ///< default: 2.0
     solverPtr->setMaxPolyTagDist(1e-5);        ///< default: 1e-5

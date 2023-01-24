@@ -39,95 +39,95 @@ namespace tslam
     //     virtual void tassellate() = 0;
     
         void tassellate(std::vector<std::vector<TSSegment>> &segmentsGrouped,
-                               std::vector<TSPolygon>& polygons)
+                        std::vector<std::vector<TSPolygon>>& polygonsGrouped)
         {
             // TSPolygon& p = polygons[0];                             // DEBUG
-            std::vector<TSSegment>& segments = segmentsGrouped[0];  // DEBUG
+            // std::vector<TSSegment>& segments = segmentsGrouped[0];  // DEBUG
 
-            // cvt to CGAL
-            std::vector<Segment> cgalSegments;
-            for (auto& s : segments)
-                cgalSegments.push_back(toCGALSegment(s));
-
-            // // insert segments into arrangement by differiating between intersecting and non-intersecting segments
-
-            
-            Arrangement arr;
-            Naive_pl pl(arr);
-            for (auto& s : cgalSegments)
-                // TODO: we need to differentiate between intersecting and not intersecting segments see 4.1.5 CGAL doc
-                insert(arr, s, pl);
-                // insert_non_intersecting_curve(arr, s, pl);
-            print_arrangement_size(arr);
-
-
-
-            /////////////////////////////////////////////////////////
-            // Arrangement arr;
-            // Naive_pl pl(arr);
-            // Segment s1(Point(1, 0), Point(2, 4));
-            // Segment s2(Point(5, 0), Point(5, 5));
-            // Segment s3(Point(1, 0), Point(5, 3));
-            // Segment s4(Point(0, 2), Point(6, 0));
-            // Segment s5(Point(3, 0), Point(5, 5));
-            // auto e = insert_non_intersecting_curve(arr, s1, pl);
-            // insert_non_intersecting_curve(arr, s2, pl);
-            // insert(arr, s3, Pl_result_type(e->source()));
-            // insert(arr, s4, pl);
-            // insert(arr, s5, pl);
-            // print_arrangement_size(arr);
-            /////////////////////////////////////////////////////////
-
-            
-            // extract boundaries of the faces
-            std::vector<Face_const_handle> faces;
-            std::vector<std::vector<Point>> vertices;
-            for (auto f = arr.faces_begin(); f != arr.faces_end(); ++f)
+            for (auto& segments : segmentsGrouped)
             {
-                if (f->is_unbounded())
-                    continue;
-                print_face<Arrangement>(f);
-                faces.push_back(f);
+                std::vector<TSPolygon> polygons;
+                double zCoord = segments[0].P1.z();  // FIXME: TEST on hold
 
-                // extract the vertices
-                std::vector<Point> v;
-                auto c = f->outer_ccb();
-                do
+
+                // cvt to CGAL
+                std::vector<Segment> cgalSegments;
+                for (auto& s : segments)
+                    cgalSegments.push_back(toCGALSegment(s));
+                
+                // DEBUG: print all the segments and their end points coordinates
+                std::cout << "--------------------------------------------" << std::endl;
+                std::cout << "group of segments number: " << segments.size() << std::endl;
+                for (auto& s : cgalSegments)
                 {
-                    v.push_back(c->source()->point());
-                    c = c->next();
-                } while (c != f->outer_ccb());
-                vertices.push_back(v);
-            }
-
-            // print all the vertices
-            for (auto& v : vertices)
-            {
-                for (auto& p : v)
-                    std::cout << p << " ";
-                std::cout << std::endl;
-            }
-
-            // convert to TSPolygon
-            for (auto& v : vertices)
-            {
-                TSPolygon poly;
-
-                for (uint i = 0; i < v.size(); ++i)
-                {
-                    double x = CGAL::to_double(v[i].x());
-                    double y = CGAL::to_double(v[i].y());
-                    poly.addVertex(Eigen::Vector3d(x, y, 0));
+                    std::cout << "Segment: " << s << std::endl;
+                    std::cout << "P1: " << s.source() << std::endl;
+                    std::cout << "P2: " << s.target() << std::endl;
                 }
 
-                poly.setLinkedPlane(TSPlane(0,0,1,0));
-                poly.reorderClockwisePoints();
+                // build arrangements2d CGAL
+                Arrangement arr;
+                Naive_pl pl(arr);
+                for (auto& s : cgalSegments)
+                {
+                    // TODO: we need to differentiate between intersecting and not 
+                    // intersecting segments see 4.1.5 CGAL doc (?)
+                    std::cout << "POOP2" << std::endl;  // DEBUG
+                    insert(arr, s, pl);
+                    // insert_non_intersecting_curve(arr, s, pl);
+                }
 
-                polygons.push_back(poly);
+                std::cout << "POOP333" << std::endl;  // DEBUG
+
+
+                // extract boundaries of the faces
+                std::vector<Face_const_handle> faces;
+                std::vector<std::vector<Point>> vertices;
+                for (auto f = arr.faces_begin(); f != arr.faces_end(); ++f)
+                {
+                    if (f->is_unbounded())
+                        continue;
+                    faces.push_back(f);
+
+                    // extract the vertices
+                    std::vector<Point> v;
+                    auto c = f->outer_ccb();
+                    do
+                    {
+                        v.push_back(c->source()->point());
+                        c = c->next();
+                    } while (c != f->outer_ccb());
+                    vertices.push_back(v);
+                }
+
+                std::cout << "POOP444" << std::endl;  // DEBUG
+
+
+                // convert to TSPolygon
+                for (auto& v : vertices)
+                {
+                    TSPolygon poly;
+
+                    for (uint i = 0; i < v.size(); ++i)
+                    {
+                        double x = CGAL::to_double(v[i].x());
+                        double y = CGAL::to_double(v[i].y());
+                        poly.addVertex(Eigen::Vector3d(x, y, zCoord));  // FIXME:: original 0 ? zCoord
+                    }
+
+                    poly.setLinkedPlane(TSPlane(0,0,1,0));
+                    poly.reorderClockwisePoints();
+
+                    polygons.push_back(poly);
+                }
+
+                std::cout << "POOP555" << std::endl;  // DEBUG
+
+
+                polygonsGrouped.push_back(polygons);
             }
-
-
-        }
+            
+        };
 
     public: __always_inline  ///< converstion funcs
         // TODO: specify 2D in naming
@@ -137,8 +137,14 @@ namespace tslam
             double y1 = tsSegment.P1.y();
             double x2 = tsSegment.P2.x();
             double y2 = tsSegment.P2.y();
-            return Segment(Point(x1, y1), Point(x2, y2));
-        }
+
+            Segment seg = Segment(Point(x1, y1), Point(x2, y2));
+            // verify that the segment is not degenerate
+            // CGAL_assertion(seg.is_degenerate() == false);
+            return seg;
+
+            // return Segment(Point(x1, y1), Point(x2, y2));
+        };
 
         // TODO: add here the polygon conversion
     };

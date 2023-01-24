@@ -18,6 +18,57 @@
 
 namespace tslam
 {
+    /// Struct interface for vector utility function
+    struct TSVector
+    {
+    public: __always_inline  ///< utility static funcs
+        /**
+         * @brief Get the angle between two vectors
+         * 
+         * @param v1 the first vector
+         * @param v2 the second vector
+         * @return double the angle between the two vectors
+         */
+        static double angleBetweenVectors(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2)
+        {
+            double angle = std::acos(v1.dot(v2) / (v1.norm() * v2.norm()));
+            if (std::isnan(angle))
+                return 0.0;
+            return (angle * 180 / M_PI);
+        }
+        /**
+         * @brief Get the distance between two points
+         * 
+         * @param a the first point
+         * @param b the second point
+         * @return double the distance between the two points
+         */
+        static double distance(const Eigen::Vector3d &a, const Eigen::Vector3d &b)
+        {
+            return std::sqrt(std::pow(a(0) - b(0), 2) + std::pow(a(1) - b(1), 2) + std::pow(a(2) - b(2), 2));
+        }
+
+    public: __always_inline  ///< custom WorldAxis
+        /**
+         * @brief Get the X axis
+         * 
+         * @return Eigen::Vector3d the X axis
+         */
+        static Eigen::Vector3d AxisX() { return Eigen::Vector3d(1, 0, 0); }
+        /**
+         * @brief Get the Y axis
+         * 
+         * @return Eigen::Vector3d the Y axis
+         */
+        static Eigen::Vector3d AxisY() { return Eigen::Vector3d(0, 1, 0); }
+        /**
+         * @brief Get the Z axis
+         * 
+         * @return Eigen::Vector3d the Z axis
+         */
+        static Eigen::Vector3d AxisZ() { return Eigen::Vector3d(0, 0, 1); }
+    };
+
     /// A struct to store a plane
     struct TSPlane
     {
@@ -296,28 +347,46 @@ namespace tslam
             if (plane.A * orig.x() + plane.B * orig.y() + plane.C * orig.z() + plane.D == 0.f)
                 out_points[out_point_count++] = orig;
         }
-        // TODO: test me
-        static Eigen::Matrix3d getPlane2XYPlaneTransform(TSPlane source)
+        // // FIXME: the rotation not working
+        static Eigen::Matrix3d getPlane2XYPlaneRotation(TSPlane& source)
         {
-            // compute the transform matrix from source plane to XY plane
+            Eigen::Vector3d O0 = source.Center;
+            Eigen::Vector3d X0 = source.AxisX.normalized();
+            Eigen::Vector3d Y0 = source.AxisY.normalized();
+            Eigen::Vector3d Z0 = source.Normal.normalized();
 
-            // if (source.Normal == Eigen::Vector3d(0.f, 0.f, 1.f))
-            //     return Eigen::Matrix3d::Identity();
-            // else if (source.Normal == Eigen::Vector3d(0.f, 0.f, -1.f))
-            //     return Eigen::AngleAxisd(M_PI, Eigen::Vector3d(1.f, 0.f, 0.f)).toRotationMatrix();
-            // else
-            // {
-            //     Eigen::Vector3d axis = source.Normal.cross(Eigen::Vector3d(0.f, 0.f, 1.f));
-            //     axis.normalize();
-            //     float angle = acos(source.Normal.dot(Eigen::Vector3d(0.f, 0.f, 1.f)));
-            //     return Eigen::AngleAxisd(angle, axis).toRotationMatrix();
-            // }
+            Eigen::Vector3d O1 = Eigen::Vector3d(0, 0, 0);
+            Eigen::Vector3d X1 = Eigen::Vector3d(1, 0, 0);
+            Eigen::Vector3d Y1 = Eigen::Vector3d(0, 1, 0);
+            Eigen::Vector3d Z1 = Eigen::Vector3d(0, 0, 1);
 
-            Eigen::Vector3d axis = source.Normal.cross(Eigen::Vector3d(0.f, 0.f, 1.f));
-            axis.normalize();
-            float angle = acos(source.Normal.dot(Eigen::Vector3d(0.f, 0.f, 1.f)));
-            return Eigen::AngleAxisd(angle, axis).toRotationMatrix();
+            Eigen::Matrix3d F0;
+            F0 << X0.x(), X0.y(), X0.z(),
+                  Y0.x(), Y0.y(), Y0.z(),
+                  Z0.x(), Z0.y(), Z0.z();
+            
+            Eigen::Matrix3d F1;
+            F1 << X1.x(), Y1.x(), Z1.x(),
+                  X1.y(), Y1.y(), Z1.y(),
+                  X1.z(), Y1.z(), Z1.z();
+
+            Eigen::Matrix3d F = F1 * F0;
+
+            return F;
+
         };
+        // // FIXME: another test to avoid plane to plane
+        // static Eigen::Matrix3d getRotationToPlaneXYMatrix(TSPlane& source, TSPlane& target)
+        // {
+        //     Eigen::Matrix3d rot;
+        //     // rotate with axis
+        //     source.Normal.normalize();
+        //     Eigen::Vector3d axis = source.Normal.cross(target.Normal);
+        //     double angle = acos(source.Normal.dot(target.Normal));
+        //     rot = Eigen::AngleAxisd(angle, axis).toRotationMatrix();
+
+        //     return rot;
+        // };
 
     public: __always_inline  ///< bool funcs
         /**
@@ -337,57 +406,6 @@ namespace tslam
         Eigen::Vector3d AxisX, AxisY;
         Eigen::Vector3d Center;
         double A, B, C, D;  ///< eq: ax+by+cz=d
-    };
-
-    /// Struct interface for vector utility function
-    struct TSVector
-    {
-    public: __always_inline  ///< utility static funcs
-        /**
-         * @brief Get the angle between two vectors
-         * 
-         * @param v1 the first vector
-         * @param v2 the second vector
-         * @return double the angle between the two vectors
-         */
-        static double angleBetweenVectors(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2)
-        {
-            double angle = std::acos(v1.dot(v2) / (v1.norm() * v2.norm()));
-            if (std::isnan(angle))
-                return 0.0;
-            return (angle * 180 / M_PI);
-        }
-        /**
-         * @brief Get the distance between two points
-         * 
-         * @param a the first point
-         * @param b the second point
-         * @return double the distance between the two points
-         */
-        static double distance(const Eigen::Vector3d &a, const Eigen::Vector3d &b)
-        {
-            return std::sqrt(std::pow(a(0) - b(0), 2) + std::pow(a(1) - b(1), 2) + std::pow(a(2) - b(2), 2));
-        }
-
-    public: __always_inline  ///< custom WorldAxis
-        /**
-         * @brief Get the X axis
-         * 
-         * @return Eigen::Vector3d the X axis
-         */
-        static Eigen::Vector3d AxisX() { return Eigen::Vector3d(1, 0, 0); }
-        /**
-         * @brief Get the Y axis
-         * 
-         * @return Eigen::Vector3d the Y axis
-         */
-        static Eigen::Vector3d AxisY() { return Eigen::Vector3d(0, 1, 0); }
-        /**
-         * @brief Get the Z axis
-         * 
-         * @return Eigen::Vector3d the Z axis
-         */
-        static Eigen::Vector3d AxisZ() { return Eigen::Vector3d(0, 0, 1); }
     };
 
     /// A struct to store a segment object
@@ -463,25 +481,33 @@ namespace tslam
         * 
         * @param transform the transform matrix
         */
-        void transform(Eigen::Matrix3d transform)
+        void transform(Eigen::Matrix3d& transform)
         {
             this->P1 = transform * this->P1;
             this->P2 = transform * this->P2;
         };
-        // TODO: test me
-        /**
-         * @brief Apply a plane to planeXY transform to the segment
-         * 
-         * @param source source plane
-         * @param target target plane
-         * @return Eigen::Matrix3d returns the transform matrix
-         */
-        Eigen::Matrix3d plane2PlaneTransform(TSPlane source)
-        {
-            Eigen::Matrix3d mat = TSPlane::getPlane2XYPlaneTransform(source);
-            this->transform(mat);
-            return mat;
-        };
+        // // TODO: test me not valid
+        // void translate(Eigen::Vector3d translation)
+        // {
+        //     this->P1 += translation;
+        //     this->P2 += translation;
+        // };
+
+        // /**
+        //  * @brief Apply a plane to planeXY transform to the segment
+        //  * 
+        //  * @param source source plane
+        //  * @param target target plane
+        //  * @return Eigen::Matrix3d returns the transform matrix
+        //  */
+        // Eigen::Matrix4d plane2PlaneTransform(TSPlane& planeA, TSPlane& planeB)
+        // {
+        //     Eigen::Matrix4d mat = TSPlane::plane2Plane(planeA.Center, planeA.Normal,
+        //                                                planeB.Center, planeB.Normal);
+
+        //     this->transform(mat);
+        //     return mat;
+        // };
 
     public: __always_inline  ///< custom funcs
         /**
@@ -887,20 +913,6 @@ namespace tslam
             this->transform(rotMat);
             return rotMat;
         };
-        // // TODO: to be tested
-        // /**
-        //  * @brief Apply a plane-to-plane transformation to the polygon
-        //  * 
-        //  * @param targetPlane the target plane
-        //  * 
-        //  * @return Eigen::Matrix3d the transformation matrix
-        //  */
-        // Eigen::Matrix3d plane2PlaneTransform(TSPlane& targetPlane)
-        // {
-        //     Eigen::Matrix3d mat = TSPlane::getPlane2XYPlaneTransform(this->m_LinkedPlane, targetPlane);
-        //     this->transform(mat);
-        //     return mat;
-        // };
 
     public: __always_inline  ///< custom funcs
         /**

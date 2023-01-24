@@ -352,18 +352,12 @@ namespace tslam
                                           this->m_SplitPolygons,
                                           this->m_SplitSegmentsGrouped);
 
-        std::cout << "size of split polygons: " << this->m_SplitPolygons.size() << std::endl;  // DEBUG
-        this->m_FacePolygons = this->m_SplitPolygons;  // DEBUG
+        // std::cout << "size of split polygons: " << this->m_SplitPolygons.size() << std::endl;  // DEBUG
+        // this->m_FacePolygons = this->m_SplitPolygons;  // DEBUG
 
-        // // // get all segments in a vector
-        // // std::vector<TSSegment> allSegments;
-        // // for (auto& segs : this->m_SplitSegmentsGrouped)
-        // //     allSegments.insert(allSegments.end(), segs.begin(), segs.end());
-        // // this->rSplitPolygons(this->m_PlnAABBPolygons, this->m_SplitPolygons, allSegments);
-
-        // this->rSelectFacePolygons(this->m_SplitPolygons,
-        //                           this->m_FacePolygons,
-        //                           this->m_MaxPolyTagDist);
+        this->rSelectFacePolygons(this->m_SplitPolygons,
+                                  this->m_FacePolygons,
+                                  this->m_MaxPolyTagDist);
     }
     void TSGeometricSolver::rIntersectPolygons(std::vector<TSPolygon> &polygons,
                                                std::vector<std::vector<TSSegment>> &segmentsGrouped)
@@ -392,7 +386,7 @@ namespace tslam
 
             if (tempSegments.size() > 0)
             {
-                // if (segmentsGrouped.size() == 0)  // DEBUG <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                this->m_SplitSegmentsPlanes.push_back(polyA.getLinkedPlane());  // FIXME: test, if works move to func params
                 segmentsGrouped.push_back(tempSegments);
                 tempSegments.clear();
             }
@@ -439,150 +433,95 @@ namespace tslam
     {
         std::cout << "<<<<<<<<<< rIntersectSplittingSegments >>>>>>>>>>" << std::endl;  // DEBUG
 
-        // first we need to do a plane-to-plane transformation for each polygon to World XY plane and reverse it after
+        // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DEBUG
+        // deep copy of the segmentsGrouped
+        // std::vector<std::vector<TSSegment>> segmentsGroupedCopy;
+        // for (auto& segGroup : segmentsGrouped)
+        // {
+        //     std::vector<TSSegment> tempSegGroup;
+        //     for (auto& seg : segGroup)
+        //     {
+        //         tempSegGroup.push_back(seg);
+        //     }
+        //     segmentsGroupedCopy.push_back(tempSegGroup);
+        // }
+        // segmentsGrouped.clear();
+        // segmentsGrouped.push_back(segmentsGroupedCopy[1]);
+        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< DEBUG
 
-        // TSPlane worldXYPlane = TSPlane(Eigen::Vector3d(0, 0, 0), Eigen::Vector3d(0, 0, 1));
+        // TEST FOR TRANSFOM
+        TSPlane worldXYPlane = TSPlane(Eigen::Vector3d(0, 0, 1), Eigen::Vector3d(0, 0, 0));
+        std::vector<Eigen::Matrix3d> invMats;
+
+        std::cout << "number of segments groups: " << segmentsGrouped.size() << std::endl;  // DEBUG
+        std::cout << "number of polygons: " << AabbPolygons.size() << std::endl;  // DEBUG
+        std::cout << "number of planes of splitting segments: " << this->m_SplitSegmentsPlanes.size() << std::endl;  // DEBUG
 
         for (uint i = 0; i < segmentsGrouped.size(); i++)
         {
+            // DEBUG: print number of segments per group
+            std::cout << "group " << i << " has " << segmentsGrouped[i].size() << " segments" << std::endl;
+
             auto& segs = segmentsGrouped[i];
+            TSPlane& planeA = this->m_SplitSegmentsPlanes[i];
+            // planeA.Normal.normalize();
+            Eigen::Matrix3d rot = TSPlane::getPlane2XYPlaneRotation(planeA);  // TEST 1
+            // Eigen::Matrix3d rot = TSPlane::getRotationToPlaneXYMatrix(planeA, worldXYPlane);  // TEST 2
+
+
+            // to origin translation
+
+            // Eigen::Matrix3d transl = mat.block<3, 1>(0, 3);
+
+
+            // mat.normalize();
+
+            Eigen::Matrix3d invMat = rot.inverse();
+            invMats.push_back(invMat);
+
             for (auto& seg : segs)
             {
-                // transform the segment to world XY plane
-                seg.plane2PlaneTransform(AabbPolygons[i].getLinkedPlane());
+                // move first to origin
+                seg.transform(rot);
             }
         }
 
-
+        std::vector<std::vector<TSPolygon>> polygonsGrouped;
         std::shared_ptr<TSTassellation> tassellatorPtr = std::make_shared<TSTassellation>(TSTassellation());
-        tassellatorPtr->tassellate(segmentsGrouped, polygons);
+        tassellatorPtr->tassellate(segmentsGrouped, polygonsGrouped);
 
-        // // build an adjaceny graph of the segments's intersection points
-        // std::vector<std::vector<uint>> adjGraph;
-        // std::vector<Eigen::Vector3d> intersectionPts;
-        
-        // for (auto& segGroup : segmentsGrouped)
-        // {
-        //     intersectionPts.clear();
-        //     for (uint i = 0; i < segGroup.size(); i++)
-        //     {
-        //         TSSegment& segA = segGroup[i];
-
-        //         for (uint j = 0; j < segGroup.size(); j++)
-        //         {
-        //             TSSegment& segB = segGroup[j];
-
-        //             if (i == j) continue;
-
-        // DEBUG
-        // polygons.clear();
-
-
-
-        //         }
-        //     }
-        // }
-
-        // // print the adjaceny graph
-        // for (uint i = 0; i < adjGraph.size(); i++)
-        // {
-        //     std::cout << "adjGraph[" << i << "]: ";
-        //     for (auto& adj : adjGraph[i])
-        //     {
-        //         std::cout << adj << ", ";
-        //     }
-        //     std::cout << std::endl;
-        // }
-
-
-
-        
-    }
-    // TODO: test, dev
-    void TSGeometricSolver::rSplitPolygons(std::vector<TSPolygon>& polygons,
-                                           std::vector<TSPolygon>& splitPolygons,
-                                           std::vector<TSSegment>& segments)
-    {
-        for (auto& poly : polygons)
+        // store the polygons tasselation
+        for (uint i = 0; i < polygonsGrouped.size(); i++)
         {
-            splitPolygons.push_back(poly);
-            // std::vector<TSPolygon> splitPolygons = {poly};
-            std::vector<TSPolygon> tempSplitPolygons;
-            std::tuple<TSPolygon, TSPolygon> subTuplePolys;
-
-            bool isSubSplitVT;
-            bool isUnique = true;
-            uint NSubSplit = 0;
-
-            do
+            for (uint j = 0; j < polygonsGrouped[i].size(); j++)
             {
-                for (int i = 0; i < splitPolygons.size(); i++)
-                {
-                    NSubSplit = 0;
-
-                    for (auto& seg : segments)
-                    {
-                        isSubSplitVT = splitPolygons[i].splitPolygon(seg, subTuplePolys);
-
-                        if (isSubSplitVT)
-                        {
-                            NSubSplit++;
-
-                            TSPolygon polySplitA = std::get<0>(subTuplePolys);
-                            TSPolygon polySplitB = std::get<1>(subTuplePolys);
-
-                            isUnique = true;
-                            for (auto& poly : tempSplitPolygons)
-                            {
-                                if (poly == polySplitA)
-                                {
-                                    isUnique = false;
-                                    break;
-                                }
-                            }
-                            if (isUnique)
-                                tempSplitPolygons.push_back(polySplitA);
-
-                            isUnique = true;
-                            for (auto& poly : tempSplitPolygons)
-                            {
-                                if (poly == polySplitB)
-                                {
-                                    isUnique = false;
-                                    break;
-                                }
-                            }
-                            if (isUnique)
-                                tempSplitPolygons.push_back(polySplitB);
-                        }
-                    }
-
-                    if (NSubSplit == 0)
-                    {
-                        isUnique = true;
-                        for (auto& poly : tempSplitPolygons)
-                        {
-                            if (poly == splitPolygons[i])
-                            {
-                                isUnique = false;
-                                break;
-                            }
-                        }
-                        if (isUnique)
-                            tempSplitPolygons.push_back(splitPolygons[i]);
-                    }
-                }
-
-                splitPolygons.clear();
-                if (tempSplitPolygons.size() > 0)
-                    for (auto& tpoly : tempSplitPolygons)
-                        splitPolygons.emplace_back(tpoly);
-                tempSplitPolygons.clear();
-
-            } while (NSubSplit > 0);
+                polygonsGrouped[i][j].transform(invMats[i]);
+                polygonsGrouped[i][j].setLinkedPlane(this->m_SplitSegmentsPlanes[i]);
+                polygons.push_back(polygonsGrouped[i][j]);
+            }
         }
+
+        // // TEST: reverting segments to their original position
+        // for (uint i = 0; i < segmentsGrouped.size(); i++)
+        // {
+        //     auto& segs = segmentsGrouped[i];
+        //     for (auto& seg : segs)
+        //     {
+        //         seg.transform(invMats[i]);
+        //     }
+        // }
+
+        // // TEST FOR INV TRANSFOM
+        // for (uint i = 0; i < polygonsGrouped.size(); i++)
+        // {
+        //     for (uint j = 0; j < polygonsGrouped[i].size(); j++)
+        //     {
+        //         polygonsGrouped[i][j].transform(invMats[i]);
+        //         polygonsGrouped[i][j].setLinkedPlane(AabbPolygons[i].getLinkedPlane());
+        //         polygons.push_back(polygonsGrouped[i][j]);
+        //     }
+        // }
     }
-    
     
     void TSGeometricSolver::rSelectFacePolygons(std::vector<TSPolygon>& polygons,
                                                 std::vector<TSPolygon>& facePolygons,
