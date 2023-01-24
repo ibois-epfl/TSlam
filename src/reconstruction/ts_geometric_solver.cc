@@ -20,7 +20,7 @@ namespace tslam
         this->rDetectFacesStripes();
         this->rIntersectStripeTagPlnAABB();
         this->rCreatePolysurface();
-        // this->rCreateMesh();
+        this->rCreateMesh();
 
         this->visualize(this->m_ShowVisualizer,
                         this->m_DrawTags,
