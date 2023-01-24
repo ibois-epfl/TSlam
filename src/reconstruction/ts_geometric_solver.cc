@@ -349,9 +349,9 @@ namespace tslam
                                  this->m_SplitSegmentsGrouped,
                                  this->m_SplitSegmentsPlanes);
 
-        this->rIntersectSplittingSegments(this->m_SplitPolygons,
-                                          this->m_SplitSegmentsPlanes,
-                                          this->m_SplitSegmentsGrouped);
+        this->rTassellateSplittingSegments(this->m_SplitPolygons,
+                                           this->m_SplitSegmentsPlanes,
+                                           this->m_SplitSegmentsGrouped);
         
         this->m_FacePolygons = this->m_SplitPolygons;  // DEBUG
 
@@ -427,9 +427,9 @@ namespace tslam
             }
         }
     }
-    void TSGeometricSolver::rIntersectSplittingSegments(std::vector<TSPolygon> &polygons,
-                                                        std::vector<TSPlane> &planes,
-                                                        std::vector<std::vector<TSSegment>> &segmentsGrouped)
+    void TSGeometricSolver::rTassellateSplittingSegments(std::vector<TSPolygon> &polygons,
+                                                         std::vector<TSPlane> &planes,
+                                                         std::vector<std::vector<TSSegment>> &segmentsGrouped)
     {
         std::unique_ptr<TSTassellation> tassellatorPtr = 
             std::make_unique<TSTassellation>(

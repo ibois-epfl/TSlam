@@ -201,35 +201,6 @@ namespace tslam
             Eigen::Vector3d pt =  point - this->distance(point) * this->Normal;
             return pt;
         };
-        // TODO: test me
-        /**
-         * @brief It computes the intersection between two planes
-         * 
-         * @param mat the transformation matrix (3x3)
-         */
-        void transform(Eigen::Matrix3d& mat)
-        {
-            Eigen::Vector3d normal = mat * this->Normal;
-            Eigen::Vector3d center = mat * this->Center;
-            this->Normal = normal;
-            this->Center = center;
-            this->A = normal(0);
-            this->B = normal(1);
-            this->C = normal(2);
-            this->D = normal.dot(center);
-        };
-        // TODO: test me
-        void transform(Eigen::Matrix4d& mat)
-        {
-            Eigen::Vector3d normal = mat.block<3, 3>(0, 0) * this->Normal;
-            Eigen::Vector3d center = mat.block<3, 3>(0, 0) * this->Center + mat.block<3, 1>(0, 3);
-            this->Normal = normal;
-            this->Center = center;
-            this->A = normal(0);
-            this->B = normal(1);
-            this->C = normal(2);
-            this->D = normal.dot(center);
-        };
         /// Extract the two axes of the plane
         void extractAxes()
         {
@@ -255,6 +226,41 @@ namespace tslam
             this->AxisY = axisY;
         }
     
+    public: __always_inline ///< transform funcs
+        /**
+         * @brief It computes the intersection between two planes
+         * 
+         * @param mat the transformation matrix (3x3)
+         */
+        void transform(Eigen::Matrix3d& mat)
+        {
+            Eigen::Vector3d normal = mat * this->Normal;
+            Eigen::Vector3d center = mat * this->Center;
+            this->Normal = normal;
+            this->Center = center;
+            this->A = normal(0);
+            this->B = normal(1);
+            this->C = normal(2);
+            this->D = normal.dot(center);
+        };
+        /**
+         * @brief To transform the plane with a 4x4 matrix
+         * 
+         * @param mat the transformation matrix (4x4)
+         * @see transform(Eigen::Matrix3d& mat)
+         */
+        void transform(Eigen::Matrix4d& mat)
+        {
+            Eigen::Vector3d normal = mat.block<3, 3>(0, 0) * this->Normal;
+            Eigen::Vector3d center = mat.block<3, 3>(0, 0) * this->Center + mat.block<3, 1>(0, 3);
+            this->Normal = normal;
+            this->Center = center;
+            this->A = normal(0);
+            this->B = normal(1);
+            this->C = normal(2);
+            this->D = normal.dot(center);
+        };
+
     public: __always_inline  ///< static funcs
         /** 
          * @brief It checks if there is intersection between a ray and a plane following the:
@@ -363,42 +369,12 @@ namespace tslam
             if (plane.A * orig.x() + plane.B * orig.y() + plane.C * orig.z() + plane.D == 0.f)
                 out_points[out_point_count++] = orig;
         }
-        // // FIXME: test this function
-        // /**
-        //  * @brief Given the plane, return the rotation matrix that rotates the plane to XY plane
-        //  * 
-        //  * @param source 
-        //  * @return Eigen::Matrix3d 
-        //  */
-        // static Eigen::Matrix3d getPlane2XYPlaneRotation(TSPlane& source)
-        // {
-        //     Eigen::Vector3d O0 = source.Center;
-        //     Eigen::Vector3d X0 = source.AxisX.normalized();
-        //     Eigen::Vector3d Y0 = source.AxisY.normalized();
-        //     Eigen::Vector3d Z0 = source.Normal.normalized();
-
-        //     Eigen::Vector3d O1 = Eigen::Vector3d(0, 0, 0);
-        //     Eigen::Vector3d X1 = Eigen::Vector3d(1, 0, 0);
-        //     Eigen::Vector3d Y1 = Eigen::Vector3d(0, 1, 0);
-        //     Eigen::Vector3d Z1 = Eigen::Vector3d(0, 0, 1);
-
-        //     Eigen::Matrix3d F0;
-        //     F0 << X0.x(), X0.y(), X0.z(),
-        //           Y0.x(), Y0.y(), Y0.z(),
-        //           Z0.x(), Z0.y(), Z0.z();
-            
-        //     Eigen::Matrix3d F1;
-        //     F1 << X1.x(), Y1.x(), Z1.x(),
-        //           X1.y(), Y1.y(), Z1.y(),
-        //           X1.z(), Y1.z(), Z1.z();
-
-        //     Eigen::Matrix3d F = F1 * F0;
-
-        //     // translation
-
-        //     return F;
-        // };
-
+        /**
+         * @brief Get the matrix (4x4) describing a plane to XY plane transform
+         * 
+         * @param source the starting plane
+         * @return Eigen::Matrix4d the transform matrix (4x4)
+         */
         static Eigen::Matrix4d getPlane2XYPlaneRotation(TSPlane& source)
         {
             Eigen::Vector3d O0 = source.Center;
@@ -415,18 +391,15 @@ namespace tslam
             F0 << X0.x(), X0.y(), X0.z(),
                   Y0.x(), Y0.y(), Y0.z(),
                   Z0.x(), Z0.y(), Z0.z();
-            
             Eigen::Matrix3d F1;
             F1 << X1.x(), Y1.x(), Z1.x(),
                   X1.y(), Y1.y(), Z1.y(),
                   X1.z(), Y1.z(), Z1.z();
-
             Eigen::Matrix3d F = F1 * F0;
 
             Eigen::Vector3d T0(0 - O0.x(), 0 - O0.y(), 0 - O0.z());
             Eigen::Vector3d T1(O1.x() - 0, O1.y() - 0, O1.z() - 0);
 
-            //Combine translation and rotation
             Eigen::Matrix4d A;
             A.setIdentity();
             A.block<3, 1>(0, 3) = T0;
@@ -439,11 +412,8 @@ namespace tslam
             C.setIdentity();
             C.block<3, 1>(0, 3) = T1;
 
-            // translation
             return C * B * A;
         };
-
-
 
     public: __always_inline  ///< bool funcs
         /**
@@ -532,7 +502,6 @@ namespace tslam
         };
 
     public: __always_inline  ///< transform
-        // TODO: test me
         /**
         * @brief It transforms the segment with a given transform matrix (3x3)
         * 
@@ -915,19 +884,24 @@ namespace tslam
             {
                 v = mat * v;
             }
-            // apply the transform to the  linkedplane
+
             this->m_LinkedPlane.transform(mat);
-            // recompute the polygon
+
             this->compute();
         };
-        // TODO: testing
+        /**
+         * @brief It transforms the polygon by a 4x4 matrix
+         * 
+         * @param mat the 4x4 matrix
+         * @see transform(Eigen::Matrix3d& mat)
+         */
         void transform(Eigen::Matrix4d& mat)
         {
             for (auto& v : this->m_Vertices)
                 v = mat.block<3, 3>(0, 0) * v + mat.block<3, 1>(0, 3);
-            // apply the transform to the  linkedplane
+
             this->m_LinkedPlane.transform(mat);
-            // recompute the polygon
+
             this->compute();
         };
         /**

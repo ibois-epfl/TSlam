@@ -92,9 +92,9 @@ namespace tslam
              * @param planes[in] the planes associated to the segments
              * @param segmentsGrouped[in] the segments connecting polygon's detected intersections grouped by plane
              */
-            void rIntersectSplittingSegments(std::vector<TSPolygon> &polygons,
-                                             std::vector<TSPlane> &planes,
-                                             std::vector<std::vector<TSSegment>> &segmentsGrouped);
+            void rTassellateSplittingSegments(std::vector<TSPolygon> &polygons,
+                                              std::vector<TSPlane> &planes,
+                                              std::vector<std::vector<TSSegment>> &segmentsGrouped);
             /**
              * @brief This unit selects the best candidates polygons to compose the mesh's faces. To do so
              * it takes each plane of polygons, projects the closest points to it and test if they are inside.
