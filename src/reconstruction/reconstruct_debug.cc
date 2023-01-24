@@ -24,7 +24,7 @@ int main()
 
     // create timber object & read yml TSlam map
     std::shared_ptr<tslam::TSTimber> timberPtr = std::make_shared<tslam::TSTimber>();
-    timberPtr->setPlaneTagsFromYAML(testData[4]);  // 4
+    timberPtr->setPlaneTagsFromYAML(testData[4]);
 
     // create geometric solver
     std::shared_ptr<tslam::TSGeometricSolver> solverPtr = std::make_shared<tslam::TSGeometricSolver>();
@@ -33,9 +33,9 @@ int main()
     solverPtr->setTimber(timberPtr);
     solverPtr->setCreaseAngleThreshold(2.0);   ///< default: 10.0 deg (?)
     solverPtr->setMaxPlnDist2Merge(1.0);       ///< default: 1.0 deg FIXME: not used?
-    solverPtr->setMaxPlnAngle2Merge(0.9);      ///< default: 0.9 --> 0.9 / 0.5 = 4.5 mm
+    solverPtr->setMaxPlnAngle2Merge(0.9);      ///< default: 0.9 --> 0.9 / 0.5 = 4.5 mm  FIXME: unsure of the function
     solverPtr->setAABBScaleFactor(1.5f);        ///< default: 2.0
-    solverPtr->setMaxPolyTagDist(1e-5);        ///< default: 1e-5
+    solverPtr->setMaxPolyTagDist(1e-5);        ///< default: 1e-5  // FIXME: might not be used
     solverPtr->setEPS(1e-5);                   ///< default: 1e-5  TODO: in geo util funcs() expose and pass the tolerance
 
     // set solver's visualizer parameters
@@ -45,7 +45,7 @@ int main()
                                          /*drawTagNormals*/         false,
                                          /*drawAabb*/               false,
                                          /*drawIntersectedPoly*/    false,
-                                         /*drawSplittingSegments*/  true,
+                                         /*drawSplittingSegments*/  false,
                                          /*drawSelectedFace*/       true,
                                          /*drawFinalMesh*/          false
                                          );

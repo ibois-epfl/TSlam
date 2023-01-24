@@ -225,7 +225,20 @@ namespace tslam
             this->AxisX = axisX;
             this->AxisY = axisY;
         }
-    
+        /// get closest points
+        void getClosestPoints(std::vector<Eigen::Vector3d>& points,
+                              std::vector<Eigen::Vector3d>& closestPoints,
+                              std::vector<double>& distances)
+        {
+            for (auto& pt : points)
+            {
+                Eigen::Vector3d closestPt = this->projectPoint(pt);
+                double dist = this->distance(pt);
+                closestPoints.push_back(closestPt);
+                distances.push_back(dist);
+            }
+        }
+
     public: __always_inline ///< transform funcs
         /**
          * @brief It computes the intersection between two planes
@@ -289,7 +302,7 @@ namespace tslam
             const Eigen::Vector3d PlaneNormal(Plane.A, Plane.B, Plane.C);
 
             const double Denominator = PlaneNormal.dot(RayDir);
-            if (Denominator == 0.0f)  return false;  // ray is parallel to plane
+            if (Denominator == 0.0f)  return false;
 
             const double Numerator = Plane.D - PlaneNormal.dot(RayOrig);
             const double t = Numerator / Denominator;
@@ -822,25 +835,23 @@ namespace tslam
          * @return true if the point is inside the polygon
          * @return false if the point is not inside the polygon
          */
-        bool isPointInsidePolygon(Eigen::Vector3d point)
+        bool isPointInsidePolygon(Eigen::Vector3d point, double EPS)
         {
             // if (!this->isPointOnPolygon(point))
             //     return false;
 
-            Eigen::Vector3d point2 = point + 10 * this->getNormal();
-
-            TSSegment seg = this->getSegments()[0];
+            TSSegment seg = this->getSegments().front();
             Eigen::Vector3d midPt = seg.getMidPoint();
 
             TSSegment segment(point, midPt);
 
             // extend the segment longer thant the mid point
-            segment.extend(1000);
+            segment.extend(1000000);
 
             std::vector<Eigen::Vector3d> intersections;
             Eigen::Vector3d tempIntersection;
 
-            for (auto s : m_Segments)
+            for (auto s : this->m_Segments)
             {
                 if (s.intersect(segment, tempIntersection))
                 {
@@ -848,16 +859,11 @@ namespace tslam
                 }
             }
 
-            // // FIXME: check which checker is working
-            // if (intersections.size() != 1)
-            //     return false;
-            // else
-            //     return true;
+            std::cout << "Number of intersections: " << intersections.size() << "\n";
 
-            if (intersections.size() % 2 == 0)
-                return false;
-            else
+            if (intersections.size() % 2 == 1)
                 return true;
+            return false;
         };
         /// Check if the polygon is a quadrilateral
         bool isQuadrilateral()

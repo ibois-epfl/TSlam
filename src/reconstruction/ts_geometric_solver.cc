@@ -352,12 +352,11 @@ namespace tslam
         this->rTassellateSplittingSegments(this->m_SplitPolygons,
                                            this->m_SplitSegmentsPlanes,
                                            this->m_SplitSegmentsGrouped);
-        
-        this->m_FacePolygons = this->m_SplitPolygons;  // DEBUG
 
-        // this->rSelectFacePolygons(this->m_SplitPolygons,
-        //                           this->m_FacePolygons,
-        //                           this->m_MaxPolyTagDist);
+        this->rSelectFacePolygons(this->m_SplitPolygons,
+                                  this->m_FacePolygons,
+                                  this->m_EPS
+                                  );
     }
     void TSGeometricSolver::rIntersectPolygons(std::vector<TSPolygon> &polygons,
                                                std::vector<std::vector<TSSegment>> &segmentsGrouped,
@@ -444,18 +443,27 @@ namespace tslam
                                                 std::vector<TSPolygon>& facePolygons,
                                                 double tolerance)
     {
+        // get all the points
+        std::vector<Eigen::Vector3d> tagCenters;
+        for (auto& tag : this->m_Timber->getPlaneTags())
+            tagCenters.push_back(tag.getCenter());
+
+
         for (auto& poly : polygons)
         {
-            for (auto& tag : this->m_Timber->getPlaneTags())
+            TSPlane& polyPln = poly.getLinkedPlane();
+
+            for (auto& ctr : tagCenters)
             {
-                Eigen::Vector3d& tagCtr = tag.getCenter();
-                TSPlane& polyPln = poly.getLinkedPlane();
 
-                if (polyPln.distance(tagCtr) < tolerance)
+
+                if (polyPln.distance(ctr) < tolerance)
                 {
-                    Eigen::Vector3d tagCtrProj = polyPln.projectPoint(tagCtr);
+                    std::cout << "[DEBUG] distance: " << polyPln.distance(ctr) << std::endl;  // DEBUG
 
-                    if (poly.isPointInsidePolygon(tagCtrProj))
+                    Eigen::Vector3d ctrProj = polyPln.projectPoint(ctr);
+
+                    if (poly.isPointInsidePolygon(ctrProj, tolerance))
                     {
                         facePolygons.push_back(poly);
                         break;
@@ -463,6 +471,31 @@ namespace tslam
                 }
             }
         }
+
+
+
+        ////////////////////// ATTEMPT 1 ///////////////////////
+        // for (auto& poly : polygons)
+        // {
+        //     for (auto& tag : this->m_Timber->getPlaneTags())
+        //     {
+        //         Eigen::Vector3d& tagCtr = tag.getCenter();
+        //         TSPlane& polyPln = poly.getLinkedPlane();
+
+        //         std::cout << "[DEBUG] distance: " << polyPln.distance(tagCtr) << std::endl;  // DEBUG
+
+        //         if (polyPln.distance(tagCtr) < tolerance)
+        //         {
+        //             Eigen::Vector3d tagCtrProj = polyPln.projectPoint(tagCtr);
+
+        //             if (poly.isPointInsidePolygon(tagCtrProj))
+        //             {
+        //                 facePolygons.push_back(poly);
+        //                 break;
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     void TSGeometricSolver::rCreateMesh()
