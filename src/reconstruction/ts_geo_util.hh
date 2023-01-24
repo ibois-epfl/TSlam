@@ -202,11 +202,27 @@ namespace tslam
             return pt;
         };
         // TODO: test me
-        /// Apply a transformation to the plane
+        /**
+         * @brief It computes the intersection between two planes
+         * 
+         * @param mat the transformation matrix (3x3)
+         */
         void transform(Eigen::Matrix3d& mat)
         {
             Eigen::Vector3d normal = mat * this->Normal;
             Eigen::Vector3d center = mat * this->Center;
+            this->Normal = normal;
+            this->Center = center;
+            this->A = normal(0);
+            this->B = normal(1);
+            this->C = normal(2);
+            this->D = normal.dot(center);
+        };
+        // TODO: test me
+        void transform(Eigen::Matrix4d& mat)
+        {
+            Eigen::Vector3d normal = mat.block<3, 3>(0, 0) * this->Normal;
+            Eigen::Vector3d center = mat.block<3, 3>(0, 0) * this->Center + mat.block<3, 1>(0, 3);
             this->Normal = normal;
             this->Center = center;
             this->A = normal(0);
@@ -347,8 +363,43 @@ namespace tslam
             if (plane.A * orig.x() + plane.B * orig.y() + plane.C * orig.z() + plane.D == 0.f)
                 out_points[out_point_count++] = orig;
         }
-        // // FIXME: the rotation not working
-        static Eigen::Matrix3d getPlane2XYPlaneRotation(TSPlane& source)
+        // // FIXME: test this function
+        // /**
+        //  * @brief Given the plane, return the rotation matrix that rotates the plane to XY plane
+        //  * 
+        //  * @param source 
+        //  * @return Eigen::Matrix3d 
+        //  */
+        // static Eigen::Matrix3d getPlane2XYPlaneRotation(TSPlane& source)
+        // {
+        //     Eigen::Vector3d O0 = source.Center;
+        //     Eigen::Vector3d X0 = source.AxisX.normalized();
+        //     Eigen::Vector3d Y0 = source.AxisY.normalized();
+        //     Eigen::Vector3d Z0 = source.Normal.normalized();
+
+        //     Eigen::Vector3d O1 = Eigen::Vector3d(0, 0, 0);
+        //     Eigen::Vector3d X1 = Eigen::Vector3d(1, 0, 0);
+        //     Eigen::Vector3d Y1 = Eigen::Vector3d(0, 1, 0);
+        //     Eigen::Vector3d Z1 = Eigen::Vector3d(0, 0, 1);
+
+        //     Eigen::Matrix3d F0;
+        //     F0 << X0.x(), X0.y(), X0.z(),
+        //           Y0.x(), Y0.y(), Y0.z(),
+        //           Z0.x(), Z0.y(), Z0.z();
+            
+        //     Eigen::Matrix3d F1;
+        //     F1 << X1.x(), Y1.x(), Z1.x(),
+        //           X1.y(), Y1.y(), Z1.y(),
+        //           X1.z(), Y1.z(), Z1.z();
+
+        //     Eigen::Matrix3d F = F1 * F0;
+
+        //     // translation
+
+        //     return F;
+        // };
+
+        static Eigen::Matrix4d getPlane2XYPlaneRotation(TSPlane& source)
         {
             Eigen::Vector3d O0 = source.Center;
             Eigen::Vector3d X0 = source.AxisX.normalized();
@@ -372,21 +423,27 @@ namespace tslam
 
             Eigen::Matrix3d F = F1 * F0;
 
-            return F;
+            Eigen::Vector3d T0(0 - O0.x(), 0 - O0.y(), 0 - O0.z());
+            Eigen::Vector3d T1(O1.x() - 0, O1.y() - 0, O1.z() - 0);
 
+            //Combine translation and rotation
+            Eigen::Matrix4d A;
+            A.setIdentity();
+            A.block<3, 1>(0, 3) = T0;
+
+            Eigen::Matrix4d B;
+            B.setIdentity();
+            B.block<3, 3>(0, 0) = F;
+
+            Eigen::Matrix4d C;
+            C.setIdentity();
+            C.block<3, 1>(0, 3) = T1;
+
+            // translation
+            return C * B * A;
         };
-        // // FIXME: another test to avoid plane to plane
-        // static Eigen::Matrix3d getRotationToPlaneXYMatrix(TSPlane& source, TSPlane& target)
-        // {
-        //     Eigen::Matrix3d rot;
-        //     // rotate with axis
-        //     source.Normal.normalize();
-        //     Eigen::Vector3d axis = source.Normal.cross(target.Normal);
-        //     double angle = acos(source.Normal.dot(target.Normal));
-        //     rot = Eigen::AngleAxisd(angle, axis).toRotationMatrix();
 
-        //     return rot;
-        // };
+
 
     public: __always_inline  ///< bool funcs
         /**
@@ -477,7 +534,7 @@ namespace tslam
     public: __always_inline  ///< transform
         // TODO: test me
         /**
-        * @brief It transforms the segment with a given transform matrix
+        * @brief It transforms the segment with a given transform matrix (3x3)
         * 
         * @param transform the transform matrix
         */
@@ -486,28 +543,17 @@ namespace tslam
             this->P1 = transform * this->P1;
             this->P2 = transform * this->P2;
         };
-        // // TODO: test me not valid
-        // void translate(Eigen::Vector3d translation)
-        // {
-        //     this->P1 += translation;
-        //     this->P2 += translation;
-        // };
-
-        // /**
-        //  * @brief Apply a plane to planeXY transform to the segment
-        //  * 
-        //  * @param source source plane
-        //  * @param target target plane
-        //  * @return Eigen::Matrix3d returns the transform matrix
-        //  */
-        // Eigen::Matrix4d plane2PlaneTransform(TSPlane& planeA, TSPlane& planeB)
-        // {
-        //     Eigen::Matrix4d mat = TSPlane::plane2Plane(planeA.Center, planeA.Normal,
-        //                                                planeB.Center, planeB.Normal);
-
-        //     this->transform(mat);
-        //     return mat;
-        // };
+        /**
+         * @brief It transforms the segment with a given transform matrix (4x4)
+         * 
+         * @param transform the transform matrix
+         * @see transform(Eigen::Matrix3d& transform)
+         */
+        void transform(Eigen::Matrix4d& transform)
+        {
+            this->P1 = transform.block<3, 3>(0, 0) * this->P1 + transform.block<3, 1>(0, 3);
+            this->P2 = transform.block<3, 3>(0, 0) * this->P2 + transform.block<3, 1>(0, 3);
+        };
 
     public: __always_inline  ///< custom funcs
         /**
@@ -859,18 +905,28 @@ namespace tslam
 
     public: __always_inline  ///< transform funcs
         /**
-         * @brief It transforms the polygon by an identity matrix
+         * @brief It transforms the polygon by an identity matrix (3x3)
          * 
-         * @param rotMat the identity matrix
+         * @param mat the identity matrix
          */
-        void transform(Eigen::Matrix3d& rotMat)
+        void transform(Eigen::Matrix3d& mat)
         {
             for (auto& v : this->m_Vertices)
             {
-                v = rotMat * v;
+                v = mat * v;
             }
             // apply the transform to the  linkedplane
-            this->m_LinkedPlane.transform(rotMat);
+            this->m_LinkedPlane.transform(mat);
+            // recompute the polygon
+            this->compute();
+        };
+        // TODO: testing
+        void transform(Eigen::Matrix4d& mat)
+        {
+            for (auto& v : this->m_Vertices)
+                v = mat.block<3, 3>(0, 0) * v + mat.block<3, 1>(0, 3);
+            // apply the transform to the  linkedplane
+            this->m_LinkedPlane.transform(mat);
             // recompute the polygon
             this->compute();
         };

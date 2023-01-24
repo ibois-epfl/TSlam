@@ -79,19 +79,21 @@ namespace tslam
              * 
              * @param polygons[in] the polygons to intersect
              * @param segments[out] the segments connecting polygon's detected intersections grouped by plane
+             * @param planes[out] the planes associated to the segments
              */
             void rIntersectPolygons(std::vector<TSPolygon> &polygons,
-                                    std::vector<std::vector<TSSegment>> &segmentsGrouped);
+                                    std::vector<std::vector<TSSegment>> &segmentsGrouped,
+                                    std::vector<TSPlane> &planes);
             /**
              * @brief Split the segments among them. This allows to obtain the polygons describing multiple faces.
              *  The found polygons still need to be selected for candidate faces of the acutal timber piece.
              * 
-             * @param AabbPolygons[in] the AABB-generated polygons
              * @param polygons[out] the polygons to intersect
+             * @param planes[in] the planes associated to the segments
              * @param segmentsGrouped[in] the segments connecting polygon's detected intersections grouped by plane
              */
-            void rIntersectSplittingSegments(std::vector<TSPolygon> &AabbPolygons,
-                                             std::vector<TSPolygon> &polygons,
+            void rIntersectSplittingSegments(std::vector<TSPolygon> &polygons,
+                                             std::vector<TSPlane> &planes,
                                              std::vector<std::vector<TSSegment>> &segmentsGrouped);
             /**
              * @brief This unit selects the best candidates polygons to compose the mesh's faces. To do so
