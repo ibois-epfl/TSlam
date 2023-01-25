@@ -190,6 +190,8 @@ namespace tslam
         {
             return std::fabs(this->Normal.dot(plane.Center - this->Center));
         };
+        // TODO: testing
+
         /**
          * @brief Project a point on the plane.
          * 
@@ -200,6 +202,9 @@ namespace tslam
         {
             Eigen::Vector3d pt =  point - this->distance(point) * this->Normal;
             return pt;
+
+            // Eigen::Vector3d pt = point - this->distance(point) * this->Normal;
+            // return (pt - point).norm();
         };
         /// Extract the two axes of the plane
         void extractAxes()

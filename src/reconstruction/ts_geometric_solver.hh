@@ -221,7 +221,7 @@ namespace tslam
         double m_CreaseAngleThreshold;
         /// The scale factor for scaleing up the AABB of the timber element
         double m_AABBScaleFactor;
-        /// The maximal distance between a polygon and a tag to be considered as a candidate face in meters (0.03 ~3cm)
+        /// The maximal distance between a polygon and a tag to be considered as a candidate face
         double m_MaxPolyTagDist;
         /// The maximal distance between planes of stripes to be eligible for merging
         double m_MaxPlnDist2Merge;
@@ -230,7 +230,7 @@ namespace tslam
         /// The tolerance for all the computation (e.g. for the intersections)
         double m_EPS;
 
-    protected:  ///< Solver internal variables
+    private:  ///< Solver internal variables
         /// Vector of polygons issued of tags' planes-AABB intersections
         std::vector<TSPolygon> m_PlnAABBPolygons;
         /// Vector of splitting segments out of main polygons' intersection
@@ -245,6 +245,13 @@ namespace tslam
         std::vector<TSPolygon> m_FacePolygons;
         /// The timber mesh
         open3d::geometry::TriangleMesh m_MeshOut;
+
+        // TODO: erase, for debugging
+        std::shared_ptr<open3d::geometry::PointCloud> m_DEBUG_pts;
+        // TODO: erase, for debugging
+        std::vector<Eigen::Vector3d> m_DEBUG_normals;
+        // TODO: erase, for debugging
+        std::vector<Eigen::Vector3d> m_DEBUG_centers;
 
     private:  ///< Profiler  // TODO: this needs to be implemented (mayybe for the all tslam)
 #ifdef TSLAM_REC_PROFILER
