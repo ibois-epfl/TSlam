@@ -188,17 +188,6 @@ namespace tslam::Reconstruction
          * @return false if the solver was not able to produce a mesh
          */
         bool hasMesh(){return (m_MeshOut.HasVertices()) ? true : false; };
-        
-    private:  ///< I/O funcs  // FIXME: this should be externalized to the top interface header
-        /**
-         * @brief Export the timber mesh to a .ply file locally.
-         * 
-         */
-        void exportMesh2PLY(std::string& dir, std::string& name);
-        /// Directory to save the timber mesh
-        std::string m_DirOut;
-        /// Name of the timber mesh
-        std::string m_FilenameOut;
     
     private:  ///< Visualizer
         /// visualize the results of the timber reconstruction
@@ -259,8 +248,11 @@ namespace tslam::Reconstruction
         std::vector<TSPolygon> m_SplitPolygons;
         /// Face polygons to create the mesh
         std::vector<TSPolygon> m_FacePolygons;
-        /// The timber mesh
+        /// The timber mesh in format PLY
         open3d::geometry::TriangleMesh m_MeshOut;
+        // TODO: to implement the XAC format and storage for importing on 3d modeler
+        /// The timber mesh in format XAC
+        open3d::geometry::TriangleMesh m_MeshOutXAC;
 
     private:  ///< Profiler  // TODO: this needs to be implemented (mayybe for the all tslam)
 #ifdef TSLAM_REC_PROFILER
