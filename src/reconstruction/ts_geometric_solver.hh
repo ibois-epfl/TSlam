@@ -7,7 +7,7 @@
 #include <Eigen/Core>
 
 
-namespace tslam
+namespace tslam::Reconstruction
 {
     /**
      * @brief TSGeometricSolver class responsible for reconstructing a mesh of the timber from its tags
@@ -104,7 +104,7 @@ namespace tslam
              * @param polygons[in] the polygons to select
              * @param facePolygons[out] the selected polygons
              * @param tolerance[in] the tolerance to select the polygons
-             * @param angleToleranceDeg[in] the angle to check condition 2
+             * @param angleToleranceDeg[in] the angle to check condition
              */
             void rSelectFacePolygons(std::vector<TSPolygon>& polygons,
                                      std::vector<TSPolygon>& facePolygons,
@@ -176,7 +176,7 @@ namespace tslam
          */
         bool check4PlaneTags();
         
-    private:  ///< I/O funcs
+    private:  ///< I/O funcs  // FIXME: this should be externalized to the top interface header
         /**
          * @brief Export the timber mesh to a .ply file locally.
          * 
@@ -219,7 +219,7 @@ namespace tslam
     
     private:  ///< Solver parameters for user's tuning
         /// The timber element to reconstruct
-        std::shared_ptr<tslam::TSTimber> m_Timber;
+        std::shared_ptr<TSTimber> m_Timber;
         /// The threshold for detection of crease's angle (the smaller the more creases will be detected)
         double m_CreaseAngleThreshold;
         /// The scale factor for scaleing up the AABB of the timber element

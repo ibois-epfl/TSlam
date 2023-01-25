@@ -1,6 +1,6 @@
 #include "ts_tassellation.hh"
 
-namespace tslam
+namespace tslam::Reconstruction
 {
     TSTassellation::TSTassellation(std::vector<std::vector<TSSegment>>& segmentsGrouped,
                                    std::vector<TSPlane>& planes,

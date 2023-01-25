@@ -1,9 +1,9 @@
 #include "ts_timber.hh"
 
 
-namespace tslam
+namespace tslam::Reconstruction
 {
-    TSTimber::TSTimber(std::vector<tslam::TSRTag> planeTags)
+    TSTimber::TSTimber(std::vector<TSRTag> planeTags)
         : m_RTags(planeTags)
     {
         this->compute();
@@ -16,7 +16,7 @@ namespace tslam
 
     void TSTimber::removeDuplicateTags(double distancethreshold)
     {
-        std::vector<tslam::TSRTag> tagsNoDuplTemp;
+        std::vector<TSRTag> tagsNoDuplTemp;
         std::shared_ptr<open3d::geometry::PointCloud> pntCldTemp = std::make_shared<open3d::geometry::PointCloud>();
         for (auto& p : this->getPlaneTags())
         {
@@ -42,7 +42,7 @@ namespace tslam
 
     void TSTimber::setPlaneTagsFromYAML(const std::string& filename)
     {
-        tslam::TSRTag::parseFromMAPYAML(filename, this->m_RTags);
+        TSRTag::parseFromMAPYAML(filename, this->m_RTags);
         this->removeDuplicateTags();
         this->compute();
     };

@@ -7,7 +7,7 @@
 #include <array>
 
 
-namespace tslam
+namespace tslam::Reconstruction
 {
     /// Stripe of tags
     class TSRTStripe : public TSCompute

@@ -13,16 +13,14 @@
 #include <array>
 
 
-// TODO: add a sub-namespace tslam::reconstruction
-
-namespace tslam
+namespace tslam::Reconstruction
 {
     void TSGeometricSolver::reconstruct()
     {
         this->rDetectFacesStripes();
         this->rIntersectStripeTagPlnAABB();
         this->rCreatePolysurface();
-        // this->rCreateMesh();
+        this->rCreateMesh();
 
 #ifdef TSLAM_REC_DEBUG
         this->visualize(this->m_ShowVisualizer,
@@ -226,7 +224,7 @@ namespace tslam
             nextIdx = indices[1];
 
             // compute the angle between the two tags
-            double angle = tslam::TSVector::angleBetweenVectors(
+            double angle = TSVector::angleBetweenVectors(
                 tagsCopy[idx].getNormal(),
                 tagsCopy[nextIdx].getNormal());
             
@@ -310,11 +308,11 @@ namespace tslam
         {
             // a. intersect the plane with the AABB
             unsigned int outPtsCount;
-            tslam::TSPlane::plane2AABBSegmentIntersect(this->m_Timber->getTSRTagsStripes()[i]->getMeanPlane(),
-                                                       this->m_Timber->getAABB().min_bound_,
-                                                       this->m_Timber->getAABB().max_bound_,
-                                                       outPtsPtr,
-                                                       outPtsCount);
+            TSPlane::plane2AABBSegmentIntersect(this->m_Timber->getTSRTagsStripes()[i]->getMeanPlane(),
+                                                this->m_Timber->getAABB().min_bound_,
+                                                this->m_Timber->getAABB().max_bound_,
+                                                outPtsPtr,
+                                                outPtsCount);
             // b. save the result into a polygon
             planeIntersections->reserve(outPtsCount);
             planeIntersections->clear();
@@ -524,7 +522,7 @@ namespace tslam
 
     bool TSGeometricSolver::check4PlaneTags()
     {
-        std::vector<tslam::TSRTag> tstag = this->m_Timber->getPlaneTags();
+        std::vector<TSRTag> tstag = this->m_Timber->getPlaneTags();
         if (tstag.size() != 0) return true;
         else
         {

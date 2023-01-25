@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string_view>
 
-namespace tslam
+namespace tslam::Reconstruction
 {
     TSRTStripe::TSRTStripe(std::vector<TSRTag> tags)
     {

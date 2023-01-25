@@ -34,7 +34,7 @@ typedef Arrangement::Face_const_handle                          Face_const_handl
 typedef CGAL::Arr_naive_point_location<Arrangement>             Naive_pl;
 typedef CGAL::Arr_point_location_result<Arrangement>::Type      Pl_result_type;
 
-namespace tslam
+namespace tslam::Reconstruction
 {
     /// TSTassellation is a simple interface parent class for tassellation of the TS.
     class TSTassellation

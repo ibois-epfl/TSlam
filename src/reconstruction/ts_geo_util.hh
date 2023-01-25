@@ -16,7 +16,7 @@
 
 //TODO: all raw pointers for the intersections and other should be replace with smart pointers
 
-namespace tslam
+namespace tslam::Reconstruction
 {
     /// Struct interface for vector utility function
     struct TSVector
@@ -340,46 +340,46 @@ namespace tslam
             // Test edges along X axis, pointing right
             Eigen::Vector3d dir = Eigen::Vector3d(aabb_max[0] - aabb_min[0], 0.f, 0.f);
             Eigen::Vector3d orig = aabb_min;
-            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+            if (TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
                 out_points[out_point_count++] = orig + dir * t;
             orig = Eigen::Vector3d(aabb_min[0], aabb_max[1], aabb_min[2]);
-            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+            if (TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
                 out_points[out_point_count++] = orig + dir * t;
             orig = Eigen::Vector3d(aabb_min[0], aabb_min[1], aabb_max[2]);
-            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+            if (TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
                 out_points[out_point_count++] = orig + dir * t;
             orig = Eigen::Vector3d(aabb_min[0], aabb_max[1], aabb_max[2]);
-            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+            if (TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
                 out_points[out_point_count++] = orig + dir * t;
 
             // Test edges along Y axis, pointing up
             dir = Eigen::Vector3d(0.f, aabb_max[1] - aabb_min[1], 0.f);
             orig = Eigen::Vector3d(aabb_min[0], aabb_min[1], aabb_min[2]);
-            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+            if (TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
                 out_points[out_point_count++] = orig + dir * t;
             orig = Eigen::Vector3d(aabb_max[0], aabb_min[1], aabb_min[2]);
-            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+            if (TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
                 out_points[out_point_count++] = orig + dir * t;
             orig = Eigen::Vector3d(aabb_min[0], aabb_min[1], aabb_max[2]);
-            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+            if (TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
                 out_points[out_point_count++] = orig + dir * t;
             orig = Eigen::Vector3d(aabb_max[0], aabb_min[1], aabb_max[2]);
-            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+            if (TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
                 out_points[out_point_count++] = orig + dir * t;
 
             // Test edges along Z axis, pointing forward
             dir = Eigen::Vector3d(0.f, 0.f, aabb_max[2] - aabb_min[2]);
             orig = Eigen::Vector3d(aabb_min[0], aabb_min[1], aabb_min[2]);
-            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+            if (TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
                 out_points[out_point_count++] = orig + dir * t;
             orig = Eigen::Vector3d(aabb_max[0], aabb_min[1], aabb_min[2]);
-            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+            if (TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
                 out_points[out_point_count++] = orig + dir * t;
             orig = Eigen::Vector3d(aabb_min[0], aabb_max[1], aabb_min[2]);
-            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+            if (TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
                 out_points[out_point_count++] = orig + dir * t;
             orig = Eigen::Vector3d(aabb_max[0], aabb_max[1], aabb_min[2]);
-            if (tslam::TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
+            if (TSPlane::ray2PlaneIntersection(orig, dir, plane, &t, &vd) && t >= 0.f && t <= 1.f)
                 out_points[out_point_count++] = orig + dir * t;
 
             // Test the 8 vertices
@@ -783,9 +783,9 @@ namespace tslam
         /**
          * @brief Get the Linked Plane object
          * 
-         * @return tslam::TSPlane& it returns the plane on which the polygon lies
+         * @return TSPlane& it returns the plane on which the polygon lies
          */
-        tslam::TSPlane& getLinkedPlane() {return m_LinkedPlane; };
+        TSPlane& getLinkedPlane() {return m_LinkedPlane; };
         /**
          * @brief Get the Segments object
          * 
@@ -1207,7 +1207,7 @@ namespace tslam
         /// The polygon's center
         Eigen::Vector3d m_Center;
         /// The plane on which the polygon lies
-        tslam::TSPlane m_LinkedPlane;
+        TSPlane m_LinkedPlane;
         /// The polygon's segments
         std::vector<TSSegment> m_Segments;
         /// the polygon's area

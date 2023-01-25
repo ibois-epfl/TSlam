@@ -1,4 +1,4 @@
-#include "ts_reconstruct.hh"
+#include "tslam_reconstructor.hh"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -22,14 +22,16 @@ int main()
         "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_v_double_stripes.yml"        // 11  TODO:: this is not working, have a look
         };
 
-    // create timber object & read yml TSlam map
-    std::shared_ptr<tslam::TSTimber> timberPtr = std::make_shared<tslam::TSTimber>();
-    timberPtr->setPlaneTagsFromYAML(testData[11]);
+    // (1) create timber object & read yml TSlam map
+    std::shared_ptr<tslam::Reconstruction::TSTimber> timberPtr = 
+        std::make_shared<tslam::Reconstruction::TSTimber>();
+    timberPtr->setPlaneTagsFromYAML(testData[9]);
 
-    // create geometric solver
-    std::shared_ptr<tslam::TSGeometricSolver> solverPtr = std::make_shared<tslam::TSGeometricSolver>();
+    // (2) create geometric solver
+    std::shared_ptr<tslam::Reconstruction::TSGeometricSolver> solverPtr = 
+        std::make_shared<tslam::Reconstruction::TSGeometricSolver>();
 
-    // set solver's parameters
+    // (2.1) set solver's parameters
     solverPtr->setTimber(timberPtr);
     solverPtr->setCreaseAngleThreshold(2.0);   ///< default: 10.0 deg (?)
     solverPtr->setMaxPlnDist2Merge(1.0);       ///< default: 1.0 deg
@@ -38,7 +40,7 @@ int main()
     solverPtr->setMaxPolyTagDist(0.05);        ///< default: 0.05
     solverPtr->setEPS(1e-5);                   ///< default: 1e-5  TODO: in geo util funcs() expose and pass the tolerance
 
-    // set solver's visualizer parameters
+    // (2.2 for debug) set solver's visualizer parameters
     solverPtr->setShowVisualizer(true);
     solverPtr->setSolverVisualizerParams(/*drawTags*/               true,
                                          /*drawTagTypes*/           false,
@@ -47,14 +49,14 @@ int main()
                                          /*drawIntersectedPoly*/    true,
                                          /*drawSplittingSegments*/  true,
                                          /*drawSelectedFace*/       true,
-                                         /*drawFinalMesh*/          false
+                                         /*drawFinalMesh*/          true
                                          );
     
-    // I/O
+    // (2.3) I/O
     solverPtr->setDirOut("/home/as/TSlam/src/reconstruction/tests/test_data/");
     solverPtr->setFilenameOut("test_mesh_1.ply");
 
-    // run it!
+    // (2.4) run it!
     solverPtr->reconstruct();
 
     return 0;

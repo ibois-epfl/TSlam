@@ -6,7 +6,7 @@
 #include <open3d/Open3D.h>
 #include <Eigen/Core>
 
-namespace tslam
+namespace tslam::Reconstruction
 {
     /// TSRTagType enum class for classify tags in stripes (extremes or not)
     enum TSRTagType
@@ -25,7 +25,7 @@ namespace tslam
             m_Type = TSRTagType::Unknown;
             m_Corners = {};
             m_Center = Eigen::Vector3d::Zero();
-            m_Plane = tslam::TSPlane();
+            m_Plane = TSPlane();
             m_FaceIdx = -1;
         };
         ~TSRTag() = default;

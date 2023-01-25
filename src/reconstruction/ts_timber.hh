@@ -2,13 +2,13 @@
 
 #include "ts_rtag.hh"
 #include "ts_rtstripe.hh"
+#include "ts_geo_util.hh"
 
 #include <open3d/Open3D.h>
 #include <Eigen/Core>
 
-//TODO: Tag and Timber classes should inherit from a parent class with interface function compute
 
-namespace tslam
+namespace tslam::Reconstruction
 {
     /**
      * @brief TSTimber represents the timber element to be processed. It containes the
@@ -19,7 +19,7 @@ namespace tslam
     {
     public:
         TSTimber() {m_RTags = {}; };
-        TSTimber(std::vector<tslam::TSRTag> planeTags);
+        TSTimber(std::vector<TSRTag> planeTags);
         ~TSTimber() = default;
 
         /// It scales up the AABB linked to the timber element.
@@ -43,7 +43,7 @@ namespace tslam
          * 
          * @param planeTags vector of TSRTag objects
          */
-        inline void setPlaneTags(std::vector<tslam::TSRTag> planeTags)
+        inline void setPlaneTags(std::vector<TSRTag> planeTags)
         {
             m_RTags.clear();
             m_RTags = planeTags;
@@ -67,7 +67,7 @@ namespace tslam
 
     public: __always_inline
         /// Get all the tags objects attached to the timber element.
-        std::vector<tslam::TSRTag> getPlaneTags() {return m_RTags; };
+        std::vector<TSRTag> getPlaneTags() {return m_RTags; };
         /// Get the tags organized in stripes.
         std::vector<std::shared_ptr<TSRTStripe>>& getTSRTagsStripes() {return m_TSRTagsStripes; };
         /// Get the axis aligned box of the tags attached to the timber element.
@@ -84,7 +84,7 @@ namespace tslam
 
     private:
         /// m_RTags the tag objects sticked to the timber piece.
-        std::vector<tslam::TSRTag> m_RTags;
+        std::vector<TSRTag> m_RTags;
         /// m_TSRTagsStripes the tags organized in stripes.
         std::vector<std::shared_ptr<TSRTStripe>> m_TSRTagsStripes;
         /// m_RtagsCtrs the point cloud constituted by the tags' centers.

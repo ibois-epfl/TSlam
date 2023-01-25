@@ -13,6 +13,7 @@
 ## not urgent
 - [ ] @Petingo: add a simple mesh visualizer for the vanilla TSlam (not for AC).
 - [ ] @Andrea: start writing reconstruction paper section
+- [ ] in file `tslam_export.h` there are old naming to change
 
 ## solved
 - [x] Rewrite the map reconstruction post-processing code to C++

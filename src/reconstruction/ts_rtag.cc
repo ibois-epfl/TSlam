@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 
-namespace tslam
+namespace tslam::Reconstruction
 {
     void TSRTag::setCorners(std::vector<Eigen::Vector3d> corners)
     {
@@ -89,7 +89,7 @@ namespace tslam
         {
             std::string marker = markersToParse[i];
 
-            tslam::TSRTag tag = tslam::TSRTag();
+            TSRTag tag = TSRTag();
 
             // parse  id
             const std::string keyID = "id:";
