@@ -5,7 +5,6 @@
     <img src="./logo/logo_linux_violet.png" width="200">
 </p>
 
-
 <!-- ![](./example/tracking_demo.gif) -->
 
 This is a modified version of [UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62) for augmented carpentry research. The main features are:
@@ -17,9 +16,12 @@ This is a modified version of [UcoSLAM](http://www.uco.es/investiga/grupos/ava/n
 - Several [bugs are resolved](./dev_log/Bug_tracing.md).
 
 Here are some reference related to this project:
-- The official document of UcoSLAM:  [link](https://docs.google.com/document/d/12EGJ3cI-m8XMXgI5bYW1dLi5lBO-vxxr6Cf769wQzJc)
+- The publication for UcoSLAM:  [link]([https://docs.google.com/document/d/12EGJ3cI-m8XMXgI5bYW1dLi5lBO-vxxr6Cf769wQzJc](https://arxiv.org/abs/1902.03729))
 - [STag ROS](https://github.com/usrl-uofsc/stag_ros): Code of STag is from this repo. This one upgrade the original STag from OpenCV 3 to OpenCV 4.
 - [Dev Log of this modification](./dev_log)
+
+## Scanned Map
+Some scanned map can be download from [[Google Drive](https://drive.google.com/drive/folders/1wYFZq54syWwTFVQ5soJTMVUmcufcvQoT?usp=share_link)](You have to login with EPFL account to view).
 
 ## Build
 ```bash
@@ -68,6 +70,22 @@ unzip ../../example/example.map.zip -d ../../example/
 ```
 - `map`: Path to the map.
 - `isInstancing`: Indicating it's not mapping, so we can skip some operations.
+
+### Util Programs
+Some utility programs would be built defautly in `build/utils`
+#### View Map 
+```bash
+./tslam_mapviewer example.map
+```
+#### Combine Maps
+```bash
+./tslam_combine_map A.map B.map AB_comb.map
+```
+#### Export Maps
+```bash
+./tslam_map_export example.map example.[pcd|ply|yml]
+```
+
 
 ### Run GUI:
 ```
