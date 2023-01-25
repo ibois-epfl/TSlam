@@ -245,3 +245,14 @@ Here's the list of next TODOs:
 - [ ] in real world data tolerance needs to be adaptative and permissive for the process of considering tag's centers as part of the plane
 - [ ] internal polygons need to be effectivly culled out to leave only the external polygons.
 - [ ] faces might not have tags. To obviate this, we should find a mechanism to maximize the existing tags (e.g., extending them with a radius or circle)
+
+### Reconstruction - eligible face selection
+In order to select the face composing the actual volume we restructured the previous selectionag's algorithm into the 3 following filtering checks:
+- **(i) an adaptative tolerance**: in order to find the thershold distance to consider a point belonging to a polygon's plane, we consider the median with tolerance (see code). It adapts from polygon to polygon;
+- **(ii) additional selection criteria by normal comparison**: the filtering of closest tag's centers might not be enough in case of internal polygons or corner scenarios. In those cases we check the tag's center normal with the normal of the plane. If too different we pass.
+- **(iii) is the tag's center inside the polygon**: the last check consists in projecting the filtered tag's center so far to the plane, if they are inside the polygon we select our face as a candidate.
+
+![](./select_faces_a.png)
+![](./select_faces_b.png)
+
+> ⚠️ The currentmost important to the system is if *there is an eligible face, which has no sticker attached to the timber face*. In this case it will discared. The algorithm should be reinforced by covering also this case.
