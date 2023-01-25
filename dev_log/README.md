@@ -246,7 +246,7 @@ Here's the list of next TODOs:
 - [x] internal polygons need to be effectivly culled out to leave only the external polygons.
 - [x] faces might not have tags. To obviate this, we should find a mechanism to maximize the existing tags (e.g., extending them with a radius or circle)
 
-### Reconstruction - eligible face selection
+### Reconstruction - eligible face selection + top interface
 In order to select the face composing the actual volume we restructured the previous selectionag's algorithm into the 3 following filtering checks:
 - **(i) an adaptative tolerance**: in order to find the thershold distance to consider a point belonging to a polygon's plane, we consider the median with tolerance (see code). It adapts from polygon to polygon;
 - **(ii) additional selection criteria by normal comparison**: the filtering of closest tag's centers might not be enough in case of internal polygons or corner scenarios. In those cases we check the tag's center normal with the normal of the plane. If too different we pass.
@@ -257,5 +257,15 @@ In order to select the face composing the actual volume we restructured the prev
 
 > ⚠️ The currentmost important to the system is if *there is an eligible face, which has no sticker attached to the timber face*. In this case it will discared. The algorithm should be reinforced by covering also this case.
 
+A basic top api interface is implemented, see the file `tslam_reconstructor.hh`.
+
 Current TODOs:
-- [ ] a piece with double stripes on edges each is not reconstructing correctly, check the bug out.
+- [ ] (urgent) a piece with double stripes on edges each is not reconstructing correctly, check the bug out;
+- [ ] implement the a `.xac` (xml based) format in `ts_geometric_solver.hh` and `tslam_reconstructor.hh`;
+- [ ] find a way to containerize in CMakeLists as a library to be used in the main software
+- [ ] write test units
+- [ ] (optional) write metrics to evaluate the reconstruction
+- [ ] implement an CI on github actions
+- [ ] adapt optitrack
+- [ ] write small program for recordings live
+- [ ] package and integrate the new version of tslam in AC
