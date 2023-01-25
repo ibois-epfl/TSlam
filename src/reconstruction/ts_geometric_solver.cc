@@ -443,6 +443,8 @@ namespace tslam
                                                 std::vector<TSPolygon>& facePolygons,
                                                 double tolerance)
     {
+        //TODO: we need to set a tolerance as an adaptative mechanism, hardcoded values will be a problem for real data
+        
         // get all the points
         std::vector<Eigen::Vector3d> tagCenters;
         for (auto& tag : this->m_Timber->getPlaneTags())
@@ -455,19 +457,19 @@ namespace tslam
 
             for (auto& ctr : tagCenters)
             {
-
-
                 if (polyPln.distance(ctr) < tolerance)
                 {
-                    std::cout << "[DEBUG] distance: " << polyPln.distance(ctr) << std::endl;  // DEBUG
+                    facePolygons.push_back(poly);
+                    break;
+                    // std::cout << "[DEBUG] distance: " << polyPln.distance(ctr) << std::endl;  // DEBUG
 
-                    Eigen::Vector3d ctrProj = polyPln.projectPoint(ctr);
+                    // Eigen::Vector3d ctrProj = polyPln.projectPoint(ctr);
 
-                    if (poly.isPointInsidePolygon(ctrProj, tolerance))
-                    {
-                        facePolygons.push_back(poly);
-                        break;
-                    }
+                    // if (poly.isPointInsidePolygon(ctrProj, tolerance))
+                    // {
+                    //     facePolygons.push_back(poly);
+                    //     break;
+                    // }
                 }
             }
         }

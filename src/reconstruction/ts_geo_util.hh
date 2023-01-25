@@ -837,8 +837,8 @@ namespace tslam
          */
         bool isPointInsidePolygon(Eigen::Vector3d point, double EPS)
         {
-            // if (!this->isPointOnPolygon(point))
-            //     return false;
+            if (this->isPointOnPolygon(point))
+                return false;
 
             TSSegment seg = this->getSegments().front();
             Eigen::Vector3d midPt = seg.getMidPoint();
