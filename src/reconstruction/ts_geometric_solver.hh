@@ -96,17 +96,20 @@ namespace tslam
                                               std::vector<TSPlane> &planes,
                                               std::vector<std::vector<TSSegment>> &segmentsGrouped);
             /**
-             * @brief This unit selects the best candidates polygons to compose the mesh's faces. To do so
-             * it takes each plane of polygons, projects the closest points to it and test if they are inside.
-             * If they are inside the polygon is selected as a candidate face.
-            * 
-            * @param polygons[in] the polygons to select
-            * @param facePolygons[out] the selected polygons
-            * @param tolerance[in] the tolerance to select the polygons
-            */
+             * @brief This unit selects the best candidates polygons to compose the mesh's faces. To do so, for each polygon:
+             *      1. we get all the distances and get a tolerance to sift the closest tag's centers to the polygon's plane
+             *      2. we check if the normals are similar to the polygon's plane by checking their angles
+             *      3. we project the tag's center on the polygon's plane and check if it is inside the polygon
+             * 
+             * @param polygons[in] the polygons to select
+             * @param facePolygons[out] the selected polygons
+             * @param tolerance[in] the tolerance to select the polygons
+             * @param angleToleranceDeg[in] the angle to check condition 2
+             */
             void rSelectFacePolygons(std::vector<TSPolygon>& polygons,
                                      std::vector<TSPolygon>& facePolygons,
-                                     double tolerance);
+                                     double tolerance,
+                                     double angleToleranceDeg);
 
         /// (d)
         /**
@@ -245,13 +248,6 @@ namespace tslam
         std::vector<TSPolygon> m_FacePolygons;
         /// The timber mesh
         open3d::geometry::TriangleMesh m_MeshOut;
-
-        // TODO: erase, for debugging
-        std::shared_ptr<open3d::geometry::PointCloud> m_DEBUG_pts;
-        // TODO: erase, for debugging
-        std::vector<Eigen::Vector3d> m_DEBUG_normals;
-        // TODO: erase, for debugging
-        std::vector<Eigen::Vector3d> m_DEBUG_centers;
 
     private:  ///< Profiler  // TODO: this needs to be implemented (mayybe for the all tslam)
 #ifdef TSLAM_REC_PROFILER

@@ -22,8 +22,9 @@ namespace tslam
         this->rDetectFacesStripes();
         this->rIntersectStripeTagPlnAABB();
         this->rCreatePolysurface();
-        this->rCreateMesh();
+        // this->rCreateMesh();
 
+#ifdef TSLAM_REC_DEBUG
         this->visualize(this->m_ShowVisualizer,
                         this->m_DrawTags,
                         this->m_DrawTagTypes,
@@ -33,7 +34,7 @@ namespace tslam
                         this->m_DrawSplittingSegments,
                         this->m_DrawSelectedFace,
                         this->m_DrawFinalMesh);
-        
+#endif
         // this->exportMesh2PLY(this->m_DirOut, this->m_FilenameOut);  // FIXME: this might not be 
     }
 
@@ -52,30 +53,6 @@ namespace tslam
             return;
         open3d::visualization::Visualizer* vis(new open3d::visualization::Visualizer());
         vis->CreateVisualizerWindow("TSPlaneTags", 1920, 1080);
-
-        // TODO: erase, DEBUG
-        // draw m_DEBUG_pts with normals
-        this->m_DEBUG_pts->PaintUniformColor(Eigen::Vector3d(1, 0, 0));
-        vis->AddGeometry(this->m_DEBUG_pts);
-        // draw normals as lines
-
-        // TODO: erase, DEBUG
-        // draw m_DEBUG_centers as a point cloud with normals from m_DEBUG_normals
-        std::shared_ptr<open3d::geometry::PointCloud> centers = std::make_shared<open3d::geometry::PointCloud>();
-        for (int i = 0; i < this->m_DEBUG_centers.size(); i++)
-        {
-            centers->points_.push_back(this->m_DEBUG_centers[i]);
-            centers->colors_.push_back(Eigen::Vector3d(0, 1, 0));
-
-            Eigen::Vector3d pt1 = m_DEBUG_centers[i];
-            Eigen::Vector3d pt2 = pt1 + this->m_DEBUG_normals[i];
-            std::shared_ptr<open3d::geometry::LineSet> line = std::make_shared<open3d::geometry::LineSet>();
-            line->points_.push_back(pt1);
-            line->points_.push_back(pt2);
-            line->lines_.push_back(Eigen::Vector2i(0, 1));
-            vis->AddGeometry(line);
-        }
-        vis->AddGeometry(centers);
 
         if (drawTags)
         {
@@ -380,7 +357,8 @@ namespace tslam
 
         this->rSelectFacePolygons(this->m_SplitPolygons,
                                   this->m_FacePolygons,
-                                  this->m_MaxPolyTagDist
+                                  this->m_MaxPolyTagDist,
+                                  this->m_MaxPlnDist2Merge
                                   );
     }
     void TSGeometricSolver::rIntersectPolygons(std::vector<TSPolygon> &polygons,
@@ -466,40 +444,19 @@ namespace tslam
     
     void TSGeometricSolver::rSelectFacePolygons(std::vector<TSPolygon>& polygons,
                                                 std::vector<TSPolygon>& facePolygons,
-                                                double tolerance)
+                                                double tolerance,
+                                                double angleToleranceDeg)
     {
-        // TODO: we need to set a tolerance as an adaptative mechanism, hardcoded values will be a problem for real data
-        // TODO: for inside sections we first need to compare if the normals of the points are the same
-
-        /*
-            strategy:
-            1. find the points close to the polygon's plane
-            2. confront the normals of the points with the polygon's plane
-                (this will avoind inside polygons to be selected 
-                and corner scenarios to be dealt with)
-        */
-
         // get all the points
         std::vector<Eigen::Vector3d> tagCenters;
         for (auto& tag : this->m_Timber->getPlaneTags())
             tagCenters.push_back(tag.getCenter());
 
-        // DEBUG
-        std::shared_ptr<open3d::geometry::PointCloud> debugCloud_temp = 
-            std::make_shared<open3d::geometry::PointCloud>();
-
         for (uint i = 0; i < polygons.size(); i++)
         {
-            // if (i != 24) continue;                 // DEBUG inner poly idx: 22, 24
-            // facePolygons.push_back(polygons[i]);   // DEBUG
-
-            // (0) get the plane associated with the polygon
+            // (*) get the plane associated with the polygon
             TSPlane& polyPln = polygons[i].getLinkedPlane();
             Eigen::Vector3d& polyPlnNormal = polyPln.Normal;
-
-            // store the normals in the m_DEBUG_normals vector
-            this->m_DEBUG_normals.push_back(polyPln.Normal);            // DEBUG
-            this->m_DEBUG_centers.push_back(polygons[i].getCenter());   // DEBUG
 
             // (a) find an adaptive threshold based on the median distance to consider a point belonging to the plane
             std::vector<double> distances;
@@ -513,20 +470,16 @@ namespace tslam
             {
                 if (polyPln.distance(tagCenters[j]) < thresholdDist)  // ori: tolerance
                 {
-                    // debugCloud_temp->points_.push_back(tagCenters[j]);  // DEBUG
-
                     // (b) check the angle between the normal of the point and the plane's normal
                     double angle = TSVector::angleBetweenVectors(polyPlnNormal, 
                                                                  this->m_Timber->getPlaneTags()[j].getNormal().normalized());
-                    std::cout << "[DEBUG] angle: " << angle << std::endl;  // DEBUG
 
-                    if (angle < 1)  // to put anglethreshold from settings (e.g. tol - EPS)
+                    if (angle < (angleToleranceDeg))
                     {
                         // (c) check if the point is inside the polygon
                         Eigen::Vector3d ctrProj = polyPln.projectPoint(tagCenters[j]);
                         if (polygons[i].isPointInsidePolygon(ctrProj, tolerance))
                         {
-                            debugCloud_temp->points_.push_back(tagCenters[j]);  // DEBUG
                             facePolygons.push_back(polygons[i]);
                             break;
                         }
@@ -534,34 +487,6 @@ namespace tslam
                 }
             }
         }
-
-        this->m_DEBUG_pts = debugCloud_temp;  // DEBUG
-        std::cout << "print length of faces: " << facePolygons.size() << std::endl;  // DEBUG
-
-
-
-        ////////////////////// ATTEMPT 1 ///////////////////////
-        // for (auto& poly : polygons)
-        // {
-        //     for (auto& tag : this->m_Timber->getPlaneTags())
-        //     {
-        //         Eigen::Vector3d& tagCtr = tag.getCenter();
-        //         TSPlane& polyPln = poly.getLinkedPlane();
-
-        //         std::cout << "[DEBUG] distance: " << polyPln.distance(tagCtr) << std::endl;  // DEBUG
-
-        //         if (polyPln.distance(tagCtr) < tolerance)
-        //         {
-        //             Eigen::Vector3d tagCtrProj = polyPln.projectPoint(tagCtr);
-
-        //             if (poly.isPointInsidePolygon(tagCtrProj))
-        //             {
-        //                 facePolygons.push_back(poly);
-        //                 break;
-        //             }
-        //         }
-        //     }
-        // }
     }
 
     void TSGeometricSolver::rCreateMesh()

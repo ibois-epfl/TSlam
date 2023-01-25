@@ -24,7 +24,7 @@ int main()
 
     // create timber object & read yml TSlam map
     std::shared_ptr<tslam::TSTimber> timberPtr = std::make_shared<tslam::TSTimber>();
-    timberPtr->setPlaneTagsFromYAML(testData[0]);
+    timberPtr->setPlaneTagsFromYAML(testData[11]);
 
     // create geometric solver
     std::shared_ptr<tslam::TSGeometricSolver> solverPtr = std::make_shared<tslam::TSGeometricSolver>();
@@ -32,7 +32,7 @@ int main()
     // set solver's parameters
     solverPtr->setTimber(timberPtr);
     solverPtr->setCreaseAngleThreshold(2.0);   ///< default: 10.0 deg (?)
-    solverPtr->setMaxPlnDist2Merge(1.0);       ///< default: 1.0 deg FIXME: not used?
+    solverPtr->setMaxPlnDist2Merge(1.0);       ///< default: 1.0 deg
     solverPtr->setMaxPlnAngle2Merge(0.9);      ///< default: 0.9 --> 0.9 / 0.5 = 4.5 mm  FIXME: unsure of the function
     solverPtr->setAABBScaleFactor(1.5f);        ///< default: 2.0
     solverPtr->setMaxPolyTagDist(0.05);        ///< default: 0.05
@@ -44,10 +44,10 @@ int main()
                                          /*drawTagTypes*/           false,
                                          /*drawTagNormals*/         false,
                                          /*drawAabb*/               false,
-                                         /*drawIntersectedPoly*/    false,
-                                         /*drawSplittingSegments*/  false,
+                                         /*drawIntersectedPoly*/    true,
+                                         /*drawSplittingSegments*/  true,
                                          /*drawSelectedFace*/       true,
-                                         /*drawFinalMesh*/          true
+                                         /*drawFinalMesh*/          false
                                          );
     
     // I/O

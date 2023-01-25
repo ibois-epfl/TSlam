@@ -241,10 +241,10 @@ The results are quite solid but we are now facing the problem of the *selection 
 ![](./problem_sel_face_candidate.png)
 
 Here's the list of next TODOs:
-- [ ] check if planes are actually well assigned to each new tassellated polygons
-- [ ] in real world data tolerance needs to be adaptative and permissive for the process of considering tag's centers as part of the plane
-- [ ] internal polygons need to be effectivly culled out to leave only the external polygons.
-- [ ] faces might not have tags. To obviate this, we should find a mechanism to maximize the existing tags (e.g., extending them with a radius or circle)
+- [x] check if planes are actually well assigned to each new tassellated polygons
+- [x] in real world data tolerance needs to be adaptative and permissive for the process of considering tag's centers as part of the plane
+- [x] internal polygons need to be effectivly culled out to leave only the external polygons.
+- [x] faces might not have tags. To obviate this, we should find a mechanism to maximize the existing tags (e.g., extending them with a radius or circle)
 
 ### Reconstruction - eligible face selection
 In order to select the face composing the actual volume we restructured the previous selectionag's algorithm into the 3 following filtering checks:
@@ -256,3 +256,6 @@ In order to select the face composing the actual volume we restructured the prev
 ![](./select_faces_b.png)
 
 > ⚠️ The currentmost important to the system is if *there is an eligible face, which has no sticker attached to the timber face*. In this case it will discared. The algorithm should be reinforced by covering also this case.
+
+Current TODOs:
+- [ ] a piece with double stripes on edges each is not reconstructing correctly, check the bug out.
