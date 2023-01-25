@@ -33,7 +33,6 @@ namespace tslam::Reconstruction
                         this->m_DrawSelectedFace,
                         this->m_DrawFinalMesh);
 #endif
-        // this->exportMesh2PLY(this->m_DirOut, this->m_FilenameOut);  // FIXME: this might not be 
     }
 
     void TSGeometricSolver::visualize(bool showVisualizer,
@@ -63,7 +62,7 @@ namespace tslam::Reconstruction
                 Eigen::Vector3d color = Eigen::Vector3d(dis(gen), dis(gen), dis(gen));
                 clrs.push_back(color);
             }
-            for (auto& tag : this->m_Timber->getPlaneTags())
+            for (auto& tag : this->m_Timber.getPlaneTags())
             {
                 open3d::geometry::TriangleMesh tagBase = tag.getOpen3dMesh();
                 auto planeTagsLineset1 = open3d::geometry::LineSet::CreateFromTriangleMesh(tagBase);
@@ -76,7 +75,7 @@ namespace tslam::Reconstruction
         if (drawTagTypes)
         {
             std::shared_ptr<open3d::geometry::PointCloud> tagCenters = std::make_shared<open3d::geometry::PointCloud>();
-            for (auto& tag : this->m_Timber->getPlaneTags())
+            for (auto& tag : this->m_Timber.getPlaneTags())
             {
                 if (tag.isEdge())
                 {
@@ -90,7 +89,7 @@ namespace tslam::Reconstruction
         if (drawTagNormals)
         {
             std::shared_ptr<open3d::geometry::LineSet> tagNormals = std::make_shared<open3d::geometry::LineSet>();
-            for (auto& tag : this->m_Timber->getPlaneTags())
+            for (auto& tag : this->m_Timber.getPlaneTags())
             {
                 tagNormals->points_.push_back(tag.getCenter());
                 tagNormals->points_.push_back(tag.getCenter() + tag.getNormal() * 1.0);
@@ -192,14 +191,14 @@ namespace tslam::Reconstruction
         this->rParseTags2Stripes(tempStripes);
         this->rRefineStripesByPlanes(tempStripes);
 
-        this->m_Timber->setTSRTagsStripes(tempStripes);
+        this->m_Timber.setTSRTagsStripes(tempStripes);
     }
     void TSGeometricSolver::rParseTags2Stripes(std::vector<std::shared_ptr<TSRTStripe>>& stripes)
     {
         // copy tags for destructive operations
         std::unique_ptr<open3d::geometry::PointCloud> ctrsCopyPtr = 
-            std::make_unique<open3d::geometry::PointCloud>(this->m_Timber->getTagsCtrs());
-        auto tagsCopy = this->m_Timber->getPlaneTags();
+            std::make_unique<open3d::geometry::PointCloud>(this->m_Timber.getTagsCtrs());
+        auto tagsCopy = this->m_Timber.getPlaneTags();
 
         // output stripes
         std::shared_ptr<TSRTStripe> stripe = std::make_shared<TSRTStripe>();
@@ -298,19 +297,19 @@ namespace tslam::Reconstruction
     void TSGeometricSolver::rIntersectStripeTagPlnAABB()
     {
         // scale the AABB
-        this->m_Timber->scaleAABB(this->m_AABBScaleFactor);
+        this->m_Timber.scaleAABB(this->m_AABBScaleFactor);
 
         // intersect the planes with the timber's AABB
         Eigen::Vector3d* outPtsPtr = new Eigen::Vector3d[3*6];
         std::vector<Eigen::Vector3d>* planeIntersections = new std::vector<Eigen::Vector3d>();
 
-        for (int i = 0; i < this->m_Timber->getTSRTagsStripes().size(); i++)
+        for (int i = 0; i < this->m_Timber.getTSRTagsStripes().size(); i++)
         {
             // a. intersect the plane with the AABB
             unsigned int outPtsCount;
-            TSPlane::plane2AABBSegmentIntersect(this->m_Timber->getTSRTagsStripes()[i]->getMeanPlane(),
-                                                this->m_Timber->getAABB().min_bound_,
-                                                this->m_Timber->getAABB().max_bound_,
+            TSPlane::plane2AABBSegmentIntersect(this->m_Timber.getTSRTagsStripes()[i]->getMeanPlane(),
+                                                this->m_Timber.getAABB().min_bound_,
+                                                this->m_Timber.getAABB().max_bound_,
                                                 outPtsPtr,
                                                 outPtsCount);
             // b. save the result into a polygon
@@ -321,7 +320,7 @@ namespace tslam::Reconstruction
 
             // if (i==2)  // DEBUG  i.e. 4 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             // {
-                TSPolygon tempPoly = TSPolygon(*planeIntersections, this->m_Timber->getTSRTagsStripes()[i]->getMeanPlane());
+                TSPolygon tempPoly = TSPolygon(*planeIntersections, this->m_Timber.getTSRTagsStripes()[i]->getMeanPlane());
                 tempPoly.reorderClockwisePoints();
                 this->m_PlnAABBPolygons.push_back(tempPoly);
             // }
@@ -447,7 +446,7 @@ namespace tslam::Reconstruction
     {
         // get all the points
         std::vector<Eigen::Vector3d> tagCenters;
-        for (auto& tag : this->m_Timber->getPlaneTags())
+        for (auto& tag : this->m_Timber.getPlaneTags())
             tagCenters.push_back(tag.getCenter());
 
         for (uint i = 0; i < polygons.size(); i++)
@@ -470,7 +469,7 @@ namespace tslam::Reconstruction
                 {
                     // (b) check the angle between the normal of the point and the plane's normal
                     double angle = TSVector::angleBetweenVectors(polyPlnNormal, 
-                                                                 this->m_Timber->getPlaneTags()[j].getNormal().normalized());
+                                                                 this->m_Timber.getPlaneTags()[j].getNormal().normalized());
 
                     if (angle < (angleToleranceDeg))
                     {
@@ -522,7 +521,7 @@ namespace tslam::Reconstruction
 
     bool TSGeometricSolver::check4PlaneTags()
     {
-        std::vector<TSRTag> tstag = this->m_Timber->getPlaneTags();
+        std::vector<TSRTag> tstag = this->m_Timber.getPlaneTags();
         if (tstag.size() != 0) return true;
         else
         {

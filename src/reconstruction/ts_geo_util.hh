@@ -14,8 +14,6 @@
 
 #include <open3d/Open3D.h>
 
-//TODO: all raw pointers for the intersections and other should be replace with smart pointers
-
 namespace tslam::Reconstruction
 {
     /// Struct interface for vector utility function
@@ -190,8 +188,6 @@ namespace tslam::Reconstruction
         {
             return std::fabs(this->Normal.dot(plane.Center - this->Center));
         };
-        // TODO: testing
-
         /**
          * @brief Project a point on the plane.
          * 
@@ -863,8 +859,6 @@ namespace tslam::Reconstruction
                     intersections.push_back(tempIntersection);
                 }
             }
-
-            std::cout << "Number of intersections: " << intersections.size() << "\n";
 
             if (intersections.size() % 2 == 1)
                 return true;

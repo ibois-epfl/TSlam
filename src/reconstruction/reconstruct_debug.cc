@@ -6,7 +6,7 @@
 
 int main()
 {
-    // test data
+    // (* for debug) test data
     std::vector<std::string> testData = {
         "/home/as/TSlam/src/reconstruction/tests/test_data/long_map.yml",                        // 0
         "/home/as/TSlam/src/reconstruction/tests/test_data/mid_map.yml",                         // 1
@@ -22,42 +22,39 @@ int main()
         "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_v_double_stripes.yml"        // 11  TODO:: this is not working, have a look
         };
 
-    // (1) create timber object & read yml TSlam map
-    std::shared_ptr<tslam::Reconstruction::TSTimber> timberPtr = 
-        std::make_shared<tslam::Reconstruction::TSTimber>();
-    timberPtr->setPlaneTagsFromYAML(testData[9]);
-
-    // (2) create geometric solver
-    std::shared_ptr<tslam::Reconstruction::TSGeometricSolver> solverPtr = 
-        std::make_shared<tslam::Reconstruction::TSGeometricSolver>();
-
-    // (2.1) set solver's parameters
-    solverPtr->setTimber(timberPtr);
-    solverPtr->setCreaseAngleThreshold(2.0);   ///< default: 10.0 deg (?)
-    solverPtr->setMaxPlnDist2Merge(1.0);       ///< default: 1.0 deg
-    solverPtr->setMaxPlnAngle2Merge(0.9);      ///< default: 0.9 --> 0.9 / 0.5 = 4.5 mm  FIXME: unsure of the function
-    solverPtr->setAABBScaleFactor(1.5f);        ///< default: 2.0
-    solverPtr->setMaxPolyTagDist(0.05);        ///< default: 0.05
-    solverPtr->setEPS(1e-5);                   ///< default: 1e-5  TODO: in geo util funcs() expose and pass the tolerance
-
-    // (2.2 for debug) set solver's visualizer parameters
-    solverPtr->setShowVisualizer(true);
-    solverPtr->setSolverVisualizerParams(/*drawTags*/               true,
-                                         /*drawTagTypes*/           false,
-                                         /*drawTagNormals*/         false,
-                                         /*drawAabb*/               false,
-                                         /*drawIntersectedPoly*/    true,
-                                         /*drawSplittingSegments*/  true,
-                                         /*drawSelectedFace*/       true,
-                                         /*drawFinalMesh*/          true
-                                         );
+    // (0) create reconstructor
+    tslam::Reconstruction::TSLAMReconstructor reconstructor = 
+        tslam::Reconstruction::TSLAMReconstructor();
     
-    // (2.3) I/O
-    solverPtr->setDirOut("/home/as/TSlam/src/reconstruction/tests/test_data/");
-    solverPtr->setFilenameOut("test_mesh_1.ply");
+    // (0.1) load map
+    reconstructor.loadMap(testData[9]);
+
+    // (0.2) set parameters
+    reconstructor.setParams(2.0,
+                            1.0,
+                            0.9,
+                            1.5,
+                            0.05,
+                            1e-6);
+
+    // (* for debug) set solver's visualizer parameters
+    reconstructor.getGeometricSolver().setShowVisualizer(true);
+    reconstructor.getGeometricSolver().setSolverVisualizerParams(/*drawTags*/               true,
+                                                                 /*drawTagTypes*/           false,
+                                                                 /*drawTagNormals*/         false,
+                                                                 /*drawAabb*/               false,
+                                                                 /*drawIntersectedPoly*/    true,
+                                                                 /*drawSplittingSegments*/  true,
+                                                                 /*drawSelectedFace*/       true,
+                                                                 /*drawFinalMesh*/          true
+                                                                 );
 
     // (2.4) run it!
-    solverPtr->reconstruct();
+    reconstructor.run();
+
+    // (2.5) save mesh (as PLY or XAC)
+    reconstructor.saveMeshAsPLY("/home/as/TSlam/src/reconstruction/tests/test_data/", "test_mesh.ply");
+
 
     return 0;
 }

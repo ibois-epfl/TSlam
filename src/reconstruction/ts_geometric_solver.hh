@@ -24,6 +24,7 @@ namespace tslam::Reconstruction
             m_MaxPlnAngle2Merge=0.9;
             m_MaxPolyTagDist=0.5;
             m_EPS=1e-05;
+            m_ShowVisualizer=false;
         };
         ~TSGeometricSolver() = default;
 
@@ -136,12 +137,12 @@ namespace tslam::Reconstruction
             bool rCheckMeshSanity(open3d::geometry::TriangleMesh& mesh);
 
     public: __always_inline  ///< Setters for solver parameters
-        void setTimber(std::shared_ptr<TSTimber> timber){m_Timber = timber; check4PlaneTags();};
-        void setCreaseAngleThreshold(double crease_angle_threshold){m_CreaseAngleThreshold = crease_angle_threshold;};
-        void setMaxPlnDist2Merge(double max_pln_dist){m_MaxPlnDist2Merge = max_pln_dist;};
-        void setMaxPlnAngle2Merge(double max_pln_angle){m_MaxPlnAngle2Merge = max_pln_angle;};
-        void setAABBScaleFactor(double aabb_scale_factor){m_AABBScaleFactor = aabb_scale_factor;};
-        void setMaxPolyTagDist(double max_poly_dist){m_MaxPolyTagDist = max_poly_dist;};
+        void setTimber(TSTimber timber){m_Timber = timber; check4PlaneTags();};
+        void setCreaseAngleThreshold(double creaseAngleThreshold){m_CreaseAngleThreshold = creaseAngleThreshold;};
+        void setMaxPlnDist2Merge(double maxPlnDist){m_MaxPlnDist2Merge = maxPlnDist;};
+        void setMaxPlnAngle2Merge(double maxPlnAngle){m_MaxPlnAngle2Merge = maxPlnAngle;};
+        void setAABBScaleFactor(double aabbScaleFactor){m_AABBScaleFactor = aabbScaleFactor;};
+        void setMaxPolyTagDist(double maxPolyDist){m_MaxPolyTagDist = maxPolyDist;};
         void setEPS(double eps){m_EPS = eps;};
 
         void setDirOut(const std::string& dir){this->m_DirOut = dir;};
@@ -166,8 +167,11 @@ namespace tslam::Reconstruction
             m_DrawSelectedFace = drawSelectedFace;
             m_DrawFinalMesh = drawFinalMesh;
         };
+    
+    public: __always_inline  ///< Getters for solver parameters
+        open3d::geometry::TriangleMesh& getMeshOut() {return this->m_MeshOut;};
 
-    private:  ///< utility funcs
+    private:  ///< private utility funcs
         /** 
          * @brief check4PlaneTags checks if the timber object has plane tags
          * 
@@ -175,6 +179,15 @@ namespace tslam::Reconstruction
          * @return false if the timber object has no plane tags
          */
         bool check4PlaneTags();
+    
+    public:  ///< public utility funcs
+        /**
+         * @brief Check if the geometric solver was able to produce a mesh.
+         * 
+         * @return true if the solver was able to produce a mesh
+         * @return false if the solver was not able to produce a mesh
+         */
+        bool hasMesh(){return (m_MeshOut.HasVertices()) ? true : false; };
         
     private:  ///< I/O funcs  // FIXME: this should be externalized to the top interface header
         /**
@@ -219,7 +232,7 @@ namespace tslam::Reconstruction
     
     private:  ///< Solver parameters for user's tuning
         /// The timber element to reconstruct
-        std::shared_ptr<TSTimber> m_Timber;
+        TSTimber m_Timber;
         /// The threshold for detection of crease's angle (the smaller the more creases will be detected)
         double m_CreaseAngleThreshold;
         /// The scale factor for scaleing up the AABB of the timber element

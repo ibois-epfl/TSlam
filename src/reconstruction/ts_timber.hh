@@ -64,8 +64,8 @@ namespace tslam::Reconstruction
                 }
             }
         };
-
-    public: __always_inline
+    
+    public: __always_inline  ///< tag funcs
         /// Get all the tags objects attached to the timber element.
         std::vector<TSRTag> getPlaneTags() {return m_RTags; };
         /// Get the tags organized in stripes.
@@ -74,15 +74,17 @@ namespace tslam::Reconstruction
         open3d::geometry::AxisAlignedBoundingBox& getAABB() {return m_AABB; };
         /// Get the point cloud of the tags' centers.
         open3d::geometry::PointCloud& getTagsCtrs() {return m_RtagsCtrs; };
+        /// Get if the object has tags attached to it.
+        bool hasTags() {return (m_RTags.size() > 0) ? true : false; };
 
-    private:
+    private:  ///< compute funcs
         void compute() override;
         /// It computes the axis aligned bounding box of the tags and store it in a member variable.
         void computeAABB();
         /// It computes the point cloud of the tags' centers and store it in a member variable.
         void computeTagsCtrs();
 
-    private:
+    private:  ///< member vars
         /// m_RTags the tag objects sticked to the timber piece.
         std::vector<TSRTag> m_RTags;
         /// m_TSRTagsStripes the tags organized in stripes.
