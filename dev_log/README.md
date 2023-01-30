@@ -269,7 +269,7 @@ Current TODOs:
 - [ ] (urgent) a piece with double stripes on edges each is not reconstructing correctly, check the bug out;
 - [ ] (urgen) solve reconstruction for more complex objects
 - [ ] implement the a `.xac` (xml based) format in `ts_geometric_solver.hh` and `tslam_reconstructor.hh`;
-- [ ] find a way to containerize in CMakeLists as a library to be used in the main software
+- [ ] find a way to containerize in CMakeLists as a library to be used in the main software and integrate in main TSlam CMakeLists file
 - [ ] write test units
 - [ ] (optional) write metrics to evaluate the reconstruction
 - [ ] implement an CI on github actions

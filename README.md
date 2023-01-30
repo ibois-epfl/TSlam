@@ -20,6 +20,9 @@ Here are some reference related to this project:
 - [STag ROS](https://github.com/usrl-uofsc/stag_ros): Code of STag is from this repo. This one upgrade the original STag from OpenCV 3 to OpenCV 4.
 - [Dev Log of this modification](./dev_log)
 
+## STag to print
+An A0 format with all STag stripes can be downloaded [here](https://drive.google.com/file/d/1a_uYvb9TZmeg664L9f9kR5GuTU0A3bfs/view?usp=share_link).
+
 ## Scanned Map
 Some scanned map can be download from [[Google Drive](https://drive.google.com/drive/folders/1wYFZq54syWwTFVQ5soJTMVUmcufcvQoT?usp=share_link)](You have to login with EPFL account to view).
 
