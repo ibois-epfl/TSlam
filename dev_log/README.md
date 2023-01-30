@@ -259,8 +259,15 @@ In order to select the face composing the actual volume we restructured the prev
 
 A basic top api interface is implemented, see the file `tslam_reconstructor.hh`.
 
+We also tried to give it a shot for very complex geometries such as this one but without success.
+
+![](./complex_shape.png)
+![](./real_complexe.jpg)
+
+
 Current TODOs:
 - [ ] (urgent) a piece with double stripes on edges each is not reconstructing correctly, check the bug out;
+- [ ] (urgen) solve reconstruction for more complex objects
 - [ ] implement the a `.xac` (xml based) format in `ts_geometric_solver.hh` and `tslam_reconstructor.hh`;
 - [ ] find a way to containerize in CMakeLists as a library to be used in the main software
 - [ ] write test units

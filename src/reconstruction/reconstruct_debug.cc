@@ -19,7 +19,8 @@ int main()
         "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_v.yml",       // 8
         "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_v_not_symmetrical.yml",        // 9
         "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_h_rot.yml",        // 10
-        "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_v_double_stripes.yml"        // 11  TODO:: this is not working, have a look
+        "/home/as/TSlam/src/reconstruction/tests/test_data/synth_parallel_XY_XZ_YZ_v_double_stripes.yml",        // 11  TODO:: this is not working, have a look
+        "/home/as/TSlam/src/reconstruction/tests/test_data/real_world_pyramid.yml"        // 12
         };
 
     // (0) create reconstructor
@@ -27,7 +28,7 @@ int main()
         tslam::Reconstruction::TSLAMReconstructor();
     
     // (0.1) load map
-    reconstructor.loadMap(testData[9]);
+    reconstructor.loadMap(testData[12]);
 
     // (0.2) set parameters
     reconstructor.setParams(2.0,
@@ -43,10 +44,10 @@ int main()
                                                                  /*drawTagTypes*/           false,
                                                                  /*drawTagNormals*/         false,
                                                                  /*drawAabb*/               false,
-                                                                 /*drawIntersectedPoly*/    true,
-                                                                 /*drawSplittingSegments*/  true,
+                                                                 /*drawIntersectedPoly*/    false,
+                                                                 /*drawSplittingSegments*/  false,
                                                                  /*drawSelectedFace*/       true,
-                                                                 /*drawFinalMesh*/          true
+                                                                 /*drawFinalMesh*/          false
                                                                  );
 
     // (2.4) run it!

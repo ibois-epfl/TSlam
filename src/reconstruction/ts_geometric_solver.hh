@@ -145,9 +145,6 @@ namespace tslam::Reconstruction
         void setMaxPolyTagDist(double maxPolyDist){m_MaxPolyTagDist = maxPolyDist;};
         void setEPS(double eps){m_EPS = eps;};
 
-        void setDirOut(const std::string& dir){this->m_DirOut = dir;};
-        void setFilenameOut(const std::string& name){this->m_FilenameOut = name;};
-
         void setShowVisualizer(bool showVisualizer){m_ShowVisualizer = showVisualizer;};
         void setSolverVisualizerParams(bool drawTags = true,
                                        bool drawTagTypes = true,

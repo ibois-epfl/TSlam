@@ -20,7 +20,7 @@ namespace tslam::Reconstruction
         this->rDetectFacesStripes();
         this->rIntersectStripeTagPlnAABB();
         this->rCreatePolysurface();
-        this->rCreateMesh();
+        // this->rCreateMesh();
 
 #ifdef TSLAM_REC_DEBUG
         this->visualize(this->m_ShowVisualizer,
@@ -511,12 +511,6 @@ namespace tslam::Reconstruction
             return true;
         else
             return false;
-    }
-
-    void TSGeometricSolver::exportMesh2PLY(std::string& dir, std::string& name)
-    {
-        std::string plyName = dir + name;
-        open3d::io::WriteTriangleMesh(plyName, this->m_MeshOut);
     }
 
     bool TSGeometricSolver::check4PlaneTags()
