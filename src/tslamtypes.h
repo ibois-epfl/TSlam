@@ -92,7 +92,7 @@ struct TSLAM_API Params{
     bool detectKeyPoints;//(dis/en)ables kp detection
     DescriptorTypes::Type kpDescriptorType;//keypoint descriptor employed
     bool KPNonMaximaSuppresion;//activating it will create maps with less points (faster).
-    bool enableLoopClosure=true;//if disabled, loop closure detection and correction will not be enabled.
+    bool enableLoopClosure=false;//if disabled, loop closure detection and correction will not be enabled.
     float KFMinConfidence;//value that regulates when a keyframe is added. Range (0,inf). low values will include less keyframes. high value will include more keyframes
     int maxFeatures;//number of features to be detected in the image
     int nOctaveLevels;//number of octaves for keypoint detection

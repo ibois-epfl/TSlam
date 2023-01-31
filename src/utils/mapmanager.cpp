@@ -185,14 +185,7 @@ namespace tslam {
 
             }
 
-            if (
-
-                    System::
-
-                    getParams()
-
-                            .reLocalizationWithMarkers && !System::getParams().isInstancing) {
-
+            if (System::getParams().reLocalizationWithMarkers && !System::getParams().isInstancing) {
                 _LoopClosureInfo = _TheLoopDetector_141391->detectLoopFromMarkers(_175247760268, currentKeyFrameId);
             }
 
@@ -925,9 +918,10 @@ namespace tslam {
 
         delete newPtrFrame;
 
-        if (System::getParams().reLocalizationWithKeyPoints && !System::getParams().isInstancing)
-            _LoopClosureInfo = _TheLoopDetector_141391->detectLoopFromKeyPoints(keyframe_169372,
-                                                                                    _CurkeyFrame);
+        if (System::getParams().reLocalizationWithKeyPoints && !System::getParams().isInstancing) {
+            _LoopClosureInfo = _TheLoopDetector_141391->detectLoopFromKeyPoints(keyframe_169372,_CurkeyFrame);
+        }
+
 
         TheMap->unlock(__FUNCTION__, __FILE__, __LINE__);
 
@@ -1025,7 +1019,6 @@ namespace tslam {
 
         // keep deleting the new frame during instancing
         if (System::getParams().isInstancing) {
-
             // if there're > the specified number of new added frame, remove them
             while (newInsertedKeyFrames.size() > 20) {
                 auto kfIdxToBeRemoved = newInsertedKeyFrames.front();

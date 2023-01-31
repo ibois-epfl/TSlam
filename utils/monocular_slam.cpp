@@ -91,10 +91,12 @@ void overwriteParamsByCommandLine(CmdLineParser &cml,tslam::Params &params){
     if(cml["-extra_params"])    params.extraParams=cml("-extra_params");
 
     if(cml["-scale"]) params.kptImageScaleFactor=stof(cml("-scale"));
-
     if(cml["-nokploopclosure"]) params.reLocalizationWithKeyPoints=false;
     if(cml["-inplanemarkers"]) params.inPlaneMarkers=true;
     params.aruco_CornerRefimentMethod=cml("-aruco-cornerRefinementM","CORNER_SUBPIX");
+
+    if(cml["-enableLoopClosure"]) params.enableLoopClosure=true;
+    else params.enableLoopClosure=false;
 
     if (cml["-dbg_str"])
         tslam::debug::Debug::addString(cml("-dbg_str"),"");
@@ -201,6 +203,8 @@ int main(int argc,char **argv){
     if( cml["-params"]) params.readFromYMLFile(cml("-params"));
     overwriteParamsByCommandLine(cml,params);
 
+    params.enableLoopClosure = false;
+
     auto TheMap = std::make_shared<tslam::Map>();
     //read the map from file?
     if (cml["-map"]){
@@ -295,7 +299,7 @@ int main(int argc,char **argv){
            }
 
             // enhanceImage (more contrast)
-//            enhanceImageBGR(in_image, in_image);
+            // enhanceImageBGR(in_image, in_image);
 
             currentFrameIndex = vcap.getNextFrameIndex() - 1;
 
@@ -315,7 +319,6 @@ int main(int argc,char **argv){
 
             //save to output video?
             if (!TheOutputVideo.empty()){
-                cout << "meow";
                 auto image=TheViewer.getImage();
                 if(!videoout.isOpened()){
                     videoout.open(TheOutputVideo, CV_FOURCC('X', '2', '6', '4'), stof(cml("-fps","30")),image.size()  , image.channels()!=1);
@@ -324,7 +327,6 @@ int main(int argc,char **argv){
 
                 if(videoout.isOpened()) {
                     videoout.write(image);
-                    cout << "write";
                 }
             }
 
