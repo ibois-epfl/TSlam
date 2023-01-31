@@ -547,15 +547,4 @@ namespace tslam::Reconstruction
         else
             return false;
     }
-
-    bool TSGeometricSolver::check4PlaneTags()
-    {
-        std::vector<TSRTag> tstag = this->m_Timber.getPlaneTags();
-        if (tstag.size() != 0) return true;
-        else
-        {
-            throw std::runtime_error("[ERROR]: corners are not set.");
-        }
-        return false;
-    }
 }

@@ -69,13 +69,7 @@ namespace tslam::Reconstruction
         // TODO: implement the XAC file writer
         void saveMeshAsXAC(const std::string& dir, const std::string& filename);
     
-    public:  ///< special getters
-        // /**
-        //  * @brief Get the timber object.
-        //  * 
-        //  * @return TSTimber& timber object
-        //  */
-        // TSTimber& getTimber() { return this->m_Timber; };
+    public:  ///< engine getter
         /**
          * @brief Get the geometric solver object.
          * 
@@ -91,8 +85,6 @@ namespace tslam::Reconstruction
         };
 
     private:  ///< internal members
-        // const std::string m_YMLpath;
-        TSTimber m_Timber;
         TSGeometricSolver m_GeometricSolver;
     };
 }

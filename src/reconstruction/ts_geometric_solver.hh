@@ -20,6 +20,7 @@ namespace tslam::Reconstruction
         TSGeometricSolver()
         {
             m_Timber = TSTimber();
+
             m_CreaseAngleThreshold=10.0;
             m_AABBScaleFactor=2.0;
             m_MaxPlnDist2Merge=5.2;
@@ -139,7 +140,6 @@ namespace tslam::Reconstruction
             bool rCheckMeshSanity(open3d::geometry::TriangleMesh& mesh);
 
     public: __always_inline  ///< Setters for solver parameters
-        void setTimber(TSTimber timber){m_Timber = timber; check4PlaneTags();};
         void setCreaseAngleThreshold(double creaseAngleThreshold){m_CreaseAngleThreshold = creaseAngleThreshold;};
         void setMaxPlnDist2Merge(double maxPlnDist){m_MaxPlnDist2Merge = maxPlnDist;};
         void setMaxPlnAngle2Merge(double maxPlnAngle){m_MaxPlnAngle2Merge = maxPlnAngle;};
@@ -169,15 +169,6 @@ namespace tslam::Reconstruction
     
     public: __always_inline  ///< Getters for solver parameters
         open3d::geometry::TriangleMesh& getMeshOut() {return this->m_MeshOut;};
-
-    private:  ///< private utility funcs
-        /** 
-         * @brief check4PlaneTags checks if the timber object has plane tags
-         * 
-         * @return true if the timber object has plane tags
-         * @return false if the timber object has no plane tags
-         */
-        bool check4PlaneTags();
     
     public:  ///< public utility funcs
         /**
@@ -243,9 +234,9 @@ namespace tslam::Reconstruction
         TSTimber& getTimber(){return this->m_Timber;};
 
     private:  ///< Solver components
-        /// The timber element to reconstruct
+        /// The timber component of the geometric solver contains all the tags and tag stripes
         TSTimber m_Timber;
-        /// The tassellotor plugin object
+        /// The tassellotor component object is a plugin responsible for the tassellation of spliiting segments
         // TSTassellation m_Tasselator;
     
     private:  ///< Solver parameters for user's tuning

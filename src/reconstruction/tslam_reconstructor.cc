@@ -7,7 +7,6 @@ namespace tslam::Reconstruction
 {
     TSLAMReconstructor::TSLAMReconstructor()
     {
-        // this->m_Timber = TSTimber();
         this->m_GeometricSolver = TSGeometricSolver();
     }
 
@@ -18,7 +17,6 @@ namespace tslam::Reconstruction
                                        double maxPolyDist,
                                        double eps)
     {
-        // this->m_GeometricSolver.setTimber(this->m_Timber);
         this->m_GeometricSolver.setCreaseAngleThreshold(creaseAngleThreshold);
         this->m_GeometricSolver.setMaxPlnDist2Merge(maxPlnDist);
         this->m_GeometricSolver.setMaxPlnAngle2Merge(maxPlnAngle);
