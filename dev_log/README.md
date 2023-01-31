@@ -275,9 +275,9 @@ A basic top api interface is implemented, see the file `tslam_reconstructor.hh`.
 
 We also tried to give it a shot for very complex geometries such as this one but without success.
 
-![](./complex_shape.png)
-![](./real_complexe.jpg)
-
+|        real object       |     reconstruct geo      |
+|:------------------------:|:------------------------:|
+| ![](./complex_shape.png) | ![](./real_complexe.jpg) |
 
 Current TODOs:
 - [ ] (urgent) a piece with double stripes on edges each is not reconstructing correctly, check the bug out;
