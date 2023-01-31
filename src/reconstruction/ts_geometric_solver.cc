@@ -20,7 +20,7 @@ namespace tslam::Reconstruction
         this->rDetectFacesStripes();
         this->rIntersectStripeTagPlnAABB();
         this->rCreatePolysurface();
-        // this->rCreateMesh();
+        this->rCreateMesh();
 
 #ifdef TSLAM_REC_DEBUG
         this->visualize(this->m_ShowVisualizer,
@@ -54,7 +54,12 @@ namespace tslam::Reconstruction
         if (drawTags)
         {
             std::vector<Eigen::Vector3d> clrs;
-            for (int i = 0; i < 10; i++)
+
+            std::vector<int> faceIdxs;
+            for (auto& tag : this->m_Timber.getPlaneTags())
+                faceIdxs.push_back(tag.getFaceIdx());
+            std::sort(faceIdxs.begin(), faceIdxs.end());
+            for (int i = 0; i < faceIdxs.back()+1; i++)
             {
                 std::random_device rd;
                 std::mt19937 gen(rd());

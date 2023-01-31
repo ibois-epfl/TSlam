@@ -184,8 +184,23 @@ namespace tslam::Reconstruction
          * @return true if the solver was able to produce a mesh
          * @return false if the solver was not able to produce a mesh
          */
-        bool hasMesh(){return (m_MeshOut.HasVertices()) ? true : false; };
+        bool hasMesh(){return (this->m_MeshOut.HasVertices()) ? true : false; };
     
+    public:  __always_inline  ///< clean out memory func
+        /// Function to clean all the members and memory linked to the solver
+        void clean()
+        {
+            this->m_PlnAABBPolygons.clear();
+            this->m_SplitSegments.clear();
+            this->m_SplitSegmentsPlanes.clear();
+            this->m_SplitSegmentsGrouped.clear();
+            this->m_SplitPolygons.clear();
+            this->m_FacePolygons.clear();
+
+            this->m_MeshOut.Clear();
+            this->m_MeshOutXAC.Clear();
+        };
+
     private:  ///< Visualizer
         /// visualize the results of the timber reconstruction
         void visualize(bool showVisualizer,
