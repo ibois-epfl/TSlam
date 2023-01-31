@@ -16,22 +16,9 @@ namespace tslam::Reconstruction
 {
     void TSGeometricSolver::reconstruct()
     {
-        // print size of all vectors 
-        std::cout << "m_Timber.getPlaneTags().size() = " << this->m_Timber.getPlaneTags().size() << std::endl;
-        std::cout << "m_PlnAABBPolygons size: " << this->m_PlnAABBPolygons.size() << std::endl;
-        std::cout << "m_SplitSegments size: " << this->m_SplitSegments.size() << std::endl;
-        std::cout << "m_SplitSegmentsPlanes size: " << this->m_SplitSegmentsPlanes.size() << std::endl;
-        std::cout << "m_SplitSegmentsGrouped size: " << this->m_SplitSegmentsGrouped.size() << std::endl;
-        std::cout << "m_SplitPolygons size: " << this->m_SplitPolygons.size() << std::endl;
-        std::cout << "m_FacePolygons size: " << this->m_FacePolygons.size() << std::endl;
-
-
         this->rDetectFacesStripes();
-        std::cout << "POP1" << std::endl;  // DEBUG
         this->rIntersectStripeTagPlnAABB();
-        std::cout << "POP2" << std::endl;  // DEBUG
         this->rCreatePolysurface();
-        std::cout << "POP3" << std::endl;  // DEBUG
         this->rCreateMesh();
 
 #ifdef TSLAM_REC_DEBUG
@@ -361,28 +348,19 @@ namespace tslam::Reconstruction
 
     void TSGeometricSolver::rCreatePolysurface()
     {
-        std::cout << "POP_CreatPolysurface()1" << std::endl;  // DEBUG
-
         this->rIntersectPolygons(this->m_PlnAABBPolygons,
                                  this->m_SplitSegmentsGrouped,
                                  this->m_SplitSegmentsPlanes);
 
-        std::cout << "POP_CreatPolysurface()2" << std::endl;  // DEBUG
-
         this->rTassellateSplittingSegments(this->m_SplitPolygons,
                                            this->m_SplitSegmentsPlanes,
                                            this->m_SplitSegmentsGrouped);
-
-        std::cout << "POP_CreatPolysurface()3" << std::endl;  // DEBUG
-        std::cout << "m_SplitPolygons.size() = " << this->m_SplitPolygons.size() << std::endl;  // DEBUG
 
         this->rSelectFacePolygons(this->m_SplitPolygons,
                                   this->m_FacePolygons,
                                   this->m_MaxPolyTagDist,
                                   this->m_MaxPlnDist2Merge
                                   );
-
-        std::cout << "POP_CreatPolysurface()4" << std::endl;  // DEBUG
     }
     void TSGeometricSolver::rIntersectPolygons(std::vector<TSPolygon> &polygons,
                                                std::vector<std::vector<TSSegment>> &segmentsGrouped,
@@ -456,22 +434,11 @@ namespace tslam::Reconstruction
                                                          std::vector<TSPlane> &planes,
                                                          std::vector<std::vector<TSSegment>> &segmentsGrouped)
     {
-        std::unique_ptr<TSTassellation> tassellatorPtr = 
-            std::make_unique<TSTassellation>(
-                    segmentsGrouped,
-                    planes,
-                    polygons
-            );
-        tassellatorPtr->tassellate();
-
-        // TSTassellation tasselator(
-        //         segmentsGrouped,
-        //         planes,
-        //         polygons
-        // );
-
-        // this->m_Tasselator = tasselator;
-        // this->m_Tasselator.tassellate();
+        this->m_TasselatorPtr = std::make_shared<TSTassellation>(segmentsGrouped,
+                                                                 planes,
+                                                                 polygons
+        );
+        this->m_TasselatorPtr->tassellate();
     }
     
     void TSGeometricSolver::rSelectFacePolygons(std::vector<TSPolygon>& polygons,

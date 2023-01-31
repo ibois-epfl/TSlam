@@ -20,6 +20,7 @@ namespace tslam::Reconstruction
         TSGeometricSolver()
         {
             m_Timber = TSTimber();
+            m_TasselatorPtr = nullptr;
 
             m_CreaseAngleThreshold=10.0;
             m_AABBScaleFactor=2.0;
@@ -184,6 +185,7 @@ namespace tslam::Reconstruction
         void clean()
         {
             this->m_Timber.clean();
+            this->m_TasselatorPtr = nullptr;
 
             this->m_PlnAABBPolygons.clear();
             this->m_SplitSegments.clear();
@@ -194,9 +196,6 @@ namespace tslam::Reconstruction
 
             this->m_MeshOut.Clear();
             this->m_MeshOutXAC.Clear();
-
-            // this->m_Tasselator.clean();
-
         };
 
     private:  ///< Visualizer
@@ -237,7 +236,7 @@ namespace tslam::Reconstruction
         /// The timber component of the geometric solver contains all the tags and tag stripes
         TSTimber m_Timber;
         /// The tassellotor component object is a plugin responsible for the tassellation of spliiting segments
-        // TSTassellation m_Tasselator;
+        std::shared_ptr<TSTassellation> m_TasselatorPtr;
     
     private:  ///< Solver parameters for user's tuning
         /// The threshold for detection of crease's angle (the smaller the more creases will be detected)
