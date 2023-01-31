@@ -61,7 +61,7 @@ int main()
 
     std::cout << "Done!" << std::endl;
 
-    reconstructor.loadMap(testData[4]);
+    reconstructor.loadMap(testData[0]);
 
     std::cout << "Donex2!" << std::endl;
 
