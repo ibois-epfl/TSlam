@@ -65,6 +65,16 @@ namespace tslam::Reconstruction
             }
         };
     
+    public:  __always_inline  ///< clean out memory func
+        /// Function to clean all the members and memory linked to the timber element
+        void clean()
+        {
+            m_RTags.clear();
+            m_TSRTagsStripes.clear();
+            m_RtagsCtrs.Clear();
+            m_AABB = open3d::geometry::AxisAlignedBoundingBox();
+        };
+    
     public: __always_inline  ///< tag funcs
         /// Get all the tags objects attached to the timber element.
         std::vector<TSRTag> getPlaneTags() {return m_RTags; };
@@ -93,7 +103,5 @@ namespace tslam::Reconstruction
         open3d::geometry::PointCloud m_RtagsCtrs;
         ///  m_AABB the axis aligned bounding box of the tags.
         open3d::geometry::AxisAlignedBoundingBox m_AABB;
-        /// m_Mesh the output mesh of the reconstructed object.
-        open3d::geometry::TriangleMesh m_Mesh;
     };
 }

@@ -75,13 +75,21 @@ namespace tslam::Reconstruction
          * 
          * @return TSTimber& timber object
          */
-        TSTimber& getTimber() { return this->m_Timber; }
+        TSTimber& getTimber() { return this->m_Timber; };
         /**
          * @brief Get the geometric solver object.
          * 
          * @return TSGeometricSolver& geometric solver object
          */
-        TSGeometricSolver& getGeometricSolver() { return this->m_GeometricSolver; }
+        TSGeometricSolver& getGeometricSolver() { return this->m_GeometricSolver; };
+    
+    public: __always_inline  ///< clean func
+        /// Clean the data attached to the reconstructor
+        void clean()
+        {
+            this->m_Timber.clean();
+            this->m_GeometricSolver.clean();
+        };
 
     private:  ///< internal members
         // const std::string m_YMLpath;

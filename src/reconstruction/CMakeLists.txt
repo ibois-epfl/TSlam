@@ -8,12 +8,12 @@ set(CMAKE_CXX_STANDARD 17)
 # Options
 #---------------------------------------------------------------------------------------------------------
 
-option(BUILD_TSLAMREC_API   "Build the TSlam reconstruction API, *no debug/ no profiler* "             OFF)
+option(BUILD_TSLAMREC_API   "Build the TSlam reconstruction API, *no debug/ no profiler* "              OFF)
 
 option(ENABLE_REC_PROFILER  "Enable profiling for the TSlam reconstruction"                             ON)
 option(ENABLE_REC_DEBUG     "Enable debug outputs (logs, visualizer) for the TSlam reconstruction"      ON)
 
-option(ENABLE_TESTING       "Enable testing for the TSlam reconstruction"                              OFF)
+option(ENABLE_TESTING       "Enable testing for the TSlam reconstruction"                               OFF)
 
 #---------------------------------------------------------------------------------------------------------
 # library for tslam reconstruction

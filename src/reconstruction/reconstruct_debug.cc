@@ -28,7 +28,7 @@ int main()
         tslam::Reconstruction::TSLAMReconstructor();
     
     // (0.1) load map
-    reconstructor.loadMap(testData[12]);
+    reconstructor.loadMap(testData[4]);
 
     // (0.2) set parameters
     reconstructor.setParams(2.0,
@@ -45,7 +45,7 @@ int main()
                                                                  /*drawTagNormals*/         false,
                                                                  /*drawAabb*/               false,
                                                                  /*drawIntersectedPoly*/    false,
-                                                                 /*drawSplittingSegments*/  false,
+                                                                 /*drawSplittingSegments*/  true,
                                                                  /*drawSelectedFace*/       true,
                                                                  /*drawFinalMesh*/          false
                                                                  );
@@ -55,6 +55,9 @@ int main()
 
     // (2.5) save mesh (as PLY or XAC)
     reconstructor.saveMeshAsPLY("/home/as/TSlam/src/reconstruction/tests/test_data/", "test_mesh.ply");
+
+    // (3) clean up (unload all vectors and delete all objects) if you want to run it again
+    reconstructor.clean();
 
 
     return 0;
