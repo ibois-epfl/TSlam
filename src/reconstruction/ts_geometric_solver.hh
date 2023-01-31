@@ -19,6 +19,7 @@ namespace tslam::Reconstruction
     public:
         TSGeometricSolver()
         {
+            m_Timber = TSTimber();
             m_CreaseAngleThreshold=10.0;
             m_AABBScaleFactor=2.0;
             m_MaxPlnDist2Merge=5.2;
@@ -236,6 +237,10 @@ namespace tslam::Reconstruction
         bool m_DrawSelectedFace;
         /// Show the timber volume after merging into a mesh
         bool m_DrawFinalMesh;
+
+    public: __always_inline  ///< getters
+        /// Get the timber element
+        TSTimber& getTimber(){return this->m_Timber;};
 
     private:  ///< Solver components
         /// The timber element to reconstruct

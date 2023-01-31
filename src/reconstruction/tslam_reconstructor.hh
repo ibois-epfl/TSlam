@@ -70,12 +70,12 @@ namespace tslam::Reconstruction
         void saveMeshAsXAC(const std::string& dir, const std::string& filename);
     
     public:  ///< special getters
-        /**
-         * @brief Get the timber object.
-         * 
-         * @return TSTimber& timber object
-         */
-        TSTimber& getTimber() { return this->m_Timber; };
+        // /**
+        //  * @brief Get the timber object.
+        //  * 
+        //  * @return TSTimber& timber object
+        //  */
+        // TSTimber& getTimber() { return this->m_Timber; };
         /**
          * @brief Get the geometric solver object.
          * 

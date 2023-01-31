@@ -7,7 +7,7 @@ namespace tslam::Reconstruction
 {
     TSLAMReconstructor::TSLAMReconstructor()
     {
-        this->m_Timber = TSTimber();
+        // this->m_Timber = TSTimber();
         this->m_GeometricSolver = TSGeometricSolver();
     }
 
@@ -18,7 +18,7 @@ namespace tslam::Reconstruction
                                        double maxPolyDist,
                                        double eps)
     {
-        this->m_GeometricSolver.setTimber(this->m_Timber);
+        // this->m_GeometricSolver.setTimber(this->m_Timber);
         this->m_GeometricSolver.setCreaseAngleThreshold(creaseAngleThreshold);
         this->m_GeometricSolver.setMaxPlnDist2Merge(maxPlnDist);
         this->m_GeometricSolver.setMaxPlnAngle2Merge(maxPlnAngle);
@@ -29,7 +29,7 @@ namespace tslam::Reconstruction
 
     bool TSLAMReconstructor::run()
     {
-        if (!this->m_Timber.hasTags())
+        if (!this->m_GeometricSolver.getTimber().hasTags())
             throw std::runtime_error("[ERROR] No tags are loaded in the timber object.");
         
         this->m_GeometricSolver.reconstruct();
@@ -42,7 +42,7 @@ namespace tslam::Reconstruction
         if (!std::filesystem::exists(filepath))
             throw std::runtime_error("[ERROR] The file does not exist.");
         
-        this->m_Timber.setPlaneTagsFromYAML(filepath);
+        this->m_GeometricSolver.getTimber().setPlaneTagsFromYAML(filepath);
     }
 
     void TSLAMReconstructor::saveMeshAsPLY(const std::string& dir, const std::string& filename)
