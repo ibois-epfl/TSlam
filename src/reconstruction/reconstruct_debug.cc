@@ -59,18 +59,18 @@ int main()
     // (3) clean up (unload all vectors and delete all objects) if you want to run it again
     reconstructor.clean();
 
-    // std::cout << "Done!" << std::endl;
+    std::cout << "Done!" << std::endl;
 
-    // reconstructor.loadMap(testData[4]);
+    reconstructor.loadMap(testData[4]);
 
-    // std::cout << "Donex2!" << std::endl;
+    std::cout << "Donex2!" << std::endl;
 
-    // reconstructor.getGeometricSolver().setShowVisualizer(false);  // TEST
+    reconstructor.getGeometricSolver().setShowVisualizer(true);  // TEST
 
 
-    // reconstructor.run();
+    reconstructor.run();
 
-    // std::cout << "Donex3!" << std::endl;
+    std::cout << "Donex3!" << std::endl;
 
 
 
