@@ -9,8 +9,8 @@ namespace tslam::Reconstruction
           Planes_ref(planes),
           Polygons_ref(polygons)
     {
-        this->m_InvMats.reserve(planes.size());
-        this->m_PolygonsGrouped.reserve(segmentsGrouped.size());
+        // this->m_InvMats.reserve(planes.size());
+        // this->m_PolygonsGrouped.reserve(segmentsGrouped.size());
     }
 
     void TSTassellation::tassellate()

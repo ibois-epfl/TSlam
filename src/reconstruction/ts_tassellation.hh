@@ -40,7 +40,7 @@ namespace tslam::Reconstruction
     class TSTassellation
     {
     public:
-        // TSTassellation();
+        TSTassellation() = default;
         TSTassellation(std::vector<std::vector<TSSegment>>& segmentsGrouped,
                        std::vector<TSPlane>& planes,
                        std::vector<TSPolygon>& polygons);
@@ -100,6 +100,22 @@ namespace tslam::Reconstruction
          * @return TSPolygon the TSPolygon
          */
         TSPolygon toTSPolygon(const std::vector<Point>& cgalVertices);
+    
+    public: __always_inline  ///< clean func
+        /// Clean the tassellation memories and data attached
+        void clean()
+        {
+            this->m_PolygonsGrouped.clear();
+            this->m_InvMats.clear();
+        };
+    
+    public: ///< set funcs
+        /// Set the reference to the splitting segments grouped
+        void setSegmentsGroupedRef(std::vector<std::vector<TSSegment>>& segmentsGrouped);
+        /// Set the reference to the target planes
+        void setPlanesRef(std::vector<TSPlane>& planes);
+        /// Set the reference to the output polygons
+        void setPolygonsRef(std::vector<TSPolygon>& polygons);
 
     public:  ///< reference members
         /// the reference to the splitting segments grouped

@@ -87,7 +87,6 @@ namespace tslam::Reconstruction
         /// Clean the data attached to the reconstructor
         void clean()
         {
-            this->m_Timber.clean();
             this->m_GeometricSolver.clean();
         };
 

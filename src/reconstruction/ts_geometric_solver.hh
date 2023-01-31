@@ -3,6 +3,7 @@
 #include "ts_timber.hh"
 #include "ts_geo_util.hh"
 #include "ts_rtstripe.hh"
+#include "ts_tassellation.hh"
 
 #include <Eigen/Core>
 
@@ -190,6 +191,8 @@ namespace tslam::Reconstruction
         /// Function to clean all the members and memory linked to the solver
         void clean()
         {
+            this->m_Timber.clean();
+
             this->m_PlnAABBPolygons.clear();
             this->m_SplitSegments.clear();
             this->m_SplitSegmentsPlanes.clear();
@@ -199,6 +202,9 @@ namespace tslam::Reconstruction
 
             this->m_MeshOut.Clear();
             this->m_MeshOutXAC.Clear();
+
+            // this->m_Tasselator.clean();
+
         };
 
     private:  ///< Visualizer
@@ -230,10 +236,14 @@ namespace tslam::Reconstruction
         bool m_DrawSelectedFace;
         /// Show the timber volume after merging into a mesh
         bool m_DrawFinalMesh;
-    
-    private:  ///< Solver parameters for user's tuning
+
+    private:  ///< Solver components
         /// The timber element to reconstruct
         TSTimber m_Timber;
+        /// The tassellotor plugin object
+        // TSTassellation m_Tasselator;
+    
+    private:  ///< Solver parameters for user's tuning
         /// The threshold for detection of crease's angle (the smaller the more creases will be detected)
         double m_CreaseAngleThreshold;
         /// The scale factor for scaleing up the AABB of the timber element
