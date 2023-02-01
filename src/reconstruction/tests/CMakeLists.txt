@@ -11,24 +11,21 @@ include(CTest)
 enable_testing()
 
 #---------------------------------------------------------------------------------------------------------
-# Tests
+# Doc
 #---------------------------------------------------------------------------------------------------------
+set(TEST_EXE_NAME test_gsolver)
 
-add_executable(test_gsolver test_gsolver.cc)
-target_link_libraries(test_gsolver PRIVATE tslamrec)
-target_include_directories(test_gsolver PRIVATE ${CMAKE_SOURCE_DIR})
-
-add_test(test_gsolver_series test_gsolver)
-
-# (2) Accuracy testing with synthetic data
-# TODO: implement
+add_executable(${TEST_EXE_NAME} test_gsolver.cc)
+target_link_libraries(${TEST_EXE_NAME} PRIVATE tslamrec)
+target_include_directories(${TEST_EXE_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
 
 #---------------------------------------------------------------------------------------------------------
-# Post-build
+# Post-build for doctest
 #---------------------------------------------------------------------------------------------------------
 
-# run all tests on build
-add_custom_command(TARGET test_gsolver
+# run doctest series
+add_custom_command(TARGET ${TEST_EXE_NAME}
                    POST_BUILD
-                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/tests
-                   COMMAND ${CMAKE_CTEST_COMMAND} -j N)
+                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                   COMMAND ${CMAKE_BINARY_DIR}/tests/${TEST_EXE_NAME})
+

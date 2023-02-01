@@ -296,6 +296,7 @@ namespace tslam::Reconstruction
                 }
             }
         }
+
     }
 
     void TSGeometricSolver::rIntersectStripeTagPlnAABB()
@@ -425,6 +426,22 @@ namespace tslam::Reconstruction
                             segGroup.erase(segGroup.begin() + i);
                             break;
                         }
+                    }
+                }
+            }
+        }
+
+        // (c) remove duplicate segments
+        for (auto& segGroup : segmentsGrouped)
+        {
+            for (uint i = 0; i < segGroup.size(); i++)
+            {
+                for (uint j = i + 1; j < segGroup.size(); j++)
+                {
+                    if (segGroup[i] == segGroup[j])
+                    {
+                        segGroup.erase(segGroup.begin() + j);
+                        j--;
                     }
                 }
             }
