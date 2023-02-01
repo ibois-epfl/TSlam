@@ -188,6 +188,26 @@ void enhanceImageBGR(const cv::Mat &imgIn, cv::Mat &imgOut){
     cv::cvtColor(Lab_image, imgOut, cv::COLOR_Lab2BGR);
 }
 
+void drawMesh(cv::Mat img, vector<cv::Vec3f> linePoints, cv::Mat projectionMatrix) {
+    for(auto &p:linePoints){
+        cv::Mat p4 = (cv::Mat_<float>(4, 1) << p[0], p[1], p[2], 1);
+        cv::Mat p2 = projectionMatrix * p4;
+        p2 /= p2.at<float>(2, 0);
+
+        cout << projectionMatrix << endl;
+        cout << p2 << endl;
+
+
+        int x = img.cols - (p2.at<float>(0, 0) + 1.0f) / 2.0f * img.cols;
+        int y = img.rows - (p2.at<float>(1, 0) + 1.0f) / 2.0f * img.rows;
+
+        cout << x << "  " << y << endl;
+        cv::circle(img, cv::Point(x, y), 5, cv::Scalar(200, 0, 200), 5);
+    }
+}
+
+vector<cv::Vec3f> linePoints = {{-1.3046491146087646e+00,-5.1872926950454712e-01, 1.5634726524353027e+01}};
+cv::Mat projectionMatrix;
 int currentFrameIndex;
 
 int main(int argc,char **argv){
@@ -252,7 +272,25 @@ int main(int argc,char **argv){
     tslam::Params params;
     cv::Mat in_image;
 
+    // load camera matrix and distortion coefficients
     image_params.readFromXMLFile(argv[2]);
+    // update projection matrix for rendering mesh
+    cv::Mat cameraMatrix = image_params.CameraMatrix;
+    float camW = image_params.CamSize.width;
+    float camH = image_params.CamSize.height;
+    float x0 = 0, y0 = 0,zF = 100.0f, zN =0.01f;
+    float fovX = cameraMatrix.at<float>(0,0);
+    float fovY = cameraMatrix.at<float>(1,1);
+    float cX = cameraMatrix.at<float>(0,2);
+    float cY = cameraMatrix.at<float>(1,2);
+    float perspectiveProjMatrixData[16] = {
+            2 * fovX / camW,    0, ( camW - 2 * cX + 2 * x0) / camW,                         0,
+            0,    2 * fovY / camH, (-camH + 2 * cY + 2 * y0) / camH,                         0,
+            0,                  0,             (-zF - zN)/(zF - zN),  -2 * zF * zN / (zF - zN),
+            0,                  0,                               -1,                         0
+    };
+    cv::Mat perspectiveProjMatrix(4, 4, CV_32F, perspectiveProjMatrixData);
+    projectionMatrix = perspectiveProjMatrix.t();
 
     if( cml["-params"]) params.readFromYMLFile(cml("-params"));
     overwriteParamsByCommandLine(cml,params);
@@ -368,10 +406,19 @@ int main(int argc,char **argv){
             Fps.stop();
 
             TimerDraw.start();
-            //            Slam->drawMatches(in_image);
-            //    char k = TheViewer.show(&Slam, in_image,"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
+            // Slam->drawMatches(in_image);
+            // char k = TheViewer.show(&Slam, in_image,"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
             char k =0;
-            if(!cml["-noX"]) k=TheViewer.show(TheMap, in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam->getCurrentKeyFrameIndex());
+            if(!cml["-noX"]) {
+                // draw mesh
+                if(!camPose_c2g.empty()){
+                    cout << "CamPose: " << camPose_c2g << endl << "---" << endl;
+                    drawMesh(in_image, linePoints, projectionMatrix * camPose_c2g);
+                }
+
+                // draw tags & points
+                k = TheViewer.show(TheMap, in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam->getCurrentKeyFrameIndex());
+            }
 
             if (int(k) == 27 || k=='q') finish = true; //pressed ESC
             TimerDraw.stop();
