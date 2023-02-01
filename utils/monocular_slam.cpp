@@ -25,6 +25,59 @@
 #include "basictypes/cvversioning.h"
 
 
+// Checks if a matrix is a valid rotation matrix.
+bool isRotationMatrix(cv::Mat &R)
+{
+    cv::Mat Rt;
+    transpose(R, Rt);
+    cv::Mat shouldBeIdentity = Rt * R;
+    cv::Mat I = cv::Mat::eye(3,3, shouldBeIdentity.type());
+
+    return  norm(I, shouldBeIdentity) < 1e-6;
+
+}
+
+// Calculates rotation matrix to euler angles
+// The result is the same as MATLAB except the order
+// of the euler angles ( x and z are swapped ).
+cv::Vec3f rotationMatrixToEulerAngles(cv::Mat R)
+{
+
+//    assert(isRotationMatrix(R));
+
+    float sy = sqrt(R.at<double>(0,0) * R.at<double>(0,0) +  R.at<double>(1,0) * R.at<double>(1,0) );
+
+    bool singular = sy < 1e-6; // If
+
+    float x, y, z;
+    if (!singular)
+    {
+        x = atan2(R.at<double>(2,1) , R.at<double>(2,2));
+        y = atan2(-R.at<double>(2,0), sy);
+        z = atan2(R.at<double>(1,0), R.at<double>(0,0));
+    }
+    else
+    {
+        x = atan2(-R.at<double>(1,2), R.at<double>(1,1));
+        y = atan2(-R.at<double>(2,0), sy);
+        z = 0;
+    }
+    return cv::Vec3f(x, y, z);
+
+}
+
+cv::Vec4f rotationMatrixToQuaternion(cv::Mat R)
+{
+    cv::Vec4f q;
+
+    q[0] = sqrt(1.0 + R.at<float>(0,0) + R.at<float>(1,1) + R.at<float>(2,2)) / 2.0;
+    q[1] = (R.at<float>(2,1) - R.at<float>(1,2)) / (4.0 * q[0]);
+    q[2] = (R.at<float>(0,2) - R.at<float>(2,0)) / (4.0 * q[0]);
+    q[3] = (R.at<float>(1,0) - R.at<float>(0,1)) / (4.0 * q[0]);
+
+    return q;
+}
+
 cv::Mat getImage(cv::VideoCapture &vcap,int frameIdx){
     cv::Mat im;
     tslam::Frame frame;
@@ -160,6 +213,7 @@ int main(int argc,char **argv){
                 "[-extra_params \"param1=value1 param2=value2...\"]"
                 "[-vspeed <int:def 1> video analysis speed ]"
                 "[-liveImageSize w:h]"
+                "[-outCamPose <filename>]"
                 << endl;        
         return -1;
     }
@@ -219,10 +273,16 @@ int main(int argc,char **argv){
         cerr<<"Warning!! No VOCABULARY INDICATED. KEYPOINT RELOCALIZATION IMPOSSIBLE WITHOUT A VOCABULARY FILE!!!!!"<<endl;
     }
 
+    ofstream outCamPose;
+    bool toSaveCamPose = cml["-outCamPose"];
+    if(toSaveCamPose) {
+        outCamPose.open(cml("-outCamPose"));
+        // outPose<<"frame_number pos_x pos_y pos_z rot_w rot_x rot_y rot_z"<<endl;
+    }
 
-//    if (cml["-loc_only"]) Slam->setMode(tslam::MODE_LOCALIZATION);
+    // if (cml["-loc_only"]) Slam->setMode(tslam::MODE_LOCALIZATION);
 
-    //need to skip frames?
+    // need to skip frames?
     if (cml["-skip"]) {
         int n=stoi(cml("-skip","0"));
         vcap.set(CV_CAP_PROP_POS_FRAMES,n);
@@ -312,10 +372,29 @@ int main(int argc,char **argv){
             //    char k = TheViewer.show(&Slam, in_image,"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
             char k =0;
             if(!cml["-noX"]) k=TheViewer.show(TheMap, in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam->getCurrentKeyFrameIndex());
-            // cv::imshow("Frame", in_image);
-            // k = (char) cv::waitKey(25);
-            if (int(k) == 27 || k=='q')finish = true;//pressed ESC
+
+            if (int(k) == 27 || k=='q') finish = true; //pressed ESC
             TimerDraw.stop();
+
+            //save to output pose?
+            if (toSaveCamPose) {
+                if(camPose_c2g.empty()) {
+                    outCamPose << currentFrameIndex << " ";
+                    // pose[x, y, z] = (0, 0, 0) and quaternion[w, x, y, z] = (1, 0, 0, 0)
+                    outCamPose << "0 0 0 1 0 0 0" << endl;
+                } else {
+                    auto camPoseQuaternion = rotationMatrixToQuaternion(camPose_c2g.rowRange(0, 3).colRange(0, 3));
+                    outCamPose <<
+                               currentFrameIndex << " " <<
+                               camPose_c2g.at<float>(0, 3) << " " <<
+                               camPose_c2g.at<float>(1, 3) << " " <<
+                               camPose_c2g.at<float>(2, 3) << " " <<
+                               camPoseQuaternion[0] << " " <<
+                               camPoseQuaternion[1] << " " <<
+                               camPoseQuaternion[2] << " " <<
+                               camPoseQuaternion[3] << endl;
+                }
+            }
 
             //save to output video?
             if (!TheOutputVideo.empty()){
@@ -363,8 +442,6 @@ int main(int argc,char **argv){
             errorFlag = true;
             cerr << "an error occurs" << endl;
 
-
-
             if (cml["-isInstancing"]){
                 delete Slam;
                 Slam = new tslam::TSlam;
@@ -387,6 +464,9 @@ int main(int argc,char **argv){
 
     //release the video output if required
     if(videoout.isOpened()) videoout.release();
+
+    //close the output file
+    if (toSaveCamPose) outCamPose.close();
 
     //optimize the map
     // fullbaOptimization(*TheMap);
