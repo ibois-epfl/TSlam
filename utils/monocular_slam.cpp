@@ -25,6 +25,59 @@
 #include "basictypes/cvversioning.h"
 
 
+// Checks if a matrix is a valid rotation matrix.
+bool isRotationMatrix(cv::Mat &R)
+{
+    cv::Mat Rt;
+    transpose(R, Rt);
+    cv::Mat shouldBeIdentity = Rt * R;
+    cv::Mat I = cv::Mat::eye(3,3, shouldBeIdentity.type());
+
+    return  norm(I, shouldBeIdentity) < 1e-6;
+
+}
+
+// Calculates rotation matrix to euler angles
+// The result is the same as MATLAB except the order
+// of the euler angles ( x and z are swapped ).
+cv::Vec3f rotationMatrixToEulerAngles(cv::Mat R)
+{
+
+//    assert(isRotationMatrix(R));
+
+    float sy = sqrt(R.at<double>(0,0) * R.at<double>(0,0) +  R.at<double>(1,0) * R.at<double>(1,0) );
+
+    bool singular = sy < 1e-6; // If
+
+    float x, y, z;
+    if (!singular)
+    {
+        x = atan2(R.at<double>(2,1) , R.at<double>(2,2));
+        y = atan2(-R.at<double>(2,0), sy);
+        z = atan2(R.at<double>(1,0), R.at<double>(0,0));
+    }
+    else
+    {
+        x = atan2(-R.at<double>(1,2), R.at<double>(1,1));
+        y = atan2(-R.at<double>(2,0), sy);
+        z = 0;
+    }
+    return cv::Vec3f(x, y, z);
+
+}
+
+cv::Vec4f rotationMatrixToQuaternion(cv::Mat R)
+{
+    cv::Vec4f q;
+
+    q[0] = sqrt(1.0 + R.at<float>(0,0) + R.at<float>(1,1) + R.at<float>(2,2)) / 2.0;
+    q[1] = (R.at<float>(2,1) - R.at<float>(1,2)) / (4.0 * q[0]);
+    q[2] = (R.at<float>(0,2) - R.at<float>(2,0)) / (4.0 * q[0]);
+    q[3] = (R.at<float>(1,0) - R.at<float>(0,1)) / (4.0 * q[0]);
+
+    return q;
+}
+
 cv::Mat getImage(cv::VideoCapture &vcap,int frameIdx){
     cv::Mat im;
     tslam::Frame frame;
@@ -91,10 +144,12 @@ void overwriteParamsByCommandLine(CmdLineParser &cml,tslam::Params &params){
     if(cml["-extra_params"])    params.extraParams=cml("-extra_params");
 
     if(cml["-scale"]) params.kptImageScaleFactor=stof(cml("-scale"));
-
     if(cml["-nokploopclosure"]) params.reLocalizationWithKeyPoints=false;
     if(cml["-inplanemarkers"]) params.inPlaneMarkers=true;
     params.aruco_CornerRefimentMethod=cml("-aruco-cornerRefinementM","CORNER_SUBPIX");
+
+    if(cml["-enableLoopClosure"]) params.enableLoopClosure=true;
+    else params.enableLoopClosure=false;
 
     if (cml["-dbg_str"])
         tslam::debug::Debug::addString(cml("-dbg_str"),"");
@@ -133,6 +188,26 @@ void enhanceImageBGR(const cv::Mat &imgIn, cv::Mat &imgOut){
     cv::cvtColor(Lab_image, imgOut, cv::COLOR_Lab2BGR);
 }
 
+void drawMesh(cv::Mat img, vector<cv::Vec3f> linePoints, cv::Mat projectionMatrix) {
+    for(auto &p:linePoints){
+        cv::Mat p4 = (cv::Mat_<float>(4, 1) << p[0], p[1], p[2], 1);
+        cv::Mat p2 = projectionMatrix * p4;
+        p2 /= p2.at<float>(2, 0);
+
+        cout << projectionMatrix << endl;
+        cout << p2 << endl;
+
+
+        int x = img.cols - (p2.at<float>(0, 0) + 1.0f) / 2.0f * img.cols;
+        int y = img.rows - (p2.at<float>(1, 0) + 1.0f) / 2.0f * img.rows;
+
+        cout << x << "  " << y << endl;
+        cv::circle(img, cv::Point(x, y), 5, cv::Scalar(200, 0, 200), 5);
+    }
+}
+
+vector<cv::Vec3f> linePoints = {{-1.3046491146087646e+00,-5.1872926950454712e-01, 1.5634726524353027e+01}};
+cv::Mat projectionMatrix;
 int currentFrameIndex;
 
 int main(int argc,char **argv){
@@ -158,6 +233,7 @@ int main(int argc,char **argv){
                 "[-extra_params \"param1=value1 param2=value2...\"]"
                 "[-vspeed <int:def 1> video analysis speed ]"
                 "[-liveImageSize w:h]"
+                "[-outCamPose <filename>]"
                 << endl;        
         return -1;
     }
@@ -196,10 +272,30 @@ int main(int argc,char **argv){
     tslam::Params params;
     cv::Mat in_image;
 
+    // load camera matrix and distortion coefficients
     image_params.readFromXMLFile(argv[2]);
+    // update projection matrix for rendering mesh
+    cv::Mat cameraMatrix = image_params.CameraMatrix;
+    float camW = image_params.CamSize.width;
+    float camH = image_params.CamSize.height;
+    float x0 = 0, y0 = 0,zF = 100.0f, zN =0.01f;
+    float fovX = cameraMatrix.at<float>(0,0);
+    float fovY = cameraMatrix.at<float>(1,1);
+    float cX = cameraMatrix.at<float>(0,2);
+    float cY = cameraMatrix.at<float>(1,2);
+    float perspectiveProjMatrixData[16] = {
+            2 * fovX / camW,    0, ( camW - 2 * cX + 2 * x0) / camW,                         0,
+            0,    2 * fovY / camH, (-camH + 2 * cY + 2 * y0) / camH,                         0,
+            0,                  0,             (-zF - zN)/(zF - zN),  -2 * zF * zN / (zF - zN),
+            0,                  0,                               -1,                         0
+    };
+    cv::Mat perspectiveProjMatrix(4, 4, CV_32F, perspectiveProjMatrixData);
+    projectionMatrix = perspectiveProjMatrix.t();
 
     if( cml["-params"]) params.readFromYMLFile(cml("-params"));
     overwriteParamsByCommandLine(cml,params);
+
+    params.enableLoopClosure = false;
 
     auto TheMap = std::make_shared<tslam::Map>();
     //read the map from file?
@@ -215,10 +311,16 @@ int main(int argc,char **argv){
         cerr<<"Warning!! No VOCABULARY INDICATED. KEYPOINT RELOCALIZATION IMPOSSIBLE WITHOUT A VOCABULARY FILE!!!!!"<<endl;
     }
 
+    ofstream outCamPose;
+    bool toSaveCamPose = cml["-outCamPose"];
+    if(toSaveCamPose) {
+        outCamPose.open(cml("-outCamPose"));
+        // outPose<<"frame_number pos_x pos_y pos_z rot_w rot_x rot_y rot_z"<<endl;
+    }
 
-//    if (cml["-loc_only"]) Slam->setMode(tslam::MODE_LOCALIZATION);
+    // if (cml["-loc_only"]) Slam->setMode(tslam::MODE_LOCALIZATION);
 
-    //need to skip frames?
+    // need to skip frames?
     if (cml["-skip"]) {
         int n=stoi(cml("-skip","0"));
         vcap.set(CV_CAP_PROP_POS_FRAMES,n);
@@ -295,7 +397,7 @@ int main(int argc,char **argv){
            }
 
             // enhanceImage (more contrast)
-//            enhanceImageBGR(in_image, in_image);
+            // enhanceImageBGR(in_image, in_image);
 
             currentFrameIndex = vcap.getNextFrameIndex() - 1;
 
@@ -304,18 +406,45 @@ int main(int argc,char **argv){
             Fps.stop();
 
             TimerDraw.start();
-            //            Slam->drawMatches(in_image);
-            //    char k = TheViewer.show(&Slam, in_image,"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
+            // Slam->drawMatches(in_image);
+            // char k = TheViewer.show(&Slam, in_image,"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
             char k =0;
-            if(!cml["-noX"]) k=TheViewer.show(TheMap, in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam->getCurrentKeyFrameIndex());
-            // cv::imshow("Frame", in_image);
-            // k = (char) cv::waitKey(25);
-            if (int(k) == 27 || k=='q')finish = true;//pressed ESC
+            if(!cml["-noX"]) {
+                // draw mesh
+                if(!camPose_c2g.empty()){
+                    cout << "CamPose: " << camPose_c2g << endl << "---" << endl;
+                    drawMesh(in_image, linePoints, projectionMatrix * camPose_c2g);
+                }
+
+                // draw tags & points
+                k = TheViewer.show(TheMap, in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam->getCurrentKeyFrameIndex());
+            }
+
+            if (int(k) == 27 || k=='q') finish = true; //pressed ESC
             TimerDraw.stop();
+
+            //save to output pose?
+            if (toSaveCamPose) {
+                if(camPose_c2g.empty()) {
+                    outCamPose << currentFrameIndex << " ";
+                    // pose[x, y, z] = (0, 0, 0) and quaternion[w, x, y, z] = (1, 0, 0, 0)
+                    outCamPose << "0 0 0 1 0 0 0" << endl;
+                } else {
+                    auto camPoseQuaternion = rotationMatrixToQuaternion(camPose_c2g.rowRange(0, 3).colRange(0, 3));
+                    outCamPose <<
+                               currentFrameIndex << " " <<
+                               camPose_c2g.at<float>(0, 3) << " " <<
+                               camPose_c2g.at<float>(1, 3) << " " <<
+                               camPose_c2g.at<float>(2, 3) << " " <<
+                               camPoseQuaternion[0] << " " <<
+                               camPoseQuaternion[1] << " " <<
+                               camPoseQuaternion[2] << " " <<
+                               camPoseQuaternion[3] << endl;
+                }
+            }
 
             //save to output video?
             if (!TheOutputVideo.empty()){
-                cout << "meow";
                 auto image=TheViewer.getImage();
                 if(!videoout.isOpened()){
                     videoout.open(TheOutputVideo, CV_FOURCC('X', '2', '6', '4'), stof(cml("-fps","30")),image.size()  , image.channels()!=1);
@@ -324,7 +453,6 @@ int main(int argc,char **argv){
 
                 if(videoout.isOpened()) {
                     videoout.write(image);
-                    cout << "write";
                 }
             }
 
@@ -361,8 +489,6 @@ int main(int argc,char **argv){
             errorFlag = true;
             cerr << "an error occurs" << endl;
 
-
-
             if (cml["-isInstancing"]){
                 delete Slam;
                 Slam = new tslam::TSlam;
@@ -385,6 +511,9 @@ int main(int argc,char **argv){
 
     //release the video output if required
     if(videoout.isOpened()) videoout.release();
+
+    //close the output file
+    if (toSaveCamPose) outCamPose.close();
 
     //optimize the map
     // fullbaOptimization(*TheMap);

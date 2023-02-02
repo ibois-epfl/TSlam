@@ -177,6 +177,20 @@ std::string info;
 `Aug 01`
 - The map utilities (merge & optimization) is now a member function of Map.
 
+### Disabling optimization (loop detection)
+- The optimization process is the main cause of the lagging problem.
+- Actually there's a system-scale parameter "-enableLoopClosure" that controls this.
+
+### Mapping with special conditions
+#### Cut off beam
+|     Mapping View     |    Mapped result     |
+|:--------------------:|:--------------------:|
+| ![](./short_cut.gif) | ![](./short_cut.png) |
+
+#### Long beam with only marker in the end
+|    Mapping View     |     Mapped result    |
+|:-------------------:|:--------------------:|
+| ![](./only_end.gif) | ![](./only_end.png)  |
 
 ### Reconstruction
 We will use only the `.yaml` file since the point cloud obtained from the mapping phase has no definition. Mostly the points are concentrated where the fiducial markers are.
@@ -261,9 +275,9 @@ A basic top api interface is implemented, see the file `tslam_reconstructor.hh`.
 
 We also tried to give it a shot for very complex geometries such as this one but without success.
 
-![](./complex_shape.png)
-![](./real_complexe.jpg)
-
+|        real object       |     reconstruct geo      |
+|:------------------------:|:------------------------:|
+| ![](./complex_shape.png) | ![](./real_complexe.jpg) |
 
 ### Reconstruction - implementation of testing
 We need testing for the next CI but also the refinement of the current reconstruction algorithm. We are using `DocTest` for testing and we test both synthetic and reals scans maps (`.yml`) with expected ground-truth data.

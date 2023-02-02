@@ -91,8 +91,7 @@ int main(int argc,char **argv){
         // cout << endl;
 
         string filename = argv[3];
-        filename = "no_opt_" + filename;
-        TheMapA->saveToFile(filename);
+        TheMapA->saveToFile(filename+".no-opt");
 
         TheMapA->optimize(50);
 
