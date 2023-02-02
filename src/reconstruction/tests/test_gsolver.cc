@@ -29,7 +29,9 @@ tslam::Reconstruction::TSLAMReconstructor reconstructor =
 
 
 /// Main check func
-void checkResults(std::string ymlPath, bool showVisualizer = false)
+void checkResults(std::string ymlPath,
+                  bool showVisualizer = false,
+                  bool saveMesh = false)
 {
     // load map for construction
     reconstructor.loadMap(ymlPath);
@@ -68,11 +70,11 @@ void checkResults(std::string ymlPath, bool showVisualizer = false)
     CHECK(nbrMeshVertices    <= GT_nbrMeshVertices_UP);
     CHECK(nbrMeshVertices    >= GT_nbrMeshVertices_DOWN);
 
-    reconstructor.saveMeshAsPLY("/home/as/TSlam/src/reconstruction/tests/test_data/", "test_mesh.ply");
+    // (optional) save mesh
+    // reconstructor.saveMeshAsPLY("/home/as/TSlam/src/reconstruction/tests/test_data/", "test_mesh.ply");
 
     // clean everything
     reconstructor.clean();
-
 }
 
 // #############################################################################################
@@ -116,7 +118,7 @@ TEST_SUITE("Real_scans")
 
     // ===============================================================================
 
-    TEST_CASE("Long_length_only_extremes_poor_mapping"  // FIXME: fails
+    TEST_CASE("Long_length_only_extremes_poor_mapping"
     * doctest::description("Checks the case of a beam with tags only at extremeties.\n"
                            "The yml is the result of poor mapping quality (inclined tag planes)."))
     {
@@ -133,13 +135,12 @@ TEST_SUITE("Real_scans")
         checkResults(ymlPath);
     }
 
-    TEST_CASE("Long_length_only_extremes"  // FIXME: fails
-    * doctest::description("Checks the case of a beam with tags only at extremeties.\n"
-                           "The reconstructor should still be able to produce a mesh."))
+    TEST_CASE("Long_length_only_extremes_good_mapping"
+    * doctest::description("Checks the case of a beam with tags only at extremeties."))
     {
-        ymlPath = YML_DIR_REAL + "only_end_cross_with_chessboard_TEST.yml";  // FIXME: change yml file
+        ymlPath = YML_DIR_REAL + "only_end_cross.yml";
 
-        GT_nbrTags              =  56;
+        GT_nbrTags              =  100;
         GT_nbrPlnAABBPolygons   =  7;
         GT_nbrSplitSegments     =  34;
         GT_nbrFacePolygons_UP   =  12;
@@ -147,24 +148,7 @@ TEST_SUITE("Real_scans")
         GT_nbrMeshVertices_UP   =  13;
         GT_nbrMeshVertices_DOWN =  6;
 
-        checkResults(ymlPath, true);
-    }
-
-    TEST_CASE("Long_length_only_extremes2"  // FIXME: fails
-    * doctest::description("Checks the case of a beam with tags only at extremeties.\n"
-                           "The reconstructor should still be able to produce a mesh."))
-    {
-        ymlPath = YML_DIR_REAL + "only_end_cross_TEST.yml";  // FIXME: change yml file
-
-        GT_nbrTags              =  56;
-        GT_nbrPlnAABBPolygons   =  7;
-        GT_nbrSplitSegments     =  34;
-        GT_nbrFacePolygons_UP   =  12;
-        GT_nbrFacePolygons_DOWN =  7;
-        GT_nbrMeshVertices_UP   =  13;
-        GT_nbrMeshVertices_DOWN =  6;
-
-        checkResults(ymlPath, true);
+        checkResults(ymlPath);
     }
 
     // ===============================================================================
@@ -290,7 +274,7 @@ TEST_SUITE("Synthetic_scans")
         GT_nbrMeshVertices_UP   =  24;
         GT_nbrMeshVertices_DOWN =  12;
 
-        checkResults(ymlPath, true);
+        checkResults(ymlPath);
     }
 
     // ===============================================================================

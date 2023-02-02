@@ -72,7 +72,7 @@ namespace tslam::Reconstruction
             throw std::runtime_error("[ERROR] No mesh is reconstructed.");
         
         std::string filepath = dir + "/" + filename;
-        open3d::io::WriteTriangleMesh(filepath, this->m_GeometricSolver.getMeshOut());
+        open3d::io::WriteTriangleMesh(filepath, this->m_GeometricSolver.getMeshOut(), true);
     }
 
     void TSLAMReconstructor::saveMeshAsXAC(const std::string& dir, const std::string& filename)

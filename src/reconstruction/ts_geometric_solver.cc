@@ -295,6 +295,9 @@ namespace tslam::Reconstruction
 
     }
 
+    
+
+
     void TSGeometricSolver::rIntersectStripeTagPlnAABB()
     {
         // scale the AABB

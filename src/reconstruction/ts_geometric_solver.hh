@@ -35,6 +35,9 @@ namespace tslam::Reconstruction
         /// The main function responsible for the reconstruction
         void reconstruct();
 
+    public:  ///< test funcs TODO: to erase
+        void clusterStripesByNormal();
+
     public:  ///< reconstruction methods
         /// (a)
         /**
