@@ -21,7 +21,6 @@ namespace tslam::Reconstruction
         this->rCreatePolysurface();
         this->rCreateMesh();
 
-#ifdef TSLAM_REC_DEBUG
         this->visualize(this->m_ShowVisualizer,
                         this->m_DrawTags,
                         this->m_DrawTagTypes,
@@ -31,7 +30,6 @@ namespace tslam::Reconstruction
                         this->m_DrawSplittingSegments,
                         this->m_DrawSelectedFace,
                         this->m_DrawFinalMesh);
-#endif
     }
 
     void TSGeometricSolver::visualize(bool showVisualizer,
@@ -44,7 +42,6 @@ namespace tslam::Reconstruction
                                       bool drawSelectedFaces,
                                       bool drawFinalMesh)
     {
-#ifdef TSLAM_REC_DEBUG
         if (!showVisualizer)
             return;
         open3d::visualization::Visualizer* vis(new open3d::visualization::Visualizer());
@@ -107,9 +104,9 @@ namespace tslam::Reconstruction
 
         if (drawIntersectedPoly)
         {
-            for (auto& pg : this->m_PlnAABBPolygons)
+            for (uint j = 0; j < this->m_PlnAABBPolygons.size(); j++)
             {
-                std::vector<Eigen::Vector3d> pts = pg.getVertices();
+                std::vector<Eigen::Vector3d> pts = this->m_PlnAABBPolygons[j].getVertices();
                 for (int i = 0; i < pts.size(); i++)
                 {
                     std::shared_ptr<open3d::geometry::Segment3D> segm = std::make_shared<open3d::geometry::Segment3D>(pts[i], pts[(i+1)%pts.size()]);
@@ -185,7 +182,6 @@ namespace tslam::Reconstruction
         vis->Run();
         vis->Close();
         vis->DestroyVisualizerWindow();
-#endif
     }
 
     void TSGeometricSolver::rDetectFacesStripes()
@@ -323,17 +319,14 @@ namespace tslam::Reconstruction
             for (unsigned int i = 0; i < outPtsCount; i++)
                 planeIntersections->push_back(outPtsPtr[i]);
 
-            // if (i==2)  // DEBUG  i.e. 4 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-            // {
-                TSPolygon tempPoly = TSPolygon(*planeIntersections, this->m_Timber.getTSRTagsStripes()[i]->getMeanPlane());
-                tempPoly.reorderClockwisePoints();
-                this->m_PlnAABBPolygons.push_back(tempPoly);
-            // }
+            TSPolygon tempPoly = TSPolygon(*planeIntersections, this->m_Timber.getTSRTagsStripes()[i]->getMeanPlane());
+            tempPoly.reorderClockwisePoints();
+            this->m_PlnAABBPolygons.push_back(tempPoly);
         }
         delete outPtsPtr;
         delete planeIntersections;
 
-        // delete duplicates from the polygons list (e.g. double stripes on the same plane for synthetic data)
+        // (*)delete duplicates from the polygons list (e.g. double stripes on the same plane for synthetic data)
         for (int i = 0; i < this->m_PlnAABBPolygons.size(); i++)
         {
             for (int j = i + 1; j < this->m_PlnAABBPolygons.size(); j++)
@@ -343,6 +336,16 @@ namespace tslam::Reconstruction
                     this->m_PlnAABBPolygons.erase(this->m_PlnAABBPolygons.begin() + j);
                     j--;
                 }
+            }
+        }
+
+        // (**) delete polygons with less than 3 verticees
+        for (int i = 0; i < this->m_PlnAABBPolygons.size(); i++)
+        {
+            if (this->m_PlnAABBPolygons[i].getVertices().size() < 3)
+            {
+                this->m_PlnAABBPolygons.erase(this->m_PlnAABBPolygons.begin() + i);
+                i--;
             }
         }
     }
@@ -508,8 +511,6 @@ namespace tslam::Reconstruction
     void TSGeometricSolver::rCreateMesh()
     {
         this->rJoinPolygons(this->m_FacePolygons, this->m_MeshOut);
-        if (!this->rCheckMeshSanity(this->m_MeshOut))
-            throw std::runtime_error("[ERROR]: mesh is not valid.");
     }
     void TSGeometricSolver::rJoinPolygons(std::vector<TSPolygon>& facePolygons,
                                           open3d::geometry::TriangleMesh& mesh)
@@ -523,12 +524,5 @@ namespace tslam::Reconstruction
             mesh.RemoveNonManifoldEdges();
             mesh.RemoveDegenerateTriangles();
         }
-    }
-    bool TSGeometricSolver::rCheckMeshSanity(open3d::geometry::TriangleMesh& mesh)
-    {
-        if (mesh.HasVertices() && mesh.HasTriangles() && mesh.IsWatertight())
-            return true;
-        else
-            return false;
     }
 }

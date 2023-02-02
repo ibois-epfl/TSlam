@@ -22,20 +22,20 @@ namespace tslam::Reconstruction
             m_Timber = TSTimber();
             m_TasselatorPtr = nullptr;
 
-            m_CreaseAngleThreshold=10.0;
-            m_AABBScaleFactor=2.0;
-            m_MaxPlnDist2Merge=5.2;
-            m_MaxPlnAngle2Merge=0.9;
-            m_MaxPolyTagDist=0.5;
-            m_EPS=1e-05;
-            m_ShowVisualizer=false;
+            m_CreaseAngleThreshold = 2.0;
+            m_MaxPlnDist2Merge     = 1.0;
+            m_MaxPlnAngle2Merge    = 0.9;
+            m_AABBScaleFactor      = 1.5;
+            m_MaxPolyTagDist       = 0.5;
+            m_EPS                  = 1e-05;
+            m_ShowVisualizer       = false;
         };
         ~TSGeometricSolver() = default;
 
         /// The main function responsible for the reconstruction
         void reconstruct();
 
-    private:  ///< reconstruction methods
+    public:  ///< reconstruction methods
         /// (a)
         /**
          * @brief The function parse the tags following the detected creases of the timber piece. Tags are stored
@@ -131,14 +131,6 @@ namespace tslam::Reconstruction
              */
             void rJoinPolygons(std::vector<TSPolygon>& facePolygons,
                                open3d::geometry::TriangleMesh& mesh);
-            /**
-             * @brief Check for manifoldness and watertightness of the mesh.
-             * 
-             * @param mesh[in] the mesh to check
-             * @return true if the mesh is manifold and watertight
-             * @return false if the mesh is not manifold or watertight
-             */
-            bool rCheckMeshSanity(open3d::geometry::TriangleMesh& mesh);
 
     public: __always_inline  ///< Setters for solver parameters
         void setCreaseAngleThreshold(double creaseAngleThreshold){m_CreaseAngleThreshold = creaseAngleThreshold;};
@@ -171,7 +163,7 @@ namespace tslam::Reconstruction
     public: __always_inline  ///< Getters for solver parameters
         open3d::geometry::TriangleMesh& getMeshOut() {return this->m_MeshOut;};
     
-    public:  ///< public utility funcs
+    public: __always_inline  ///< mesh utility funcs
         /**
          * @brief Check if the geometric solver was able to produce a mesh.
          * 
@@ -179,7 +171,31 @@ namespace tslam::Reconstruction
          * @return false if the solver was not able to produce a mesh
          */
         bool hasMesh(){return (this->m_MeshOut.HasVertices()) ? true : false; };
-    
+        /**
+         * @brief Check for manifoldness and watertightness of the mesh.
+         * 
+         * @param mesh[in] the mesh to check
+         * @return true if the mesh is manifold and watertight
+         * @return false if the mesh has vertices, faces and watertight
+         */
+        bool checkMeshSanity(open3d::geometry::TriangleMesh& mesh)
+        {
+            if (mesh.HasVertices() && mesh.HasTriangles() && mesh.IsWatertight())
+                return true;
+            else
+                return false;
+        };
+        /**
+         * @see checkMeshSanity(open3d::geometry::TriangleMesh& mesh)
+         */
+        bool checkMeshSanity()
+        {
+            if (this->m_MeshOut.HasVertices() && this->m_MeshOut.HasTriangles() && this->m_MeshOut.IsWatertight())
+                return true;
+            else
+                return false;
+        };
+
     public:  __always_inline  ///< clean out memory func
         /// Function to clean all the members and memory linked to the solver
         void clean()
@@ -231,6 +247,25 @@ namespace tslam::Reconstruction
     public: __always_inline  ///< getters
         /// Get the timber element
         TSTimber& getTimber(){return this->m_Timber;};
+        /// Get the tassellator
+        std::shared_ptr<TSTassellation>& getTasselator(){return this->m_TasselatorPtr;};
+
+        /// Get number of tags
+        int getNbrTags(){return this->m_Timber.getNbrTags();};
+        /// Get number of intersected polygons with the AABB
+        int getNbrPlnAABBPolygons(){return this->m_PlnAABBPolygons.size();};
+        /// Get number of splitting segments
+        int getNbrSplitSegments()
+        {
+            int nbrSplitSegments = 0;
+            for (auto& splitSegments : this->m_SplitSegmentsGrouped)
+                nbrSplitSegments += splitSegments.size();
+            return nbrSplitSegments;
+        };
+        /// Get number of face polygons
+        int getNbrFacePolygons(){return this->m_FacePolygons.size();};
+        /// Get number of vertices of the final mesh
+        int getNbrMeshVertices(){return this->m_MeshOut.vertices_.size();};
 
     private:  ///< Solver components
         /// The timber component of the geometric solver contains all the tags and tag stripes

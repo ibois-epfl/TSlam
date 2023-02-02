@@ -265,6 +265,12 @@ We also tried to give it a shot for very complex geometries such as this one but
 ![](./real_complexe.jpg)
 
 
+### Reconstruction - implementation of testing
+We need testing for the next CI but also the refinement of the current reconstruction algorithm. We are using `DocTest` for testing and we test both synthetic and reals scans maps (`.yml`) with expected ground-truth data.
+
+![](./doctest.png)
+
+
 Current TODOs:
 - [ ] (urgent) a piece with double stripes on edges each is not reconstructing correctly, check the bug out;
 - [ ] (urgen) solve reconstruction for more complex objects
@@ -276,3 +282,5 @@ Current TODOs:
 - [ ] adapt optitrack
 - [ ] write small program for recordings live
 - [ ] package and integrate the new version of tslam in AC
+
+- [ ] implement an evaluation method (mesh-mesh comparison) for the synthetic data, i.e. [Hausdorf distance for two mesh models](https://www.researchgate.net/publication/224258658_Assessing_Visual_Quality_of_3-D_Polygonal_Models)

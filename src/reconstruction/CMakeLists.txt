@@ -8,12 +8,12 @@ set(CMAKE_CXX_STANDARD 17)
 # Options
 #---------------------------------------------------------------------------------------------------------
 
-option(BUILD_TSLAMREC_API   "Build the TSlam reconstruction API, *no debug/ no profiler* "              OFF)
+# TODO: "BUILD_TSLAMREC_API" might not be necessary
+option(BUILD_TSLAMREC_API   "Build the TSlam reconstruction API, *no profiler* "                        OFF)
 
-option(ENABLE_REC_PROFILER  "Enable profiling for the TSlam reconstruction"                             ON)
-option(ENABLE_REC_DEBUG     "Enable debug outputs (logs, visualizer) for the TSlam reconstruction"      ON)
+option(ENABLE_REC_PROFILER  "Enable profiling for the TSlam reconstruction"                             OFF)
 
-option(ENABLE_TESTING       "Enable testing for the TSlam reconstruction"                               OFF)
+option(ENABLE_TESTING       "Enable testing for the TSlam reconstruction"                               ON)
 
 #---------------------------------------------------------------------------------------------------------
 # library for tslam reconstruction
@@ -34,7 +34,7 @@ target_link_libraries(tslamrec PUBLIC Open3D::Open3D)
 target_link_libraries(tslamrec PUBLIC Eigen3::Eigen)
 
 #---------------------------------------------------------------------------------------------------------
-# GTest
+# DocTests
 #---------------------------------------------------------------------------------------------------------
 
 if(ENABLE_TESTING)
@@ -47,7 +47,6 @@ endif()
 
 if (BUILD_TSLAMREC_API)
     set(ENABLE_REC_PROFILER OFF)
-    set(ENABLE_REC_DEBUG OFF)
 
     # TODO: prepare the library to be  integrated in the main tslam
     # set(TSLAMREC_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
@@ -57,18 +56,3 @@ endif()
 if(ENABLE_REC_PROFILER)
     target_compile_definitions(tslamrec PUBLIC TSLAM_REC_PROFILER=0)
 endif()
-
-if(ENABLE_REC_DEBUG)
-    target_compile_definitions(tslamrec PUBLIC TSLAM_REC_DEBUG=0)
-    
-    # executable for testing
-    set(EXE_NAME reconstruct_debug)
-    add_executable(${EXE_NAME} reconstruct_debug.cc)
-    target_link_libraries(${EXE_NAME} PRIVATE tslamrec)
-
-    add_custom_command(TARGET reconstruct_debug
-                       POST_BUILD
-                       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                       COMMAND ${CMAKE_BINARY_DIR}/reconstruct_debug)
-endif()
-

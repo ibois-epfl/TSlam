@@ -19,6 +19,12 @@ namespace tslam::Reconstruction
     {
     public:
         TSLAMReconstructor();
+        TSLAMReconstructor(double creaseAngleThreshold,
+                           double maxPlnDist,
+                           double maxPlnAngle,
+                           double aabbScaleFactor,
+                           double maxPolyDist,
+                           double eps);
         ~TSLAMReconstructor() = default;
 
     public:  ///< main funcs
@@ -85,6 +91,7 @@ namespace tslam::Reconstruction
         };
 
     private:  ///< internal members
+        std::string m_MapPath;
         TSGeometricSolver m_GeometricSolver;
     };
 }

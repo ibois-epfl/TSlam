@@ -8,6 +8,24 @@ namespace tslam::Reconstruction
     TSLAMReconstructor::TSLAMReconstructor()
     {
         this->m_GeometricSolver = TSGeometricSolver();
+        this->m_GeometricSolver.setShowVisualizer(false);
+    }
+    TSLAMReconstructor::TSLAMReconstructor(double creaseAngleThreshold,
+                                           double maxPlnDist,
+                                           double maxPlnAngle,
+                                           double aabbScaleFactor,
+                                           double maxPolyDist,
+                                           double eps)
+    {
+        this->m_GeometricSolver = TSGeometricSolver();
+        this->m_GeometricSolver.setShowVisualizer(false);
+
+        this->setParams(creaseAngleThreshold,
+                        maxPlnDist,
+                        maxPlnAngle,
+                        aabbScaleFactor,
+                        maxPolyDist,
+                        eps);
     }
 
     void TSLAMReconstructor::setParams(double creaseAngleThreshold,
@@ -28,7 +46,10 @@ namespace tslam::Reconstruction
     bool TSLAMReconstructor::run()
     {
         if (!this->m_GeometricSolver.getTimber().hasTags())
-            throw std::runtime_error("[ERROR] No tags are loaded in the timber object.");
+            if (this->m_MapPath.empty())
+                throw std::runtime_error("[ERROR] No tags are loaded in the timber object.");
+            else
+                this->loadMap(this->m_MapPath);
         
         this->m_GeometricSolver.reconstruct();
 
@@ -39,6 +60,8 @@ namespace tslam::Reconstruction
     {
         if (!std::filesystem::exists(filepath))
             throw std::runtime_error("[ERROR] The file does not exist.");
+
+        this->m_MapPath = filepath;
         
         this->m_GeometricSolver.getTimber().setPlaneTagsFromYAML(filepath);
     }
