@@ -29,7 +29,7 @@ namespace tslam::Reconstruction
             m_MaxPlnDist2Merge     = 1.0;
             m_MaxPlnAngle2Merge    = 10.0;  ///< 0.9 deg ori
             m_AABBScaleFactor      = 3.0;
-            m_MaxPolyTagDist       = 0.5;
+            m_MaxPolyTagDist       = 0.1;  ///< 0.5 ori
 
             m_EPS                  = 1e-05;
             m_ShowVisualizer       = false;
