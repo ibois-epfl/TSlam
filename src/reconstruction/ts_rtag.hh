@@ -8,13 +8,6 @@
 
 namespace tslam::Reconstruction
 {
-    /// TSRTagType enum class for classify tags in stripes (extremes or not)
-    enum TSRTagType
-    {
-        Unknown = 0,
-        Edge = 1,
-    };
-    
     /// TSRTag class responsible for storing the plane information.
     class TSRTag : public TSCompute
     {
@@ -22,7 +15,6 @@ namespace tslam::Reconstruction
         TSRTag()
         {
             m_Id = -1;
-            m_Type = TSRTagType::Unknown;
             m_Corners = {};
             m_Center = Eigen::Vector3d::Zero();
             m_Plane = TSPlane();
@@ -45,9 +37,6 @@ namespace tslam::Reconstruction
             };
 
     public:
-        inline bool isEdge() {return (m_Type==TSRTagType::Edge) ? true : false; };
-
-    public:
         /**
          * @brief Set the corners' coordinates of the planes
          * 
@@ -60,7 +49,6 @@ namespace tslam::Reconstruction
         */
         void setCorners(Eigen::Vector3d A, Eigen::Vector3d B, Eigen::Vector3d C, Eigen::Vector3d D);
         inline void setID(uint id) {m_Id = id; };
-        inline void setType(TSRTagType type) {m_Type = type; };
         inline void setFaceIdx(int idx) {m_FaceIdx = idx; };
 
     public: __always_inline
@@ -76,13 +64,8 @@ namespace tslam::Reconstruction
         Eigen::Vector3d& getNormal() {m_Normal = m_Plane.Normal; return m_Normal; };
         Eigen::Vector3d& getAxisY() {m_AxisY = m_Plane.AxisY; return m_AxisY; };
         Eigen::Vector3d& getAxisX() {m_AxisX = m_Plane.AxisX; return m_AxisX; };
-        TSRTagType& getType() {return m_Type; };
         uint& getFaceIdx() {return m_FaceIdx; };
     
-    public: __always_inline
-        bool isUnknown() const {return (m_Type==TSRTagType::Unknown) ? true : false; };
-        bool isEdge() const {return (m_Type==TSRTagType::Edge) ? true : false; };
-        
     private:
         /// Compute the intrinsic properties from the corners and it sets the obj members.
         void compute() override;
@@ -138,7 +121,6 @@ namespace tslam::Reconstruction
         /// Axis X,Y of the plane linked to the tag
         Eigen::Vector3d m_AxisX, m_AxisY;
         Eigen::Vector3d m_Center;
-        TSRTagType m_Type;
         /// Index to identify the face on which the tag is stick to
         uint m_FaceIdx;
         /// Color of the tag for visualizer

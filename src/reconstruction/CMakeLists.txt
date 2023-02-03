@@ -27,11 +27,31 @@ add_library(tslamrec SHARED)  # SHARED or STATIC
 target_sources(tslamrec PUBLIC ${tslamrec_srcs_base})
 find_package(Open3D 0.16.1 REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-# add_subdirectory(CGAL)
-# target_include_directories(tslamrec PUBLIC CGAL)
+
+
+
+
+
+
 target_include_directories(tslamrec PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/CGAL/include)
+
 target_link_libraries(tslamrec PUBLIC Open3D::Open3D)
 target_link_libraries(tslamrec PUBLIC Eigen3::Eigen)
+
+
+# set(BUILD_SHARED_LIBS ON)
+# add_subdirectory(cilantro)                                                                # TEST
+target_include_directories(tslamrec PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cilantro/include)  # TEST
+# target_include_directories(tslamrec PUBLIC ${CMAKE_BINARY_DIR}/cilantro/include)          # TEST
+
+# target_link_libraries(tslamrec PUBLIC cilantro)
+
+# print the cilantro include directory
+
+
+# link the cilantro .so library to the tslamrec library
+# target_link_libraries(tslamrec PUBLIC cilantro)                                           # TEST
+
 
 #---------------------------------------------------------------------------------------------------------
 # DocTests

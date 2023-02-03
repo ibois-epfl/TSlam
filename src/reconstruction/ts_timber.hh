@@ -76,7 +76,7 @@ namespace tslam::Reconstruction
         };
     
     public: __always_inline  ///< tag funcs
-        /// Get all the tags objects attached to the timber element (raw, it may contain doubles).
+        /// Get all the tags objects attached to the timber element.
         std::vector<TSRTag> getPlaneTags() {return m_RTags; };
         /// Get number of tags after removing duplicates.
         int getNbrTags() {return m_RtagsCtrs.points_.size(); };

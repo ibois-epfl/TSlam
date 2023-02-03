@@ -19,7 +19,9 @@ namespace tslam::Reconstruction
     {
     public:
         TSLAMReconstructor();
-        TSLAMReconstructor(double creaseAngleThreshold,
+        TSLAMReconstructor(float radiusSearch,
+                           double creaseAngleThreshold,
+                           int minClusterSize,
                            double maxPlnDist,
                            double maxPlnAngle,
                            double aabbScaleFactor,
@@ -31,14 +33,18 @@ namespace tslam::Reconstruction
         /**
          * @brief Set the parameters for the geometric solver.
          * 
+         * @param radiusSearch The radius of the search for the nearest neighbors
          * @param creaseAngleThreshold The threshold for detection of crease's angle (the smaller the more creases will be detected)
+         * @param minClusterSize The maximal number of nearest neighbors
          * @param maxPlnDist The scale factor for scaleing up the AABB of the timber element
          * @param maxPlnAngle The maximal distance between a polygon and a tag to be considered as a candidate face
          * @param aabbScaleFactor The maximal distance between planes of stripes to be eligible for merging
          * @param maxPolyDist The maximal angle difference in degs between two planes'normals' angle to be eligible for merging
          * @param eps The tolerance for all the computation (e.g. for the intersections)
          */
-        void setParams(double creaseAngleThreshold,
+        void setParams(float radiusSearch,
+                       double creaseAngleThreshold,
+                       int minClusterSize,
                        double maxPlnDist,
                        double maxPlnAngle,
                        double aabbScaleFactor,

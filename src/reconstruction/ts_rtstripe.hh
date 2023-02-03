@@ -19,7 +19,7 @@ namespace tslam::Reconstruction
 
         inline int size() {return m_Tags.size(); };
 
-        /// Reorde the tags based on the axis of the stripe (longest edge)
+        /// Reorder the tags based on the axis of the stripe (longest edge)
         void reorderTags();
 
     public: __always_inline  ///< Accessors

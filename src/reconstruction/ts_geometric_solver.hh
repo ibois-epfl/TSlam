@@ -22,11 +22,15 @@ namespace tslam::Reconstruction
             m_Timber = TSTimber();
             m_TasselatorPtr = nullptr;
 
-            m_CreaseAngleThreshold = 2.0;
+            m_RadiusSearch         = 2.0;
+            m_CreaseAngleThreshold = 5.0;
+            m_MinClusterSize       = 1;
+
             m_MaxPlnDist2Merge     = 1.0;
-            m_MaxPlnAngle2Merge    = 0.9;
+            m_MaxPlnAngle2Merge    = 10.0;  ///< 0.9 deg ori
             m_AABBScaleFactor      = 3.0;
             m_MaxPolyTagDist       = 0.5;
+
             m_EPS                  = 1e-05;
             m_ShowVisualizer       = false;
         };
@@ -34,9 +38,6 @@ namespace tslam::Reconstruction
 
         /// The main function responsible for the reconstruction
         void reconstruct();
-
-    public:  ///< test funcs TODO: to erase
-        void clusterStripesByNormal();
 
     public:  ///< reconstruction methods
         /// (a)
@@ -53,22 +54,25 @@ namespace tslam::Reconstruction
          */
         void rDetectFacesStripes();
             /**
-             * @brief Parse the tags into stripes. We compare the tags by proximity and we compute the angle between
-             * the normals of the tags. If the angle is below a threshold we consider the tags as belonging to the same
-             * stripe. The stripes are stored in a vector of stripes. There are still stripes with similar planes. This 
-             * is why in the next steps we refine them by merging those with similar planes.
+             * @brief Cluster the tags based on the normal.
              * 
-             * @param stripes the vector of stripes
+             * @note We employ the connected component algorithm in Cilantro library (see the reference here:
+             *       https://github.com/kzampog/cilantro/blob/master/examples/connected_component_extraction.cpp)
+             * @param stripesGrouped the vector of stripes
+             * @param radius the radius of the search
+             * @param threshDeg the threshold angle in degrees
+             * @param minClusterSize the minimum cluster size
              */
-            void rParseTags2Stripes(std::vector<std::shared_ptr<TSRTStripe>>& stripes);
+            void clusterStripesByNormal(std::vector<std::shared_ptr<TSRTStripe>>& stripesGrouped,
+                                        float radius, float threshDeg, int minClusterSize);
             /**
              * @brief We merge similar stripes based on their planes. The planes are similar if they are too close
              * and too similar in orientation. The merging is done by averaging the planes normals and computing the
              * new plane passing through the extremes of the stripe.
              * 
-             * @param stripes the vector of stripes
+             * @param stripesGrouped the vector of stripes
              */
-            void rRefineStripesByPlanes(std::vector<std::shared_ptr<TSRTStripe>>& stripes);
+            void rRefineStripesByPlanes(std::vector<std::shared_ptr<TSRTStripe>>& stripesGrouped);
         
         /// (b)
         /** 
@@ -136,7 +140,10 @@ namespace tslam::Reconstruction
                                open3d::geometry::TriangleMesh& mesh);
 
     public: __always_inline  ///< Setters for solver parameters
+        void setRadiusSearch(float radiusSearch){m_RadiusSearch = radiusSearch;}; 
         void setCreaseAngleThreshold(double creaseAngleThreshold){m_CreaseAngleThreshold = creaseAngleThreshold;};
+        void setMinClusterSize(int minClusterSize){m_MinClusterSize = minClusterSize;};
+
         void setMaxPlnDist2Merge(double maxPlnDist){m_MaxPlnDist2Merge = maxPlnDist;};
         void setMaxPlnAngle2Merge(double maxPlnAngle){m_MaxPlnAngle2Merge = maxPlnAngle;};
         void setAABBScaleFactor(double aabbScaleFactor){m_AABBScaleFactor = aabbScaleFactor;};
@@ -145,7 +152,6 @@ namespace tslam::Reconstruction
 
         void setShowVisualizer(bool showVisualizer){m_ShowVisualizer = showVisualizer;};
         void setSolverVisualizerParams(bool drawTags = true,
-                                       bool drawTagTypes = true,
                                        bool drawTagNormals = false,
                                        bool drawAabb = true,
                                        bool drawIntersectedPoly = true,
@@ -154,7 +160,6 @@ namespace tslam::Reconstruction
                                        bool drawFinalMesh = true)
         {
             m_DrawTags = drawTags;
-            m_DrawTagTypes = drawTagTypes;
             m_DrawTagNormals = drawTagNormals;
             m_DrawAabb = drawAabb;
             m_DrawIntersectedPoly = drawIntersectedPoly;
@@ -220,7 +225,6 @@ namespace tslam::Reconstruction
         /// visualize the results of the timber reconstruction
         void visualize(bool showVisualizer,
                        bool drawTags,
-                       bool drawTagTypes,
                        bool drawTagNormals,
                        bool drawAabb,
                        bool drawIntersectedPoly,
@@ -231,8 +235,6 @@ namespace tslam::Reconstruction
         bool m_ShowVisualizer;
         /// Show the tags as wireframe
         bool m_DrawTags;
-        /// Show the tags' types (edges)
-        bool m_DrawTagTypes;
         /// Show the tags' normals
         bool m_DrawTagNormals;
         /// Show the Axis-Aligned Bounding Box (AABB) of the timber element
@@ -276,8 +278,13 @@ namespace tslam::Reconstruction
         std::shared_ptr<TSTassellation> m_TasselatorPtr;
     
     private:  ///< Solver parameters for user's tuning
+        /// Radius search for the normal clustering of the tags
+        float m_RadiusSearch;
         /// The threshold for detection of crease's angle (the smaller the more creases will be detected)
         double m_CreaseAngleThreshold;
+        /// Minimum cluster possible of tags
+        int m_MinClusterSize;
+
         /// The scale factor for scaleing up the AABB of the timber element
         double m_AABBScaleFactor;
         /// The maximal distance between a polygon and a tag to be considered as a candidate face
@@ -305,6 +312,9 @@ namespace tslam::Reconstruction
         // TODO: to implement the XAC format and storage for importing on 3d modeler
         /// The timber mesh in format XAC
         open3d::geometry::TriangleMesh m_MeshOutXAC;
+
+        // // TODO: for debugging
+        // std::shared_ptr<open3d::geometry::PointCloud> m_DEBUG_cloud;
 
     private:  ///< Profiler  // TODO: this needs to be implemented (mayybe for the all tslam)
 #ifdef TSLAM_REC_PROFILER

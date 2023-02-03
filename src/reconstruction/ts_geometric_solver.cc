@@ -11,6 +11,11 @@
 #include <random>
 #include <array>
 
+// TODO: test if working clustering by normals
+#include <cilantro/clustering/connected_component_extraction.hpp>
+#include <cilantro/utilities/point_cloud.hpp>
+#include <cilantro/utilities/timer.hpp>
+#include <cilantro/visualization.hpp>
 
 namespace tslam::Reconstruction
 {
@@ -23,7 +28,6 @@ namespace tslam::Reconstruction
 
         this->visualize(this->m_ShowVisualizer,
                         this->m_DrawTags,
-                        this->m_DrawTagTypes,
                         this->m_DrawTagNormals,
                         this->m_DrawAabb,
                         this->m_DrawIntersectedPoly,
@@ -34,7 +38,6 @@ namespace tslam::Reconstruction
 
     void TSGeometricSolver::visualize(bool showVisualizer,
                                       bool drawTags,
-                                      bool drawTagTypes,
                                       bool drawTagNormals,
                                       bool drawAabb,
                                       bool drawIntersectedPoly,
@@ -50,12 +53,7 @@ namespace tslam::Reconstruction
         if (drawTags)
         {
             std::vector<Eigen::Vector3d> clrs;
-
-            std::vector<int> faceIdxs;
-            for (auto& tag : this->m_Timber.getPlaneTags())
-                faceIdxs.push_back(tag.getFaceIdx());
-            std::sort(faceIdxs.begin(), faceIdxs.end());
-            for (int i = 0; i < faceIdxs.back()+1; i++)
+            for (uint i = 0; i < this->m_Timber.getTSRTagsStripes().size(); i++)
             {
                 std::random_device rd;
                 std::mt19937 gen(rd());
@@ -63,28 +61,20 @@ namespace tslam::Reconstruction
                 Eigen::Vector3d color = Eigen::Vector3d(dis(gen), dis(gen), dis(gen));
                 clrs.push_back(color);
             }
-            for (auto& tag : this->m_Timber.getPlaneTags())
-            {
-                open3d::geometry::TriangleMesh tagBase = tag.getOpen3dMesh();
-                auto planeTagsLineset1 = open3d::geometry::LineSet::CreateFromTriangleMesh(tagBase);
-                planeTagsLineset1->PaintUniformColor(clrs[tag.getFaceIdx()]);
 
-                vis->AddGeometry(planeTagsLineset1);
-            }
-        }
-
-        if (drawTagTypes)
-        {
-            std::shared_ptr<open3d::geometry::PointCloud> tagCenters = std::make_shared<open3d::geometry::PointCloud>();
-            for (auto& tag : this->m_Timber.getPlaneTags())
+            for (uint j = 0; j < this->m_Timber.getTSRTagsStripes().size(); j++)
             {
-                if (tag.isEdge())
+                auto& clr = clrs[j];
+                auto& stripe = this->m_Timber.getTSRTagsStripes()[j];
+                for (auto& tag : *stripe)
                 {
-                    tagCenters->points_.push_back(tag.getCenter());
-                    tagCenters->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+                    open3d::geometry::TriangleMesh tagBase = tag.getOpen3dMesh();
+                    auto planeTagsLineset1 = open3d::geometry::LineSet::CreateFromTriangleMesh(tagBase);
+                    planeTagsLineset1->PaintUniformColor(clr);
+
+                    vis->AddGeometry(planeTagsLineset1);
                 }
             }
-            vis->AddGeometry(tagCenters);
         }
 
         if (drawTagNormals)
@@ -188,115 +178,96 @@ namespace tslam::Reconstruction
     {
         std::vector<std::shared_ptr<TSRTStripe>> tempStripes;
 
-        this->rParseTags2Stripes(tempStripes);
+        this->clusterStripesByNormal(tempStripes,
+                                     this->m_RadiusSearch,
+                                     this->m_CreaseAngleThreshold,
+                                     this->m_MinClusterSize
+        );
+
         this->rRefineStripesByPlanes(tempStripes);
 
         this->m_Timber.setTSRTagsStripes(tempStripes);
     }
-    void TSGeometricSolver::rParseTags2Stripes(std::vector<std::shared_ptr<TSRTStripe>>& stripes)
+    void TSGeometricSolver::clusterStripesByNormal(std::vector<std::shared_ptr<TSRTStripe>>& stripesGrouped,
+                                                   float radius, float threshDeg, int minClusterSize)
     {
-        // copy tags for destructive operations
-        std::unique_ptr<open3d::geometry::PointCloud> ctrsCopyPtr = 
-            std::make_unique<open3d::geometry::PointCloud>(this->m_Timber.getTagsCtrs());
-        auto tagsCopy = this->m_Timber.getPlaneTags();
+        uint nbrTags = this->m_Timber.getPlaneTags().size();
+        const std::vector<TSRTag>& tags = this->m_Timber.getPlaneTags();
 
-        // output stripes
-        std::shared_ptr<TSRTStripe> stripe = std::make_shared<TSRTStripe>();
+        cilantro::VectorSet3f ctrs(3, nbrTags);
+        for (int i = 0; i < nbrTags; i++)
+            ctrs.col(i) = this->m_Timber.getPlaneTags()[i].getCenter().cast<float>();
+        cilantro::VectorSet3f normals(3, nbrTags);
+        for (int i = 0; i < nbrTags; i++)
+            normals.col(i) = this->m_Timber.getPlaneTags()[i].getNormal().cast<float>();
+        cilantro::VectorSet3f colors(3, nbrTags);
+        for (int i = 0; i < nbrTags; i++)
+            colors.col(i) = Eigen::Vector3f(0.5, 0.5, 0.5);
 
-        // properties for kdtree
-        open3d::geometry::KDTreeFlann kdtree;
-        kdtree.SetGeometry(*ctrsCopyPtr);
-        std::vector<int> indices;
-        std::vector<double> distances;
-        uint knn = 2;
-        uint faceIdx = 0;
-        uint idx = 0;
-        uint nextIdx = 0;
+        // convert pts vector to cilantro point cloud
+        cilantro::PointCloud3f cloud(ctrs, normals, colors);
 
-        do
+        // run clustering
+        cilantro::RadiusNeighborhoodSpecification<float> nh(radius * radius);
+        cilantro::NormalsProximityEvaluator<float, 3> ev(cloud.normals, (float)(threshDeg * M_PI / 180.0));
+
+        cilantro::ConnectedComponentExtraction3f<> cce(cloud.points);
+        cce.segment(nh, ev, minClusterSize, cloud.size());
+
+        // create a vector of stripes based on the number of clusters
+        size_t nbrLabels = cce.getNumberOfClusters();
+        const auto& labels = cce.getPointToClusterIndexMap();
+
+        // create a vector of stripes based on the number of clusters
+        std::vector<std::shared_ptr<TSRTStripe>> stripes = {};
+
+        for (uint idx = 0; idx < nbrLabels; idx++)
         {
-            // refresh the new kdtree
-            kdtree.SetGeometry(*ctrsCopyPtr);
-
-            // find the nearest neighborh
-            kdtree.SearchKNN(ctrsCopyPtr->points_[idx], knn, indices, distances);
-            nextIdx = indices[1];
-
-            // compute the angle between the two tags
-            double angle = TSVector::angleBetweenVectors(
-                tagsCopy[idx].getNormal(),
-                tagsCopy[nextIdx].getNormal());
-            
-            // (a) face: if the angle is below the threshold
-            if (angle < this->m_CreaseAngleThreshold)
+            std::vector<TSRTag> stripeTags = std::vector<TSRTag>();
+            for (uint j = 0; j < nbrTags; j++)
             {
-                tagsCopy[idx].setFaceIdx(faceIdx);
-                stripe->push_back(tagsCopy[idx]);
+                if (labels[j] == idx)
+                    stripeTags.push_back(tags[j]);
             }
-            // (b) crease: if the angle is above the threshold
-            else if (angle > this->m_CreaseAngleThreshold)
-            {
-                tagsCopy[idx].setFaceIdx(faceIdx);
-                faceIdx++;
-                tagsCopy[nextIdx].setFaceIdx(faceIdx);
-
-                stripe->push_back(tagsCopy[idx]);
-                
-                std::shared_ptr<TSRTStripe> stripeCopy = std::make_shared<TSRTStripe>(*stripe);
-                stripes.push_back(stripeCopy);
-
-                stripe->clear();
-                stripe->push_back(tagsCopy[nextIdx]);
-            }
-
-            // get rid of the current tag
-            tagsCopy.erase(tagsCopy.begin() + idx);
-            ctrsCopyPtr->points_.erase(ctrsCopyPtr->points_.begin() + idx);
-
-            // set the next index as the current index
-            idx = (nextIdx > idx) ? nextIdx - 1 : nextIdx;
-
-        } while(ctrsCopyPtr->points_.size() > 0);
-
-        // add the last stripe
-        stripes.push_back(stripe);
+            std::shared_ptr<TSRTStripe> stripePtr = std::make_shared<TSRTStripe>(stripeTags);
+            stripes.push_back(stripePtr);
+        }
 
         // reorder the tags on each stripe
         for (auto& stripe : stripes)
             stripe->reorderTags();
+
+        // assign the stripes to the output
+        stripesGrouped = stripes;
     }
-    void TSGeometricSolver::rRefineStripesByPlanes(std::vector<std::shared_ptr<TSRTStripe>>& stripes)
+    void TSGeometricSolver::rRefineStripesByPlanes(std::vector<std::shared_ptr<TSRTStripe>>& stripesGrouped)
     {
-        for (int i = 0; i < stripes.size(); i++)
+        for (int i = 0; i < stripesGrouped.size(); i++)
         {
-            for (int j = i + 1; j < stripes.size(); j++)
+            for (int j = i + 1; j < stripesGrouped.size(); j++)
             {
-                double dist = stripes[i]->getMeanPlane().distance(stripes[j]->getMeanPlane());
-                double angle = stripes[i]->getMeanPlane().Normal.dot(stripes[j]->getMeanPlane().Normal);
+                double dist = stripesGrouped[i]->getMeanPlane().distance(stripesGrouped[j]->getMeanPlane());
+                double angle = stripesGrouped[i]->getMeanPlane().Normal.dot(stripesGrouped[j]->getMeanPlane().Normal);
                 double angleDeg = acos(angle) * 180. / M_PI;
 
-                if (stripes[i]->getMeanPlane().distance(stripes[j]->getMeanPlane()) < this->m_MaxPlnDist2Merge &&
+                if (stripesGrouped[i]->getMeanPlane().distance(stripesGrouped[j]->getMeanPlane()) < this->m_MaxPlnDist2Merge &&
                     (angleDeg < this->m_MaxPlnAngle2Merge || angleDeg > 180 - this->m_MaxPlnAngle2Merge)
                     )
                 {
-                    *stripes[i] += *stripes[j];
+                    *stripesGrouped[i] += *stripesGrouped[j];
 
-                    TSPlane avgPlane = TSPlane(stripes[i]->getNormal(), 
-                                                stripes[i]->front().getCenter(), 
-                                                stripes[i]->back().getCenter());
+                    TSPlane avgPlane = TSPlane(stripesGrouped[i]->getNormal(), 
+                                                stripesGrouped[i]->front().getCenter(), 
+                                                stripesGrouped[i]->back().getCenter());
 
-                    stripes[i]->setMeanPlane(avgPlane);
+                    stripesGrouped[i]->setMeanPlane(avgPlane);
 
-                    stripes.erase(stripes.begin() + j);
+                    stripesGrouped.erase(stripesGrouped.begin() + j);
                     j--;
                 }
             }
         }
-
     }
-
-    
-
 
     void TSGeometricSolver::rIntersectStripeTagPlnAABB()
     {
@@ -311,7 +282,9 @@ namespace tslam::Reconstruction
         {
             // a. intersect the plane with the AABB
             unsigned int outPtsCount;
-            TSPlane::plane2AABBSegmentIntersect(this->m_Timber.getTSRTagsStripes()[i]->getMeanPlane(),
+            const TSPlane& meanStripePlane = this->m_Timber.getTSRTagsStripes()[i]->getMeanPlane();
+            
+            TSPlane::plane2AABBSegmentIntersect(meanStripePlane,
                                                 this->m_Timber.getAABB().min_bound_,
                                                 this->m_Timber.getAABB().max_bound_,
                                                 outPtsPtr,
@@ -322,7 +295,7 @@ namespace tslam::Reconstruction
             for (unsigned int i = 0; i < outPtsCount; i++)
                 planeIntersections->push_back(outPtsPtr[i]);
 
-            TSPolygon tempPoly = TSPolygon(*planeIntersections, this->m_Timber.getTSRTagsStripes()[i]->getMeanPlane());
+            TSPolygon tempPoly = TSPolygon(*planeIntersections, meanStripePlane);
             tempPoly.reorderClockwisePoints();
             this->m_PlnAABBPolygons.push_back(tempPoly);
         }

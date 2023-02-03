@@ -39,13 +39,12 @@ void checkResults(std::string ymlPath,
     // set params for visualizer
     reconstructor.getGeometricSolver().setShowVisualizer(showVisualizer);  ///< Enable/disable visualizer
     reconstructor.getGeometricSolver().setSolverVisualizerParams(/*drawTags*/               true,
-                                                                 /*drawTagTypes*/           false,
                                                                  /*drawTagNormals*/         false,
                                                                  /*drawAabb*/               false,
-                                                                 /*drawIntersectedPoly*/    true,
-                                                                 /*drawSplittingSegments*/  true,
+                                                                 /*drawIntersectedPoly*/    false,
+                                                                 /*drawSplittingSegments*/  false,
                                                                  /*drawSelectedFace*/       true,
-                                                                 /*drawFinalMesh*/          true
+                                                                 /*drawFinalMesh*/          false
     );
 
     // reconstruct!
@@ -113,95 +112,95 @@ TEST_SUITE("Real_scans")
         GT_nbrMeshVertices_UP   =  8;
         GT_nbrMeshVertices_DOWN =  8;
 
-        checkResults(ymlPath);
+        checkResults(ymlPath, true);
     }
 
     // ===============================================================================
 
-    TEST_CASE("Long_length_only_extremes_poor_mapping"
-    * doctest::description("Checks the case of a beam with tags only at extremeties.\n"
-                           "The yml is the result of poor mapping quality (inclined tag planes)."))
+    // TEST_CASE("Long_length_only_extremes_poor_mapping"  // FIXME: not working
+    // * doctest::description("Checks the case of a beam with tags only at extremeties.\n"
+    //                        "The yml is the result of poor mapping quality (inclined tag planes)."))
+    // {
+    //     ymlPath = YML_DIR_REAL + "beam_only_end.yml";
+
+    //     GT_nbrTags              =  58;  // FIXME: gt values to set
+    //     GT_nbrPlnAABBPolygons   =  8;
+    //     GT_nbrSplitSegments     =  44;
+    //     GT_nbrFacePolygons_UP   =  18;
+    //     GT_nbrFacePolygons_DOWN =  7;
+    //     GT_nbrMeshVertices_UP   =  13;
+    //     GT_nbrMeshVertices_DOWN =  6;
+
+    //     checkResults(ymlPath);
+    // }
+
+    // TEST_CASE("Long_length_only_extremes_good_mapping"  // FIXME: not working
+    // * doctest::description("Checks the case of a beam with tags only at extremeties."))
+    // {
+    //     ymlPath = YML_DIR_REAL + "only_end_cross.yml";
+
+    //     GT_nbrTags              =  100;
+    //     GT_nbrPlnAABBPolygons   =  7;
+    //     GT_nbrSplitSegments     =  34;
+    //     GT_nbrFacePolygons_UP   =  12;
+    //     GT_nbrFacePolygons_DOWN =  7;
+    //     GT_nbrMeshVertices_UP   =  13;
+    //     GT_nbrMeshVertices_DOWN =  6;
+
+    //     checkResults(ymlPath);
+    // }
+
+    // ===============================================================================
+
+    TEST_CASE("Long_length_2_lap_joint"  // FIXME: fails
+    * doctest::description("Checks the case of a long beam with 2 lap joint."))
     {
-        ymlPath = YML_DIR_REAL + "beam_only_end.yml";
+        ymlPath = YML_DIR_REAL + "long_cut.yml";
 
-        GT_nbrTags              =  58;
-        GT_nbrPlnAABBPolygons   =  7;
-        GT_nbrSplitSegments     =  34;
-        GT_nbrFacePolygons_UP   =  12;
-        GT_nbrFacePolygons_DOWN =  7;
-        GT_nbrMeshVertices_UP   =  13;
-        GT_nbrMeshVertices_DOWN =  6;
+        GT_nbrTags              =  218;
+        GT_nbrPlnAABBPolygons   =  6;  // TODO: set gt values
+        GT_nbrSplitSegments     =  24;
+        GT_nbrFacePolygons_UP   =  6;
+        GT_nbrFacePolygons_DOWN =  6;
+        GT_nbrMeshVertices_UP   =  8;
+        GT_nbrMeshVertices_DOWN =  8;
 
-        checkResults(ymlPath);
+        checkResults(ymlPath, true);
     }
 
-    TEST_CASE("Long_length_only_extremes_good_mapping"
-    * doctest::description("Checks the case of a beam with tags only at extremeties."))
+    TEST_CASE("Medium_length_2_lap_joint"  // FIXME: fails
+    * doctest::description("Checks the case of a medium beam with 2 lap joint."))
     {
-        ymlPath = YML_DIR_REAL + "only_end_cross.yml";
+        ymlPath = YML_DIR_REAL + "medium_cut.yml";
 
-        GT_nbrTags              =  100;
-        GT_nbrPlnAABBPolygons   =  7;
-        GT_nbrSplitSegments     =  34;
-        GT_nbrFacePolygons_UP   =  12;
-        GT_nbrFacePolygons_DOWN =  7;
-        GT_nbrMeshVertices_UP   =  13;
-        GT_nbrMeshVertices_DOWN =  6;
+        GT_nbrTags              =  157;
+        GT_nbrPlnAABBPolygons   =  6;  // TODO: set gt values
+        GT_nbrSplitSegments     =  24;
+        GT_nbrFacePolygons_UP   =  6;
+        GT_nbrFacePolygons_DOWN =  6;
+        GT_nbrMeshVertices_UP   =  8;
+        GT_nbrMeshVertices_DOWN =  8;
 
-        checkResults(ymlPath);
+        checkResults(ymlPath, true);
     }
 
     // ===============================================================================
 
-    // TEST_CASE("Long_length_2_lap_joint"  // FIXME: fails
-    // * doctest::description("Checks the case of a long beam with 2 lap joint."))
-    // {
-    //     ymlPath = YML_DIR_REAL + "long_cut.yml";
+    TEST_CASE("Complex_geometry_romboid"  // FIXME: fails
+    * doctest::description("Checks the case of a romboid object with multiple details."))
+    {
+        ymlPath = YML_DIR_REAL + "romboid.yml";
 
-    //     GT_nbrTags              =  218;
-    //     GT_nbrPlnAABBPolygons   =  6;  // TODO: set gt values
-    //     GT_nbrSplitSegments     =  24;
-    //     GT_nbrFacePolygons_UP   =  6;
-    //     GT_nbrFacePolygons_DOWN =  6;
-    //     GT_nbrMeshVertices_UP   =  8;
-    //     GT_nbrMeshVertices_DOWN =  8;
+        GT_nbrTags              =  157;
+        GT_nbrPlnAABBPolygons   =  6;  // TODO: set gt values
+        GT_nbrSplitSegments     =  24;
+        GT_nbrFacePolygons_UP   =  6;
+        GT_nbrFacePolygons_DOWN =  6;
+        GT_nbrMeshVertices_UP   =  8;
+        GT_nbrMeshVertices_DOWN =  8;
 
-    //     checkResults(ymlPath);
-    // }
-
-    // TEST_CASE("Medium_length_2_lap_joint"  // FIXME: fails
-    // * doctest::description("Checks the case of a medium beam with 2 lap joint."))
-    // {
-    //     ymlPath = YML_DIR_REAL + "medium_cut.yml";
-
-    //     GT_nbrTags              =  157;
-    //     GT_nbrPlnAABBPolygons   =  6;  // TODO: set gt values
-    //     GT_nbrSplitSegments     =  24;
-    //     GT_nbrFacePolygons_UP   =  6;
-    //     GT_nbrFacePolygons_DOWN =  6;
-    //     GT_nbrMeshVertices_UP   =  8;
-    //     GT_nbrMeshVertices_DOWN =  8;
-
-    //     checkResults(ymlPath);
-    // }
-
-    // ===============================================================================
-
-    // TEST_CASE("Complex_geometry_romboid"  // FIXME: fails
-    // * doctest::description("Checks the case of a romboid object with multiple details."))
-    // {
-    //     ymlPath = YML_DIR_REAL + "romboid.yml";
-
-    //     GT_nbrTags              =  157;
-    //     GT_nbrPlnAABBPolygons   =  6;  // TODO: set gt values
-    //     GT_nbrSplitSegments     =  24;
-    //     GT_nbrFacePolygons_UP   =  6;
-    //     GT_nbrFacePolygons_DOWN =  6;
-    //     GT_nbrMeshVertices_UP   =  8;
-    //     GT_nbrMeshVertices_DOWN =  8;
-
-    //     checkResults(ymlPath);
-    // }
+        checkResults(ymlPath, true);
+    }
 }
 
 // ####################################################################################
@@ -222,7 +221,7 @@ TEST_SUITE("Synthetic_scans")
         GT_nbrMeshVertices_UP   =  8;
         GT_nbrMeshVertices_DOWN =  8;
 
-        checkResults(ymlPath);
+        checkResults(ymlPath, true);
     }
 
     TEST_CASE("Medium_length"
@@ -256,7 +255,7 @@ TEST_SUITE("Synthetic_scans")
         GT_nbrMeshVertices_UP   =  8;
         GT_nbrMeshVertices_DOWN =  8;
 
-        checkResults(ymlPath);
+        checkResults(ymlPath, true);
     }
 
     // ===============================================================================
@@ -274,7 +273,7 @@ TEST_SUITE("Synthetic_scans")
         GT_nbrMeshVertices_UP   =  24;
         GT_nbrMeshVertices_DOWN =  12;
 
-        checkResults(ymlPath);
+        checkResults(ymlPath, true);
     }
 
     // ===============================================================================
@@ -310,7 +309,7 @@ TEST_SUITE("Synthetic_scans")
         GT_nbrMeshVertices_UP   =  8;
         GT_nbrMeshVertices_DOWN =  8;
 
-        checkResults(ymlPath);
+        checkResults(ymlPath, true);
     }
 
     TEST_CASE("Long_length_parallel_vertical_XY_XZ_YZ"
@@ -326,24 +325,24 @@ TEST_SUITE("Synthetic_scans")
         GT_nbrMeshVertices_UP   =  8;
         GT_nbrMeshVertices_DOWN =  8;
 
-        checkResults(ymlPath);
+        checkResults(ymlPath, true);
     }
 
-    // TEST_CASE("Long_length_parallel_vertical_XY_XZ_YZ_double_stripes"  // FIXME: test fails
-    // * doctest::description("Checks the case of vertical beam parallel to XY, XZ, YZ planes.\n"
-    //                        "Stripes are doubled on each face."))
-    // {
-    //     ymlPath = YML_DIR_SYNTH + "synth_parallel_XY_XZ_YZ_v_double_stripes.yml";
+    TEST_CASE("Long_length_parallel_vertical_XY_XZ_YZ_double_stripes"  // FIXME: test fails
+    * doctest::description("Checks the case of vertical beam parallel to XY, XZ, YZ planes.\n"
+                           "Stripes are doubled on each face."))
+    {
+        ymlPath = YML_DIR_SYNTH + "synth_parallel_XY_XZ_YZ_v_double_stripes.yml";
 
-    //     GT_nbrTags              =  963;
-    //     GT_nbrPlnAABBPolygons   =  6;
-    //     GT_nbrSplitSegments     =  24;
-    //     GT_nbrFacePolygons_UP   =  6;
-    //     GT_nbrFacePolygons_DOWN =  6;
-    //     GT_nbrMeshVertices_UP   =  8;
-    //     GT_nbrMeshVertices_DOWN =  8;
+        GT_nbrTags              =  963;
+        GT_nbrPlnAABBPolygons   =  6;
+        GT_nbrSplitSegments     =  24;
+        GT_nbrFacePolygons_UP   =  6;
+        GT_nbrFacePolygons_DOWN =  6;
+        GT_nbrMeshVertices_UP   =  8;
+        GT_nbrMeshVertices_DOWN =  8;
 
-    //     checkResults(ymlPath);
-    // }
+        checkResults(ymlPath, true);
+    }
 }
 

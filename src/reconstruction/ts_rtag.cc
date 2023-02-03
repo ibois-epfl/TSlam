@@ -142,7 +142,6 @@ namespace tslam::Reconstruction
                 // std::cout << "D: " << D << std::endl;  // <<<<<<< DEBUG
 
                 // fill TSRTag's info
-                tag.setType(TSRTagType::Unknown);
                 tag.setCorners(A, B, C, D);
                 tag.compute();
 

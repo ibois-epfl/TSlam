@@ -10,7 +10,9 @@ namespace tslam::Reconstruction
         this->m_GeometricSolver = TSGeometricSolver();
         this->m_GeometricSolver.setShowVisualizer(false);
     }
-    TSLAMReconstructor::TSLAMReconstructor(double creaseAngleThreshold,
+    TSLAMReconstructor::TSLAMReconstructor(float radiusSearch,
+                                           double creaseAngleThreshold,
+                                           int minClusterSize,
                                            double maxPlnDist,
                                            double maxPlnAngle,
                                            double aabbScaleFactor,
@@ -20,7 +22,9 @@ namespace tslam::Reconstruction
         this->m_GeometricSolver = TSGeometricSolver();
         this->m_GeometricSolver.setShowVisualizer(false);
 
-        this->setParams(creaseAngleThreshold,
+        this->setParams(radiusSearch,
+                        creaseAngleThreshold,
+                        minClusterSize,
                         maxPlnDist,
                         maxPlnAngle,
                         aabbScaleFactor,
@@ -28,14 +32,18 @@ namespace tslam::Reconstruction
                         eps);
     }
 
-    void TSLAMReconstructor::setParams(double creaseAngleThreshold,
+    void TSLAMReconstructor::setParams(float radiusSearch,
+                                       double creaseAngleThreshold,
+                                       int minClusterSize,
                                        double maxPlnDist,
                                        double maxPlnAngle,
                                        double aabbScaleFactor,
                                        double maxPolyDist,
                                        double eps)
     {
+        this->m_GeometricSolver.setRadiusSearch(radiusSearch);
         this->m_GeometricSolver.setCreaseAngleThreshold(creaseAngleThreshold);
+        this->m_GeometricSolver.setMinClusterSize(minClusterSize);
         this->m_GeometricSolver.setMaxPlnDist2Merge(maxPlnDist);
         this->m_GeometricSolver.setMaxPlnAngle2Merge(maxPlnAngle);
         this->m_GeometricSolver.setAABBScaleFactor(aabbScaleFactor);

@@ -59,9 +59,14 @@ namespace tslam::Reconstruction
     };
     TSPlane TSRTStripe::computeMeanPlane()
     {
-        return TSPlane(this->getNormal(),
-                       this->front().getCenter(),
-                       this->back().getCenter());
+        if (this->m_Tags.size() > 1)
+            return TSPlane(this->getNormal(),
+                           this->front().getCenter(),
+                           this->back().getCenter());
+        else
+            return TSPlane(this->getNormal(),
+                           this->front().getCenter(),
+                           this->front().getCenter() + this->front().getAxisX());
     };
 
     void TSRTStripe::reorderTags()
@@ -75,10 +80,6 @@ namespace tslam::Reconstruction
         std::sort(this->m_Tags.begin(), this->m_Tags.end(), [ptRef] (TSRTag& a, TSRTag& b) {
             return (a.distance2Pt(ptRef) < b.distance2Pt(ptRef));
         });
-
-        // set the flag of the extremity tags
-        this->m_Tags.front().setType(TSRTagType::Edge);
-        this->m_Tags.back().setType(TSRTagType::Edge);
 
         // recompute everythin now that tags are ordered
         this->compute();
