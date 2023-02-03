@@ -41,8 +41,8 @@ void checkResults(std::string ymlPath,
     reconstructor.getGeometricSolver().setSolverVisualizerParams(/*drawTags*/               true,
                                                                  /*drawTagNormals*/         false,
                                                                  /*drawAabb*/               false,
-                                                                 /*drawIntersectedPoly*/    false,
-                                                                 /*drawSplittingSegments*/  false,
+                                                                 /*drawIntersectedPoly*/    true,
+                                                                 /*drawSplittingSegments*/  true,
                                                                  /*drawSelectedFace*/       true,
                                                                  /*drawFinalMesh*/          false
     );

@@ -285,9 +285,20 @@ We need testing for the next CI but also the refinement of the current reconstru
 ![](./doctest.png)
 
 
+### Reconstruction - implement normal clustering 
+We changed the way we cluster the tags and now we implement a normal-based clustering from [Cilantro](https://github.com/kzampog/cilantro/blob/master/examples/connected_component_extraction.cpp). By adding a refinement by planes of the group of tags the tag grouping result quite robust.
+
+The current challenge is the **face selection** after the tassellation. It might happen that tags are not present to validate the face, hence the polygon will not be selected and we will have a hole.
+
+![](./workingsplitting.gif)
+
+*A different approach needs to be found for selecting eligible faces*
+
 Current TODOs:
-- [ ] (urgent) a piece with double stripes on edges each is not reconstructing correctly, check the bug out;
-- [ ] (urgen) solve reconstruction for more complex objects
+- [x] (urgent) a piece with double stripes on edges each is not reconstructing correctly, check the bug out;
+- [ ] (urgent) find a better algorithm for selecting candidate polygon faces
+- [ ] (urgent) solve reconstruction for more complex objects
+- [ ] (urgent) 
 - [ ] implement the a `.xac` (xml based) format in `ts_geometric_solver.hh` and `tslam_reconstructor.hh`;
 - [ ] find a way to containerize in CMakeLists as a library to be used in the main software and integrate in main TSlam CMakeLists file
 - [ ] write test units
