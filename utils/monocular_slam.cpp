@@ -24,92 +24,56 @@
 #include "inputreader.h"
 #include "basictypes/cvversioning.h"
 
-cv::Vec4f rotationMatrixToQuaternion(cv::Mat R)
-{
-    cv::Vec4f q;
-
-    q[0] = sqrt(1.0 + R.at<float>(0,0) + R.at<float>(1,1) + R.at<float>(2,2)) / 2.0;
-    q[1] = (R.at<float>(2,1) - R.at<float>(1,2)) / (4.0 * q[0]);
-    q[2] = (R.at<float>(0,2) - R.at<float>(2,0)) / (4.0 * q[0]);
-    q[3] = (R.at<float>(1,0) - R.at<float>(0,1)) / (4.0 * q[0]);
-
-    return q;
-}
-
-cv::Mat getImage(cv::VideoCapture &vcap,int frameIdx){
-    cv::Mat im;
-    tslam::Frame frame;
-    vcap.set(CV_CAP_PROP_POS_FRAMES,frameIdx);
-    vcap.grab();
-    vcap.set(CV_CAP_PROP_POS_FRAMES,frameIdx);
-    vcap.retrieve(im);
-    return im;
-}
-
-class CmdLineParser{int argc; char **argv;
-                public: CmdLineParser(int _argc,char **_argv):argc(_argc),argv(_argv){}  bool operator[] ( string param ) {int idx=-1;  for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i;    return ( idx!=-1 ) ;    } string operator()(string param,string defvalue=""){int idx=-1;    for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i; if ( idx==-1 ) return defvalue;   else  return ( argv[  idx+1] ); }
-                    std::vector<std::string> getAllInstances(string str){
-                        std::vector<std::string> ret;
-                        for(int i=0;i<argc-1;i++){
-                            if (string(argv[i])==str)
-                                ret.push_back(argv[i+1]);
-                        }
-                        return ret;
-                    }
-                   };
-
-cv::Size readInpuSize(string s){
-    for(auto &c:s)if(c==':')c =' ';
-    stringstream sstr(s.c_str());
-    cv::Size size;
-    if ( sstr>>size.width>>size.height) return size;
-    else return cv::Size(0,0);
-}
-
-cv::Mat resize(cv::Mat &in,cv::Size size){
-    if (size.area()<=0)return in;
-    cv::Mat ret,ret2;
+cv::Mat resize(cv::Mat &in, cv::Size size){
+    if (size.area() <= 0) return in;
+    cv::Mat ret, ret2;
     cv::resize(in,ret,size);  return ret;
 }
 
+//////////////////////////////////
+/// Command line config parser ///
+//////////////////////////////////
 
-int cIndexLive=0;
-int getCurrentFrameIndex(cv::VideoCapture &vcap,bool isLive){
-
-    if (isLive)return cIndexLive++;
-    else return  int(vcap.get(CV_CAP_PROP_POS_FRAMES));
-}
-
+class CmdLineParser{int argc; char **argv;
+public: CmdLineParser(int _argc,char **_argv):argc(_argc),argv(_argv){}  bool operator[] ( string param ) {int idx=-1;  for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i;    return ( idx!=-1 ) ;    } string operator()(string param,string defvalue=""){int idx=-1;    for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i; if ( idx==-1 ) return defvalue;   else  return ( argv[  idx+1] ); }
+    std::vector<std::string> getAllInstances(string str){
+        std::vector<std::string> ret;
+        for(int i=0;i<argc-1;i++){
+            if (string(argv[i])==str)
+                ret.push_back(argv[i+1]);
+        }
+        return ret;
+    }
+};
 
 void overwriteParamsByCommandLine(CmdLineParser &cml,tslam::Params &params){
-    if (cml["-aruco-markerSize"])      params.aruco_markerSize = stof(cml("-aruco-markerSize", "1"));
-    if (cml["-marker_minsize"])    params.aruco_minMarkerSize= stod(cml("-marker_minsize", "0.025"));
+    if (cml["-aruco-markerSize"])   params.aruco_markerSize = stof(cml("-aruco-markerSize", "1"));
+    if (cml["-marker_minsize"])     params.aruco_minMarkerSize= stod(cml("-marker_minsize", "0.025"));
     if (cml["-nokeypoints"])        params.detectKeyPoints=false;
-    if (cml["-nomarkers"])  params.detectMarkers =false;
-    if (cml["-sequential"]) params.runSequential=true;
-    if (cml["-maxFeatures"])    params.maxFeatures = stoi(cml("-maxFeatures","4000"));
-    if (cml["-nOct"])       params.nOctaveLevels = stoi(cml("-nOct","8"));
-    if (cml["-fdt"])        params.nthreads_feature_detector = stoi(cml("-fdt", "1"));
-    if (cml["-desc"])       params.kpDescriptorType = tslam::DescriptorTypes::fromString(cml("-desc", "orb"));
-    if (cml["-dict"])       params.aruco_Dictionary = cml("-dict");
-    if (cml["-tfocus"])  params.targetFocus =stof(cml("-tfocus","-1"));
-    if (cml["-KFMinConfidence"])  params.KFMinConfidence =stof(cml("-KFMinConfidence"));
-    if(cml["-nonmax"])    params.KPNonMaximaSuppresion=true;
-    if(cml["-saveImages"])    params.saveImageInMap=true;
-    if(cml["-isInstancing"]) params.isInstancing=true;
+    if (cml["-nomarkers"])          params.detectMarkers =false;
+    if (cml["-sequential"])         params.runSequential=true;
+    if (cml["-maxFeatures"])        params.maxFeatures = stoi(cml("-maxFeatures","4000"));
+    if (cml["-nOct"])               params.nOctaveLevels = stoi(cml("-nOct","8"));
+    if (cml["-fdt"])                params.nthreads_feature_detector = stoi(cml("-fdt", "1"));
+    if (cml["-desc"])               params.kpDescriptorType = tslam::DescriptorTypes::fromString(cml("-desc", "orb"));
+    if (cml["-dict"])               params.aruco_Dictionary = cml("-dict");
+    if (cml["-tfocus"])             params.targetFocus =stof(cml("-tfocus","-1"));
+    if (cml["-KFMinConfidence"])    params.KFMinConfidence =stof(cml("-KFMinConfidence"));
+    if(cml["-nonmax"])              params.KPNonMaximaSuppresion=true;
+    if(cml["-saveImages"])          params.saveImageInMap=true;
+    if(cml["-isInstancing"])        params.isInstancing=true;
     if(cml["-autoAdjustKpSensitivity"])    params.autoAdjustKpSensitivity=true;
-    if(cml["-extra_params"])    params.extraParams=cml("-extra_params");
+    if(cml["-extra_params"])        params.extraParams=cml("-extra_params");
+    if(cml["-scale"])               params.kptImageScaleFactor=stof(cml("-scale"));
+    if(cml["-nokploopclosure"])     params.reLocalizationWithKeyPoints=false;
+    if(cml["-inplanemarkers"])      params.inPlaneMarkers=true;
 
-    if(cml["-scale"]) params.kptImageScaleFactor=stof(cml("-scale"));
-    if(cml["-nokploopclosure"]) params.reLocalizationWithKeyPoints=false;
-    if(cml["-inplanemarkers"]) params.inPlaneMarkers=true;
     params.aruco_CornerRefimentMethod=cml("-aruco-cornerRefinementM","CORNER_SUBPIX");
 
     if(cml["-enableLoopClosure"]) params.enableLoopClosure=true;
     else params.enableLoopClosure=false;
 
-    if (cml["-dbg_str"])
-        tslam::debug::Debug::addString(cml("-dbg_str"),"");
+    if (cml["-dbg_str"]) tslam::debug::Debug::addString(cml("-dbg_str"),"");
 }
 
 std::pair<std::string,std::string> getSplit(std::string str){
@@ -123,7 +87,6 @@ std::pair<std::string,std::string> getSplit(std::string str){
 
 void enhanceImageBGR(const cv::Mat &imgIn, cv::Mat &imgOut){
     // Start CLAHE Contrast Limited and Adaptive Histogram Equalization
-
     //Get Intesity imagef
     cv::Mat Lab_image;
     cvtColor(imgIn, Lab_image, cv::COLOR_BGR2Lab);
@@ -133,7 +96,7 @@ void enhanceImageBGR(const cv::Mat &imgIn, cv::Mat &imgOut){
     // apply the CLAHE algorithm to the L channel
     cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
     clahe->setClipLimit(4);
-    // clahe->setTilesGridSize(cv::Size(10, 10));
+
     cv::Mat clahe_L;
     clahe->apply(Lab_planes[0], clahe_L);
 
@@ -143,6 +106,21 @@ void enhanceImageBGR(const cv::Mat &imgIn, cv::Mat &imgOut){
 
     // convert back to RGB
     cv::cvtColor(Lab_image, imgOut, cv::COLOR_Lab2BGR);
+}
+
+//////////////////////
+/// Mesh Rendering ///
+//////////////////////
+
+cv::Mat projectionMatrix;
+
+cv::Vec4f convertRotationMatrixToQuaternion(cv::Mat R) {
+    cv::Vec4f q;
+    q[0] = sqrt(1.0 + R.at<float>(0,0) + R.at<float>(1,1) + R.at<float>(2,2)) / 2.0;
+    q[1] = (R.at<float>(2,1) - R.at<float>(1,2)) / (4.0 * q[0]);
+    q[2] = (R.at<float>(0,2) - R.at<float>(2,0)) / (4.0 * q[0]);
+    q[3] = (R.at<float>(1,0) - R.at<float>(0,1)) / (4.0 * q[0]);
+    return q;
 }
 
 void loadPly(string path, vector<cv::Vec3f> &vertices, vector<cv::Vec3i> &faces, vector<pair<cv::Vec3f, cv::Vec3f>> &lines){
@@ -240,15 +218,6 @@ std::pair<cv::Point2f, cv::Point2f>projectToScreen(int imgW, int imgH, std::pair
     int x2 = (pts.second[0] + 1.0f) / 2.0f * imgW;
     int y2 = (pts.second[1] + 1.0f) / 2.0f * imgH;
 
-//    x = abs(imgW - x);
-//    y = abs(imgH - y);
-
-//    cout << "reproj: (" << x << ", " << y << ")" << endl;
-//    x = max(0, min(x, imgW - 1));
-//    y = max(0, min(y, imgH - 1));
-
-//    if (p2.at<float>(3, 0) > 1) cout << "w > 1" << endl;
-
     return make_pair(cv::Point2f(x1, y1), cv::Point2f(x2, y2));
 }
 
@@ -262,7 +231,11 @@ void drawMesh(cv::Mat img, vector<pair<cv::Vec3f, cv::Vec3f>> linesToDraw, cv::M
     cout << "---" << endl;
 }
 
-cv::Mat projectionMatrix;
+
+////////////
+/// Main ///
+////////////
+
 int currentFrameIndex;
 
 int main(int argc,char **argv){
@@ -419,23 +392,6 @@ int main(int argc,char **argv){
     //Create the viewer to see the images and the 3D
     tslam::MapViewer TheViewer;
 
-//    if (cml["-slam"]){
-//        Slam->readFromFile(cml("-slam"));
-//            vcap.set(CV_CAP_PROP_POS_FRAMES,Slam->getLastProcessedFrame());
-//        vcap.retrieve(in_image);
-//        vcap.set(CV_CAP_PROP_POS_FRAMES,Slam->getLastProcessedFrame());
-//        vcap.retrieve(in_image);
-//        TheMap=Slam->getMap();
-//        overwriteParamsByCommandLine(cml,params);
-//        Slam->updateParams(params);
-
-//    }
-
-//    if (cml["-noMapUpdate"])
-//        Slam->setMode(tslam::MODE_LOCALIZATION);
-
-
-
     cv::Mat auxImage;
     //Ok, lets start
     tslam::TimerAvrg Fps;
@@ -443,14 +399,13 @@ int main(int argc,char **argv){
     tslam::TimerAvrg TimerDraw;
     bool finish = false;
     cv::Mat camPose_c2g;
-    int vspeed=stoi(cml("-vspeed","1"));
+    int vspeed = stoi(cml("-vspeed","1"));
     while (!finish && !in_image.empty())  {
         try{
             FpsComplete.start();
 
             //image resize (if required)
             in_image = resize(in_image, vsize);
-
 
             //image undistortion (if required)
            if(undistort ){
@@ -493,7 +448,8 @@ int main(int argc,char **argv){
                     // pose[x, y, z] = (0, 0, 0) and quaternion[w, x, y, z] = (1, 0, 0, 0)
                     outCamPose << "0 0 0 1 0 0 0" << endl;
                 } else {
-                    auto camPoseQuaternion = rotationMatrixToQuaternion(camPose_c2g.rowRange(0, 3).colRange(0, 3));
+                    auto camPoseQuaternion = convertRotationMatrixToQuaternion(
+                            camPose_c2g.rowRange(0, 3).colRange(0, 3));
                     outCamPose <<
                                currentFrameIndex << " " <<
                                camPose_c2g.at<float>(0, 3) << " " <<
@@ -521,6 +477,7 @@ int main(int argc,char **argv){
 
             //reset?
             if (k=='r') Slam->clear();
+
             //write the current map
             if (k=='e'){
                 string number = std::to_string(currentFrameIndex);
@@ -565,7 +522,7 @@ int main(int argc,char **argv){
 
         }
         //read next
-        vcap>>in_image;
+        vcap >> in_image;
         if(!camPose_c2g.empty()){
             for(int s=0;s<vspeed-1;s++)
                 vcap >> in_image;
@@ -590,12 +547,6 @@ int main(int argc,char **argv){
     }
     TheMap->saveToMarkerMap("markermap.yml");
 
-
-    // }
-    // catch (const std::exception &ex) {
-    //     errorFlag = true;
-    //     cerr << ex.what() << endl;
-    // }
     if (errorFlag) {
         cout << "Program ends with an error." << endl;
     }
