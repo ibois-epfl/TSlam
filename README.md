@@ -42,9 +42,9 @@ sudo make install  # if building as API
 ```
 
 ## Run with you camera:
-In this project, we provide you with a example executable `tslam_monocular` to run the monocular slam.
-After building, a file `monocular_slam` will be generated in `build/utils/`. You can run it with your camera with the
-following commend. Two extra parameters are needed: video source and path to the camera calibration matrix. 
+In this project, we provide you an example executable to run the monocular slam.
+After building, a file `monocular_slam` will be generated in `build/utils`. You can run it with your camera through the
+following commend. Note that two extra parameters are needed, video source and path to the camera calibration matrix. 
 ``` bash
 cd build/util
 
@@ -52,7 +52,8 @@ cd build/util
 ./monocular_slam live:0 camera_calibration.yml
 ```
 Here are some optional parameters: 
-- `-voc`: Path to the vocabulary file for the feature describer. In the root folder we provide `orb.fbow` for you to use.
+- `-voc`: Path to the vocabulary file for the feature describer. If an input map is specified, this is not needed;
+otherwise, you won't be able to run mapping. In the root folder we provide `orb.fbow` for you to use.
 - `-out`: Path to the output map.
 - `-map`: Path to the input map.
 - `-outvideo`: Path to the output video. (You should specify the file extension, use `.mp4` if you have no preference).
