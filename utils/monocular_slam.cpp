@@ -24,48 +24,6 @@
 #include "inputreader.h"
 #include "basictypes/cvversioning.h"
 
-
-// Checks if a matrix is a valid rotation matrix.
-bool isRotationMatrix(cv::Mat &R)
-{
-    cv::Mat Rt;
-    transpose(R, Rt);
-    cv::Mat shouldBeIdentity = Rt * R;
-    cv::Mat I = cv::Mat::eye(3,3, shouldBeIdentity.type());
-
-    return  norm(I, shouldBeIdentity) < 1e-6;
-
-}
-
-// Calculates rotation matrix to euler angles
-// The result is the same as MATLAB except the order
-// of the euler angles ( x and z are swapped ).
-cv::Vec3f rotationMatrixToEulerAngles(cv::Mat R)
-{
-
-//    assert(isRotationMatrix(R));
-
-    float sy = sqrt(R.at<double>(0,0) * R.at<double>(0,0) +  R.at<double>(1,0) * R.at<double>(1,0) );
-
-    bool singular = sy < 1e-6; // If
-
-    float x, y, z;
-    if (!singular)
-    {
-        x = atan2(R.at<double>(2,1) , R.at<double>(2,2));
-        y = atan2(-R.at<double>(2,0), sy);
-        z = atan2(R.at<double>(1,0), R.at<double>(0,0));
-    }
-    else
-    {
-        x = atan2(-R.at<double>(1,2), R.at<double>(1,1));
-        y = atan2(-R.at<double>(2,0), sy);
-        z = 0;
-    }
-    return cv::Vec3f(x, y, z);
-
-}
-
 cv::Vec4f rotationMatrixToQuaternion(cv::Mat R)
 {
     cv::Vec4f q;
@@ -87,7 +45,6 @@ cv::Mat getImage(cv::VideoCapture &vcap,int frameIdx){
     vcap.retrieve(im);
     return im;
 }
-
 
 class CmdLineParser{int argc; char **argv;
                 public: CmdLineParser(int _argc,char **_argv):argc(_argc),argv(_argv){}  bool operator[] ( string param ) {int idx=-1;  for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i;    return ( idx!=-1 ) ;    } string operator()(string param,string defvalue=""){int idx=-1;    for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i; if ( idx==-1 ) return defvalue;   else  return ( argv[  idx+1] ); }
@@ -188,25 +145,123 @@ void enhanceImageBGR(const cv::Mat &imgIn, cv::Mat &imgOut){
     cv::cvtColor(Lab_image, imgOut, cv::COLOR_Lab2BGR);
 }
 
-void drawMesh(cv::Mat img, vector<cv::Vec3f> linePoints, cv::Mat projectionMatrix) {
-    for(auto &p:linePoints){
-        cv::Mat p4 = (cv::Mat_<float>(4, 1) << p[0], p[1], p[2], 1);
-        cv::Mat p2 = projectionMatrix * p4;
-        p2 /= p2.at<float>(2, 0);
+void loadPly(string path, vector<cv::Vec3f> &vertices, vector<cv::Vec3i> &faces, vector<pair<cv::Vec3f, cv::Vec3f>> &lines){
+    int elementVertex = 0;
+    int elementFace = 0;
 
-        cout << projectionMatrix << endl;
-        cout << p2 << endl;
+    ifstream plyFile;
+    plyFile.open(path);
+    if(!plyFile.is_open()){
+        cout << "Error opening file" << endl;
+        return;
+    }
+    string line;
+    size_t found;
+    while(getline(plyFile, line)){
+        found = line.find("element vertex");
+        if(found != string::npos){
+            auto num = line.substr(found + string("element vertex").length());
+            elementVertex = stoi(num);
+        }
+        found = line.find("element face");
+        if(found != string::npos){
+            auto num = line.substr(found + string("element face").length());
+            elementFace = stoi(num);
+        }
+        if(line == "end_header") break;
+    }
 
+    float x, y, z;
+    for(int i = 0 ; i < elementVertex ; i++){
+        getline(plyFile, line);
+        stringstream ss(line);
+        ss >> x >> y >> z;
+        cv::Vec3f point(x, y, z);
+        vertices.emplace_back(point);
+    }
 
-        int x = img.cols - (p2.at<float>(0, 0) + 1.0f) / 2.0f * img.cols;
-        int y = img.rows - (p2.at<float>(1, 0) + 1.0f) / 2.0f * img.rows;
+    int num, a, b, c;
+    for(int i = 0 ; i < elementFace ; i++) {
+        getline(plyFile, line);
+        stringstream ss(line);
+        ss >> num >> a >> b >> c;
+        cv::Vec3i face(a, b, c);
+        faces.emplace_back(face);
 
-        cout << x << "  " << y << endl;
-        cv::circle(img, cv::Point(x, y), 5, cv::Scalar(200, 0, 200), 5);
+        cv::Vec3f pt1 = vertices[a];
+        cv::Vec3f pt2 = vertices[b];
+        cv::Vec3f pt3 = vertices[c];
+        lines.emplace_back(make_pair(pt1, pt2));
+        lines.emplace_back(make_pair(pt2, pt3));
+        lines.emplace_back(make_pair(pt3, pt1));
     }
 }
 
-vector<cv::Vec3f> linePoints = {{-1.3046491146087646e+00,-5.1872926950454712e-01, 1.5634726524353027e+01}};
+std::pair<cv::Point2f, cv::Point2f>projectToScreen(int imgW, int imgH, std::pair<cv::Vec3f, cv::Vec3f> pts, cv::Mat projectionMatrix){
+    float zNear = 0.1f;
+
+    cv::Mat p1 = (cv::Mat_<float>(4, 1) << pts.first[0], pts.first[1], pts.first[2], 1);
+    p1 = projectionMatrix * p1;
+
+    cv::Mat p2 = (cv::Mat_<float>(4, 1) << pts.second[0], pts.second[1], pts.second[2], 1);
+    p2 = projectionMatrix * p2;
+
+    // if both points are behind the camera, return pair<(-1, -1), (-1, -1)>
+    if ( p1.at<float>(2, 0) < zNear && p2.at<float>(2, 0) < zNear) {
+        return std::make_pair(cv::Point2f(-1, -1), cv::Point2f(-1, -1));
+    }
+
+    auto reprojOnNearPlane = [&zNear](std::pair<cv::Vec3f, cv::Vec3f> pts){
+        cv::Vec3f basePt;
+        cv::Vec3f vec;
+
+        if (pts.first[2] < zNear) {
+            basePt = pts.second;
+            vec = pts.first - pts.second;
+        } else {
+            basePt = pts.first;
+            vec = pts.second - pts.first;
+        }
+
+        float t = (zNear - basePt[2]) / vec[2];
+        return make_pair(basePt + t * vec, basePt);
+    };
+
+    // if the point is behind the camera, project the point onto the near plane
+    if (p2.at<float>(2, 0) < zNear || p1.at<float>(2, 0) < zNear) {
+        pts = reprojOnNearPlane(pts);
+    }
+
+    pts.first  /= -pts.first[2];  // make all z = 1
+    pts.second /= -pts.second[2]; // make all z = 1
+
+    int x1 = (pts.first[0] + 1.0f) / 2.0f * imgW;
+    int y1 = (pts.first[1] + 1.0f) / 2.0f * imgH;
+    int x2 = (pts.second[0] + 1.0f) / 2.0f * imgW;
+    int y2 = (pts.second[1] + 1.0f) / 2.0f * imgH;
+
+//    x = abs(imgW - x);
+//    y = abs(imgH - y);
+
+//    cout << "reproj: (" << x << ", " << y << ")" << endl;
+//    x = max(0, min(x, imgW - 1));
+//    y = max(0, min(y, imgH - 1));
+
+//    if (p2.at<float>(3, 0) > 1) cout << "w > 1" << endl;
+
+    return make_pair(cv::Point2f(x1, y1), cv::Point2f(x2, y2));
+}
+
+void drawMesh(cv::Mat img, vector<pair<cv::Vec3f, cv::Vec3f>> linesToDraw, cv::Mat projectionMatrix) {
+    int flag = 0;
+    int count = 0;
+    for(auto &pts:linesToDraw){
+        auto ptsScreen = projectToScreen(img.cols, img.rows, pts, projectionMatrix);
+        cv::line(img, ptsScreen.first, ptsScreen.second, cv::Scalar(0, 0, 255), 2);
+    }
+    cout << "---" << endl;
+}
+
 cv::Mat projectionMatrix;
 int currentFrameIndex;
 
@@ -278,19 +333,20 @@ int main(int argc,char **argv){
     cv::Mat cameraMatrix = image_params.CameraMatrix;
     float camW = image_params.CamSize.width;
     float camH = image_params.CamSize.height;
-    float x0 = 0, y0 = 0,zF = 100.0f, zN =0.01f;
+    cout << "camW: " << camW << " camH: " << camH << endl;
+    float x0 = 0, y0 = 0,zF = 10000.0f, zN =0.0001f;
     float fovX = cameraMatrix.at<float>(0,0);
     float fovY = cameraMatrix.at<float>(1,1);
     float cX = cameraMatrix.at<float>(0,2);
     float cY = cameraMatrix.at<float>(1,2);
     float perspectiveProjMatrixData[16] = {
-            2 * fovX / camW,    0, ( camW - 2 * cX + 2 * x0) / camW,                         0,
-            0,    2 * fovY / camH, (-camH + 2 * cY + 2 * y0) / camH,                         0,
+            2.0f * fovX / camW,    0, ( camW - 2 * cX + 2 * x0) / camW,                         0,
+            0,    2.0f * fovY / camH, (-camH + 2 * cY + 2 * y0) / camH,                         0,
             0,                  0,             (-zF - zN)/(zF - zN),  -2 * zF * zN / (zF - zN),
-            0,                  0,                               -1,                         0
+            0,                  0,                               1,                         0
     };
-    cv::Mat perspectiveProjMatrix(4, 4, CV_32F, perspectiveProjMatrixData);
-    projectionMatrix = perspectiveProjMatrix.t();
+
+    projectionMatrix = cv::Mat(4, 4, CV_32F, perspectiveProjMatrixData);
 
     if( cml["-params"]) params.readFromYMLFile(cml("-params"));
     overwriteParamsByCommandLine(cml,params);
@@ -334,6 +390,13 @@ int main(int argc,char **argv){
             vcap.set(cv::CAP_PROP_FRAME_WIDTH,stoi(cameraSize.first));
         if(cameraSize.second!="-1")
             vcap.set(cv::CAP_PROP_FRAME_HEIGHT,stoi(cameraSize.second));
+    }
+
+    vector<cv::Vec3f> vertices;
+    vector<cv::Vec3i> faces;
+    vector<pair<cv::Vec3f, cv::Vec3f>> lines;
+    if(cml["-drawMesh"]){
+        loadPly(cml("-drawMesh"), vertices, faces, lines);
     }
 
     //read the first frame if not yet
@@ -411,9 +474,9 @@ int main(int argc,char **argv){
             char k =0;
             if(!cml["-noX"]) {
                 // draw mesh
-                if(!camPose_c2g.empty()){
+                if(cml["-drawMesh"] && !camPose_c2g.empty()){
                     cout << "CamPose: " << camPose_c2g << endl << "---" << endl;
-                    drawMesh(in_image, linePoints, projectionMatrix * camPose_c2g);
+                    drawMesh(in_image, lines, projectionMatrix * camPose_c2g);
                 }
 
                 // draw tags & points
