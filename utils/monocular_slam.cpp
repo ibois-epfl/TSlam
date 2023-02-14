@@ -169,9 +169,13 @@ void loadPly(string path, vector<cv::Vec3f> &vertices, vector<cv::Vec3i> &faces,
         cv::Vec3f pt1 = vertices[a];
         cv::Vec3f pt2 = vertices[b];
         cv::Vec3f pt3 = vertices[c];
-        lines.emplace_back(make_pair(pt1, pt2));
-        lines.emplace_back(make_pair(pt2, pt3));
-        lines.emplace_back(make_pair(pt3, pt1));
+
+        lines.emplace_back(make_pair(pt1, (pt1 + pt2) / 2));
+        lines.emplace_back(make_pair(pt2, (pt1 + pt2) / 2));
+        lines.emplace_back(make_pair(pt2, (pt2 + pt3) / 2));
+        lines.emplace_back(make_pair(pt3, (pt2 + pt3) / 2));
+        lines.emplace_back(make_pair(pt3, (pt3 + pt1) / 2));
+        lines.emplace_back(make_pair(pt1, (pt3 + pt1) / 2));
     }
 }
 
@@ -184,39 +188,64 @@ std::pair<cv::Point2f, cv::Point2f>projectToScreen(int imgW, int imgH, std::pair
     cv::Mat p2 = (cv::Mat_<float>(4, 1) << pts.second[0], pts.second[1], pts.second[2], 1);
     p2 = projectionMatrix * p2;
 
+//    cout << "p1: " << p1 << endl;
+//    cout << "p2: " << p2 << endl;
+
     // if both points are behind the camera, return pair<(-1, -1), (-1, -1)>
-    if ( p1.at<float>(2, 0) < zNear && p2.at<float>(2, 0) < zNear) {
+    auto w1 = p1.at<float>(3, 0) / p1.at<float>(2, 0);
+    auto w2 = p2.at<float>(3, 0) / p2.at<float>(2, 0);
+    if ( w1 > 1 || w2 > 1) {
         return std::make_pair(cv::Point2f(-1, -1), cv::Point2f(-1, -1));
     }
 
+    pts.first = cv::Vec3f(p1.at<float>(0, 0), p1.at<float>(1, 0), p1.at<float>(2, 0));
+    pts.second = cv::Vec3f(p2.at<float>(0, 0), p2.at<float>(1, 0), p2.at<float>(2, 0));
+
     auto reprojOnNearPlane = [&zNear](std::pair<cv::Vec3f, cv::Vec3f> pts){
+//        cout << "Need to reproject on near plane" << endl;
+//        cout << pts.first << pts.second << endl;
+
         cv::Vec3f basePt;
         cv::Vec3f vec;
 
-        if (pts.first[2] < zNear) {
+        float pz;
+
+        if (abs(pts.first[2]) < abs(pts.first[3])) {
             basePt = pts.second;
             vec = pts.first - pts.second;
+            pz = pts.first[3];
         } else {
             basePt = pts.first;
             vec = pts.second - pts.first;
+            pz = pts.second[3];
         }
 
         float t = (zNear - basePt[2]) / vec[2];
-        return make_pair(basePt + t * vec, basePt);
+
+        auto reprojectPts = make_pair(basePt + t * vec, basePt);
+
+//        cout << "reprojectPts: " << reprojectPts.first << reprojectPts.second << endl;
+
+        return reprojectPts;
     };
 
     // if the point is behind the camera, project the point onto the near plane
-    if (p2.at<float>(2, 0) < zNear || p1.at<float>(2, 0) < zNear) {
+    if (w1 > 1 || w2 > 1) {
         pts = reprojOnNearPlane(pts);
     }
 
-    pts.first  /= -pts.first[2];  // make all z = 1
-    pts.second /= -pts.second[2]; // make all z = 1
+    pts.first  /= pts.first[2];  // make all z = 1
+    pts.second /= pts.second[2]; // make all z = 1
 
-    int x1 = (pts.first[0] + 1.0f) / 2.0f * imgW;
-    int y1 = (pts.first[1] + 1.0f) / 2.0f * imgH;
-    int x2 = (pts.second[0] + 1.0f) / 2.0f * imgW;
-    int y2 = (pts.second[1] + 1.0f) / 2.0f * imgH;
+//    cout << "projectionMatrix: " << projectionMatrix << endl;
+//    cout << "pts.first: " << pts.first << endl;
+//    cout << "pts.second: " << pts.second << endl;
+
+    int x1 = imgW - (pts.first[0] + 1.0f) / 2.0f * imgW;
+    int y1 = imgH - (pts.first[1] + 1.0f) / 2.0f * imgH;
+
+    int x2 = imgW - (pts.second[0] + 1.0f) / 2.0f * imgW;
+    int y2 = imgH - (pts.second[1] + 1.0f) / 2.0f * imgH;
 
     return make_pair(cv::Point2f(x1, y1), cv::Point2f(x2, y2));
 }
@@ -228,7 +257,7 @@ void drawMesh(cv::Mat img, vector<pair<cv::Vec3f, cv::Vec3f>> linesToDraw, cv::M
         auto ptsScreen = projectToScreen(img.cols, img.rows, pts, projectionMatrix);
         cv::line(img, ptsScreen.first, ptsScreen.second, cv::Scalar(0, 0, 255), 2);
     }
-    cout << "---" << endl;
+//    cout << "---" << endl;
 }
 
 
@@ -316,7 +345,7 @@ int main(int argc,char **argv){
             2.0f * fovX / camW,    0, ( camW - 2 * cX + 2 * x0) / camW,                         0,
             0,    2.0f * fovY / camH, (-camH + 2 * cY + 2 * y0) / camH,                         0,
             0,                  0,             (-zF - zN)/(zF - zN),  -2 * zF * zN / (zF - zN),
-            0,                  0,                               1,                         0
+            0,                  0,                               -1,                         0
     };
 
     projectionMatrix = cv::Mat(4, 4, CV_32F, perspectiveProjMatrixData);
@@ -370,6 +399,19 @@ int main(int argc,char **argv){
     vector<pair<cv::Vec3f, cv::Vec3f>> lines;
     if(cml["-drawMesh"]){
         loadPly(cml("-drawMesh"), vertices, faces, lines);
+
+//        auto l0 = lines[1];
+//        lines.clear();
+//        lines.emplace_back(l0);
+
+        // for test
+//        lines.clear();
+//        lines.emplace_back(
+//                make_pair(
+//                        cv::Vec3f(-4.3453914642333984e+01, -1.2498917579650879e+01, 3.6316684722900391e+01),
+//                        cv::Vec3f(-4.4349357604980469e+01, -1.2652835845947266e+01, 3.6734409332275391e+01)
+//                )
+//        );
     }
 
     //read the first frame if not yet
@@ -430,7 +472,7 @@ int main(int argc,char **argv){
             if(!cml["-noX"]) {
                 // draw mesh
                 if(cml["-drawMesh"] && !camPose_c2g.empty()){
-                    cout << "CamPose: " << camPose_c2g << endl << "---" << endl;
+//                    cout << "CamPose: " << camPose_c2g << endl << "---" << endl;
                     drawMesh(in_image, lines, projectionMatrix * camPose_c2g);
                 }
 
