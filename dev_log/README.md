@@ -306,12 +306,12 @@ Current TODOs:
 - [ ] (urgent) establish an evaluation protocol for the tslam
 - [ ] (urgent) find a better algorithm for selecting candidate polygon faces
 - [ ] (urgent) solve reconstruction for more complex objects
-- [ ] (urgent) 
+- [ ] (urgent) delete all dependecies of old UCOSlam and code labels replaced with TSLam
+- [ ] (medium) set uo CI/CD
 - [ ] implement the a `.xac` (xml based) format in `ts_geometric_solver.hh` and `tslam_reconstructor.hh`;
 - [ ] find a way to containerize in CMakeLists as a library to be used in the main software and integrate in main TSlam CMakeLists file
 - [ ] write test units
 - [ ] (optional) write metrics to evaluate the reconstruction
-- [ ] implement an CI on github actions
 - [ ] adapt optitrack
 - [ ] write small program for recordings live
 - [ ] package and integrate the new version of tslam in AC
