@@ -1,4 +1,5 @@
 #include "ts_geometric_solver.hh"
+#include "ts_mesh_holes_filler.hh"
 
 #include<open3d/Open3D.h>
 #include <stdexcept>
@@ -482,7 +483,6 @@ namespace tslam::Reconstruction
                     // (b) check the angle between the normal of the point and the plane's normal
                     double angle = TSVector::angleBetweenVectors(polyPlnNormal, 
                                                                  this->m_Timber.getPlaneTags()[j].getNormal().normalized());
-                    std::cout << "[DEBUG] angle: " << angle << std::endl;
                     if (angle < angleToleranceDeg)
                     {
                         // (c) check if the point is inside the polygon
@@ -515,5 +515,10 @@ namespace tslam::Reconstruction
             mesh.RemoveNonManifoldEdges();
             mesh.RemoveDegenerateTriangles();
         }
+
+
+        // TODO: add mesh hole filler-convert o3d mesh to CGAL polyhedron
+
+
     }
 }
