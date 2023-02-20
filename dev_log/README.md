@@ -303,6 +303,7 @@ Today we got a general stand up meeting with Yves and Julien. The development is
 
 Current TODOs:
 - [x] (urgent) a piece with double stripes on edges each is not reconstructing correctly, check the bug out;
+- [ ] (urgent) establish an evaluation protocol for the tslam
 - [ ] (urgent) find a better algorithm for selecting candidate polygon faces
 - [ ] (urgent) solve reconstruction for more complex objects
 - [ ] (urgent) 
