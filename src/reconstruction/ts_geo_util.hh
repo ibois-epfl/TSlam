@@ -829,85 +829,40 @@ namespace tslam::Reconstruction
 
             return true;
         };
-
-
-
-        // FIXME: this function is not working properly
         /**
-         * @brief Check if a point is inside the polygon.
+         * @brief Check if a point is inside the polygon by checking if the point is on the same side of all the polygon's segments.
+         * 
+         * @ref we implemented a 3D version of the code present here:
+         *      https://inginious.org/course/competitive-programming/geometry-pointinconvex
          * 
          * @param point the point to check
          * @return true if the point is inside the polygon
          * @return false if the point is not inside the polygon
          */
-        bool isPointInsidePolygon(Eigen::Vector3d point, double EPS)
+        bool isPointInsidePolygon(Eigen::Vector3d point)
         {
-            if (this->isPointOnPolygon(point))
-                return false;
-
-            TSSegment seg = this->getSegments().front();
-            Eigen::Vector3d midPt = seg.getMidPoint();
-
-            TSSegment segment(point, midPt);
-
-            // extend the segment longer thant the mid point
-            segment.extend(1000000);
-
-            std::vector<Eigen::Vector3d> intersections;
-            Eigen::Vector3d tempIntersection;
-
-            for (auto s : this->m_Segments)
+            bool isInside = true;
+            for (uint k = 0; k < this->getVertices().size(); k++)
             {
-                if (s.intersect(segment, tempIntersection))  // TODO: check if this is the one that fails
+                Eigen::Vector3d v1 = this->getVertices()[k];
+                Eigen::Vector3d v2 = this->getVertices()[(k + 1) % this->getVertices().size()];
+
+                Eigen::Vector3d v1v2 = v2 - v1;
+                Eigen::Vector3d v1ctr = point - v1;
+
+                Eigen::Vector3d cross = v1v2.cross(v1ctr);
+
+                Eigen::Vector3d polyPlnNormal = this->getNormal();
+
+                if (cross.dot(polyPlnNormal) < 0)
                 {
-                    intersections.push_back(tempIntersection);
+                    isInside = false;
+                    break;
                 }
             }
 
-            std::cout << "DEBUG: intersections: " << intersections.size() << std::endl;  // FIXME: DEBUG
-
-            if (intersections.size() % 2 == 1)
-                return true;
-            return false;
+            return isInside;
         };
-
-        // FIXME: DEBUG to erase
-        Eigen::Vector3d isPointInsidePolygon2(Eigen::Vector3d point, double EPS)
-        {
-            // if (this->isPointOnPolygon(point))
-            //     return false;
-
-            TSSegment seg = this->getSegments().front();
-            Eigen::Vector3d midPt = seg.getMidPoint();
-
-            TSSegment segment(point, midPt);
-
-            // extend the segment longer thant the mid point
-            segment.extend(30);
-
-            Eigen::Vector3d extendPt;
-            extendPt = segment.P2;
-
-            return extendPt;
-
-            // std::vector<Eigen::Vector3d> intersections;
-            // Eigen::Vector3d tempIntersection;
-
-            // for (auto s : this->m_Segments)
-            // {
-            //     if (s.intersect(segment, tempIntersection))
-            //     {
-            //         intersections.push_back(tempIntersection);
-            //     }
-            // }
-
-            // if (intersections.size() % 2 == 1)
-            //     return true;
-            // return false;
-        };
-
-
-
         /// Check if the polygon is a quadrilateral
         bool isQuadrilateral()
         {
