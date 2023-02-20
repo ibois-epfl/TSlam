@@ -307,13 +307,12 @@ Current TODOs:
 - [ ] (urgent) find a better algorithm for selecting candidate polygon faces
 - [ ] (urgent) solve reconstruction for more complex objects
 - [ ] (urgent) delete all dependecies of old UCOSlam and code labels replaced with TSLam
+- [ ] (urgent) integrate the reconstruction as a library in the main TSlam base code
 - [ ] (medium) set uo CI/CD
 - [ ] implement the a `.xac` (xml based) format in `ts_geometric_solver.hh` and `tslam_reconstructor.hh`;
 - [ ] find a way to containerize in CMakeLists as a library to be used in the main software and integrate in main TSlam CMakeLists file
 - [ ] write test units
-- [ ] (optional) write metrics to evaluate the reconstruction
-- [ ] adapt optitrack
-- [ ] write small program for recordings live
+
 - [ ] package and integrate the new version of tslam in AC
 
 - [ ] implement an evaluation method (mesh-mesh comparison) for the synthetic data, i.e. [Hausdorf distance for two mesh models](https://www.researchgate.net/publication/224258658_Assessing_Visual_Quality_of_3-D_Polygonal_Models)
