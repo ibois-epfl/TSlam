@@ -26,10 +26,12 @@ namespace tslam::Reconstruction
             m_CreaseAngleThreshold = 5.0;
             m_MinClusterSize       = 1;
 
-            m_MaxPlnDist2Merge     = 1.0;
-            m_MaxPlnAngle2Merge    = 10.0;  ///< 0.9 deg ori
-            m_AABBScaleFactor      = 3.0;
-            m_MaxPolyTagDist       = 0.1;  ///< 0.5 ori
+            m_AABBScaleFactor      = 3.0;  ///< 3.0 ori
+
+            m_MaxPlnDist2Merge     = 1.0;  ///< 1.0 ori
+            m_MaxPlnAngle2Merge    = 10.0;  ///< 10.0 deg ori
+
+            m_MaxPolyTagDist       = 0.1;  ///< 0.1 ori
 
             m_EPS                  = 1e-05;
             m_ShowVisualizer       = false;
@@ -338,5 +340,9 @@ namespace tslam::Reconstruction
         inline void timeStart(const char* msg){};
         inline void timeEnd(){};
 #endif
+    
+    private:  ///< FIXME: to erase, DEBUGGING
+        std::shared_ptr<open3d::geometry::PointCloud> m_DEBUG_cloud;
+
     };
 }

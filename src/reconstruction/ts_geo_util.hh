@@ -829,6 +829,10 @@ namespace tslam::Reconstruction
 
             return true;
         };
+
+
+
+        // FIXME: this function is not working properly
         /**
          * @brief Check if a point is inside the polygon.
          * 
@@ -854,16 +858,56 @@ namespace tslam::Reconstruction
 
             for (auto s : this->m_Segments)
             {
-                if (s.intersect(segment, tempIntersection))
+                if (s.intersect(segment, tempIntersection))  // TODO: check if this is the one that fails
                 {
                     intersections.push_back(tempIntersection);
                 }
             }
 
+            std::cout << "DEBUG: intersections: " << intersections.size() << std::endl;  // FIXME: DEBUG
+
             if (intersections.size() % 2 == 1)
                 return true;
             return false;
         };
+
+        // FIXME: DEBUG to erase
+        Eigen::Vector3d isPointInsidePolygon2(Eigen::Vector3d point, double EPS)
+        {
+            // if (this->isPointOnPolygon(point))
+            //     return false;
+
+            TSSegment seg = this->getSegments().front();
+            Eigen::Vector3d midPt = seg.getMidPoint();
+
+            TSSegment segment(point, midPt);
+
+            // extend the segment longer thant the mid point
+            segment.extend(30);
+
+            Eigen::Vector3d extendPt;
+            extendPt = segment.P2;
+
+            return extendPt;
+
+            // std::vector<Eigen::Vector3d> intersections;
+            // Eigen::Vector3d tempIntersection;
+
+            // for (auto s : this->m_Segments)
+            // {
+            //     if (s.intersect(segment, tempIntersection))
+            //     {
+            //         intersections.push_back(tempIntersection);
+            //     }
+            // }
+
+            // if (intersections.size() % 2 == 1)
+            //     return true;
+            // return false;
+        };
+
+
+
         /// Check if the polygon is a quadrilateral
         bool isQuadrilateral()
         {

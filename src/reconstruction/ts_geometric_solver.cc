@@ -150,7 +150,22 @@ namespace tslam::Reconstruction
                     segLineset->PaintUniformColor(color);
                     vis->AddGeometry(segLineset);
                 }
+
+                // draw normal of the face
+                std::shared_ptr<open3d::geometry::LineSet> crossLineset = std::make_shared<open3d::geometry::LineSet>();
+                crossLineset->points_.push_back(pg.getCenter());
+                crossLineset->points_.push_back(pg.getCenter() + pg.getNormal() * 1.0);
+                crossLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+                crossLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+                crossLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+                crossLineset->PaintUniformColor(color);
+                vis->AddGeometry(crossLineset);
             }
+
+            // FIXME: DEBUG to erase
+            this->m_DEBUG_cloud->PaintUniformColor(Eigen::Vector3d(0, 0, 1));
+            vis->AddGeometry(this->m_DEBUG_cloud);
+
         }
         
         if (drawFinalMesh)
@@ -159,14 +174,15 @@ namespace tslam::Reconstruction
             mesh->PaintUniformColor(Eigen::Vector3d(0.5, 0.5, 0.5));
             vis->AddGeometry(mesh);
 
-            std::shared_ptr<open3d::geometry::PointCloud> pcdMeshCenters = std::make_shared<open3d::geometry::PointCloud>();
-            for (auto& tri : mesh->triangles_)
-            {
-                Eigen::Vector3d ctr = (mesh->vertices_[tri(0)] + mesh->vertices_[tri(1)] + mesh->vertices_[tri(2)]) / 3.;
-                pcdMeshCenters->points_.push_back(ctr);
-            }
-            pcdMeshCenters->PaintUniformColor(Eigen::Vector3d(1., 0., 0.));
-            vis->AddGeometry(pcdMeshCenters);
+            // show mesh faces' centers
+            // std::shared_ptr<open3d::geometry::PointCloud> pcdMeshCenters = std::make_shared<open3d::geometry::PointCloud>();
+            // for (auto& tri : mesh->triangles_)
+            // {
+            //     Eigen::Vector3d ctr = (mesh->vertices_[tri(0)] + mesh->vertices_[tri(1)] + mesh->vertices_[tri(2)]) / 3.;
+            //     pcdMeshCenters->points_.push_back(ctr);
+            // }
+            // pcdMeshCenters->PaintUniformColor(Eigen::Vector3d(1., 0., 0.));
+            // vis->AddGeometry(pcdMeshCenters);
         }
 
         vis->Run();
@@ -338,8 +354,8 @@ namespace tslam::Reconstruction
 
         this->rSelectFacePolygons(this->m_SplitPolygons,
                                   this->m_FacePolygons,
-                                  this->m_MaxPolyTagDist,
-                                  this->m_MaxPlnDist2Merge
+                                  0.1,  // ori: this->m_MaxPlnDist2Merge  TODO: check this
+                                  10.0  // ori: this->m_MaxPlnDist2Merge  TODO: check this
                                   );
     }
     void TSGeometricSolver::rIntersectPolygons(std::vector<TSPolygon> &polygons,
@@ -437,6 +453,7 @@ namespace tslam::Reconstruction
         this->m_TasselatorPtr->tassellate();
     }
     
+    // FIXME: the selection of the mesh faces is not working in all cases
     void TSGeometricSolver::rSelectFacePolygons(std::vector<TSPolygon>& polygons,
                                                 std::vector<TSPolygon>& facePolygons,
                                                 double tolerance,
@@ -453,34 +470,138 @@ namespace tslam::Reconstruction
             TSPlane& polyPln = polygons[i].getLinkedPlane();
             Eigen::Vector3d& polyPlnNormal = polyPln.Normal;
 
-            // (a) find an adaptive threshold based on the median distance to consider a point belonging to the plane
-            std::vector<double> distances;
-            for (auto& ctr : tagCenters)
-                distances.push_back(polyPln.distance(ctr));
-            std::sort(distances.begin(), distances.end());
-            double median = distances[distances.size() / 2];
-            double thresholdDist = tolerance * median + tolerance;
+            // // (a) find an adaptive threshold based on the median distance to consider a point belonging to the plane
+            // std::vector<double> distances;
+            // for (auto& ctr : tagCenters)
+            //     distances.push_back(polyPln.distance(ctr));
+            // std::sort(distances.begin(), distances.end());
+            // double median = distances[distances.size() / 2];
+            // double thresholdDist = tolerance * median + tolerance;
 
+
+            // project points to the plane
+            std::vector<Eigen::Vector3d> tagCentersProj;
+            for (auto& ctr : tagCenters)
+                tagCentersProj.push_back(polyPln.projectPoint(ctr));
+            
+
+            uint tagCounter = 0;
             for (uint j = 0; j < tagCenters.size(); j++)
             {
-                if (polyPln.distance(tagCenters[j]) < thresholdDist)  // ori: tolerance
+                double dist = polyPln.distance(tagCenters[j]);
+
+
+                if (dist < tolerance)  // ori: thresholdDist
                 {
+                    std::cout << "dist: " << dist << std::endl;  // FIXME: remove
+
                     // (b) check the angle between the normal of the point and the plane's normal
                     double angle = TSVector::angleBetweenVectors(polyPlnNormal, 
                                                                  this->m_Timber.getPlaneTags()[j].getNormal().normalized());
 
+                    std::cout << "angle: " << angle << std::endl;  // FIXME: remove
+
                     if (angle < (angleToleranceDeg))
                     {
+                        // tagCounter++;
+                        // if (tagCounter >= 2)
+                        // {
+                        //     facePolygons.push_back(polygons[i]);
+                        //     break;
+                        // }
+
                         // (c) check if the point is inside the polygon
                         Eigen::Vector3d ctrProj = polyPln.projectPoint(tagCenters[j]);
-                        if (polygons[i].isPointInsidePolygon(ctrProj, tolerance))
+
+                        // check if the point is inside the polygon
+
+
+                        // --------------------------------------------------------------------------------------------
+                        // TEST0: CHECK IF POINT INSIDE BY SIDE
+                        // The 3D point will be inside a convex polygon if and only if it lies on the same side of the support line of each of the segments. That is, either it lies on the left of every line or it lines on the right of every line.
+                        // the theory can be found here and we adapted to 3D: https://inginious.org/course/competitive-programming/geometry-pointinconvex
+
+                        bool isInside = true;
+                        for (uint k = 0; k < polygons[i].getVertices().size(); k++)
                         {
+                            Eigen::Vector3d v1 = polygons[i].getVertices()[k];
+                            Eigen::Vector3d v2 = polygons[i].getVertices()[(k + 1) % polygons[i].getVertices().size()];
+
+                            Eigen::Vector3d v1v2 = v2 - v1;
+                            Eigen::Vector3d v1ctr = ctrProj - v1;
+
+                            Eigen::Vector3d cross = v1v2.cross(v1ctr);
+
+                            if (cross.dot(polyPlnNormal) < 0)
+                            {
+                                isInside = false;
+                                break;
+                            }
+                        }
+                        
+
+                        if (isInside)
+                        {
+                            std::cout << "index center: " << j << std::endl;  // FIXME: remove
+
+                            m_DEBUG_cloud = std::make_shared<open3d::geometry::PointCloud>();  // FIXME: DEBUG
+                            m_DEBUG_cloud->points_.push_back(ctrProj);                         // FIXME: DEBUG
+
                             facePolygons.push_back(polygons[i]);
                             break;
                         }
+
+
+                        // --------------------------------------------------------------------------------------------
+                        // TEST1: NOT WORKING BY DISTANCE
+                        // we are going to test if a coplanar point is inside the convex polygon
+                        // get all the distances from the polygon'center and its vertices
+                        // if the point is inisde the polygon, the distance is smaller than the biggest distance
+                        // if the point is outside the polygon, the distance is bigger than the biggest distance
+
+                        // std::vector<double> distances;
+                        // Eigen::Vector3d polyCtr = polygons[i].getCenter();
+                        // std::vector<Eigen::Vector3d>& polyVertices = polygons[i].getVertices();
+                        // for (auto& v : polyVertices)
+                        //     distances.push_back((polyCtr - v).norm());
+                        // std::sort(distances.begin(), distances.end());
+                        // double maxDist = distances[distances.size() - 1];
+
+                        // double distToCtr = (polyCtr - ctrProj).norm();
+
+                        // std::cout << "distToCtr: " << distToCtr << std::endl;  // FIXME: remove
+
+                        // if (distToCtr < maxDist)
+                        // {
+                        //     std::cout << "index center: " << j << std::endl;  // FIXME: remove
+
+                        //     m_DEBUG_cloud = std::make_shared<open3d::geometry::PointCloud>();  // FIXME: DEBUG
+                        //     m_DEBUG_cloud->points_.push_back(ctrProj);                         // FIXME: DEBUG
+
+                        //     facePolygons.push_back(polygons[i]);
+                        //     break;
+                        // }
+
+                        // --------------------------------------------------------------------------------------------
+                        // TEST": BY RAYCASTING AND INTERSECTION - NOT WORKING
+                        // Eigen::Vector3d segPt = polygons[i].isPointInsidePolygon2(ctrProj, tolerance);  // FIXME: DEBUG
+                        
+                        // if (polygons[i].isPointInsidePolygon(ctrProj, tolerance))
+                        // {
+                        //     std::cout << "index center: " << j << std::endl;  // FIXME: remove
+
+                        //     m_DEBUG_cloud = std::make_shared<open3d::geometry::PointCloud>();  // FIXME: DEBUG
+                        //     m_DEBUG_cloud->points_.push_back(ctrProj);                         // FIXME: DEBUG
+                        //     m_DEBUG_cloud->points_.push_back(segPt);                           // FIXME: DEBUG
+
+                        //     facePolygons.push_back(polygons[i]);
+                        //     break;
+                        // }
                     }
                 }
             }
+
+            // if (i == 10) return;  // 9, 10 is an error  FIXME: remove
         }
     }
 
