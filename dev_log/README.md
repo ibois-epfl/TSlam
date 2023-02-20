@@ -298,6 +298,7 @@ The current challenge is the **face selection** after the tassellation. It might
 ### Stand up on the development
 Today we got a general stand up meeting with Yves and Julien. The development is successfull but we need to focus now on the evaluation of the TSLAM. This means that we need to cut out some features from the road map, fix parameters, do a due diligence on the evaluation of SLAMS and esstablish a scientific protocol for the evaluation.
 
+|                     |                      |
 |:-------------------:|:--------------------:|
 | ![](./standup1.jpg) | ![](./standup2.jpg)  |
 
