@@ -8,6 +8,7 @@
 #include "ts_timber.hh"
 #include "ts_geo_util.hh"
 #include "ts_tassellation.hh"
+#include "ts_mesh_holes_filler.hh"
 #include "ts_geometric_solver.hh"
 
 // TODO: extenralize I/O saving from geometric solver

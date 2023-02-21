@@ -475,9 +475,6 @@ namespace tslam::Reconstruction
             {
                 // (a) check the distance between the tag's center and the plane
                 double dist = polyPln.distance(tagCenters[j]);
-
-                std::cout << "[DEBUG] dist: " << dist << std::endl;
-
                 if (dist < tolerance)
                 {
                     // (b) check the angle between the normal of the point and the plane's normal
@@ -516,8 +513,23 @@ namespace tslam::Reconstruction
             mesh.RemoveDegenerateTriangles();
         }
 
+        // FIXME: DEBUG - print mesh info
+        std::cout << "[DEBUG] Mesh info BEFORE: " << std::endl;
+        std::cout << "    # of vertices: " << mesh.vertices_.size() << std::endl;
+        std::cout << "    # of triangles: " << mesh.triangles_.size() << std::endl;
+        std::cout << "    # of normals: " << mesh.triangle_normals_.size() << std::endl;
 
         // TODO: add mesh hole filler-convert o3d mesh to CGAL polyhedron
+        Mesh_srf cglMesh;
+        TSMeshHolesFiller::cvtO3d2CGALMesh(mesh, cglMesh);
+        TSMeshHolesFiller::fillHoles(cglMesh);
+        TSMeshHolesFiller::cvtCGAL2O3dMesh(cglMesh, mesh);
+
+        // FIXME: DEBUG - print mesh info
+        std::cout << "[DEBUG] Mesh info AFTER: " << std::endl;
+        std::cout << "    # of vertices: " << mesh.vertices_.size() << std::endl;
+        std::cout << "    # of triangles: " << mesh.triangles_.size() << std::endl;
+        std::cout << "    # of normals: " << mesh.triangle_normals_.size() << std::endl;
 
 
     }
