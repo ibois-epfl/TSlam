@@ -294,6 +294,15 @@ The current challenge is the **face selection** after the tassellation. It might
 
 *A different approach needs to be found for selecting eligible faces*
 
+### Reconstruction - new polygon faces selector
+We implemented a new method to check wether a polygon is a face or not by checking if a tag is contained in it. It is robust and the algorithm has been parametrized to detect multiple faces. Here we can see that we are able to now to describe complex shapes.
+
+|        otched piecen       |     complex piece      |
+|:------------------------:|:------------------------:|
+| ![](./patchalg1.png) | ![](./patchalg2.png) |
+
+What we are missing now is a resilient refiner to fill the holes with e.g. [one method in CGAL](https://doc.cgal.org/latest/Polygon_mesh_processing/Polygon_mesh_processing_2hole_filling_example_SM_8cpp-example.html). In general this will be a limitation of the system to have markers to cover the entire piece. The rule to avoid holes is not clear at the moment.
+
 Current TODOs:
 - [x] (urgent) a piece with double stripes on edges each is not reconstructing correctly, check the bug out;
 - [ ] (urgent) find a better algorithm for selecting candidate polygon faces
