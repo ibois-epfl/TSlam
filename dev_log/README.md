@@ -294,6 +294,14 @@ The current challenge is the **face selection** after the tassellation. It might
 
 *A different approach needs to be found for selecting eligible faces*
 
+### Feb 15: stand up on the development
+Today we got a general stand up meeting with Yves and Julien. The development is successfull but we need to focus now on the evaluation of the TSLAM. This means that we need to cut out some features from the road map, fix parameters, do a due diligence on the evaluation of SLAMS and esstablish a scientific protocol for the evaluation.
+
+|                     |                      |
+|:-------------------:|:--------------------:|
+| ![](./standup1.jpg) | ![](./standup2.jpg)  |
+
+
 ### Reconstruction - new polygon faces selector
 We implemented a new method to check wether a polygon is a face or not by checking if a tag is contained in it. It is robust and the algorithm has been parametrized to detect multiple faces. Here we can see that we are able to now to describe complex shapes.
 
@@ -305,16 +313,16 @@ What we are missing now is a resilient refiner to fill the holes with e.g. [one 
 
 Current TODOs:
 - [x] (urgent) a piece with double stripes on edges each is not reconstructing correctly, check the bug out;
+- [ ] (urgent) establish an evaluation protocol for the tslam
 - [ ] (urgent) find a better algorithm for selecting candidate polygon faces
 - [ ] (urgent) solve reconstruction for more complex objects
-- [ ] (urgent) 
+- [ ] (urgent) delete all dependecies of old UCOSlam and code labels replaced with TSLam
+- [ ] (urgent) integrate the reconstruction as a library in the main TSlam base code
+- [ ] (medium) set uo CI/CD
 - [ ] implement the a `.xac` (xml based) format in `ts_geometric_solver.hh` and `tslam_reconstructor.hh`;
 - [ ] find a way to containerize in CMakeLists as a library to be used in the main software and integrate in main TSlam CMakeLists file
 - [ ] write test units
-- [ ] (optional) write metrics to evaluate the reconstruction
-- [ ] implement an CI on github actions
-- [ ] adapt optitrack
-- [ ] write small program for recordings live
+
 - [ ] package and integrate the new version of tslam in AC
 
 - [ ] implement an evaluation method (mesh-mesh comparison) for the synthetic data, i.e. [Hausdorf distance for two mesh models](https://www.researchgate.net/publication/224258658_Assessing_Visual_Quality_of_3-D_Polygonal_Models)
