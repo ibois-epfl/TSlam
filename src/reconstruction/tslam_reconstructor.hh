@@ -10,6 +10,7 @@
 #include "ts_tassellation.hh"
 #include "ts_geometric_solver.hh"
 
+
 // TODO: extenralize I/O saving from geometric solver
 
 namespace tslam::Reconstruction

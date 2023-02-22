@@ -11,6 +11,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON) #...is required...
 set(CMAKE_CXX_EXTENSIONS ON) #...with compiler extensions like gnu++11
 set(CMAKE_CXX_STANDARD 11) # C++11...
+# set (CMAKE_CXX_FLAGS "-lstdc++fs -std=c++17")  # beacuse of std::filesystem (Cpp 17 does not understand the standard library)
 
 # Set the build type for API integration into third software or not
 if(BUILD_4_API)

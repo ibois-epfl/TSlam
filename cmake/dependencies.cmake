@@ -80,18 +80,44 @@ else()
     set(TSLAM_ARUCO_LIBS ${EXTRALIBNAME}aruco)
 endif()
 
+# FIXME: for tslam reconstruction integration
+# if(NOT BUILD_OWN_O3D)
+#     find_package(Open3D 0.16.1 REQUIRED)
+#     set(TSLAM_O3D_LIBS ${Open3D_LIBRARIES})
+# else()
+#     message("[WARN-for-developer]: o3d needs to be added in the deps folder")
+#     add_subdirectory(3rdparty/Open3D)
+#     include_directories(3rdparty/Open3D)
+#     set(TSLAM_O3D_LIBS ${EXTRALIBNAME}Open3D)
+# endif()
+
+# if(NOT USE_OWN_CGAL)
+#     find_package( CGAL 5.5.1 REQUIRED )
+# else()
+#     set(CGAL_INCLUDE_DIR "3rdparty/CGAL/include")
+# endif()
+# include_directories( ${CGAL_INCLUDE_DIR} )
+
+# if(NOT USE_OWN_CGAL)
+#     find_package( cilantro REQUIRED )
+# else()
+#     set(CILANTRO_INCLUDE_DIR "3rdparty/cilantro/include")
+# endif()
+# include_directories( ${CILANTRO_INCLUDE_DIR} )
 
 
 if(XFEATURES2D)
 add_definitions(-DXFEATURES2D)
 endif()
 
-
-
-set(TSLAM_REQUIRED_LIBRARIES ${TSLAM_REQUIRED_LIBRARIES}  ${TSLAM_FBOW_LIBS}  ${TSLAM_ARUCO_LIBS} ${TSLAM_STAG_LIBS} ${TSLAM_XFLANN_LIBS} ${G2O_LIBS})
-
-
-
+set(TSLAM_REQUIRED_LIBRARIES
+    ${TSLAM_REQUIRED_LIBRARIES}
+    ${TSLAM_FBOW_LIBS}
+    ${TSLAM_ARUCO_LIBS}
+    ${TSLAM_STAG_LIBS}
+    ${TSLAM_XFLANN_LIBS}
+    # ${TSLAM_O3D_LIBS} # FIXME: for tslam reconstruction integration
+    ${G2O_LIBS})
 
 #Find OpenNI2
 ### OPENNI 2

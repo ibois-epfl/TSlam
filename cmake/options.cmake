@@ -1,10 +1,16 @@
-option(BUILD_SHARED_LIBS 	"Set to OFF to build static libraries" ON)
+option(BUILD_SHARED_LIBS  "Set to OFF to build static libraries" ON)
 option(USE_OWN_EIGEN3	"Set to OFF to use a standard eigen3 version" ON)
 option(BUILD_OWN_ARUCO	"Set to OFF to force find aruco in the system" ON)
 option(BUILD_OWN_FBOW 	"Set to OFF to force find fbow in the system" ON)
 option(BUILD_OWN_XFLANN "Set to OFF to force find xflann in the system" ON)
 option(BUILD_OWN_G2O "Set to OFF to force find g2o in the system" ON)
 option(BUILD_OWN_STAG "Set to OFF to force find stag in the system" ON)
+
+# FIXME: for tslam reconstruction integration
+# option(BUILD_OWN_O3D "Set to OFF to force find open3d 0.16.1 in the system" OFF)  # FIXME: this should not be in main TSLAM but only in local folder tslam reconstructor
+# option(USE_OWN_CGAL "Set to OFF to use a local CGAL version"                 ON)
+# option(USE_OWN_CILANTRO "Set to OFF to use a local Cilantro version"         ON)
+
 option(USE_AVX "SET ON/OFF " ON)
 
 option(BUILD_4_API "Set to ON to build TSlam just with API" OFF)
