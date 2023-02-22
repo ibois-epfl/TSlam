@@ -1,16 +1,29 @@
-#pragma onc
+#pragma once
+
+#include "ts_geo_util.hh"  // FIXME: test
 
 #include <open3d/Open3D.h>
 
-#include <CGAL/Surface_mesh.h>
-
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-
 #include <CGAL/Surface_mesh.h>
+
 #include <CGAL/Polygon_mesh_processing/triangulate_hole.h>
 #include <CGAL/Polygon_mesh_processing/border.h>
 #include <CGAL/Polygon_mesh_processing/IO/polygon_mesh_io.h>
+
 #include <boost/lexical_cast.hpp>
+
+// FIXME: test polygon soup
+#include <CGAL/Polyhedron_3.h>
+#include <CGAL/Polyhedron_items_with_id_3.h>
+#include <CGAL/Polygon_mesh_processing/orient_polygon_soup.h>
+#include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
+#include <CGAL/Polygon_mesh_processing/polygon_mesh_to_polygon_soup.h>
+#include <CGAL/Polygon_mesh_processing/repair_polygon_soup.h>
+
+#include <CGAL/Polygon_mesh_processing/orientation.h>
+#include <CGAL/IO/polygon_soup_io.h>
+
 
 #include <iostream>
 #include <fstream>
@@ -19,21 +32,20 @@
 #include <tuple>
 #include <vector>
 
+
+
+
+
 // typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
-typedef Kernel::Point_3                                     Point_3;
+typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+typedef K::Point_3                                     Point_3;
 typedef CGAL::Surface_mesh<Point_3>                           Mesh_srf;
-
-typedef CGAL::Simple_cartesian<double> K;
-typedef CGAL::Surface_mesh<K::Point_3> Mesh;
-
-// typedef CGAL::Polyhedron_3<Kernel>     Polyhedron;
-// typedef Polyhedron::Halfedge_handle    Halfedge_handle_poly;
-// typedef Polyhedron::Facet_handle       Facet_handle_poly;
-// typedef Polyhedron::Vertex_handle      Vertex_handle_poly;
 
 typedef boost::graph_traits<Mesh_srf>::vertex_descriptor        vertex_descriptor;
 typedef boost::graph_traits<Mesh_srf>::halfedge_descriptor      halfedge_descriptor;
 typedef boost::graph_traits<Mesh_srf>::face_descriptor          face_descriptor;
+
+
 
 namespace PMP = CGAL::Polygon_mesh_processing;
 
@@ -42,31 +54,120 @@ namespace tslam::Reconstruction
     class TSMeshHolesFiller
     {
     public: __always_inline  ///< fill holes
-        // FIXME: not working cgal error
-        // bool is_small_hole(halfedge_descriptor h, Mesh & mesh,
-        //            double max_hole_diam, int max_num_hole_edges)
-        // {
-        //     int num_hole_edges = 0;
-        //     CGAL::Bbox_3 hole_bbox;
-        //     for (halfedge_descriptor hc : CGAL::halfedges_around_face(h, mesh))
-        //     {
-        //         const Point_poly& p = mesh.point(target(hc, mesh));
-        //         hole_bbox += p.bbox();
-        //         ++num_hole_edges;
-        //         // Exit early, to avoid unnecessary traversal of large holes
-        //         if (num_hole_edges > max_num_hole_edges) return false;
-        //         if (hole_bbox.xmax() - hole_bbox.xmin() > max_hole_diam) return false;
-        //         if (hole_bbox.ymax() - hole_bbox.ymin() > max_hole_diam) return false;
-        //         if (hole_bbox.zmax() - hole_bbox.zmin() > max_hole_diam) return false;
-        //     }
-        //     return true;
-        // }
-
-        static void fillHoles(const Mesh_srf &cgalMesh)
+        // FIXME: check if this function is needed
+        static bool is_small_hole(halfedge_descriptor h, Mesh_srf & mesh,
+                   double max_hole_diam, int max_num_hole_edges)
         {
-            
-
+            int num_hole_edges = 0;
+            CGAL::Bbox_3 hole_bbox;
+            for (halfedge_descriptor hc : CGAL::halfedges_around_face(h, mesh))
+            {
+                const Point_3& p = mesh.point(target(hc, mesh));
+                hole_bbox += p.bbox();
+                ++num_hole_edges;
+                // Exit early, to avoid unnecessary traversal of large holes
+                if (num_hole_edges > max_num_hole_edges) return false;
+                if (hole_bbox.xmax() - hole_bbox.xmin() > max_hole_diam) return false;
+                if (hole_bbox.ymax() - hole_bbox.ymin() > max_hole_diam) return false;
+                if (hole_bbox.zmax() - hole_bbox.zmin() > max_hole_diam) return false;
+            }
+            return true;
         }
+
+        /**
+         * @brief It fills the holes in the mesh using the CGAL library. Normals are recomputed accordingly.
+         * 
+         * @param cgalMesh the input CGAL mesh
+         */
+        static void fillHoles(Mesh_srf &cgalMesh)
+        {
+            // // convert the mesh to a polygon soup
+            // std::vector<Point_3> points;
+            // std::vector<std::vector<std::size_t> > polygons;
+            // PolygonRange range = CGAL::faces(cgalMesh);
+            // CGAL::Polygon_mesh_processing::polygon_mesh_to_polygon_soup(points, polygons, cgalMesh);
+
+
+            /////////////////////////////////////////////////////
+
+            double max_hole_diam   = -1.0;
+            int max_num_hole_edges = -1;
+            unsigned int nb_holes = 0;
+            std::vector<halfedge_descriptor> border_cycles;
+            // collect one halfedge per boundary cycle
+            PMP::extract_boundary_cycles(cgalMesh, std::back_inserter(border_cycles));
+            for(halfedge_descriptor h : border_cycles)
+            {
+                // if(max_hole_diam > 0 && max_num_hole_edges > 0 &&
+                // !is_small_hole(h, cgalMesh, max_hole_diam, max_num_hole_edges))
+                // continue;
+                std::vector<face_descriptor>  patch_facets;
+                std::vector<vertex_descriptor> patch_vertices;
+                bool success = std::get<0>(PMP::triangulate_refine_and_fair_hole(cgalMesh,
+                                                                                h,
+                                                                                std::back_inserter(patch_facets),
+                                                                                std::back_inserter(patch_vertices)));
+                // std::cout << "* Number of facets in constructed patch: " << patch_facets.size() << std::endl;
+                // std::cout << "  Number of vertices in constructed patch: " << patch_vertices.size() << std::endl;
+                // std::cout << "  Is fairing successful: " << success << std::endl;
+                ++nb_holes;
+            }
+            std::cout << std::endl;
+            // std::cout << nb_holes << " holes have been filled" << std::endl;
+            // CGAL::IO::write_polygon_mesh("filled_SM.off", cgalMesh, CGAL::parameters::stream_precision(17));
+            // std::cout << "Mesh written to: filled_SM.off" << std::endl;
+        };
+
+
+        static Mesh_srf cvtPolygon2CGALPolygonSoup(std::vector<TSPolygon>& polygons)
+        {
+            Mesh_srf meshOut;
+            std::vector<Point_3> pointsRange;
+            std::vector<std::vector<std::size_t> > polygonsRange;
+
+            for (auto& polygon : polygons)
+            {
+                std::vector<std::size_t> polygonRange;
+                for (auto& point : polygon.getVertices())
+                {
+                    pointsRange.push_back(Point_3(point[0], point[1], point[2]));
+                    polygonRange.push_back(pointsRange.size() - 1);
+                }
+                polygonsRange.push_back(polygonRange);
+            }
+
+            // Visitor visitor;
+            // CGAL::Polygon_mesh_processing::orient_polygon_soup(points, polygons, CGAL::parameters::visitor(visitor));
+
+            CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(pointsRange, polygonsRange, meshOut);
+
+            return meshOut;
+        };
+
+        static bool cleanOutCGALMesh(Mesh_srf &cgalMesh)
+        {
+            std::vector<Point_3> points;
+            std::vector<std::vector<std::size_t> > polygons;
+
+            // convert the mesh to a polygon soup
+            PMP::polygon_mesh_to_polygon_soup(cgalMesh, points, polygons);
+            size_t nbrRmvPoints = 0;
+            nbrRmvPoints = PMP::merge_duplicate_points_in_polygon_soup(points, polygons);
+            std::cout << "Removed " << nbrRmvPoints << " duplicate points" << std::endl;
+
+            std::cout << "Before reparation, the soup has " << points.size() << " vertices and " << polygons.size() << " faces" << std::endl;
+            PMP::repair_polygon_soup(points, polygons);
+            std::cout << "After reparation, the soup has " << points.size() << " vertices and " << polygons.size() << " faces" << std::endl;
+            PMP::orient_polygon_soup(points, polygons);
+
+            Mesh_srf meshOut;
+            PMP::polygon_soup_to_polygon_mesh(points, polygons, meshOut);
+            cgalMesh = meshOut;
+
+            return true;
+        }
+
+
 
     public: __always_inline  ///< converter mesh o3d/CGAL
         /**

@@ -453,7 +453,7 @@ namespace tslam::Reconstruction
                                                 double tolerance,
                                                 double angleToleranceDeg)
     {
-        // get all the points
+        // get all the tags' centers and corners
         std::vector<Eigen::Vector3d> tagCenters;
         for (auto& tag : this->m_Timber.getPlaneTags())
             tagCenters.push_back(tag.getCenter());
@@ -503,15 +503,29 @@ namespace tslam::Reconstruction
     void TSGeometricSolver::rJoinPolygons(std::vector<TSPolygon>& facePolygons,
                                           open3d::geometry::TriangleMesh& mesh)
     {
-        for (auto& poly : this->m_FacePolygons)
+        for (auto& poly : facePolygons)
         {
             mesh += poly.cvtPoly2O3dMesh();
-            mesh.MergeCloseVertices(0.001);
-            mesh.RemoveDuplicatedTriangles();
-            mesh.RemoveDuplicatedVertices();
-            mesh.RemoveNonManifoldEdges();
-            mesh.RemoveDegenerateTriangles();
+
+            // mesh.MergeCloseVertices(1);  // ori: this->m_EPS
+            // mesh.RemoveDuplicatedTriangles();
+            // mesh.RemoveDuplicatedVertices();
+            // mesh.RemoveNonManifoldEdges();
+            // mesh.RemoveDegenerateTriangles();
         }
+
+        
+
+
+        // add a check if the mesh is closed
+        if (mesh.IsWatertight())
+            return;
+
+        ///================================================================================================
+        // FIXME: from here on we try to fill holes
+
+        // Mesh_srf cglMesh = TSMeshHolesFiller::cvtPolygon2CGALPolygonSoup(facePolygons);
+        
 
         // FIXME: DEBUG - print mesh info
         std::cout << "[DEBUG] Mesh info BEFORE: " << std::endl;
@@ -519,9 +533,12 @@ namespace tslam::Reconstruction
         std::cout << "    # of triangles: " << mesh.triangles_.size() << std::endl;
         std::cout << "    # of normals: " << mesh.triangle_normals_.size() << std::endl;
 
+        // close the 
+
         // TODO: add mesh hole filler-convert o3d mesh to CGAL polyhedron
         Mesh_srf cglMesh;
         TSMeshHolesFiller::cvtO3d2CGALMesh(mesh, cglMesh);
+        TSMeshHolesFiller::cleanOutCGALMesh(cglMesh);
         TSMeshHolesFiller::fillHoles(cglMesh);
         TSMeshHolesFiller::cvtCGAL2O3dMesh(cglMesh, mesh);
 
