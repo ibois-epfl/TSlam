@@ -324,7 +324,10 @@ Current TODOs:
 - [ ] (urgent) integrate the reconstruction as a library in the main TSlam base code
 - [ ] (urgent)implement an evaluation method (mesh-mesh comparison) for the synthetic data, i.e. [Hausdorf distance for two mesh models](https://www.researchgate.net/publication/224258658_Assessing_Visual_Quality_of_3-D_Polygonal_Models)
 
-- [ ] (medium) set uo CI/CD
+- [ ] (medium) TSLAM: adjust visualizer for overlapping mesh
+- [ ] (mdeium) TSLAM: establish scientific protocol for evaluation with optitrack
+
+- [ ] (medium) set up CI/CD
 - [ ] (medium) for reconstruction sub-program: get rid of open3d and integrate a mesh I/O pipeline 
 - [ ] (medium) package and integrate the new version of tslam in AC
 
