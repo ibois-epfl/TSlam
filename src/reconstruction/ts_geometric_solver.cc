@@ -1,5 +1,4 @@
 #include "ts_geometric_solver.hh"
-#include "ts_mesh_holes_filler.hh"
 
 #include<open3d/Open3D.h>
 #include <stdexcept>
@@ -503,7 +502,7 @@ namespace tslam::Reconstruction
     void TSGeometricSolver::rJoinPolygons(std::vector<TSPolygon>& facePolygons,
                                           open3d::geometry::TriangleMesh& mesh)
     {
-        for (auto& poly : this->m_FacePolygons)
+        for (auto& poly : facePolygons)
         {
             mesh += poly.cvtPoly2O3dMesh();
             mesh.MergeCloseVertices(0.001);
@@ -513,24 +512,8 @@ namespace tslam::Reconstruction
             mesh.RemoveDegenerateTriangles();
         }
 
-        // FIXME: DEBUG - print mesh info
-        std::cout << "[DEBUG] Mesh info BEFORE: " << std::endl;
-        std::cout << "    # of vertices: " << mesh.vertices_.size() << std::endl;
-        std::cout << "    # of triangles: " << mesh.triangles_.size() << std::endl;
-        std::cout << "    # of normals: " << mesh.triangle_normals_.size() << std::endl;
-
-        // TODO: add mesh hole filler-convert o3d mesh to CGAL polyhedron
-        Mesh_srf cglMesh;
-        TSMeshHolesFiller::cvtO3d2CGALMesh(mesh, cglMesh);
-        TSMeshHolesFiller::fillHoles(cglMesh);
-        TSMeshHolesFiller::cvtCGAL2O3dMesh(cglMesh, mesh);
-
-        // FIXME: DEBUG - print mesh info
-        std::cout << "[DEBUG] Mesh info AFTER: " << std::endl;
-        std::cout << "    # of vertices: " << mesh.vertices_.size() << std::endl;
-        std::cout << "    # of triangles: " << mesh.triangles_.size() << std::endl;
-        std::cout << "    # of normals: " << mesh.triangle_normals_.size() << std::endl;
-
-
+        if (mesh.IsWatertight())
+            return;
+        std::cout << "[WARN] mesh is not watertight" << std::endl;
     }
 }

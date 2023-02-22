@@ -126,6 +126,7 @@ namespace tslam::Reconstruction
                                      double tolerance,
                                      double angleToleranceDeg);
 
+        // TODO: the mesh needs a hole fixer
         /// (d)
         /**
          * @brief Create the mesh out of the candidate polygon faces. The mesh is created by joining the polygons.
