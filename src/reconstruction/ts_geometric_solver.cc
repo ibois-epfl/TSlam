@@ -168,16 +168,6 @@ namespace tslam::Reconstruction
             std::shared_ptr<open3d::geometry::TriangleMesh> mesh = std::make_shared<open3d::geometry::TriangleMesh>(this->m_MeshOut);
             mesh->PaintUniformColor(Eigen::Vector3d(0.5, 0.5, 0.5));
             vis->AddGeometry(mesh);
-
-            // show mesh faces' centers
-            // std::shared_ptr<open3d::geometry::PointCloud> pcdMeshCenters = std::make_shared<open3d::geometry::PointCloud>();
-            // for (auto& tri : mesh->triangles_)
-            // {
-            //     Eigen::Vector3d ctr = (mesh->vertices_[tri(0)] + mesh->vertices_[tri(1)] + mesh->vertices_[tri(2)]) / 3.;
-            //     pcdMeshCenters->points_.push_back(ctr);
-            // }
-            // pcdMeshCenters->PaintUniformColor(Eigen::Vector3d(1., 0., 0.));
-            // vis->AddGeometry(pcdMeshCenters);
         }
 
         vis->Run();

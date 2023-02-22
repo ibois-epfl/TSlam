@@ -26,8 +26,6 @@ uint GT_nbrMeshVertices_DOWN;
 tslam::Reconstruction::TSLAMReconstructor reconstructor = 
         tslam::Reconstruction::TSLAMReconstructor();
 
-
-
 /// Main check func
 void checkResults(std::string ymlPath,
                   bool showVisualizer = false,

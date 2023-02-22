@@ -311,6 +311,10 @@ We implemented a new method to check wether a polygon is a face or not by checki
 
 What we are missing now is a resilient refiner to fill the holes with e.g. [one method in CGAL](https://doc.cgal.org/latest/Polygon_mesh_processing/Polygon_mesh_processing_2hole_filling_example_SM_8cpp-example.html). In general this will be a limitation of the system to have markers to cover the entire piece. The rule to avoid holes is not clear at the moment.
 
+update `22-02-2023`: we tried the `triangulate_refine_and_fair_hole()` func in CGAL 5.5.1 but it is not giving the expected results. An issue is open on [CGAL github](https://github.com/CGAL/cgal/issues/7283).
+
+---
+
 Current TODOs:
 - [x] (urgent) a piece with double stripes on edges each is not reconstructing correctly, check the bug out;
 - [ ] (urgent) establish an evaluation protocol for the tslam
@@ -318,11 +322,12 @@ Current TODOs:
 - [ ] (urgent) solve reconstruction for more complex objects
 - [ ] (urgent) delete all dependecies of old UCOSlam and code labels replaced with TSLam
 - [ ] (urgent) integrate the reconstruction as a library in the main TSlam base code
+- [ ] (urgent)implement an evaluation method (mesh-mesh comparison) for the synthetic data, i.e. [Hausdorf distance for two mesh models](https://www.researchgate.net/publication/224258658_Assessing_Visual_Quality_of_3-D_Polygonal_Models)
+
 - [ ] (medium) set uo CI/CD
-- [ ] implement the a `.xac` (xml based) format in `ts_geometric_solver.hh` and `tslam_reconstructor.hh`;
-- [ ] find a way to containerize in CMakeLists as a library to be used in the main software and integrate in main TSlam CMakeLists file
-- [ ] write test units
+- [ ] (medium) for reconstruction sub-program: get rid of open3d and integrate a mesh I/O pipeline 
+- [ ] (medium) package and integrate the new version of tslam in AC
 
-- [ ] package and integrate the new version of tslam in AC
+- [ ] (optional) implement the a `.xac` (xml based) format in `ts_geometric_solver.hh` and `tslam_reconstructor.hh`;
 
-- [ ] implement an evaluation method (mesh-mesh comparison) for the synthetic data, i.e. [Hausdorf distance for two mesh models](https://www.researchgate.net/publication/224258658_Assessing_Visual_Quality_of_3-D_Polygonal_Models)
+- [x] for reconstruction: write test units
