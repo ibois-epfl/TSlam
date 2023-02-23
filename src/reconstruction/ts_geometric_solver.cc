@@ -495,7 +495,7 @@ namespace tslam::Reconstruction
         TSMeshHolesFiller::cvtPolygon2CGALMesh(facePolygons, mesh);
 
         TSMeshHolesFiller::cleanOutCGALMesh(mesh);
-        TSMeshHolesFiller::fillHoles(mesh);
+        // TSMeshHolesFiller::fillHoles(mesh);  // FIXME: to be fixed
 
         TSMeshHolesFiller::cvtCGAL2O3dMesh(mesh, this->m_MeshOutO3d);
     }

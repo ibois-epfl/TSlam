@@ -8,9 +8,11 @@
 #include <CGAL/Surface_mesh.h>
 
 #include <CGAL/Polygon_mesh_processing/triangulate_hole.h>
+#include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
 #include <CGAL/Polygon_mesh_processing/border.h>
 #include <CGAL/Polygon_mesh_processing/IO/polygon_mesh_io.h>
 #include <CGAL/Polygon_mesh_processing/repair.h>
+#include <CGAL/Polygon_mesh_processing/stitch_borders.h>
 
 #include <boost/lexical_cast.hpp>
 
@@ -65,14 +67,10 @@ namespace tslam::Reconstruction
             for(halfedge_descriptor h : border_cycles)
             {
                 std::vector<face_descriptor>  patch_facets;
-                std::vector<vertex_descriptor> patch_vertices;
-                bool success = std::get<0>(PMP::triangulate_refine_and_fair_hole(cgalMesh,
-                                                                                h,
-                                                                                std::back_inserter(patch_facets),
-                                                                                std::back_inserter(patch_vertices)));
+                PMP::triangulate_hole(cgalMesh, h, 
+                                    std::back_inserter(patch_facets));
                 ++nb_holes;
             }
-            std::cout << std::endl;
         };
 
     public: __always_inline  ///< utils
@@ -118,79 +116,41 @@ namespace tslam::Reconstruction
         static bool cvtPolygon2CGALMesh(std::vector<TSPolygon>& polygons,
                                         Mesh_srf& cgalMesh)
         {
-
-            // convert surface mesh to polygon mesh
-
-            if (polygons.size() == 0)
-                return false;
-            cgalMesh.clear();
-
-            std::vector<Eigen::Vector3d> polyVertices;
-            std::vector<vertex_descriptor> rangeVerticesCGAL;
-            std::vector<face_descriptor> rangeTrianglesCGAL;
+            std::vector<Point_3> points;
+            std::vector<std::vector<std::size_t> > polygonsCGAL;
 
             for (auto& poly : polygons)
             {
-                polyVertices = poly.getVertices();
-                // poly.triangulate(polyVertices, polyTriangles);
-
-                int i = 0;
-                while(polyVertices.size() > 0)
+                std::vector<Eigen::Vector3d> polyVertices = poly.getVertices();
+                std::vector<std::size_t> polyCGAL;
+                for (auto& pt : polyVertices)
                 {
-                    Eigen::Vector3d pt0 = polyVertices[i];
-                    vertex_descriptor v1 = cgalMesh.add_vertex(Point_3(pt0(0), pt0(1), pt0(2)));
-                    rangeVerticesCGAL.push_back(v1);
-                    polyVertices.erase(polyVertices.begin() + i);
-                    i++;
+                    points.push_back(Point_3(pt(0), pt(1), pt(2)));
+                    polyCGAL.push_back(points.size()-1);
                 }
-                face_descriptor f = cgalMesh.add_face(rangeVerticesCGAL);
-                rangeTrianglesCGAL.push_back(f);
-                
-                rangeVerticesCGAL.clear();
-                polyVertices.clear();
+                polygonsCGAL.push_back(polyCGAL);
             }
-            rangeTrianglesCGAL.clear();
 
+            // build duplicate soup
+            // PMP::polygon_soup_to_polygon_mesh(points, polygonsCGAL, cgalMesh);
 
+            // remove duplicate points
+            size_t nbrRmvPoints = 0;
+            nbrRmvPoints = PMP::merge_duplicate_points_in_polygon_soup(points, polygonsCGAL);
 
+            // orient the soup
+            PMP::orient_polygon_soup(points, polygonsCGAL);
 
+            // repair the soup
+            PMP::repair_polygon_soup(points, polygonsCGAL);
 
+            // convert the mesh back to a surface mesh
+            PMP::polygon_soup_to_polygon_mesh(points, polygonsCGAL, cgalMesh);
 
-
+            // triangulate the mesh
+            PMP::triangulate_faces(cgalMesh);
 
             return true;
-
-            ////// TEST0 ///////
-            // if (polygons.size() == 0)
-            //     return false;
-            // cgalMesh.clear();
-
-            // std::vector<Eigen::Vector3d> polyVertices;
-            // std::vector<Eigen::Vector3i> polyTriangles;
-
-            // for (auto& poly : polygons)
-            // {
-            //     polyVertices = poly.getVertices();
-            //     poly.triangulate(polyVertices, polyTriangles);
-                
-            //     for (uint i = 0; i < polyTriangles.size(); ++i)
-            //     {
-            //         Eigen::Vector3d pt0 = polyVertices[polyTriangles[i](0)];
-            //         Eigen::Vector3d pt1 = polyVertices[polyTriangles[i](1)];
-            //         Eigen::Vector3d pt2 = polyVertices[polyTriangles[i](2)];
-
-            //         vertex_descriptor v1 = cgalMesh.add_vertex(Point_3(pt0(0), pt0(1), pt0(2)));
-            //         vertex_descriptor v2 = cgalMesh.add_vertex(Point_3(pt1(0), pt1(1), pt1(2)));
-            //         vertex_descriptor v3 = cgalMesh.add_vertex(Point_3(pt2(0), pt2(1), pt2(2)));
-
-            //         face_descriptor f = cgalMesh.add_face(v1, v2, v3);
-            //     }
-
-            //     polyVertices.clear();
-            //     polyTriangles.clear();
-            // }
-
-            // return true;
         };
         /**
          * @brief convert open3d mesh to CGAL mesh

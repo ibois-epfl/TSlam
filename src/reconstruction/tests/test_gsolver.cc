@@ -38,7 +38,7 @@ void checkResults(std::string ymlPath,
     reconstructor.getGeometricSolver().setShowVisualizer(showVisualizer);  ///< Enable/disable visualizer
     reconstructor.getGeometricSolver().setSolverVisualizerParams(/*drawTags*/               true,
                                                                  /*drawTagNormals*/         false,
-                                                                 /*drawAabb*/               false,
+                                                                 /*drawAabb*/               true,
                                                                  /*drawIntersectedPoly*/    false,
                                                                  /*drawSplittingSegments*/  false,
                                                                  /*drawSelectedFace*/       true,
@@ -70,7 +70,7 @@ TEST_SUITE("Real_scans")
     * doctest::description("Checks the case of a streight beam with long length."))
     {
         ymlPath = YML_DIR_REAL + "long_map.yml";
-        checkResults(ymlPath, true);
+        checkResults(ymlPath);
     }
 
     TEST_CASE("Medium_length"
@@ -102,7 +102,7 @@ TEST_SUITE("Real_scans")
     * doctest::description("Checks the case of a medium beam with 2 lap joint."))
     {
         ymlPath = YML_DIR_REAL + "medium_cut.yml";
-        checkResults(ymlPath);
+        checkResults(ymlPath, true);
     }
 
     // ===============================================================================

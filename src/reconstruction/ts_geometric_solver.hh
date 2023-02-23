@@ -184,89 +184,27 @@ namespace tslam::Reconstruction
          * @return false if the solver was not able to produce a mesh
          */
         bool hasMesh(){return (this->m_MeshOutCGAL.number_of_vertices() != 0) ? true : false; };
+        // FIXME: to be fixed, not working properly
         /**
          * @brief Check for manifoldness and watertightness of the mesh.
          * 
-         * @param mesh[in] the mesh to check
          * @return true if the mesh is manifold and watertight
          * @return false if the mesh has vertices, faces and watertight
          */
-        bool checkMeshSanity(Mesh_srf& mesh)
-        {
-            // return mesh.is_valid(false);
-            // check that the mesh is watertight
-            // if(!mesh.is_valid())
-            // {
-            //     Mesh_srf::Vertex_index v0 = mesh.vertices_begin();
-            //     Mesh_srf::Vertex_index v = v0;
-            //     do {
-            //         if (mesh.is_border(v)) {
-            //             std::cout << "Mesh is not manifold" << std::endl;
-            //             return false;
-            //         }
-            //         v++;
-            //     } while (v != v0);
-            //     return true;
-            // }
-            // return false;
-            return true;
-        };
-        /**
-         * @see checkMeshSanity(open3d::geometry::TriangleMesh& mesh)
-         */
         bool checkMeshSanity()
         {
-            // Mesh_srf& mesh = this->m_MeshOutCGAL;
-
-            // // print number of vertices, faces and edges
-            // std::cout << "Mesh has " << mesh.number_of_vertices() << " vertices" << std::endl;
-
-            // int counter = 0;
-            // for(vertex_descriptor v : vertices(mesh))
-            // {
-            //     if(PMP::is_non_manifold_vertex(v, mesh))
-            //     {
-            //     std::cout << "vertex " << v << " is non-manifold" << std::endl;
-            //     ++counter;
-            //     }
-            // }
-            // for (halfedge_descriptor hf : halfedges)
-
-
-            // // check if the mesh is manifold
-            // bool isManifold = true;
-            // for (auto e : mesh.edges())
-            // {
-            //     if (mesh.is_border(e))
-            //     {
-            //         std::cout << "Mesh is not manifold" << std::endl;
-            //         isManifold = false;
-            //         break;
-            //     }
-            // }
-            // for (auto he : mesh.halfedges())
-            // {
-            //     if (mesh.is_border(he))
-            //     {
-            //         std::cout << "Mesh is not manifold" << std::endl;
-            //         isManifold = false;
-            //         break;
-            //     }
-            // }
-            // for (auto v : mesh.vertices())
-            // {
-            //     if (mesh.is_border(v))
-            //     {
-            //         std::cout << "Mesh is not manifold" << std::endl;
-            //         isManifold = false;
-            //         break;
-            //     }
-            // }
-            // return isManifold;
-
-            return true;
-
-            // return isManifold;
+            Mesh_srf& mesh = this->m_MeshOutCGAL;
+            bool isManifold = true;
+            for (auto v : mesh.vertices())
+            {
+                if (mesh.is_border(v))
+                {
+                    std::cout << "Mesh is not manifold" << std::endl;
+                    isManifold = false;
+                    break;
+                }
+            }
+            return isManifold;
         };
 
     public:  __always_inline  ///< clean out memory func
