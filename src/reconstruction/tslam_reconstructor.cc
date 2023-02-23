@@ -103,7 +103,5 @@ namespace tslam::Reconstruction
             throw std::runtime_error("[ERROR] No mesh is reconstructed.");
         
         std::string filepath = dir + "/" + filename + ".xac";
-
-        // TODO: implement the XAC file writer
     }
 }
