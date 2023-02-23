@@ -83,21 +83,21 @@ void checkResults(std::string ymlPath,
 
 TEST_SUITE("Real_scans")
 {
-    // TEST_CASE("Long_length"
-    // * doctest::description("Checks the case of a streight beam with long length."))
-    // {
-    //     ymlPath = YML_DIR_REAL + "long_map.yml";
+    TEST_CASE("Long_length"
+    * doctest::description("Checks the case of a streight beam with long length."))
+    {
+        ymlPath = YML_DIR_REAL + "long_map.yml";
 
-    //     GT_nbrTags              =  256;
-    //     GT_nbrPlnAABBPolygons   =  6;
-    //     GT_nbrSplitSegments     =  24;
-    //     GT_nbrFacePolygons_UP   =  6;
-    //     GT_nbrFacePolygons_DOWN =  6;
-    //     GT_nbrMeshVertices_UP   =  8;
-    //     GT_nbrMeshVertices_DOWN =  8;
+        GT_nbrTags              =  256;
+        GT_nbrPlnAABBPolygons   =  6;
+        GT_nbrSplitSegments     =  24;
+        GT_nbrFacePolygons_UP   =  6;
+        GT_nbrFacePolygons_DOWN =  6;
+        GT_nbrMeshVertices_UP   =  8;
+        GT_nbrMeshVertices_DOWN =  8;
 
-    //     checkResults(ymlPath);
-    // }
+        checkResults(ymlPath, true);
+    }
 
     // TEST_CASE("Medium_length"
     // * doctest::description("Checks the case of a streight beam with medium length."))
