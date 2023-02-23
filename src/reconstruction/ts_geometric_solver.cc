@@ -165,7 +165,7 @@ namespace tslam::Reconstruction
         
         if (drawFinalMesh)
         {
-            std::shared_ptr<open3d::geometry::TriangleMesh> mesh = std::make_shared<open3d::geometry::TriangleMesh>(this->m_MeshOut);
+            std::shared_ptr<open3d::geometry::TriangleMesh> mesh = std::make_shared<open3d::geometry::TriangleMesh>(this->m_MeshOutO3d);
             mesh->PaintUniformColor(Eigen::Vector3d(0.5, 0.5, 0.5));
             vis->AddGeometry(mesh);
         }
@@ -487,23 +487,16 @@ namespace tslam::Reconstruction
 
     void TSGeometricSolver::rCreateMesh()
     {
-        this->rJoinPolygons(this->m_FacePolygons, this->m_MeshOut);
+        this->rJoinPolygons(this->m_FacePolygons, this->m_MeshOutCGAL);
     }
     void TSGeometricSolver::rJoinPolygons(std::vector<TSPolygon>& facePolygons,
-                                          open3d::geometry::TriangleMesh& mesh)
+                                          Mesh_srf& mesh)
     {
-        for (auto& poly : facePolygons)
-        {
-            mesh += poly.cvtPoly2O3dMesh();
-            mesh.MergeCloseVertices(0.001);
-            mesh.RemoveDuplicatedTriangles();
-            mesh.RemoveDuplicatedVertices();
-            mesh.RemoveNonManifoldEdges();
-            mesh.RemoveDegenerateTriangles();
-        }
+        TSMeshHolesFiller::cvtPolygon2CGALMesh(facePolygons, mesh);
 
-        if (mesh.IsWatertight())
-            return;
-        std::cout << "[WARN] mesh is not watertight" << std::endl;
+        TSMeshHolesFiller::cleanOutCGALMesh(mesh);
+        TSMeshHolesFiller::fillHoles(mesh);
+
+        TSMeshHolesFiller::cvtCGAL2O3dMesh(mesh, this->m_MeshOutO3d);
     }
 }

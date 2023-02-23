@@ -1171,28 +1171,6 @@ namespace tslam::Reconstruction
                 }
             }
         };
-        /**
-         * @brief Convert a polygon to an open3d triangle mesh by triangulation
-         * 
-         * @return open3d::geometry::TriangleMesh 
-         */
-        open3d::geometry::TriangleMesh cvtPoly2O3dMesh()
-        {
-            open3d::geometry::TriangleMesh mesh;
-            std::vector<Eigen::Vector3d> polyVertices;
-            std::vector<Eigen::Vector3i> polyTriangles;
-
-            polyVertices = this->getVertices();
-            this->triangulate(polyVertices, polyTriangles);
-
-            mesh.vertices_ = polyVertices;
-            mesh.triangles_ = polyTriangles;
-            mesh.triangle_normals_.resize(polyTriangles.size());
-            for (unsigned i = 0; i < polyTriangles.size(); i++)
-                mesh.triangle_normals_[i] = this->getLinkedPlane().Normal;
-
-            return mesh;
-        };
 
     private:
         /// The polygon's vertices

@@ -51,13 +51,9 @@ void checkResults(std::string ymlPath,
     // check the inner values of the geometric solver
     auto internGeoSolver = reconstructor.getGeometricSolver();
 
-    uint nbrTags = internGeoSolver.getNbrTags();
-    uint nbrPlnAABBPolygons = internGeoSolver.getNbrPlnAABBPolygons();
-    uint nbrSplitSegments = internGeoSolver.getNbrSplitSegments();
-    uint nbrFacePolygons = internGeoSolver.getNbrFacePolygons();
-    uint nbrMeshVertices = internGeoSolver.getNbrMeshVertices();
-
     CHECK(internGeoSolver.checkMeshSanity() == true);
+
+    reconstructor.saveMeshAsPLY(".", "test2_mesh");
 
     // clean everything
     reconstructor.clean();
@@ -74,7 +70,7 @@ TEST_SUITE("Real_scans")
     * doctest::description("Checks the case of a streight beam with long length."))
     {
         ymlPath = YML_DIR_REAL + "long_map.yml";
-        checkResults(ymlPath);
+        checkResults(ymlPath, true);
     }
 
     TEST_CASE("Medium_length"
@@ -90,7 +86,7 @@ TEST_SUITE("Real_scans")
     * doctest::description("Checks the case of a beam with tags only at extremeties."))
     {
         ymlPath = YML_DIR_REAL + "only_end_enhanced_2_TEST.yml";
-        checkResults(ymlPath, true);
+        checkResults(ymlPath);
     }
 
     // // ===============================================================================
@@ -99,7 +95,7 @@ TEST_SUITE("Real_scans")
     * doctest::description("Checks the case of a long beam with 2 lap joint."))
     {
         ymlPath = YML_DIR_REAL + "long_cut.yml";
-        checkResults(ymlPath);
+        checkResults(ymlPath, true);
     }
 
     TEST_CASE("Medium_length_2_lap_joint"

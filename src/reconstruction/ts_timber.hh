@@ -72,7 +72,6 @@ namespace tslam::Reconstruction
             m_RTags.clear();
             m_TSRTagsStripes.clear();
             m_RtagsCtrs.Clear();
-            // m_AABB = open3d::geometry::AxisAlignedBoundingBox();
         };
     
     public: __always_inline  ///< tag funcs

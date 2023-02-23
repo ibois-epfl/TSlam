@@ -1,6 +1,11 @@
 #include "tslam_reconstructor.hh"
-// #include <filesystem>
-#include <open3d/Open3D.h>
+
+#include <CGAL/Surface_mesh.h>
+#include <CGAL/Polygon_mesh_processing/IO/polygon_mesh_io.h>
+#include <CGAL/Surface_mesh/IO/PLY.h>
+
+#include <iostream>
+#include <fstream>
 
 #ifndef __has_include
   static_assert(false, "__has_include not supported");
@@ -93,8 +98,11 @@ namespace tslam::Reconstruction
         if (!this->m_GeometricSolver.hasMesh())
             throw std::runtime_error("[ERROR] No mesh is reconstructed.");
         
-        std::string filepath = dir + "/" + filename;
-        open3d::io::WriteTriangleMesh(filepath, this->m_GeometricSolver.getMeshOut(), true);
+        std::string filepath = dir + "/" + filename + ".ply";
+        std::ofstream out(filepath);
+        out.precision(17);
+        CGAL::IO::write_PLY(out, this->m_GeometricSolver.getMeshOut());
+        out.close();
     }
 
     void TSLAMReconstructor::saveMeshAsXAC(const std::string& dir, const std::string& filename)

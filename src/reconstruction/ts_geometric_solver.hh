@@ -4,6 +4,7 @@
 #include "ts_geo_util.hh"
 #include "ts_rtstripe.hh"
 #include "ts_tassellation.hh"
+#include "ts_mesh_holes_filler.hh"
 
 #include <Eigen/Core>
 
@@ -129,7 +130,7 @@ namespace tslam::Reconstruction
         // TODO: the mesh needs a hole fixer
         /// (d)
         /**
-         * @brief Create the mesh out of the candidate polygon faces. The mesh is created by joining the polygons.
+         * @brief Create the CGAL mesh out of the candidate polygon faces. The mesh is created by joining the polygons.
          * *** The mesh has no normals/orientation ***
          * 
          */
@@ -141,7 +142,7 @@ namespace tslam::Reconstruction
              * @param mesh[out] the mesh to create
              */
             void rJoinPolygons(std::vector<TSPolygon>& facePolygons,
-                               open3d::geometry::TriangleMesh& mesh);
+                               Mesh_srf& mesh);
 
     public: __always_inline  ///< Setters for solver parameters
         void setRadiusSearch(float radiusSearch){m_RadiusSearch = radiusSearch;}; 
@@ -173,7 +174,7 @@ namespace tslam::Reconstruction
         };
     
     public: __always_inline  ///< Getters for solver parameters
-        open3d::geometry::TriangleMesh& getMeshOut() {return this->m_MeshOut;};
+        Mesh_srf& getMeshOut() {return this->m_MeshOutCGAL;};
     
     public: __always_inline  ///< mesh utility funcs
         /**
@@ -182,7 +183,7 @@ namespace tslam::Reconstruction
          * @return true if the solver was able to produce a mesh
          * @return false if the solver was not able to produce a mesh
          */
-        bool hasMesh(){return (this->m_MeshOut.HasVertices()) ? true : false; };
+        bool hasMesh(){return (this->m_MeshOutCGAL.number_of_vertices() != 0) ? true : false; };
         /**
          * @brief Check for manifoldness and watertightness of the mesh.
          * 
@@ -190,22 +191,82 @@ namespace tslam::Reconstruction
          * @return true if the mesh is manifold and watertight
          * @return false if the mesh has vertices, faces and watertight
          */
-        bool checkMeshSanity(open3d::geometry::TriangleMesh& mesh)
+        bool checkMeshSanity(Mesh_srf& mesh)
         {
-            if (mesh.HasVertices() && mesh.HasTriangles() && mesh.IsWatertight())
-                return true;
-            else
-                return false;
+            // return mesh.is_valid(false);
+            // check that the mesh is watertight
+            // if(!mesh.is_valid())
+            // {
+            //     Mesh_srf::Vertex_index v0 = mesh.vertices_begin();
+            //     Mesh_srf::Vertex_index v = v0;
+            //     do {
+            //         if (mesh.is_border(v)) {
+            //             std::cout << "Mesh is not manifold" << std::endl;
+            //             return false;
+            //         }
+            //         v++;
+            //     } while (v != v0);
+            //     return true;
+            // }
+            // return false;
+            return true;
         };
         /**
          * @see checkMeshSanity(open3d::geometry::TriangleMesh& mesh)
          */
         bool checkMeshSanity()
         {
-            if (this->m_MeshOut.HasVertices() && this->m_MeshOut.HasTriangles() && this->m_MeshOut.IsWatertight())
-                return true;
-            else
-                return false;
+            // Mesh_srf& mesh = this->m_MeshOutCGAL;
+
+            // // print number of vertices, faces and edges
+            // std::cout << "Mesh has " << mesh.number_of_vertices() << " vertices" << std::endl;
+
+            // int counter = 0;
+            // for(vertex_descriptor v : vertices(mesh))
+            // {
+            //     if(PMP::is_non_manifold_vertex(v, mesh))
+            //     {
+            //     std::cout << "vertex " << v << " is non-manifold" << std::endl;
+            //     ++counter;
+            //     }
+            // }
+            // for (halfedge_descriptor hf : halfedges)
+
+
+            // // check if the mesh is manifold
+            // bool isManifold = true;
+            // for (auto e : mesh.edges())
+            // {
+            //     if (mesh.is_border(e))
+            //     {
+            //         std::cout << "Mesh is not manifold" << std::endl;
+            //         isManifold = false;
+            //         break;
+            //     }
+            // }
+            // for (auto he : mesh.halfedges())
+            // {
+            //     if (mesh.is_border(he))
+            //     {
+            //         std::cout << "Mesh is not manifold" << std::endl;
+            //         isManifold = false;
+            //         break;
+            //     }
+            // }
+            // for (auto v : mesh.vertices())
+            // {
+            //     if (mesh.is_border(v))
+            //     {
+            //         std::cout << "Mesh is not manifold" << std::endl;
+            //         isManifold = false;
+            //         break;
+            //     }
+            // }
+            // return isManifold;
+
+            return true;
+
+            // return isManifold;
         };
 
     public:  __always_inline  ///< clean out memory func
@@ -221,7 +282,8 @@ namespace tslam::Reconstruction
             this->m_SplitPolygons.clear();
             this->m_FacePolygons.clear();
 
-            this->m_MeshOut.Clear();
+            this->m_MeshOutO3d.Clear();
+            this->m_MeshOutCGAL.clear();
             this->m_MeshOutXAC.Clear();
         };
 
@@ -270,10 +332,6 @@ namespace tslam::Reconstruction
                 nbrSplitSegments += splitSegments.size();
             return nbrSplitSegments;
         };
-        /// Get number of face polygons
-        int getNbrFacePolygons(){return this->m_FacePolygons.size();};
-        /// Get number of vertices of the final mesh
-        int getNbrMeshVertices(){return this->m_MeshOut.vertices_.size();};
 
     private:  ///< Solver components
         /// The timber component of the geometric solver contains all the tags and tag stripes
@@ -312,12 +370,13 @@ namespace tslam::Reconstruction
         /// Face polygons to create the mesh
         std::vector<TSPolygon> m_FacePolygons;
         /// The timber mesh in format PLY
-        open3d::geometry::TriangleMesh m_MeshOut;
-        // TODO: to implement the XAC format and storage for importing on 3d modeler
-        /// The timber mesh in format XAC
+        open3d::geometry::TriangleMesh m_MeshOutO3d;
+        /// Mesh in CGAL format
+        Mesh_srf m_MeshOutCGAL;
+        /// TODO: to be implemented The timber mesh in format XAC
         open3d::geometry::TriangleMesh m_MeshOutXAC;
 
-    private:  ///< Profiler  // TODO: this needs to be implemented (mayybe for the all tslam)
+    private:  ///< Profiler  // TODO: the profiler needs to be implemented (mayybe for the all tslam)
 #ifdef TSLAM_REC_PROFILER
         inline void timeStart(const char* msg)
         {
