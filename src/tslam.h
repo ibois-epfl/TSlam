@@ -6,7 +6,6 @@
 #include "tslamtypes.h"
 #include "imageparams.h"
 #include "map.h"
-#include "reconstruction/tslam_reconstructor.hh"
 
 namespace tslam{
     class TSLAM_API TSlam

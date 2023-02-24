@@ -7,6 +7,7 @@ project(tslam_reconstruct)
 
 set(CMAKE_CXX_STANDARD 17)
 
+
 #---------------------------------------------------------------------------------------------------------
 # Options
 #---------------------------------------------------------------------------------------------------------
@@ -15,6 +16,7 @@ set(CMAKE_CXX_STANDARD 17)
 option(ENABLE_O3D_VISUAL_DEBUG  "This option will find locally and link open3d to enable visual debugging"   OFF)
 option(ENABLE_REC_PROFILER      "Enable profiling for the TSlam reconstruction"                              OFF)
 option(ENABLE_TESTING           "Enable testing for the TSlam reconstruction"                                ON)
+
 
 #---------------------------------------------------------------------------------------------------------
 # library for tslam reconstruction
@@ -43,6 +45,7 @@ target_include_directories(tslamrec PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cilantro/
 if(ENABLE_TESTING)
     add_subdirectory(tests)
 endif()
+
 
 #---------------------------------------------------------------------------------------------------------
 # Pre-processor definitions
