@@ -1,6 +1,8 @@
 #include "ts_geometric_solver.hh"
 
-#include<open3d/Open3D.h>
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
+    #include<open3d/Open3D.h>
+#endif
 #include <stdexcept>
 #include <algorithm>
 #include <math.h>
@@ -26,6 +28,7 @@ namespace tslam::Reconstruction
         this->rCreatePolysurface();
         this->rCreateMesh();
 
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
         this->visualize(this->m_ShowVisualizer,
                         this->m_DrawTags,
                         this->m_DrawTagNormals,
@@ -34,8 +37,10 @@ namespace tslam::Reconstruction
                         this->m_DrawSplittingSegments,
                         this->m_DrawSelectedFace,
                         this->m_DrawFinalMesh);
+#endif
     }
 
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
     void TSGeometricSolver::visualize(bool showVisualizer,
                                       bool drawTags,
                                       bool drawTagNormals,
@@ -194,6 +199,7 @@ namespace tslam::Reconstruction
         vis->Close();
         vis->DestroyVisualizerWindow();
     }
+#endif
 
     void TSGeometricSolver::rDetectFacesStripes()
     {
@@ -518,6 +524,8 @@ namespace tslam::Reconstruction
         TSMeshHolesFiller::cleanOutCGALMesh(mesh);
         // TSMeshHolesFiller::fillHoles(mesh);  // FIXME: to be fixed
 
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
         TSMeshHolesFiller::cvtCGAL2O3dMesh(mesh, this->m_MeshOutO3d);
+#endif
     }
 }

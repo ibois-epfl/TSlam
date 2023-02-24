@@ -2,7 +2,9 @@
 
 #include "ts_geo_util.hh"
 
-#include <open3d/Open3D.h>
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
+    #include <open3d/Open3D.h>
+#endif
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Surface_mesh.h>
@@ -152,6 +154,7 @@ namespace tslam::Reconstruction
 
             return true;
         };
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
         /**
          * @brief convert open3d mesh to CGAL mesh
          * 
@@ -259,5 +262,6 @@ namespace tslam::Reconstruction
 
             return true;
         };
+#endif
     };
 }

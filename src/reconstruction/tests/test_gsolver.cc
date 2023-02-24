@@ -35,6 +35,7 @@ void checkResults(std::string ymlPath,
     reconstructor.loadMap(ymlPath);
 
     // set params for visualizer
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
     reconstructor.getGeometricSolver().setShowVisualizer(showVisualizer);  ///< Enable/disable visualizer
     reconstructor.getGeometricSolver().setSolverVisualizerParams(/*drawTags*/               true,
                                                                  /*drawTagNormals*/         false,
@@ -44,6 +45,7 @@ void checkResults(std::string ymlPath,
                                                                  /*drawSelectedFace*/       true,
                                                                  /*drawFinalMesh*/          true
     );
+#endif
 
     // reconstruct!
     reconstructor.run();
@@ -53,7 +55,8 @@ void checkResults(std::string ymlPath,
 
     CHECK(internGeoSolver.checkMeshSanity() == true);
 
-    reconstructor.saveMeshAsPLY(".", "test2_mesh");
+    // (optional) for further inspections, saave mesh locally
+    // reconstructor.saveMeshAsPLY(".", "test2_mesh");
 
     // clean everything
     reconstructor.clean();

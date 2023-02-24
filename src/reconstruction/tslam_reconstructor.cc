@@ -104,12 +104,4 @@ namespace tslam::Reconstruction
         CGAL::IO::write_PLY(out, this->m_GeometricSolver.getMeshOut());
         out.close();
     }
-
-    void TSLAMReconstructor::saveMeshAsXAC(const std::string& dir, const std::string& filename)
-    {
-        if (!this->m_GeometricSolver.hasMesh())
-            throw std::runtime_error("[ERROR] No mesh is reconstructed.");
-        
-        std::string filepath = dir + "/" + filename + ".xac";
-    }
 }

@@ -1,3 +1,6 @@
+# NOTE: This cmake file is reserved for local debugging of tslam reconstruction plugin.
+# The integration in the main TSlam is done by simply adding hh and cc.
+
 cmake_minimum_required(VERSION 3.14)
 
 project(tslam_reconstruct)
@@ -9,11 +12,9 @@ set(CMAKE_CXX_STANDARD 17)
 #---------------------------------------------------------------------------------------------------------
 
 # TODO: "BUILD_TSLAMREC_API" might not be necessary
-option(BUILD_TSLAMREC_API       "Build the TSlam reconstruction API, *no profiler or testing* "             OFF)
-
-option(ENABLE_O3D_VISUAL_DEBUG  "This option will find locally and link open3d to enablee visual debugging"  ON)
-option(ENABLE_REC_PROFILER      "Enable profiling for the TSlam reconstruction"                             OFF)
-option(ENABLE_TESTING           "Enable testing for the TSlam reconstruction"                               OFF)
+option(ENABLE_O3D_VISUAL_DEBUG  "This option will find locally and link open3d to enable visual debugging"   OFF)
+option(ENABLE_REC_PROFILER      "Enable profiling for the TSlam reconstruction"                              OFF)
+option(ENABLE_TESTING           "Enable testing for the TSlam reconstruction"                                ON)
 
 #---------------------------------------------------------------------------------------------------------
 # library for tslam reconstruction
@@ -40,7 +41,6 @@ target_include_directories(tslamrec PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cilantro/
 #---------------------------------------------------------------------------------------------------------
 
 if(ENABLE_TESTING)
-    set(ENABLE_O3D_VISUAL_DEBUG ON)
     add_subdirectory(tests)
 endif()
 
@@ -48,15 +48,10 @@ endif()
 # Pre-processor definitions
 #---------------------------------------------------------------------------------------------------------
 
-if (BUILD_TSLAMREC_API)
-    set(ENABLE_O3D_VISUAL_DEBUG OFF)
-    set(ENABLE_REC_PROFILER OFF)
-    set(ENABLE_TESTING OFF)
-endif()
-
 if(ENABLE_REC_PROFILER)
     target_compile_definitions(tslamrec PUBLIC TSLAM_REC_PROFILER=0)
 endif()
 
-if(ENABLE_O3D_VISUAL_DEBUG)
+if(ENABLE_O3D_VISUAL_DEBUG==ON)
     target_compile_definitions(tslamrec PUBLIC TSLAM_REC_O3D_VISUAL_DEBUG=0)
+endif()

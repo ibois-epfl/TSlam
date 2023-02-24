@@ -220,12 +220,14 @@ namespace tslam::Reconstruction
             this->m_SplitPolygons.clear();
             this->m_FacePolygons.clear();
 
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
             this->m_MeshOutO3d.Clear();
+#endif
             this->m_MeshOutCGAL.clear();
-            this->m_MeshOutXAC.Clear();
         };
 
     private:  ///< Visualizer
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
         /// visualize the results of the timber reconstruction
         void visualize(bool showVisualizer,
                        bool drawTags,
@@ -235,6 +237,7 @@ namespace tslam::Reconstruction
                        bool drawSplittingSegments,
                        bool drawSelectedFace,
                        bool drawFinalMesh);
+#endif
         /// Show the visulier
         bool m_ShowVisualizer;
         /// Show the tags as wireframe
@@ -307,12 +310,12 @@ namespace tslam::Reconstruction
         std::vector<TSPolygon> m_SplitPolygons;
         /// Face polygons to create the mesh
         std::vector<TSPolygon> m_FacePolygons;
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
         /// The timber mesh in format PLY
         open3d::geometry::TriangleMesh m_MeshOutO3d;
+#endif
         /// Mesh in CGAL format
         Mesh_srf m_MeshOutCGAL;
-        /// TODO: to be implemented The timber mesh in format XAC
-        open3d::geometry::TriangleMesh m_MeshOutXAC;
 
     private:  ///< Profiler  // TODO: the profiler needs to be implemented (mayybe for the all tslam)
 #ifdef TSLAM_REC_PROFILER

@@ -76,13 +76,6 @@ namespace tslam::Reconstruction
          * @param filename name of the mesh file
          */
         void saveMeshAsPLY(const std::string& dir, const std::string& filename);
-        /**
-         * @brief Save the reconstructed mesh as a XAC file.
-         * 
-         * @see saveMeshAsPLY
-         */
-        // TODO: implement the XAC file writer
-        void saveMeshAsXAC(const std::string& dir, const std::string& filename);
     
     public:  ///< engine getter
         /**
