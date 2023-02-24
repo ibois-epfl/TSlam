@@ -9,9 +9,11 @@ set(CMAKE_CXX_STANDARD 17)
 #---------------------------------------------------------------------------------------------------------
 
 # TODO: "BUILD_TSLAMREC_API" might not be necessary
-option(BUILD_TSLAMREC_API   "Build the TSlam reconstruction API, *no profiler or testing* "             ON)
-option(ENABLE_REC_PROFILER  "Enable profiling for the TSlam reconstruction"                             OFF)
-option(ENABLE_TESTING       "Enable testing for the TSlam reconstruction"                               OFF)
+option(BUILD_TSLAMREC_API       "Build the TSlam reconstruction API, *no profiler or testing* "             OFF)
+
+option(ENABLE_O3D_VISUAL_DEBUG  "This option will find locally and link open3d to enablee visual debugging"  ON)
+option(ENABLE_REC_PROFILER      "Enable profiling for the TSlam reconstruction"                             OFF)
+option(ENABLE_TESTING           "Enable testing for the TSlam reconstruction"                               OFF)
 
 #---------------------------------------------------------------------------------------------------------
 # library for tslam reconstruction
@@ -38,6 +40,7 @@ target_include_directories(tslamrec PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cilantro/
 #---------------------------------------------------------------------------------------------------------
 
 if(ENABLE_TESTING)
+    set(ENABLE_O3D_VISUAL_DEBUG ON)
     add_subdirectory(tests)
 endif()
 
@@ -46,6 +49,7 @@ endif()
 #---------------------------------------------------------------------------------------------------------
 
 if (BUILD_TSLAMREC_API)
+    set(ENABLE_O3D_VISUAL_DEBUG OFF)
     set(ENABLE_REC_PROFILER OFF)
     set(ENABLE_TESTING OFF)
 endif()
@@ -53,3 +57,6 @@ endif()
 if(ENABLE_REC_PROFILER)
     target_compile_definitions(tslamrec PUBLIC TSLAM_REC_PROFILER=0)
 endif()
+
+if(ENABLE_O3D_VISUAL_DEBUG)
+    target_compile_definitions(tslamrec PUBLIC TSLAM_REC_O3D_VISUAL_DEBUG=0)
