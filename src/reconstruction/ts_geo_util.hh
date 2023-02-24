@@ -4,6 +4,8 @@
 #include "ts_compute.hh"
 
 #include <Eigen/Core>
+#include <Eigen/Geometry>
+
 #include <tuple>
 #include <vector>
 #include <iostream>
@@ -11,8 +13,6 @@
 #include <iterator>
 #include <algorithm> 
 #include <math.h>
-
-#include <open3d/Open3D.h>
 
 namespace tslam::Reconstruction
 {
@@ -917,7 +917,7 @@ namespace tslam::Reconstruction
         Eigen::Matrix3d rotateByAxisX(double angle)
         {
             Eigen::Matrix3d rotMat;
-            rotMat = Eigen::AngleAxisd(angle, Eigen::Vector3d::UnitX());
+            rotMat = Eigen::AngleAxis(angle, Eigen::Vector3d::UnitX());
             this->transform(rotMat);
             return rotMat;
         };
@@ -930,7 +930,7 @@ namespace tslam::Reconstruction
         Eigen::Matrix3d rotateByAxisY(double angle)
         {
             Eigen::Matrix3d rotMat;
-            rotMat = Eigen::AngleAxisd(angle, Eigen::Vector3d::UnitY());
+            rotMat = Eigen::AngleAxis(angle, Eigen::Vector3d::UnitY());
             this->transform(rotMat);
             return rotMat;
         };
@@ -943,7 +943,7 @@ namespace tslam::Reconstruction
         Eigen::Matrix3d rotateByAxisZ(double angle)
         {
             Eigen::Matrix3d rotMat;
-            rotMat = Eigen::AngleAxisd(angle, Eigen::Vector3d::UnitZ());
+            rotMat = Eigen::AngleAxis(angle, Eigen::Vector3d::UnitZ());
             this->transform(rotMat);
             return rotMat;
         };

@@ -28,7 +28,7 @@ namespace tslam::Reconstruction
             m_CreaseAngleThreshold = 5.0;
             m_MinClusterSize       = 1;
 
-            m_AABBScaleFactor      = 3.0;
+            m_AABBScaleFactor      = 1.1;
 
             m_MaxPlnDist2Merge     = 1.0;
             m_MaxPlnAngle2Merge    = 5.0;

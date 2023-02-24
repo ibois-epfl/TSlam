@@ -90,7 +90,18 @@ namespace tslam::Reconstruction
         }
         
         if (drawAabb)
+        {
             std::shared_ptr<open3d::geometry::LineSet> aabbLineset = std::make_shared<open3d::geometry::LineSet>();
+
+            Eigen::Vector3d p1 = this->m_Timber.getAABBMin();
+            Eigen::Vector3d p2 = this->m_Timber.getAABBMax();
+
+            aabbLineset->points_.push_back(p1);
+            aabbLineset->points_.push_back(p2);
+            aabbLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+
+            vis->AddGeometry(aabbLineset);
+        }
 
         if (drawIntersectedPoly)
         {
@@ -286,10 +297,11 @@ namespace tslam::Reconstruction
             const TSPlane& meanStripePlane = this->m_Timber.getTSRTagsStripes()[i]->getMeanPlane();
             
             TSPlane::plane2AABBSegmentIntersect(meanStripePlane,
-                                                this->m_Timber.getAABB().min_bound_,
-                                                this->m_Timber.getAABB().max_bound_,
+                                                this->m_Timber.getAABBMin(),
+                                                this->m_Timber.getAABBMax(),
                                                 outPtsPtr,
                                                 outPtsCount);
+            
             // b. save the result into a polygon
             planeIntersections->reserve(outPtsCount);
             planeIntersections->clear();

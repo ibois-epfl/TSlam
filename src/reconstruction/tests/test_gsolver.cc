@@ -70,7 +70,7 @@ TEST_SUITE("Real_scans")
     * doctest::description("Checks the case of a streight beam with long length."))
     {
         ymlPath = YML_DIR_REAL + "long_map.yml";
-        checkResults(ymlPath);
+        checkResults(ymlPath, true);
     }
 
     TEST_CASE("Medium_length"
@@ -111,7 +111,7 @@ TEST_SUITE("Real_scans")
     * doctest::description("Checks the case of a romboid object with multiple details."))
     {
         ymlPath = YML_DIR_REAL + "romboid.yml";
-        checkResults(ymlPath);
+        checkResults(ymlPath, true);
     }
 }
 

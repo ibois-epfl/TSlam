@@ -3,10 +3,10 @@
 #include "ts_rtag.hh"
 #include "ts_rtstripe.hh"
 #include "ts_geo_util.hh"
+#include "ts_AABB.hh"
 
 #include <open3d/Open3D.h>
 #include <Eigen/Core>
-
 
 namespace tslam::Reconstruction
 {
@@ -18,7 +18,10 @@ namespace tslam::Reconstruction
     class TSTimber : public TSCompute
     {
     public:
-        TSTimber() {m_RTags = {}; };
+        TSTimber()
+        {
+            m_RTags = {};
+        };
         TSTimber(std::vector<TSRTag> planeTags);
         ~TSTimber() = default;
 
@@ -81,8 +84,9 @@ namespace tslam::Reconstruction
         int getNbrTags() {return m_RtagsCtrs.points_.size(); };
         /// Get the tags organized in stripes.
         std::vector<std::shared_ptr<TSRTStripe>>& getTSRTagsStripes() {return m_TSRTagsStripes; };
-        /// Get the axis aligned box of the tags attached to the timber element.
-        open3d::geometry::AxisAlignedBoundingBox& getAABB() {return m_AABB; };
+        /// Get the two corners defining the axis aligned bounding box of the tags.
+        Eigen::Vector3d& getAABBMin() {return m_AABB.getMin(); };
+        Eigen::Vector3d& getAABBMax() {return m_AABB.getMax(); };
         /// Get the point cloud of the tags' centers.
         open3d::geometry::PointCloud& getTagsCtrs() {return m_RtagsCtrs; };
         /// Get if the object has tags attached to it.
@@ -102,7 +106,8 @@ namespace tslam::Reconstruction
         std::vector<std::shared_ptr<TSRTStripe>> m_TSRTagsStripes;
         /// m_RtagsCtrs the point cloud constituted by the tags' centers.
         open3d::geometry::PointCloud m_RtagsCtrs;
-        ///  m_AABB the axis aligned bounding box of the tags.
-        open3d::geometry::AxisAlignedBoundingBox m_AABB;
+        // ///  m_AABB the axis aligned bounding box of the tags.
+        TSAABB m_AABB;
+        
     };
 }

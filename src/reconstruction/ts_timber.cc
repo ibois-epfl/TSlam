@@ -11,7 +11,8 @@ namespace tslam::Reconstruction
 
     void TSTimber::scaleAABB(double scale)
     {
-        this->m_AABB.Scale(scale, this->m_AABB.GetCenter());
+        // this->m_AABB.Scale(scale, this->m_AABB.GetCenter());  // TODO: erase me
+        this->m_AABB.scale(scale);
     }
 
     void TSTimber::removeDuplicateTags(double distancethreshold)
@@ -55,13 +56,21 @@ namespace tslam::Reconstruction
     }
     void TSTimber::computeAABB()
     {
-        open3d::geometry::PointCloud pntCld;
+        // // TODO: to erase for cgal version
+        // open3d::geometry::PointCloud pntCld;
+        // for (auto& p : this->getPlaneTags())
+        // {
+        //     pntCld.points_.push_back(p.getCenter());
+        // }
+        // this->m_AABB = pntCld.GetAxisAlignedBoundingBox();
+
+        std::vector<Eigen::Vector3d> pts;
         for (auto& p : this->getPlaneTags())
-        {
-            pntCld.points_.push_back(p.getCenter());
-        }
-        this->m_AABB = pntCld.GetAxisAlignedBoundingBox();
+            pts.push_back(p.getCenter());
+
+        this->m_AABB = TSAABB(pts);
     }
+    
     void TSTimber::computeTagsCtrs()
     {
         open3d::geometry::PointCloud pntCld;
