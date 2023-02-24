@@ -11,7 +11,6 @@ namespace tslam::Reconstruction
 
     void TSTimber::scaleAABB(double scale)
     {
-        // this->m_AABB.Scale(scale, this->m_AABB.GetCenter());  // TODO: erase me
         this->m_AABB.scale(scale);
     }
 
@@ -56,14 +55,6 @@ namespace tslam::Reconstruction
     }
     void TSTimber::computeAABB()
     {
-        // // TODO: to erase for cgal version
-        // open3d::geometry::PointCloud pntCld;
-        // for (auto& p : this->getPlaneTags())
-        // {
-        //     pntCld.points_.push_back(p.getCenter());
-        // }
-        // this->m_AABB = pntCld.GetAxisAlignedBoundingBox();
-
         std::vector<Eigen::Vector3d> pts;
         for (auto& p : this->getPlaneTags())
             pts.push_back(p.getCenter());

@@ -3,7 +3,6 @@
 #include "ts_compute.hh"
 #include "ts_geo_util.hh"
 
-#include <open3d/Open3D.h>
 #include <Eigen/Core>
 
 namespace tslam::Reconstruction
@@ -58,7 +57,6 @@ namespace tslam::Reconstruction
         Eigen::Vector3d& getCornerC() {return m_Corners[2]; };
         Eigen::Vector3d& getCornerD() {return m_Corners[3]; };
         uint& getID() {return m_Id; };
-        open3d::geometry::TriangleMesh& getOpen3dMesh() {return m_PlaneMesh; };
         Eigen::Vector3d& getCenter() {return m_Center; };
         TSPlane& getPlane() {return m_Plane; };
         Eigen::Vector3d& getNormal() {m_Normal = m_Plane.Normal; return m_Normal; };
@@ -115,7 +113,6 @@ namespace tslam::Reconstruction
         uint m_Id;
         std::vector<Eigen::Vector3d> m_Corners;
         TSPlane m_Plane;
-        open3d::geometry::TriangleMesh m_PlaneMesh;
         /// Normal vector of the plane linked to the tag
         Eigen::Vector3d m_Normal;
         /// Axis X,Y of the plane linked to the tag

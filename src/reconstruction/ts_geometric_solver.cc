@@ -68,7 +68,16 @@ namespace tslam::Reconstruction
                 auto& stripe = this->m_Timber.getTSRTagsStripes()[j];
                 for (auto& tag : *stripe)
                 {
-                    open3d::geometry::TriangleMesh tagBase = tag.getOpen3dMesh();
+                    open3d::geometry::TriangleMesh tagBase;
+                    tagBase.vertices_.push_back(tag.getCornerA());
+                    tagBase.vertices_.push_back(tag.getCornerB());
+                    tagBase.vertices_.push_back(tag.getCornerC());
+                    tagBase.triangles_.push_back(Eigen::Vector3i(0, 1, 2));
+                    tagBase.vertices_.push_back(tag.getCornerC());
+                    tagBase.vertices_.push_back(tag.getCornerD());
+                    tagBase.vertices_.push_back(tag.getCornerA());
+                    tagBase.triangles_.push_back(Eigen::Vector3i(3, 4, 5));
+
                     auto planeTagsLineset1 = open3d::geometry::LineSet::CreateFromTriangleMesh(tagBase);
                     planeTagsLineset1->PaintUniformColor(clr);
 
