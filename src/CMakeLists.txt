@@ -17,9 +17,8 @@ file(GLOB tslam_utils_hdr "utils/*.h" )
 file(GLOB tslam_utils_src "utils/*.cpp" )
 file(GLOB tslam_basictypes_hdr "basictypes/*.h" )
 file(GLOB tslam_basictypes_src "basictypes/*.cpp" )
-# FIXME: for tslam reconstruction integration
-# file(GLOB tslam_reconstruction_hdr "reconstruction/*.h" )
-# file(GLOB tslam_reconstruction_src "reconstruction/*.cc" )
+file(GLOB tslam_reconstruction_hdr "reconstruction/*.hh" )
+file(GLOB tslam_reconstruction_src "reconstruction/*.cc" )
 
 add_library(${PROJECT_NAME}
             ${tslam_hdrs_base}
@@ -34,8 +33,8 @@ add_library(${PROJECT_NAME}
             ${tslam_utils_src}
             ${tslam_opt_src}
             ${tslam_opt_hdr}
-            # ${tslam_reconstruction_hdr} # FIXME: for tslam reconstruction integration
-            # ${tslam_reconstruction_src} # FIXME: for tslam reconstruction integration
+            ${tslam_reconstruction_hdr}
+            ${tslam_reconstruction_src}
             )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
