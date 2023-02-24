@@ -77,7 +77,7 @@ TEST_SUITE("Real_scans")
     * doctest::description("Checks the case of a streight beam with medium length."))
     {
         ymlPath = YML_DIR_REAL + "mid_map.yml";
-        checkResults(ymlPath);
+        checkResults(ymlPath, true);
     }
 
     // ===============================================================================
@@ -86,7 +86,7 @@ TEST_SUITE("Real_scans")
     * doctest::description("Checks the case of a beam with tags only at extremeties."))
     {
         ymlPath = YML_DIR_REAL + "only_end_enhanced_2_TEST.yml";
-        checkResults(ymlPath);
+        checkResults(ymlPath, true);
     }
 
     // // ===============================================================================

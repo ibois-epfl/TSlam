@@ -5,7 +5,6 @@
 #include "ts_geo_util.hh"
 #include "ts_AABB.hh"
 
-#include <open3d/Open3D.h>
 #include <Eigen/Core>
 
 namespace tslam::Reconstruction
@@ -34,7 +33,6 @@ namespace tslam::Reconstruction
          * tags as duplicate.
          */
         void removeDuplicateTags(double distancethreshold = 0.5);
-
         /**
          * @brief Set the timber object's tags from the yaml file containing the planes coordinates
          * 
@@ -74,21 +72,21 @@ namespace tslam::Reconstruction
         {
             m_RTags.clear();
             m_TSRTagsStripes.clear();
-            m_RtagsCtrs.Clear();
+            m_RtagsCtrs.clear();
         };
     
     public: __always_inline  ///< tag funcs
         /// Get all the tags objects attached to the timber element.
         std::vector<TSRTag> getPlaneTags() {return m_RTags; };
         /// Get number of tags after removing duplicates.
-        int getNbrTags() {return m_RtagsCtrs.points_.size(); };
+        int getNbrTags() {return m_RtagsCtrs.size(); };
         /// Get the tags organized in stripes.
         std::vector<std::shared_ptr<TSRTStripe>>& getTSRTagsStripes() {return m_TSRTagsStripes; };
         /// Get the two corners defining the axis aligned bounding box of the tags.
         Eigen::Vector3d& getAABBMin() {return m_AABB.getMin(); };
         Eigen::Vector3d& getAABBMax() {return m_AABB.getMax(); };
         /// Get the point cloud of the tags' centers.
-        open3d::geometry::PointCloud& getTagsCtrs() {return m_RtagsCtrs; };
+        std::vector<Eigen::Vector3d>& getTagsCtrs() {return m_RtagsCtrs; };
         /// Get if the object has tags attached to it.
         bool hasTags() {return (m_RTags.size() > 0) ? true : false; };
 
@@ -105,7 +103,7 @@ namespace tslam::Reconstruction
         /// m_TSRTagsStripes the tags organized in stripes.
         std::vector<std::shared_ptr<TSRTStripe>> m_TSRTagsStripes;
         /// m_RtagsCtrs the point cloud constituted by the tags' centers.
-        open3d::geometry::PointCloud m_RtagsCtrs;
+        std::vector<Eigen::Vector3d> m_RtagsCtrs;
         // ///  m_AABB the axis aligned bounding box of the tags.
         TSAABB m_AABB;
         
