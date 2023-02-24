@@ -92,7 +92,7 @@ When the window pop-out, you can press `f` to enable the 3D tracking and `s` to 
 
 > [!] Vocabulary is not required, but it will not be able to relocalization with keypoints if not specified.
 
-### Mapping
+### Reconstruction
 `>>>>>>>>>>>>>>>>>> here we need to add <<<<<<<<<<<<<<<<<<<<`
 Maybe here we need to build an executable to build the model
 ### Tracking
