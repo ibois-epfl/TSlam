@@ -326,6 +326,8 @@ Current TODOs:
 
 - [ ] (medium) TSLAM: adjust visualizer for overlapping mesh
 - [ ] (mdeium) TSLAM: establish scientific protocol for evaluation with optitrack
+- [ ] (medium) in reconstruction: the check mesh sanity is not wrokgin properly
+- [ ] (medium) in reconstruction: we need to implement a hole filler
 
 - [ ] (medium) set up CI/CD
 - [ ] (medium) for reconstruction sub-program: get rid of open3d and integrate a mesh I/O pipeline 
