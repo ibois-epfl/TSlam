@@ -47,6 +47,7 @@ graph TD;
 ```
 
 ## State-of-the-art on evaluating SLAM
+SLAM are often evaluated on pre-existing data sets such as the KITTI dataset. Since we use specific tags (RTags) and pipeline for the TSlam to be used we need to define our own evaluation pipeline.
 
 ---
 ## Experimental Protocol
@@ -62,7 +63,7 @@ Here are the different evaluations designed for the TSlam package. They are all 
 >  - *Data processing*: the data processing methodology.
 >  - *Evaluation output*: the final outcomes of the evaluation.
 
-- **(A) Mapping accuracy**:
+- **(A) Mapping accuracy**: undefined
   - *Evaluation set-up*:
   - *Test population*:
   - *Fix params*:
@@ -124,18 +125,35 @@ Here are the different evaluations designed for the TSlam package. They are all 
     - [ ] plot with 8 (4 TSlam + 4 corresponding GT) graph for visualizing rotation error (axisX: rotation error scale, axisY: frames, color1: TSlam value mean, color2: GT value mean)
     - [ ] (annexe) graphs showing the translation and rotation error per each timber
 
-- **(D) Influence of tags on tracking**: how the number and location of tags on the timber piece influence TSlam tracking's stability and accuracy.
-  - *Evaluation set-up*: 
-  - *Test population*:
+- **(D) Influence of tags on tracking**: how the number and location of tags on the timber piece influence TSlam tracking's stability and accuracy. The objective is to estimate the correct distribution of tags to have a stable tracking. The layout of the tags is not evaluated but it will be deducted as heuristic once conclusions are drawn from this evaluation package.
+  - *Evaluation set-up*: the experimental set-up is composed by a camera fix in position and rotation. A timber plate is moved in position and changed in rotation and present tags attached to its face.
+  ![img_tag_setup](img/evaluation_tags.png)
+  - *Test population*: multiple sets depending on the varying parameters.
   - *Fix params*:
+    - `capture length`: fix number of frames.
+    - `camera model`: the camera model is [RunCam24K](https://shop.runcam.com/runcam2-4k-edition/).
+    - `stationary camera`: the camera is in fix position.
+    - `timber shape`: the shape is fixed to a single planar face.
+    - `timber dimension`: the dimension of the timber piece will fit the camera view from the farest distance (e.g. ~50cm x 70cm).
+    - `tags strips`: we will use tags in strips because this is the obvious choice operationally and pratically to stick these markers to any piece (i.e. no singular tags will be placed).
   - *Varying params*:
-  - *Uncontrolled params*:
-  - *Raw data output*:
-  - *Data processing*:
-  - *Evaluation output*
+    <!-- - `number of tags`: -->
+    - `view inclination`: the inclination of the timber piece can range from 0 deg to 90 deg with steps of 10 deg.
+    - `view distance`: the view distance can range from ~50cm to ~5cm with steps of 10cm.
+    <!-- - `density of tags (ratio tags/surface)`:  -->
+    - `distribution of tags (spatial pattern)`: the number of stripes and the distance between them can vary. See figure 2 as an example.
+    
+    <br>
+    
+    | Test1    |     Test2     | Test3 |
+    |----------|:-------------:|------:|
+    | ![img1](./img/eval_distr_1.png) | ![img2](./img/eval_distr_2.png) | ![img3](./img/eval_distr_3.png) |
 
-
-> output density of markers per 10cm2
+  - *Uncontrolled params*: None
+  - *Raw data output*: binary data per take if the TSlam outputs a pose or not.
+  - *Data processing*: None.
+  - *Evaluation output*:
+    - [ ] a 3D scatter plot which represent the dots as the successfull detection depending on the varying parameters (aixsZ: angles, axisY: distance from camera, axisX: tag distribution type). The distribution that counts the more success is theoretically the optimal one. Results will be discussed with practical considerations to find the best balance between a reasonable tags to be used in production and good tracking.
 
 
 ## List of abbreviations/vocabulary
