@@ -23,6 +23,7 @@
 #include "basictypes/timers.h"
 #include "inputreader.h"
 #include "basictypes/cvversioning.h"
+#include "reconstruction/tslam_reconstructor.hh"
 
 cv::Mat resize(cv::Mat &in, cv::Size size){
     if (size.area() <= 0) return in;
@@ -532,6 +533,9 @@ int main(int argc,char **argv){
             if(k=='s'){
                 TheMap->saveToFile(cml("-out","world") +".map");
             }
+            if(k=='c'){
+
+            }
             // if(k=='o'){
             //     TheMap->saveToFile(cml("-out","world") +".map");
             //     fullbaOptimization(*TheMap);
@@ -578,16 +582,27 @@ int main(int argc,char **argv){
     if (toSaveCamPose) outCamPose.close();
 
     //optimize the map
-    // fullbaOptimization(*TheMap);
+    //fullbaOptimization(*TheMap);
 
     //save the output
     TheMap->saveToFile(cml("-out","world") +".map");
+    TheMap->saveToMarkerMap(cml("-out","world") +".yml");
+
+    //reconstruct 3D
+    tslam::Reconstruction::TSLAMReconstructor reconstructor =
+            tslam::Reconstruction::TSLAMReconstructor();
+    reconstructor.loadMap(cml("-out","world") +".yml");
+    reconstructor.run();
+    reconstructor.saveMeshAsPLY(cml("-out","world") +".ply");
+    reconstructor.clean();
+
+
     //save also the parameters finally employed
     params.saveToYMLFile("tslam_params_"+cml("-out","world") +".yml");
     if (debugLevel >=10){
         Slam->saveToFile("Slam->slm");
     }
-    TheMap->saveToMarkerMap("markermap.yml");
+
 
     if (errorFlag) {
         cout << "Program ends with an error." << endl;
