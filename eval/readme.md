@@ -24,27 +24,7 @@ TSlam is composed by 3 distinct and sequential phases:
     - camera pose (position and rotation)
     - RGB frame with 3D model visualization as overlay
 
-```mermaid
-graph TD;
-    RGBFrame-->Mapping;
-    RGBFrame-->Tracking;
-
-    TagVocabulary-->Mapping;
-    TagVocabulary-->Tracking;
-
-    Mapping-->MapFile;
-
-    MapFile-->Tracking;
-
-    MapFile-->Reconstruction
-    Reconstruction-->3DModel
-
-    3DModel-->Tracking
-
-    Tracking-->CameraPose
-    Tracking-->UI
-
-```
+![proto_scheme_v1](img/scheme_proto.png)
 
 ## State-of-the-art on evaluating SLAM
 SLAM are often evaluated on pre-existing data sets such as the KITTI dataset. Since we use specific tags (RTags) and pipeline for the TSlam to be used we need to define our own evaluation pipeline.
