@@ -26,20 +26,20 @@ TSlam is composed by 3 distinct and sequential phases:
 
 ```mermaid
 graph TD;
-    (RGBFrame)-->Mapping;
-    (RGBFrame)-->Tracking;
+    RGBFrame-->Mapping;
+    RGBFrame-->Tracking;
 
-    (TagVocabulary)-->Mapping;
-    (TagVocabulary)-->Tracking;
+    TagVocabulary-->Mapping;
+    TagVocabulary-->Tracking;
 
-    Mapping-->(MapFile);
+    Mapping-->MapFile;
 
-    (MapFile)-->Tracking;
+    MapFile-->Tracking;
 
-    (MapFile)-->Reconstruction
-    Reconstruction-->(3DModel)
+    MapFile-->Reconstruction
+    Reconstruction-->3DModel
 
-    (3DModel)-->Tracking
+    3DModel-->Tracking
 
     Tracking-->CameraPose
     Tracking-->UI
