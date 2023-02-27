@@ -34,6 +34,8 @@ graph TD;
 
     Mapping-->MapFile;
 
+    MapFile-->Tracking;
+
     MapFile-->Reconstruction
     Reconstruction-->3DModel
 
