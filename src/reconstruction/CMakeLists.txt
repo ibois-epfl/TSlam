@@ -32,8 +32,10 @@ find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 target_include_directories(tslamrec PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/CGAL/include)
 
+find_library(GMP_LIB NAMES "gmp" PATHS ${CMAKE_LIBRARY_PATH}} )
+find_library(MPFR_LIB NAMES "MPFR" PATHS ${CMAKE_LIBRARY_PATH}} )
 
-target_link_libraries(tslamrec PUBLIC Eigen3::Eigen)
+target_link_libraries(tslamrec PUBLIC Eigen3::Eigen gmp mpfr)
 
 target_include_directories(tslamrec PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cilantro/include)
 
