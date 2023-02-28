@@ -11,7 +11,7 @@
 ```mermaid:test.mmd
 ```
 
-<script src="https://embed.github.com/view/3d/<username>/<repo>/<ref>/<path_to_file>"></script>
+<script src="https://embed.github.com/view/3d/ibois-epfl/TSlam/main/testmermaid.mmd"></script>
 
 
 
