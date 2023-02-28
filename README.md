@@ -8,7 +8,8 @@
 
 ## RoadMap
 
-```mermaid:testmermaid.mmd
+<!-- embedme testmermaid.mmd -->
+```mermaid
 ```
 
 
