@@ -10,29 +10,33 @@
 ```mermaid
 gantt
     dateFormat  YYYY-MM-DD
-    title       Adding GANTT diagram functionality to mermaid
-    excludes    weekends
-    %% (`excludes` accepts specific dates in YYYY-MM-DD format, days of the week ("sunday") or "weekends", but not the word "weekdays".)
+    title       TSlam dev planning
+    axisFormat %Y-%m
+
+    section Core development
+    Base code modification          :done, ucm, 2022-06-01, 2022-08-10
+    RTag integration                :done, rti, 2022-07-30, 2022-10-01
+    Mapping                         :done, map, 2022-08-20, 2022-12-20
+    Reconstruction                  :active, rec, 2022-08-30, 2023-03-05
+    AC integration                  :done, aci, 2022-09-10, 2022-11-10
+    Stand-up demo                   :milestone, 2023-02-24, 0d
 
     section Evaluation
-    Completed task            :done,    des1, 2014-01-06,2014-01-08
-    Active task               :active,  des2, 2014-01-09, 3d
-    Future task               :         des3, after des2, 5d
-    Future task2              :         des4, after des3, 5d
+    protocols design                :active, ptrd, 2023-02-24, 2023-03-14
+    Protocol submission             :milestone, 2023-03-14, 0d
+    Tracking eval                   : trel, 2023-03-14, 20d
+    Tag infulence eval              : tage, after trel, 15d
+    Map eval                        :crit, mael, after trel tage, 15d
+    Reconstruction eval             : rece, after trel tage mael, 5d
+    Data/visual processing                 : datp, after trel tage mael rece, 15d
 
-    section Source code documentation
-    Completed task in the critical line :crit, done, 2014-01-06,24h
-    Implement parser and jison          :crit, done, after des1, 2d
-    Create tests for parser             :crit, active, 3d
-    Future task in critical line        :crit, 5d
-    Create tests for renderer           :2d
-    Add to mermaid                      :1d
-    Functionality added                 :milestone, 2014-01-25, 0d
+    section Documentation
+    code cleaning                   : 3d
+    CI/CD integration               : 8d
 
     section Paper redaction
-    Describe gantt syntax               :active, a1, after des1, 3d
-    Add gantt diagram to demo page      :after a1  , 20h
-    Add another diagram to demo page    :doc1, after a1  , 48h
+    Redaction text/illustration     :20d
+    Publishing                      :milestone, 120d
 ```
 
 ## What is TSlam
