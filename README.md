@@ -8,11 +8,8 @@
 
 ## RoadMap
 
-```mermaid:test.mmd
+```mermaid:testmermaid.mmd
 ```
-
-<script src="https://embed.github.com/view/3d/ibois-epfl/TSlam/blob/main/testmermaid.mmd"></script>
-
 
 
 ## What is TSlam
