@@ -180,4 +180,21 @@ namespace tslam{
         TheMapA->saveToFile(std::move(outputPath));
     }
 
+    bool Reconstruct3DModelAndExportPly(const std::string filepath){
+        tslam::Reconstruction::TSLAMReconstructor reconstructor =
+                tslam::Reconstruction::TSLAMReconstructor();
+        reconstructor.loadMap(filepath);
+        reconstructor.run();
+
+        // check the inner values of the geometric solver
+        auto internGeoSolver = reconstructor.getGeometricSolver();
+
+        if(internGeoSolver.checkMeshSanity() == false){
+            return false;
+        }
+
+        reconstructor.saveMeshAsPLY(filepath);
+        return true;
+    }
+
 }
