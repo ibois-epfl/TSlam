@@ -27,12 +27,12 @@ file(GLOB tslamrec_srcs_base "*.cc")
 list(REMOVE_ITEM tslamrec_srcs_base "${CMAKE_CURRENT_SOURCE_DIR}/reconstruct_debug.cc")
 add_library(tslamrec SHARED)  # SHARED or STATIC
 target_sources(tslamrec PUBLIC ${tslamrec_srcs_base})
-find_package(Open3D 0.16.1 REQUIRED)
+
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 target_include_directories(tslamrec PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/CGAL/include)
 
-target_link_libraries(tslamrec PUBLIC Open3D::Open3D)
+
 target_link_libraries(tslamrec PUBLIC Eigen3::Eigen)
 
 target_include_directories(tslamrec PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cilantro/include)
@@ -55,6 +55,8 @@ if(ENABLE_REC_PROFILER)
     target_compile_definitions(tslamrec PUBLIC TSLAM_REC_PROFILER=0)
 endif()
 
-if(ENABLE_O3D_VISUAL_DEBUG==ON)
+if(ENABLE_O3D_VISUAL_DEBUG)
+    find_package(Open3D 0.16.1 REQUIRED)
+    target_link_libraries(tslamrec PUBLIC Open3D::Open3D)
     target_compile_definitions(tslamrec PUBLIC TSLAM_REC_O3D_VISUAL_DEBUG=0)
 endif()

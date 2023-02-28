@@ -4,7 +4,8 @@ project(tslam_reconstruct_tests)
 
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(Open3D REQUIRED)
+
+#find_package(Open3D REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 include(CTest)
