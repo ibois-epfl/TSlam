@@ -38,13 +38,7 @@ target_link_libraries(tslamrec PUBLIC Eigen3::Eigen)
 target_include_directories(tslamrec PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cilantro/include)
 
 
-#---------------------------------------------------------------------------------------------------------
-# DocTests
-#---------------------------------------------------------------------------------------------------------
 
-if(ENABLE_TESTING)
-    add_subdirectory(tests)
-endif()
 
 
 #---------------------------------------------------------------------------------------------------------
@@ -59,4 +53,17 @@ if(ENABLE_O3D_VISUAL_DEBUG)
     find_package(Open3D 0.16.1 REQUIRED)
     target_link_libraries(tslamrec PUBLIC Open3D::Open3D)
     target_compile_definitions(tslamrec PUBLIC TSLAM_REC_O3D_VISUAL_DEBUG=0)
+endif()
+
+#---------------------------------------------------------------------------------------------------------
+# DocTests
+#---------------------------------------------------------------------------------------------------------
+
+if(ENABLE_TESTING)
+    if (ENABLE_O3D_VISUAL_DEBUG)
+        set(ENABLE_O3D_VISUAL_DEBUG_TEST ON)
+    else()
+        set(ENABLE_O3D_VISUAL_DEBUG_TEST OFF)
+    endif()
+    add_subdirectory(tests)
 endif()
