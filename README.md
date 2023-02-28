@@ -27,10 +27,10 @@ gantt
     protocols design                :active, ptrd, 2023-02-24, 2023-03-14
     Protocol submission             :milestone, 2023-03-14, 0d
     Tracking eval                   : trel, 2023-03-14, 20d
-    Tag infulence eval              : tage, after trel, 15d
-    Map eval                        :crit, mael, after trel tage, 15d
-    Reconstruction eval             : rece, after trel tage mael, 5d
-    Data/visual processing          : datp, after trel tage mael rece, 15d
+    Tag infulence eval              :15d
+    Map eval                        :crit, 15d
+    Reconstruction eval             :5d
+    Data/visual processing          :15d
 
     section Documentation
     code cleaning                   : 3d
