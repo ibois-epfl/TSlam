@@ -23,7 +23,6 @@
 #include "basictypes/timers.h"
 #include "inputreader.h"
 #include "basictypes/cvversioning.h"
-#include "reconstruction/tslam_reconstructor.hh"
 
 cv::Mat resize(cv::Mat &in, cv::Size size){
     if (size.area() <= 0) return in;
@@ -48,26 +47,26 @@ public: CmdLineParser(int _argc,char **_argv):argc(_argc),argv(_argv){}  bool op
 };
 
 void overwriteParamsByCommandLine(CmdLineParser &cml,tslam::Params &params){
-    if (cml["-aruco-markerSize"])   params.aruco_markerSize = stof(cml("-aruco-markerSize", "1"));
-    if (cml["-marker_minsize"])     params.aruco_minMarkerSize= stod(cml("-marker_minsize", "0.025"));
-    if (cml["-nokeypoints"])        params.detectKeyPoints=false;
-    if (cml["-nomarkers"])          params.detectMarkers =false;
-    if (cml["-sequential"])         params.runSequential=true;
-    if (cml["-maxFeatures"])        params.maxFeatures = stoi(cml("-maxFeatures","4000"));
-    if (cml["-nOct"])               params.nOctaveLevels = stoi(cml("-nOct","8"));
-    if (cml["-fdt"])                params.nthreads_feature_detector = stoi(cml("-fdt", "1"));
-    if (cml["-desc"])               params.kpDescriptorType = tslam::DescriptorTypes::fromString(cml("-desc", "orb"));
-    if (cml["-dict"])               params.aruco_Dictionary = cml("-dict");
-    if (cml["-tfocus"])             params.targetFocus =stof(cml("-tfocus","-1"));
-    if (cml["-KFMinConfidence"])    params.KFMinConfidence =stof(cml("-KFMinConfidence"));
-    if(cml["-nonmax"])              params.KPNonMaximaSuppresion=true;
-    if(cml["-saveImages"])          params.saveImageInMap=true;
-    if(cml["-isInstancing"])        params.isInstancing=true;
-    if(cml["-autoAdjustKpSensitivity"])    params.autoAdjustKpSensitivity=true;
-    if(cml["-extra_params"])        params.extraParams=cml("-extra_params");
-    if(cml["-scale"])               params.kptImageScaleFactor=stof(cml("-scale"));
-    if(cml["-nokploopclosure"])     params.reLocalizationWithKeyPoints=false;
-    if(cml["-inplanemarkers"])      params.inPlaneMarkers=true;
+    if (cml["-aruco-markerSize"])           params.aruco_markerSize = stof(cml("-aruco-markerSize", "1"));
+    if (cml["-marker_minsize"])             params.aruco_minMarkerSize= stod(cml("-marker_minsize", "0.025"));
+    if (cml["-nokeypoints"])                params.detectKeyPoints=false;
+    if (cml["-nomarkers"])                  params.detectMarkers =false;
+    if (cml["-sequential"])                 params.runSequential=true;
+    if (cml["-maxFeatures"])                params.maxFeatures = stoi(cml("-maxFeatures","4000"));
+    if (cml["-nOct"])                       params.nOctaveLevels = stoi(cml("-nOct","8"));
+    if (cml["-fdt"])                        params.nthreads_feature_detector = stoi(cml("-fdt", "1"));
+    if (cml["-desc"])                       params.kpDescriptorType = tslam::DescriptorTypes::fromString(cml("-desc", "orb"));
+    if (cml["-dict"])                       params.aruco_Dictionary = cml("-dict");
+    if (cml["-tfocus"])                     params.targetFocus =stof(cml("-tfocus","-1"));
+    if (cml["-KFMinConfidence"])            params.KFMinConfidence =stof(cml("-KFMinConfidence"));
+    if (cml["-nonmax"])                     params.KPNonMaximaSuppresion=true;
+    if (cml["-saveImages"])                 params.saveImageInMap=true;
+    if (cml["-isInstancing"])               params.isInstancing=true;
+    if (cml["-autoAdjustKpSensitivity"])    params.autoAdjustKpSensitivity=true;
+    if (cml["-extra_params"])               params.extraParams=cml("-extra_params");
+    if (cml["-scale"])                      params.kptImageScaleFactor=stof(cml("-scale"));
+    if (cml["-nokploopclosure"])            params.reLocalizationWithKeyPoints=false;
+    if (cml["-inplanemarkers"])             params.inPlaneMarkers=true;
 
     params.aruco_CornerRefimentMethod=cml("-aruco-cornerRefinementM","CORNER_SUBPIX");
 
@@ -587,15 +586,6 @@ int main(int argc,char **argv){
     //save the output
     TheMap->saveToFile(cml("-out","world") +".map");
     TheMap->saveToMarkerMap(cml("-out","world") +".yml");
-
-    //reconstruct 3D
-    tslam::Reconstruction::TSLAMReconstructor reconstructor =
-            tslam::Reconstruction::TSLAMReconstructor();
-    reconstructor.loadMap(cml("-out","world") +".yml");
-    reconstructor.run();
-    reconstructor.saveMeshAsPLY(cml("-out","world") +".ply");
-    reconstructor.clean();
-
 
     //save also the parameters finally employed
     params.saveToYMLFile("tslam_params_"+cml("-out","world") +".yml");
