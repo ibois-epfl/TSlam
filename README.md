@@ -5,7 +5,6 @@
 <!-- ![](./example/tracking_demo.gif) -->
 
 # TSlam
-```mermaid ./test.md ```
 
 ## RoadMap
 ```mermaid
@@ -31,6 +30,7 @@ gantt
     Map eval                        :crit, 15d
     Reconstruction eval             :5d
     Data/visual processing          :15d
+    Stand up eval results             :milestone, 0d
 
     section Documentation
     code cleaning                   : 3d
