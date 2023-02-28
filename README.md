@@ -5,6 +5,7 @@
 <!-- ![](./example/tracking_demo.gif) -->
 
 # TSlam
+```mermaid ./test.md ```
 
 ## RoadMap
 ```mermaid
@@ -17,8 +18,9 @@ gantt
     Base code modification          :done, ucm, 2022-06-01, 2022-08-10
     RTag integration                :done, rti, 2022-07-30, 2022-10-01
     Mapping                         :done, map, 2022-08-20, 2022-12-20
-    Reconstruction                  :active, rec, 2022-08-30, 2023-03-05
-    AC integration                  :done, aci, 2022-09-10, 2022-11-10
+    Tracking                        :done, trck, 2022-10-20, 2023-01-30
+    Reconstruction                  :active, rec, 2022-10-30, 2023-03-05
+    AC integration                  :done, aci, 2022-09-10, 2022-12-10
     Stand-up demo                   :milestone, 2023-02-24, 0d
 
     section Evaluation
@@ -28,7 +30,7 @@ gantt
     Tag infulence eval              : tage, after trel, 15d
     Map eval                        :crit, mael, after trel tage, 15d
     Reconstruction eval             : rece, after trel tage mael, 5d
-    Data/visual processing                 : datp, after trel tage mael rece, 15d
+    Data/visual processing          : datp, after trel tage mael rece, 15d
 
     section Documentation
     code cleaning                   : 3d
@@ -36,6 +38,7 @@ gantt
 
     section Paper redaction
     Redaction text/illustration     :20d
+    Submission                      :milestone, 0d
     Publishing                      :milestone, 120d
 ```
 
