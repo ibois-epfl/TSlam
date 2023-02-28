@@ -8,8 +8,8 @@
 
 ## RoadMap
 
-<!-- embedme testmermaid.mmd -->
 ```mermaid
+// testmermaid.mmd
 ```
 
 
