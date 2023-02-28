@@ -7,40 +7,12 @@
 # TSlam
 
 ## RoadMap
-```mermaid
-gantt
-    dateFormat  YYYY-MM-DD
-    title       TSlam dev planning
-    axisFormat %Y-%m
 
-    section Core development
-    Base code modification          :done, ucm, 2022-06-01, 2022-08-10
-    RTag integration                :done, rti, 2022-07-30, 2022-10-01
-    Mapping                         :done, map, 2022-08-20, 2022-12-20
-    Tracking                        :done, trck, 2022-10-20, 2023-01-30
-    Reconstruction                  :active, rec, 2022-10-30, 2023-03-05
-    AC integration                  :done, aci, 2022-09-10, 2022-12-10
-    Stand-up demo                   :milestone, 2023-02-24, 0d
-
-    section Evaluation
-    protocols design                :active, ptrd, 2023-02-24, 2023-03-14
-    Protocol submission             :milestone, 2023-03-14, 0d
-    Tracking eval                   : trel, 2023-03-14, 20d
-    Tag infulence eval              :15d
-    Map eval                        :crit, 15d
-    Reconstruction eval             :5d
-    Data/visual processing          :15d
-    Stand up eval results             :milestone, 0d
-
-    section Documentation
-    code cleaning                   : 3d
-    CI/CD integration               : 8d
-
-    section Paper redaction
-    Redaction text/illustration     :20d
-    Submission                      :milestone, 0d
-    Publishing                      :milestone, 120d
+```mermaid:test.mmd
 ```
+
+
+
 
 ## What is TSlam
 This is a modified version of [UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62) for augmented carpentry research. The main features are:
