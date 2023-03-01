@@ -140,6 +140,21 @@ Here are the different evaluations designed for the TSlam package. They are all 
   - *Evaluation output*:
     - [ ] a 3D scatter plot which represent the dots as the successfull detection depending on the varying parameters (aixsZ: angles, axisY: distance from camera, axisX: tag distribution type). The distribution that counts the more success is theoretically the optimal one. Results will be discussed with practical considerations to find the best balance between a reasonable tags to be used in production and good tracking.
 
+- **(E) computation time**: the goal is to see, given a pc model, what is the computation time of the algorithm. The final output should be a FPS per 
+  - *Evaluation set-up*: profiler on software TSlam.
+  - *Test population*: ~10 sets of different recordings
+  - *Fix params*:
+    - `laptop specs`: one laptop with defined specs is chosen
+    - `CPU`: no comparison between CPU or GPU is computed
+    - `recording length`: the number of frames has to be fixed
+  - *Varying params*: None
+  - *Uncontrolled params*: None
+  - *Raw data output*:
+    -  [ ] FPS for each second of the sequence
+  - *Data processing*:
+    - [ ] simple averaging per video and across all videos
+  - *Evaluation output*:
+    - [ ] the FPS average in total
 
 ## List of abbreviations/vocabulary
 - **FOV**: field of view of a camera
