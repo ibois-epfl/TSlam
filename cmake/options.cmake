@@ -6,6 +6,8 @@ option(BUILD_OWN_XFLANN "Set to OFF to force find xflann in the system" ON)
 option(BUILD_OWN_G2O "Set to OFF to force find g2o in the system" ON)
 option(BUILD_OWN_STAG "Set to OFF to force find stag in the system" ON)
 
+option(USE_OWN_GMP "Set to OFF to use a local GMP version"                   OFF)
+option(USE_OWN_MPFR "Set to OFF to use a local MPFR version"                 OFF)
 option(USE_OWN_CGAL "Set to OFF to use a local CGAL version"                 ON)
 option(USE_OWN_CILANTRO "Set to OFF to use a local Cilantro version"         ON)
 
