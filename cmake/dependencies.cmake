@@ -15,6 +15,10 @@ endif()
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
 link_directories(${CMAKE_BINARY_DIR}/libs)
 
+find_library(GMP_LIB NAMES "gmp" PATHS ${CMAKE_LIBRARY_PATH}} )
+find_library(MPFR_LIB NAMES "MPFR" PATHS ${CMAKE_LIBRARY_PATH}} )
+link_libraries(gmp mpfr)
+
 if(NOT USE_OWN_EIGEN3)
     find_package( Eigen3 REQUIRED )
 else()

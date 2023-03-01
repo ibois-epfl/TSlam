@@ -27,24 +27,20 @@ file(GLOB tslamrec_srcs_base "*.cc")
 list(REMOVE_ITEM tslamrec_srcs_base "${CMAKE_CURRENT_SOURCE_DIR}/reconstruct_debug.cc")
 add_library(tslamrec SHARED)  # SHARED or STATIC
 target_sources(tslamrec PUBLIC ${tslamrec_srcs_base})
-find_package(Open3D 0.16.1 REQUIRED)
+
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 target_include_directories(tslamrec PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/CGAL/include)
 
-target_link_libraries(tslamrec PUBLIC Open3D::Open3D)
-target_link_libraries(tslamrec PUBLIC Eigen3::Eigen)
+find_library(GMP_LIB NAMES "gmp" PATHS ${CMAKE_LIBRARY_PATH}} )
+find_library(MPFR_LIB NAMES "MPFR" PATHS ${CMAKE_LIBRARY_PATH}} )
+
+target_link_libraries(tslamrec PUBLIC Eigen3::Eigen gmp mpfr)
 
 target_include_directories(tslamrec PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cilantro/include)
 
 
-#---------------------------------------------------------------------------------------------------------
-# DocTests
-#---------------------------------------------------------------------------------------------------------
 
-if(ENABLE_TESTING)
-    add_subdirectory(tests)
-endif()
 
 
 #---------------------------------------------------------------------------------------------------------
@@ -55,6 +51,21 @@ if(ENABLE_REC_PROFILER)
     target_compile_definitions(tslamrec PUBLIC TSLAM_REC_PROFILER=0)
 endif()
 
-if(ENABLE_O3D_VISUAL_DEBUG==ON)
+if(ENABLE_O3D_VISUAL_DEBUG)
+    find_package(Open3D 0.16.1 REQUIRED)
+    target_link_libraries(tslamrec PUBLIC Open3D::Open3D)
     target_compile_definitions(tslamrec PUBLIC TSLAM_REC_O3D_VISUAL_DEBUG=0)
+endif()
+
+#---------------------------------------------------------------------------------------------------------
+# DocTests
+#---------------------------------------------------------------------------------------------------------
+
+if(ENABLE_TESTING)
+    if (ENABLE_O3D_VISUAL_DEBUG)
+        set(ENABLE_O3D_VISUAL_DEBUG_TEST ON)
+    else()
+        set(ENABLE_O3D_VISUAL_DEBUG_TEST OFF)
+    endif()
+    add_subdirectory(tests)
 endif()

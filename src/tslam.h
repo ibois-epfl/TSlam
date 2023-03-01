@@ -6,6 +6,7 @@
 #include "tslamtypes.h"
 #include "imageparams.h"
 #include "map.h"
+#include "reconstruction/tslam_reconstructor.hh"
 
 namespace tslam{
     class TSLAM_API TSlam
@@ -125,7 +126,7 @@ namespace tslam{
          * @brief get the camera pose of the last processed frame,
          * @return A 4x4 cv::Mat; cv::eye if last frame was not tracked.
          */
-        // inline cv::Mat getLastCamPose(){ return lastCamPose; };
+//        inline cv::Mat getLastCamPose(){ return lastCamPose; };
         /**
          * @brief Process a frame
          * @param frame Frame to process
@@ -133,8 +134,6 @@ namespace tslam{
          * @return A boolean indicate if is tracked
          */
         bool process(cv::Mat frame, cv::Mat &camPose);
-
-        bool reconstructModel(const char* mapYMLPath);
 
     private:
         void *impl;
@@ -155,7 +154,23 @@ namespace tslam{
 
     // static functions
     public:
+        /**
+         * Combine two map (by aligning the tags)
+         * @param mapPathA path to the first map
+         * @param mapPathB path to the second map
+         * @param outputPath path to the combined map
+         * @param exportYml if export yml alongside
+         * @param exportPly if export ply alongside
+         * @param estimatedImageParam pointer to the estimated image parameter
+         * @param niters how many iterations to run during optimization
+         */
         static void CombineMap(string mapPathA, string mapPathB, string outputPath, bool exportYml=true, bool exportPly=true, ImageParams *estimatedImageParam=nullptr, int niters=50);
+        /**
+         * @brief Reconstruct the 3D model from the current mapping and export the .ply mesh
+         * @param filepath output path of the exported .ply
+         * @return true if succeed, false otherwise
+         */
+        static bool Reconstruct3DModelAndExportPly(const std::string filepath);
     };
 
 }

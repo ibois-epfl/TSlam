@@ -76,6 +76,12 @@ namespace tslam::Reconstruction
          * @param filename name of the mesh file
          */
         void saveMeshAsPLY(const std::string& dir, const std::string& filename);
+        /**
+         * @brief Save the reconstructed mesh as a PLY file.
+         *
+         * @param filepath filepath to save the mesh, the filename should be specificied and ended with .ply
+         */
+        void saveMeshAsPLY(const std::string& filepath);
     
     public:  ///< engine getter
         /**

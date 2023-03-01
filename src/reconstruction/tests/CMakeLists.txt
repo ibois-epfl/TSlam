@@ -4,7 +4,11 @@ project(tslam_reconstruct_tests)
 
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(Open3D REQUIRED)
+option(ENABLE_O3D_VISUAL_DEBUG_TEST "This option enable open3d visual for testing" OFF)
+
+if(ENABLE_O3D_VISUAL_DEBUG_TEST)
+    find_package(Open3D REQUIRED)
+endif()
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 include(CTest)

@@ -99,6 +99,14 @@ namespace tslam::Reconstruction
             throw std::runtime_error("[ERROR] No mesh is reconstructed.");
         
         std::string filepath = dir + "/" + filename + ".ply";
+        TSLAMReconstructor::saveMeshAsPLY(filepath);
+    }
+
+    void TSLAMReconstructor::saveMeshAsPLY(const std::string& filepath)
+    {
+        if (!this->m_GeometricSolver.hasMesh())
+            throw std::runtime_error("[ERROR] No mesh is reconstructed.");
+
         std::ofstream out(filepath);
         out.precision(17);
         CGAL::IO::write_PLY(out, this->m_GeometricSolver.getMeshOut());
