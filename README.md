@@ -21,6 +21,7 @@ gantt
     Tracking                        :done, trck, 2022-10-20, 2023-01-30
     Reconstruction                  :active, rec, 2022-10-30, 2023-03-05
     AC integration                  :done, aci, 2022-09-10, 2022-12-10
+    Direct slam during tracking     :crit, after rec, 30d
     Stand-up demo                   :milestone, 2023-02-24, 0d
 
     section Evaluation
@@ -31,11 +32,11 @@ gantt
     Map eval                        :crit, 15d
     Reconstruction eval             :5d
     Data/visual processing          :15d
-    Stand-up eval results             :milestone, 0d
+    Stand-up eval results           :milestone, 0d
 
     section Documentation
-    code cleaning                   : 3d
-    CI/CD integration               : 8d
+    code cleaning                   :3d
+    CI/CD integration               :8d
 
     section Paper redaction
     Redaction text/illustration     :20d
