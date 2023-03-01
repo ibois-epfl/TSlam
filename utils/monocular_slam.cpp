@@ -297,18 +297,23 @@ int main(int argc,char **argv){
 
     bool liveVideo = false;
     InputReader vcap;
-    cv::VideoWriter videoout;
-    string TheInputVideo = string(argv[1]);
-    string TheOutputVideo = cml("-outvideo");
-    if (TheInputVideo.find("live") != std::string::npos)
+
+    bool isExportingVideo = !cml("-outvideo").empty();
+    cv::VideoWriter outVideoWriter;
+    cv::VideoWriter outRawVideoWriter;
+    string inputVideo = string(argv[1]);
+    string outputVideoPath = cml("-outvideo") + ".mp4";
+    string outputRawVideoPath = cml("-outvideo") + "_raw.mp4";
+
+    if (inputVideo.find("live") != std::string::npos)
     {
         int vIdx = 0;
         // check if the :idx is here
         char cad[100];
-        if (TheInputVideo.find(":") != string::npos)
+        if (inputVideo.find(":") != string::npos)
         {
-            std::replace(TheInputVideo.begin(), TheInputVideo.end(), ':', ' ');
-            sscanf(TheInputVideo.c_str(), "%s %d", cad, &vIdx);
+            std::replace(inputVideo.begin(), inputVideo.end(), ':', ' ');
+            sscanf(inputVideo.c_str(), "%s %d", cad, &vIdx);
         }
         cout << "Opening camera index " << vIdx << endl;
         vcap.open(vIdx);
@@ -442,9 +447,17 @@ int main(int argc,char **argv){
     bool finish = false;
     cv::Mat camPose_c2g;
     int vspeed = stoi(cml("-vspeed","1"));
+
+    vector<cv::Mat> rawFramesToWrite;
+    vector<cv::Mat> slamFramesToWrite;
+
     while (!finish && !in_image.empty())  {
         try{
             FpsComplete.start();
+
+            if (isExportingVideo) {
+                rawFramesToWrite.emplace_back(in_image.clone());
+            }
 
             //image resize (if required)
             in_image = resize(in_image, vsize);
@@ -505,16 +518,9 @@ int main(int argc,char **argv){
             }
 
             //save to output video?
-            if (!TheOutputVideo.empty()){
-                auto image=TheViewer.getImage();
-                if(!videoout.isOpened()){
-                    videoout.open(TheOutputVideo, CV_FOURCC('X', '2', '6', '4'), stof(cml("-fps","30")),image.size()  , image.channels()!=1);
-                    cout << "open!";
-                }
+            if (isExportingVideo) {
 
-                if(videoout.isOpened()) {
-                    videoout.write(image);
-                }
+                slamFramesToWrite.emplace_back(TheViewer.getImage().clone());
             }
 
             //reset?
@@ -575,13 +581,44 @@ int main(int argc,char **argv){
     }
 
     //release the video output if required
-    if(videoout.isOpened()) videoout.release();
+    if(isExportingVideo){
+        cout << "Exporting Video..." << endl;
+        bool errFlag = false;
+        if(slamFramesToWrite.empty() || rawFramesToWrite.empty()){
+            cerr << "No frames to write" << endl;
+            errFlag = true;
+        }
+        if(!errFlag){
+            outVideoWriter.open(
+                    outputVideoPath,
+                    CV_FOURCC('m', 'p', '4', 'v'),
+                    stof(cml("-fps","10")),
+                    slamFramesToWrite.at(0).size(), slamFramesToWrite.at(0).channels()!=1);
+            outRawVideoWriter.open(
+                    outputRawVideoPath,
+                    CV_FOURCC('m', 'p', '4', 'v'),
+                    stof(cml("-fps","10")),
+                    rawFramesToWrite.at(0).size(), rawFramesToWrite.at(0).channels()!=1);
+
+            for(auto image : slamFramesToWrite){
+                outVideoWriter.write(image);
+            }
+
+            for(auto image : rawFramesToWrite){
+                outRawVideoWriter.write(image);
+            }
+
+            outVideoWriter.release();
+            outRawVideoWriter.release();
+        }
+    }
+
 
     //close the output file
     if (toSaveCamPose) outCamPose.close();
 
     //optimize the map
-    //fullbaOptimization(*TheMap);
+    TheMap->optimize();
 
     //save the output
     TheMap->saveToFile(cml("-out","world") +".map");
