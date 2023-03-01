@@ -56,7 +56,7 @@ void checkResults(std::string ymlPath,
     CHECK(internGeoSolver.checkMeshSanity() == true);
 
     // (optional) for further inspections, saave mesh locally
-    // reconstructor.saveMeshAsPLY(".", "test2_mesh");
+    reconstructor.saveMeshAsPLY(".", "test2_mesh");
 
     // clean everything
     reconstructor.clean();
@@ -73,14 +73,14 @@ TEST_SUITE("Real_scans")
     * doctest::description("Checks the case of a streight beam with long length."))
     {
         ymlPath = YML_DIR_REAL + "long_map.yml";
-        checkResults(ymlPath, true);
+        checkResults(ymlPath);
     }
 
     TEST_CASE("Medium_length"
     * doctest::description("Checks the case of a streight beam with medium length."))
     {
         ymlPath = YML_DIR_REAL + "mid_map.yml";
-        checkResults(ymlPath, true);
+        checkResults(ymlPath);
     }
 
     // ===============================================================================
@@ -89,7 +89,7 @@ TEST_SUITE("Real_scans")
     * doctest::description("Checks the case of a beam with tags only at extremeties."))
     {
         ymlPath = YML_DIR_REAL + "only_end_enhanced_2_TEST.yml";
-        checkResults(ymlPath, true);
+        checkResults(ymlPath);
     }
 
     // // ===============================================================================

@@ -49,8 +49,39 @@ namespace tslam::Reconstruction
 {
     class TSMeshHolesFiller
     {
+    private: __always_inline  ///< fill holes util
+        /**
+         * @brief Utility function to check if a hole is small enough to be filled
+         * 
+         * @param h the halfedge of the hole
+         * @param mesh the surface mesh in cgal
+         * @param maxHoleDiameter the max diameter of the hole
+         * @param maxNumHoleEdges the max number of edges of the hole
+         * @return true if the hole is small enough
+         * @return false if the hole is not small enough
+         */
+        static bool isSmallHole(halfedge_descriptor h,
+                                Mesh_srf & mesh,
+                                double maxHoleDiameter,
+                                int maxNumHoleEdges)
+        {
+            int numHoleEdges = 0;
+            CGAL::Bbox_3 hole_bbox;
+            for (halfedge_descriptor hc : CGAL::halfedges_around_face(h, mesh))
+            {
+                const Point_3& p = mesh.point(target(hc, mesh));
+                hole_bbox += p.bbox();
+                ++numHoleEdges;
+                if (numHoleEdges > maxNumHoleEdges) return false;
+                if (hole_bbox.xmax() - hole_bbox.xmin() > maxHoleDiameter) return false;
+                if (hole_bbox.ymax() - hole_bbox.ymin() > maxHoleDiameter) return false;
+                if (hole_bbox.zmax() - hole_bbox.zmin() > maxHoleDiameter) return false;
+            }
+            return true;
+        }
+
     public: __always_inline  ///< fill holes
-        // FIXME: currently the function is not filling the holes
+        // TODO: implement non manifold edges removal
         /**
          * @brief It fills the holes in the mesh using the CGAL library. Normals are recomputed accordingly.
          * 
@@ -60,19 +91,54 @@ namespace tslam::Reconstruction
          */
         static void fillHoles(Mesh_srf &cgalMesh)
         {
-            double max_hole_diam   = -1.0;
-            int max_num_hole_edges = -1;
+            double maxHoleDiameter   = -1.0;
+            int maxNumHoleEdges = -1;
             unsigned int nb_holes = 0;
             std::vector<halfedge_descriptor> border_cycles;
             
             PMP::extract_boundary_cycles(cgalMesh, std::back_inserter(border_cycles));
             for(halfedge_descriptor h : border_cycles)
             {
+                if((maxHoleDiameter > 0 || maxNumHoleEdges > 0) &&
+                    !isSmallHole(h, cgalMesh, maxHoleDiameter, maxNumHoleEdges))
+                    continue;
+                
                 std::vector<face_descriptor>  patch_facets;
                 PMP::triangulate_hole(cgalMesh, h, 
-                                    std::back_inserter(patch_facets));
+                                      std::back_inserter(patch_facets));
+
                 ++nb_holes;
             }
+
+            ////////////////////////////////////////////////////////////////////////////
+            // TEST
+            ////////////////////////////////////////////////////////////////////////////
+
+            // // check if all the faces's edges are manifold, if not delete the face
+            // std::vector<face_descriptor> facesToRemove;
+            // for (face_descriptor f : faces(cgalMesh))
+            // {
+            //     // check if all the faces's edges are manifold, if not delete the face
+            //     for (halfedge_descriptor he : halfedges_around_face(halfedge(f, cgalMesh), cgalMesh))
+            //     {
+            //         // check how many faces are connected to the edge
+            //         int numFaces = 0;
+                    
+            //         // get the faces connected to the edge
+            //         for (halfedge_descriptor he2 : halfedges_around_target(target(he, cgalMesh), cgalMesh))
+            //         {
+            //             if (face(he2, cgalMesh) != boost::graph_traits<Mesh_srf>::null_face())
+            //                 numFaces++;
+            //         }
+
+            //         if (numFaces < 2)
+            //         {
+            //             facesToRemove.push_back(f);
+            //             break;
+            //         }
+                    
+            //     }
+            // }
         };
 
     public: __always_inline  ///< utils
@@ -87,18 +153,37 @@ namespace tslam::Reconstruction
         {
             if (cgalMesh.number_of_vertices() == 0)
                 return false;
-            
+
+            // save the mesh locally as a temporary file
+            std::string tmpFileName = "/tmp/tmpMesh" + boost::lexical_cast<std::string>(std::rand()) + ".off";
+            std::ofstream tmpFile(tmpFileName);
+            tmpFile << cgalMesh;
+            tmpFile.close();
+
+            // load the mesh from the temporary file
             std::vector<Point_3> points;
             std::vector<std::vector<std::size_t> > polygons;
 
-            PMP::polygon_mesh_to_polygon_soup(cgalMesh, points, polygons);
-            size_t nbrRmvPoints = 0;
-            nbrRmvPoints = PMP::merge_duplicate_points_in_polygon_soup(points, polygons);
+            std::ifstream infile;
+            infile.open(tmpFileName);
+            bool ok = CGAL::IO::read_OFF(infile, points, polygons);
+            infile.close();
+
+            // erase the temporary file
+            std::remove(tmpFileName.c_str());
+
+            // clean out the polygon soup
+            PMP::merge_duplicate_points_in_polygon_soup(points, polygons);
+            PMP::merge_duplicate_polygons_in_polygon_soup(points, polygons);
+            PMP::remove_isolated_points_in_polygon_soup(points, polygons);
+
             PMP::repair_polygon_soup(points, polygons);
             PMP::orient_polygon_soup(points, polygons);
 
+            // output the mesh
             Mesh_srf meshOut;
             PMP::polygon_soup_to_polygon_mesh(points, polygons, meshOut);
+            cgalMesh.clear();
             cgalMesh = meshOut;
 
             return true;
@@ -133,12 +218,10 @@ namespace tslam::Reconstruction
                 polygonsCGAL.push_back(polyCGAL);
             }
 
-            // build duplicate soup
-            // PMP::polygon_soup_to_polygon_mesh(points, polygonsCGAL, cgalMesh);
-
             // remove duplicate points
-            size_t nbrRmvPoints = 0;
-            nbrRmvPoints = PMP::merge_duplicate_points_in_polygon_soup(points, polygonsCGAL);
+            PMP::merge_duplicate_points_in_polygon_soup(points, polygonsCGAL);
+            PMP::merge_duplicate_polygons_in_polygon_soup(points, polygonsCGAL);
+            PMP::remove_isolated_points_in_polygon_soup(points, polygonsCGAL);
 
             // orient the soup
             PMP::orient_polygon_soup(points, polygonsCGAL);

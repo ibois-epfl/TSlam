@@ -305,13 +305,22 @@ Today we got a general stand up meeting with Yves and Julien. The development is
 ### Reconstruction - new polygon faces selector
 We implemented a new method to check wether a polygon is a face or not by checking if a tag is contained in it. It is robust and the algorithm has been parametrized to detect multiple faces. Here we can see that we are able to now to describe complex shapes.
 
-|        otched piecen       |     complex piece      |
+|        notched piece       |     complex piece      |
 |:------------------------:|:------------------------:|
 | ![](./patchalg1.png) | ![](./patchalg2.png) |
 
 What we are missing now is a resilient refiner to fill the holes with e.g. [one method in CGAL](https://doc.cgal.org/latest/Polygon_mesh_processing/Polygon_mesh_processing_2hole_filling_example_SM_8cpp-example.html). In general this will be a limitation of the system to have markers to cover the entire piece. The rule to avoid holes is not clear at the moment.
 
 update `22-02-2023`: we tried the `triangulate_refine_and_fair_hole()` func in CGAL 5.5.1 but it is not giving the expected results. An issue is open on [CGAL github](https://github.com/CGAL/cgal/issues/7283).
+
+
+## March 1: hole filling
+The hole filling from CGAL is implemented and it patch some of the missing holes. Nonetheless, some non-manifold faces are still produced. A refinement of the hole patcher needs to be implemented.
+
+|        notched piece       |     complex piece      |
+|:------------------------:|:------------------------:|
+| ![](./hole_patch.png) | ![](./hole_patch2.png) |
+
 
 ---
 

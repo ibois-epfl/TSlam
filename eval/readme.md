@@ -138,7 +138,7 @@ Here are the different evaluations designed for the TSlam package. They are all 
   - *Raw data output*: binary data per take if the TSlam outputs a pose or not.
   - *Data processing*: None.
   - *Evaluation output*:
-    - [ ] a 3D scatter plot which represent the dots as the successfull detection depending on the varying parameters (aixsZ: angles, axisY: distance from camera, axisX: tag distribution type). The distribution that counts the more success is theoretically the optimal one. Results will be discussed with practical considerations to find the best balance between a reasonable tags to be used in production and good tracking.
+    - [ ] a 3D scatter plot which represent the dots as the successfull detection depending on the varying parameters (aixsZ: angles, axisY: distance from camera, axisX: tag distribution type). The distribution that counts the more success is theoretically the optimal one. Results will be discussed with practical considerations to find the best balance between a reasonable nubmer of tags to be used in production and good tracking.
 
 - **(E) computation time**: the goal is to see, given a pc model, what is the computation time of the algorithm. The final output should be a FPS per 
   - *Evaluation set-up*: profiler on software TSlam.

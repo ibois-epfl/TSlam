@@ -522,7 +522,7 @@ namespace tslam::Reconstruction
         TSMeshHolesFiller::cvtPolygon2CGALMesh(facePolygons, mesh);
 
         TSMeshHolesFiller::cleanOutCGALMesh(mesh);
-        // TSMeshHolesFiller::fillHoles(mesh);  // FIXME: to be fixed
+        TSMeshHolesFiller::fillHoles(mesh);
 
 #ifdef TSLAM_REC_O3D_VISUAL_DEBUG
         TSMeshHolesFiller::cvtCGAL2O3dMesh(mesh, this->m_MeshOutO3d);
