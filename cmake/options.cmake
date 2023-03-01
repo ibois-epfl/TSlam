@@ -19,12 +19,7 @@ option(USE_TIMERS "SET ON/OFF for see time of execution" OFF)
 option(XFEATURES2D "SET ON/OFF" OFF)
 
 option(BUILD_UTILS	"Set to OFF to not build utils" ON)
-option(BUILD_UTILS_ARRAY	"Set to OFF to not build utils" ON)
-option(BUILD_UTILS_DEVELOPER	"Set to OFF to not build utils" OFF)
 option(BUILD_TESTS	"Set to OFF to not build tests" OFF)
 option(BUILD_DEBUGTESTS	"Set to OFF to not build tests" OFF)
-option(BUILD_UTILS_RGBD	"Set to OFF to not build utils" OFF)
-option(BUILD_GUI	"Set to ON to build gui" OFF)
 option(BUILD_DEBPACKAGE	"Set to ON to build deb package" OFF)
-option(BUILD_UTILS_REALSENSE	"Set to OFF to not build utils" OFF)
 

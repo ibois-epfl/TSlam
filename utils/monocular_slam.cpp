@@ -618,7 +618,7 @@ int main(int argc,char **argv){
     if (toSaveCamPose) outCamPose.close();
 
     //optimize the map
-    //fullbaOptimization(*TheMap);
+    TheMap->optimize();
 
     //save the output
     TheMap->saveToFile(cml("-out","world") +".map");

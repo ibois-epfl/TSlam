@@ -153,8 +153,3 @@ if ( (OpenNI2_INCLUDE STREQUAL "OpenNI2_INCLUDE-NOTFOUND") OR (LIBOPENNI2_LIBRAR
     message(STATUS  "OpenNI.h=${OpenNI2_INCLUDE} LIBOPENNI2_LIBRARY=${LIBOPENNI2_LIBRARY}")
     set(OPENNI2LIB_FOUND "YES" )
  endif()
-
-
- if(BUILD_GUI)
- add_subdirectory(gui)
- endif()
