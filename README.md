@@ -18,18 +18,15 @@ gantt
     Tracking                        :done, trck, 2022-10-20, 2023-01-30
     Reconstruction                  :active, rec, 2022-10-30, 2023-03-05
     AC integration                  :done, aci, 2022-09-10, 2022-12-10
-    Direct slam during tracking     :crit, after rec, 30d
     Stand-up demo                   :milestone, 2023-02-24, 0d
 
     section Evaluation
     protocols design                :active, ptrd, 2023-02-24, 2023-03-14
     Protocol submission             :milestone, 2023-03-14, 0d
-    Tracking eval                   : trel, 2023-03-14, 20d
-    Tag infulence eval              :15d
-    Map eval                        :crit, 15d
-    Reconstruction eval             :5d
+    extra utilities for eval        :active, 15d
+    Fabrication eval                :crit, 21d
     Data/visual processing          :15d
-    Stand-up eval results           :milestone, 0d
+    Stand-up eval results           :milestone, 2d
 
     section Documentation
     code cleaning                   :3d
@@ -37,7 +34,7 @@ gantt
 
     section Paper redaction
     Redaction text/illustration     :20d
-    Submission                      :milestone, 0d
+    Submission                      :milestone, 1d
     Publishing                      :milestone, 120d
 ```
 
