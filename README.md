@@ -2,7 +2,7 @@
     <img src="./logo/logo_linux_violet.png" width="200">
 </p>
 <p align="center">
-    <img src="https://github.com/ibois-epfl/TSlam/actions/workflows/docker-cmake-build.yml/badge.svg" height="50">
+    <img src="https://github.com/ibois-epfl/TSlam/actions/workflows/docker-cmake-build.yml/badge.svg">
 </p>
 
 <!-- ![](./example/tracking_demo.gif) -->
