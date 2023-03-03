@@ -7,10 +7,6 @@
 
 <!-- ![](./example/tracking_demo.gif) -->
 
-# TSlam
-
-## RoadMap
-
 ```mermaid
 gantt
     dateFormat  YYYY-MM-DD
@@ -47,7 +43,7 @@ gantt
     Publishing                      :milestone, 120d
 ```
 
-## What is TSlam
+# TSlam
 This is a modified version of [UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62) for augmented carpentry research. The main features are:
 - Better API for use.
 - Using [STag](https://github.com/bbenligiray/stag)
