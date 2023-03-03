@@ -4,6 +4,7 @@
 <p align="center">
     <img src="https://github.com/ibois-epfl/TSlam/actions/workflows/docker-cmake-build.yml/badge.svg">
     <img src="https://img.shields.io/badge/os-Ubuntu22.04-blueviolet">
+    <img src="https://img.shields.io/badge/license-GPL--v3-brightgreen">
 </p>
 
 ```mermaid
