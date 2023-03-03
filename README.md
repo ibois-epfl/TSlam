@@ -5,8 +5,6 @@
     <img src="https://github.com/ibois-epfl/TSlam/actions/workflows/docker-cmake-build.yml/badge.svg">
 </p>
 
-<!-- ![](./example/tracking_demo.gif) -->
-
 ```mermaid
 gantt
     dateFormat  YYYY-MM-DD
