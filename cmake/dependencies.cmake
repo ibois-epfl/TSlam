@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------------
 #   Find Dependencies
 # ----------------------------------------------------------------------------
-find_package(OpenCV 4.5.5 REQUIRED)
+find_package(OpenCV 4.5.4 REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 set(TSLAM_REQUIRED_LIBRARIES ${OpenCV_LIBS})
 
