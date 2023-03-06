@@ -67,7 +67,26 @@ graph LR
 
 ### Steps
 
-- take a timber piece
-- apply the markers
-- map with tslam
-- reconstruct with tslam
+- [ ] calibrate Optitrack
+
+- [ ] select a timber piece
+
+- [ ] apply the markers
+- [ ] add optitrack beacons
+- [ ] scan the piece
+- [ ] select the beacons in the point cloud manually
+- [ ] introduce the timber piece model in Optitrack software
+
+- [ ] map with tslam
+- [ ] reconstruct with tslam
+- [ ] take the mesh and create a mesh for execution (by adding cuts, holes)
+
+- [ ] add optitrack beacons to the camera
+- [ ] build the camera model reference in Optitrack
+
+- [ ] run the Optitrack recording
+- [ ] run the TSlam
+- [ ] record video frames sync to the gt pose  <-- we need to run tslam on windows from docker container
+
+
+
