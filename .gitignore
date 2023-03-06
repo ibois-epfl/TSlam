@@ -2,6 +2,9 @@
 ## TSlam specific
 #######################################################
 
+# avoid to push map (too heavy ~100MB)
+assets/maps/*
+
 # editor config
 .archive
 .vscode
