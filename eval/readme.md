@@ -65,3 +65,9 @@ graph LR
     B --> BB
 ```
 
+### Steps
+
+- take a timber piece
+- apply the markers
+- map with tslam
+- reconstruct with tslam
