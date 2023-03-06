@@ -1,3 +1,7 @@
+#######################################################
+## TSlam specific
+#######################################################
+
 # editor config
 .archive
 .vscode
@@ -17,3 +21,36 @@ test_result
 *.pdf
 webcam-calib-data
 log.*
+
+#######################################################
+## VSCode
+#######################################################
+# basic files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+#######################################################
+## CMake
+#######################################################
+# basic files
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
