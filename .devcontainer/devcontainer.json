@@ -21,7 +21,9 @@
     }
 
     // Features to add to the dev container. More info: https://containers.dev/features.
-    // "features": {},
+    // "features": {
+    //     "ghcr.io/devcontainers-contrib/features/bash-command:1": {sudo sudo apt-get install v4l-utils}
+    // }
 
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     "forwardPorts": [3000],

@@ -556,7 +556,10 @@ int main(int argc,char **argv){
                 cout << " draw=" << 1./TimerDraw.getAvrg();
                 cout << (camPose_c2g.empty()?" not tracked":" tracked") << endl;
             }
-        } catch (...) { //const std::exception &ex) {
+        } catch (...) {
+        // } catch (const std::exception &ex) {
+            // cerr << ex.what() << endl;
+
             errorFlag = true;
             cerr << "an error occurs" << endl;
 

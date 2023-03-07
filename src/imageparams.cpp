@@ -21,6 +21,9 @@
 #include "basictypes/hash.h"
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+
+#include<fstream>
+
 namespace tslam {
 
 ImageParams::ImageParams(){
@@ -156,7 +159,6 @@ void ImageParams::readFromXMLFile(std::string filePath)
 {
     cv::FileStorage fs(filePath, cv::FileStorage::READ);
     if(!fs.isOpened()) throw std::runtime_error(std::string(__FILE__)+" could not open file:"+filePath);
-
 
     int w = -1, h = -1;
     cv::Mat MCamera, MDist;
