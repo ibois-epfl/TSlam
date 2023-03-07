@@ -2273,7 +2273,7 @@ _8214686538440707422 )
 
     frame_460825.jpeg_buffer.create ( 1,_11093821971029.size (),CV_8UC1 )    ;
 
-    mempcpy ( frame_460825.jpeg_buffer.ptr < uchar > ( 0 ), &_11093821971029 [ 0 ] ,_11093821971029.size () );
+    memcpy ( frame_460825.jpeg_buffer.ptr < uchar > ( 0 ), &_11093821971029 [ 0 ] ,_11093821971029.size () );
   }
   
   frame_460825.scaleFactors.resize ( _8033463663468506753 -> getParams () .nOctaveLevels )  ;

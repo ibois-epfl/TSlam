@@ -91,7 +91,7 @@ namespace tslam::Reconstruction
          */
         TSGeometricSolver& getGeometricSolver() { return this->m_GeometricSolver; };
     
-    public: __always_inline  ///< clean func
+    public: __attribute__((always_inline))  ///< clean func
         /// Clean the data attached to the reconstructor
         void clean()
         {

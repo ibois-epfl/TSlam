@@ -360,6 +360,21 @@ TSGeometricSolver& getGeometricSolver()
 ```
 - An utility getter func to retrive the geometric solver and access its internal parameters. Normally not needed. More for debug or dev.
 
+## Trouble Shooting
+### Build on MacOS
+#### GMP may have some problem linking:
+```
+Undefined symbols for architecture x86_64:
+  "___gmpn...", referenced from: ...
+  ...
+  ...
+ld: symbol(s) not found for architecture x86_64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+```
+Please manually unlink GMP:
+```bash
+brew unlink gmp
+```
 
 ## Other
 - `/example`: An example video for mapping and tracking.

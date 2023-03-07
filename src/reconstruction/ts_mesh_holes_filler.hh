@@ -49,7 +49,7 @@ namespace tslam::Reconstruction
 {
     class TSMeshHolesFiller
     {
-    private: __always_inline  ///< fill holes util
+    private: __attribute__((always_inline))  ///< fill holes util
         /**
          * @brief Utility function to check if a hole is small enough to be filled
          * 
@@ -80,7 +80,7 @@ namespace tslam::Reconstruction
             return true;
         }
 
-    public: __always_inline  ///< fill holes
+    public: __attribute__((always_inline))  ///< fill holes
         // TODO: implement non manifold edges removal
         /**
          * @brief It fills the holes in the mesh using the CGAL library. Normals are recomputed accordingly.
@@ -141,7 +141,7 @@ namespace tslam::Reconstruction
             // }
         };
 
-    public: __always_inline  ///< utils
+    public: __attribute__((always_inline))  ///< utils
         /**
          * @brief The function transform the surface mesh into a polygon soup, remove duplicate points, reorient the soup, and transform it back into a surface mesh.
          * 
@@ -189,7 +189,7 @@ namespace tslam::Reconstruction
             return true;
         }
 
-    public: __always_inline  ///< converter mesh o3d/CGAL/polygons
+    public: __attribute__((always_inline))  ///< converter mesh o3d/CGAL/polygons
         /**
          * @brief It converts a vector of polygons to a CGAL mesh.
          * 

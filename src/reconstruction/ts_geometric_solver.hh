@@ -144,7 +144,7 @@ namespace tslam::Reconstruction
             void rJoinPolygons(std::vector<TSPolygon>& facePolygons,
                                Mesh_srf& mesh);
 
-    public: __always_inline  ///< Setters for solver parameters
+    public: __attribute__((always_inline))  ///< Setters for solver parameters
         void setRadiusSearch(float radiusSearch){m_RadiusSearch = radiusSearch;}; 
         void setCreaseAngleThreshold(double creaseAngleThreshold){m_CreaseAngleThreshold = creaseAngleThreshold;};
         void setMinClusterSize(int minClusterSize){m_MinClusterSize = minClusterSize;};
@@ -173,10 +173,10 @@ namespace tslam::Reconstruction
             m_DrawFinalMesh = drawFinalMesh;
         };
     
-    public: __always_inline  ///< Getters for solver parameters
+    public: __attribute__((always_inline))  ///< Getters for solver parameters
         Mesh_srf& getMeshOut() {return this->m_MeshOutCGAL;};
     
-    public: __always_inline  ///< mesh utility funcs
+    public: __attribute__((always_inline))  ///< mesh utility funcs
         /**
          * @brief Check if the geometric solver was able to produce a mesh.
          * 
@@ -207,7 +207,7 @@ namespace tslam::Reconstruction
             return isManifold;
         };
 
-    public:  __always_inline  ///< clean out memory func
+    public:  __attribute__((always_inline))  ///< clean out memory func
         /// Function to clean all the members and memory linked to the solver
         void clean()
         {
@@ -255,7 +255,7 @@ namespace tslam::Reconstruction
         /// Show the timber volume after merging into a mesh
         bool m_DrawFinalMesh;
 
-    public: __always_inline  ///< getters
+    public: __attribute__((always_inline))  ///< getters
         /// Get the timber element
         TSTimber& getTimber(){return this->m_Timber;};
         /// Get the tassellator

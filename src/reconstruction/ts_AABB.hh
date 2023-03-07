@@ -42,7 +42,7 @@ namespace tslam::Reconstruction
         };
         ~TSAABB() = default;
 
-    private: __always_inline
+    private: __attribute__((always_inline))
         /// It computes the AABB given a list of points
         void computeAABB()
         {
@@ -56,7 +56,7 @@ namespace tslam::Reconstruction
                                           this->m_AABB.zmax());
         };
 
-    public: __always_inline  ///< transform
+    public: __attribute__((always_inline))  ///< transform
         /// Uniform scaling
         void scale(double scaleFactor)
         {
@@ -75,7 +75,7 @@ namespace tslam::Reconstruction
             this->m_Max = max;
         };
 
-    public: __always_inline  ///< getters
+    public: __attribute__((always_inline))  ///< getters
         Eigen::Vector3d& getMin() {return this->m_Min; };
         Eigen::Vector3d& getMax() {return this->m_Max; };
         
