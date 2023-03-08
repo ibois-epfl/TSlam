@@ -8,7 +8,7 @@
     - [Data processing](#data-processing)
       - [(i) TSlam reconstruction](#i-tslam-reconstruction)
       - [(ii) Camera trajectories](#ii-camera-trajectories)
-    - [Data analysis](#data-analysis)
+    - [Data analysis (error metrics)](#data-analysis-error-metrics)
       - [(i) TSlam reconstruction](#i-tslam-reconstruction-1)
       - [(ii) Camera trajectories](#ii-camera-trajectories-1)
   - [General Notes](#general-notes)
@@ -198,7 +198,7 @@ graph LR
 ---
 
 ### Data processing
-In this section we go into details of the data processing phase where we collect all the raw data out of the experimental activity, process it and output readable result values and visualization.
+In this section we go into details of the data processing phase where we collect all the raw data out of the experimental activity, process it transform the data so that can be used in the next step for the analysis.
 
 #### (i) TSlam reconstruction
 THIS NEEDS TO BE DEFINED
@@ -215,7 +215,9 @@ Next, the TSlam runs on the recorded video sequence and output the following dat
 
 Now, in order to compare the two trajectories we need to do 2 operations:
 - **(1)** *object-related frame system transposal*: express `Tr` in the coordinate of `Tt` to obtain a new list of transformations named `Tc`. This will be our ground truth and it is necessary to have both `Tc` and `Ts` on the same timber beam's coordinate system.
-- **(2)** *trajectory alignement*: now that the two sets of transformations (`Tc` and `Ts`) are expressed in the same local system we need to align them with the Horn transform[^1]. This will align `Ts` to `Tc` to obtain `Tsa`.
+
+---->>>> the allignements depending on Absolute Trajectory Error(ATE) or relative (RE) <<<<<<------
+<!-- - **(2)** *trajectory alignement*: now that the two sets of transformations (`Tc` and `Ts`) are expressed in the same local system we need to align them with the Horn transform[^1]. This will align `Ts` to `Tc` to obtain `Tsa`.
 
 After these two steps we obtain the following processed data:
 - `Tc`: the ground truth transformations expressed in the timber beam's coordinate system
@@ -224,10 +226,10 @@ After these two steps we obtain the following processed data:
 
 With these 3 data we are able to proceed to the next phase: the data analysis.
 
-[^1]: the Horn transformation for trajectories' alignement: B. K. P. Horn, “Closed-form solution of absolute orientation using unit quaternions,” Journal of the Optical Society of America A, vol. 4, no. 4, p. 629, Apr. 1987. [Online]. Available: https://doi.org/10.1364/josaa.4.000629
+[^1]: the Horn transformation for trajectories' alignement: B. K. P. Horn, “Closed-form solution of absolute orientation using unit quaternions,” Journal of the Optical Society of America A, vol. 4, no. 4, p. 629, Apr. 1987. [Online]. Available: https://doi.org/10.1364/josaa.4.000629 -->
 
 ---
-### Data analysis
+### Data analysis (error metrics)
 In this section we run analysis on the processed data to obtain the final evaluation results for (**i**) quantifying the error of the reconstructed algorithm, (**ii**) and the distance between the TSlam computed trajectory and the ground-truth trajectory.
 
 #### (i) TSlam reconstruction
@@ -237,7 +239,7 @@ THIS NEEDS TO BE DEFINED
 #### (ii) Camera trajectories
 To compare the two trajectories, state-of-the-art SLAM evaluations propose
 
-
+https://github.com/uzh-rpg/rpg_trajectory_evaluation
 
 
 
