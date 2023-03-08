@@ -8,6 +8,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <string>
 #include <thread>
+#include <random>
 #include "tslam.h"
 #include "map.h"
 namespace tslam{
@@ -475,7 +476,8 @@ vector<sgl::Point3> MapDrawer::getMarkerIdPcd(tslam::Marker &minfo,float perct=1
         int notused=float(points_id.size())*(1-perct);
         vector<char> used(points_id.size(),true);
         for(int i=0;i<notused;i++) used[i]=false;
-        std::random_shuffle(used.begin(),used.end());
+        std::mt19937 randomSeed(std::random_device{}());
+        std::shuffle(used.begin(),used.end(),randomSeed);
         //copy only the selected
         s_points_id.reserve(points_id.size());
         for(size_t i=0;i<points_id.size();i++)

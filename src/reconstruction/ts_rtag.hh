@@ -50,7 +50,7 @@ namespace tslam::Reconstruction
         inline void setID(uint id) {m_Id = id; };
         inline void setFaceIdx(int idx) {m_FaceIdx = idx; };
 
-    public: __always_inline
+    public: __attribute__((always_inline))
         std::vector<Eigen::Vector3d>& getCorners() {return m_Corners; }; 
         Eigen::Vector3d& getCornerA() {return m_Corners[0]; };
         Eigen::Vector3d& getCornerB() {return m_Corners[1]; };
@@ -71,11 +71,11 @@ namespace tslam::Reconstruction
         void computePlaneEquation();
         void computeOpen3dMesh();
     
-    public: __always_inline
+    public: __attribute__((always_inline))
         void setColor(Eigen::Vector3d clr) {m_Color = clr; };
         Eigen::Vector3d& getColor() {return m_Color; };
 
-    public: __always_inline
+    public: __attribute__((always_inline))
         /**
          * @brief Compute the distance between two tags
          * 

@@ -66,7 +66,7 @@ namespace tslam::Reconstruction
             }
         };
     
-    public:  __always_inline  ///< clean out memory func
+    public:  __attribute__((always_inline))  ///< clean out memory func
         /// Function to clean all the members and memory linked to the timber element
         void clean()
         {
@@ -75,7 +75,7 @@ namespace tslam::Reconstruction
             m_RtagsCtrs.clear();
         };
     
-    public: __always_inline  ///< tag funcs
+    public: __attribute__((always_inline))  ///< tag funcs
         /// Get all the tags objects attached to the timber element.
         std::vector<TSRTag> getPlaneTags() {return m_RTags; };
         /// Get number of tags after removing duplicates.

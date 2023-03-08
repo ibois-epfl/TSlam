@@ -10,6 +10,7 @@
 #include "optimization/pnpsolver.h"
 #include "basictypes/minmaxbags.h"
 #include <xflann/xflann.h>
+#include <random>
 #include "basictypes/hash.h"
 #include "utils/framematcher.h"
 
@@ -3519,13 +3520,8 @@ namespace tslam {
                 getParams()
                         .maxNewPoints) {
 
-            std::
-
-            random_shuffle(
-
-                    _7619806436859450970.begin(), _7619806436859450970.end()
-
-            );
+                std::mt19937 randomSeed(std::random_device{}());
+                std::shuffle(_7619806436859450970.begin(), _7619806436859450970.end(),randomSeed);
 
         }
 
@@ -4813,7 +4809,7 @@ namespace tslam {
 
         _11093822380353 +=
 
-                keyframesToAdd.size();
+                uint64_t(keyframesToAdd.size());
 
         for (
 

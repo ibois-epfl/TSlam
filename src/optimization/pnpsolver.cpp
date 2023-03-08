@@ -17,6 +17,7 @@
 * along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
 #include "typesg2o.h"
+#include <random>
 #include <g2o/core/block_solver.h>
 #include <g2o/core/optimization_algorithm_levenberg.h>
 #include <g2o/solvers/eigen/linear_solver_eigen.h>
@@ -62,7 +63,8 @@ bool PnPSolver::solvePnPRansac( const Frame &frame, std::shared_ptr<Map> map, st
     const float *cam=frame.imageParams.CameraMatrix.ptr<float>(0);
     for(int iter=0;iter<maxIters;iter++){
         inliers.clear();
-        std::random_shuffle(indices.begin(),indices.end());
+        std::mt19937 randomSeed(std::random_device{}());
+        std::shuffle(indices.begin(),indices.end(),randomSeed);
         for(int j=0;j<nSamples;j++){
             _p2d[j]=p2d[  indices[j] ];
             _p3d[j]=p3d[  indices[j] ];
