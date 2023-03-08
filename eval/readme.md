@@ -5,6 +5,12 @@
   - [Methodology](#methodology)
     - [Evaluation variables and repetitions](#evaluation-variables-and-repetitions)
     - [Evaluation pipeline](#evaluation-pipeline)
+    - [Data processing](#data-processing)
+      - [(i) TSlam reconstruction](#i-tslam-reconstruction)
+      - [(ii) Camera trajectories](#ii-camera-trajectories)
+    - [Data analysis](#data-analysis)
+      - [(i) TSlam reconstruction](#i-tslam-reconstruction-1)
+      - [(ii) Camera trajectories](#ii-camera-trajectories-1)
   - [General Notes](#general-notes)
   - [Questions](#questions)
 
@@ -78,11 +84,10 @@ graph LR
 
 * (B) Same cuts and holes on each beam with the most popular types of joineries for carpentry. One for each phase so that we need to turn the piece. For holes we want a variation in angles (30-60 deg) and two types of drilling (for washers and pegs/dowels).
 
-![](./img/sketch1.png)
-
 * (C) the distribution and density of tags. We limit the scope of the use of tags by stripes because we identify this as a plausible use rather than single ones. We explore two orientations (long and short axis) and 3 densities.
 
-Tags distribution
+![](./img/sketch1.png)
+
 |        stripe distribution           |          ring distribution           |
 |:----------------------:|:-----------------------:|
 | ![](./img/stripe_1.png) | ![](./img/ring_1.png)  |
@@ -92,7 +97,12 @@ Tags distribution
 
 ---
 ### Evaluation pipeline
-The scheme shows the steps to follow for each iteration independently from the variants.
+
+The evaluation pipeline for each iteration and it is independent from the values of the evaluation parameters. The two outcomes will always be (**i**) the accuracy of the reconstructed model, and the accuracy of the TSlam tracking, i.e. the camera's trajectory (**ii**).
+
+- **i**) <u>the reconstruction needs to be clarified</u>
+- **ii**) after the application of the Optitrack and TSlam tracking beacons and the preparation of the necessary set-up for the MotiveOptitrack software to be operative, the beam is mapped with TSlam. The piece will be marked manually as in traditional carpentry practice. The fabrication will be carried out with manual electric tools (saber saw and drill). <u>The operator will not follow any augmented instructions and they will not be provided with any graphical support. The fabrication will be carried out by following the precedently applied marks</u>. This will get rid of any biases in the evaluation of TSlam. in fact, if the operator had visual feedback informing them on the TSlam tracking health, they might have the tendancy of modifying the current wood-working action to ameliorate the visual feedback at their disposal, hence the tracking signal. Our goal for the construction of the dataset is to have a video sequence of common and unbiased wood-working movements.
+
 ```mermaid
 graph LR
 
@@ -184,6 +194,52 @@ graph LR
 
     end
 ```
+
+---
+
+### Data processing
+In this section we go into details of the data processing phase where we collect all the raw data out of the experimental activity, process it and output readable result values and visualization.
+
+#### (i) TSlam reconstruction
+THIS NEEDS TO BE DEFINED
+
+#### (ii) Camera trajectories
+After the Optitrack tracking of the fabrication we obtain the following data:
+- `Tt`: the transformation records from the Optitrack of the timber rigid body (translation + quaternions) expressed in a global coordinate system
+- `Tr`: the transformation records from the Optitrack of the camera rigid body (translation + quaternions) expressed in a global coordinate system
+- `RGB frames`: frames of the fabrication video sequence
+`
+Next, the TSlam runs on the recorded video sequence and output the following data:
+- `Ts`: the transformation records from the TSLAM of the camera (translation + quaternions) expressed in the coordinate system of the timber piece (the object is fix and the camera moves around)
+- `RGB frames with detection overlay`: the RGB frames with visual hints of markers or visual features detections
+
+Now, in order to compare the two trajectories we need to do 2 operations:
+- **(1)** *object-related frame system transposal*: express `Tr` in the coordinate of `Tt` to obtain a new list of transformations named `Tc`. This will be our ground truth and it is necessary to have both `Tc` and `Ts` on the same timber beam's coordinate system.
+- **(2)** *trajectory alignement*: now that the two sets of transformations (`Tc` and `Ts`) are expressed in the same local system we need to align them with the Horn transform[^1]. This will align `Ts` to `Tc` to obtain `Tsa`.
+
+After these two steps we obtain the following processed data:
+- `Tc`: the ground truth transformations expressed in the timber beam's coordinate system
+- `Tsa`: the TSlam transformations aligned to `Tc`
+- `RGB frames`: video capture of the fabrication sequence
+
+With these 3 data we are able to proceed to the next phase: the data analysis.
+
+[^1]: the Horn transformation for trajectories' alignement: B. K. P. Horn, “Closed-form solution of absolute orientation using unit quaternions,” Journal of the Optical Society of America A, vol. 4, no. 4, p. 629, Apr. 1987. [Online]. Available: https://doi.org/10.1364/josaa.4.000629
+
+---
+### Data analysis
+In this section we run analysis on the processed data to obtain the final evaluation results for (**i**) quantifying the error of the reconstructed algorithm, (**ii**) and the distance between the TSlam computed trajectory and the ground-truth trajectory.
+
+#### (i) TSlam reconstruction
+THIS NEEDS TO BE DEFINED
+
+
+#### (ii) Camera trajectories
+To compare the two trajectories, state-of-the-art SLAM evaluations propose
+
+
+
+
 
 ## General Notes
 The evaluation protocol is designed to assess parameters that are important for the fabrication process. As every other SLAM, also TSlam could be evaluated under many other aspects and criteria proper to the computer vision domain. Nevertheless, we limit the evaluation to the obtention of quantitative data only for those parameters impacting operational aspects of the developed SLAM pipeline. We will mention all relevant state-of-the-art evaluation methods and will make public the collected data and source code for further computer-vision fundamental analysis on TSlam.
