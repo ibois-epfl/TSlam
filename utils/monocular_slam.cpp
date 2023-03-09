@@ -180,7 +180,7 @@ void loadPly(string path, vector<cv::Vec3f> &vertices, vector<cv::Vec3i> &faces,
 }
 
 std::pair<cv::Point2f, cv::Point2f>projectToScreen(int imgW, int imgH, std::pair<cv::Vec3f, cv::Vec3f> pts, cv::Mat projectionMatrix){
-    float zNear = 0.1f;
+    float zNear = 1.0f;
 
     cv::Mat p1 = (cv::Mat_<float>(4, 1) << pts.first[0], pts.first[1], pts.first[2], 1);
     p1 = projectionMatrix * p1;
@@ -188,49 +188,30 @@ std::pair<cv::Point2f, cv::Point2f>projectToScreen(int imgW, int imgH, std::pair
     cv::Mat p2 = (cv::Mat_<float>(4, 1) << pts.second[0], pts.second[1], pts.second[2], 1);
     p2 = projectionMatrix * p2;
 
-//    cout << "p1: " << p1 << endl;
-//    cout << "p2: " << p2 << endl;
-
-    // if both points are behind the camera, return pair<(-1, -1), (-1, -1)>
-    auto w1 = p1.at<float>(3, 0) / p1.at<float>(2, 0);
-    auto w2 = p2.at<float>(3, 0) / p2.at<float>(2, 0);
-    if ( w1 > 1 || w2 > 1) {
-        return std::make_pair(cv::Point2f(-1, -1), cv::Point2f(-1, -1));
-    }
+    // cout << "p1: " << p1 << endl;
+    // cout << "p2: " << p2 << endl;
 
     pts.first = cv::Vec3f(p1.at<float>(0, 0), p1.at<float>(1, 0), p1.at<float>(2, 0));
     pts.second = cv::Vec3f(p2.at<float>(0, 0), p2.at<float>(1, 0), p2.at<float>(2, 0));
-
+    
     auto reprojOnNearPlane = [&zNear](std::pair<cv::Vec3f, cv::Vec3f> pts){
-//        cout << "Need to reproject on near plane" << endl;
-//        cout << pts.first << pts.second << endl;
-
-        cv::Vec3f basePt;
-        cv::Vec3f vec;
+        auto ptFront = pts.first, ptBack = pts.second;
+        if (pts.first[2] < zNear) {
+            // pts.first is behind the camera
+            ptFront = pts.second;
+            ptBack = pts.first;
+        }
 
         float pz;
 
-        if (abs(pts.first[2]) < abs(pts.first[3])) {
-            basePt = pts.second;
-            vec = pts.first - pts.second;
-            pz = pts.first[3];
-        } else {
-            basePt = pts.first;
-            vec = pts.second - pts.first;
-            pz = pts.second[3];
-        }
+        ptBack = (abs(zNear - ptBack[2]) * ptFront + abs(zNear - ptFront[2]) * ptBack) / abs(ptFront[2] - ptBack[2]);
 
-        float t = (zNear - basePt[2]) / vec[2];
-
-        auto reprojectPts = make_pair(basePt + t * vec, basePt);
-
-//        cout << "reprojectPts: " << reprojectPts.first << reprojectPts.second << endl;
-
-        return reprojectPts;
+        return make_pair(ptBack, ptFront);
     };
 
-    // if the point is behind the camera, project the point onto the near plane
-    if (w1 > 1 || w2 > 1) {
+    if (p1.at<float>(2, 0) < zNear && p2.at<float>(2, 0) < zNear) {
+        return std::make_pair(cv::Point2f(-1, -1), cv::Point2f(-1, -1));
+    } else if (p1.at<float>(2, 0) < zNear || p2.at<float>(2, 0) < zNear) {
         pts = reprojOnNearPlane(pts);
     }
 
