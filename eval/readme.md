@@ -68,17 +68,352 @@ graph LR
     subgraph Evaluation methodology
       AA(Scanning and model comparison)
       BB(Optitrack dataset and trajectory comparison)
-    end
 
     k --> A
     j --> B
 
     A --> AA
     B --> BB
+  end
 ```
 
 ---
 ### Evaluation variables and repetitions
+
+Type of variables
+```mermaid
+  flowchart LR
+
+    Variables
+    Variables --> Cc
+    Variables --> J
+    Variables --> Ti
+    Variables --> T
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    Cc(camera)
+    Cc --> Ccr(resolution)
+    Ccr --> Ccr1(1280 x 720)
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    J[joinery]
+    J --> Cuts
+    J --> Hole
+
+    Cuts[Cuts]
+    Cuts --> CutsT
+    Cuts --> CutsNum
+    CutsT[types]
+    CutsT_S(joint scar)
+    CutsT_H(joint half lap)
+    CutsT_L(joint lap)
+    CutsT_N(joint notch)
+    CutsT --> CutsT_S
+    CutsT --> CutsT_H
+    CutsT --> CutsT_L
+    CutsT --> CutsT_N
+    CutsNum[number]
+    CutsNum --> CutsNum_1(1 per piece)
+    CutsNum --> CutsNum_2(2 per piece)
+    CutsNum --> CutsNum_3(3 per piece)
+    CutsNum --> CutsNum_4(4 per piece)
+
+    Hole[Hole]
+    Hole --> HoleT
+    Hole --> HoleN
+    Hole --> HoleDeg
+    HoleT[type]
+    HoleT --> HoleT1(washer head d:50mm)
+    HoleT --> HoleT2(spiral piercing head d:20mm)
+    HoleN[number]
+    HoleN --> HoleN_10(10 per piece)
+    HoleN --> HoleN_2(2 per piece)
+    HoleDeg(angle)
+    HoleDeg --> HoleDeg_90(90deg)
+    HoleDeg --> HoleDeg_45(45deg)
+    HoleDeg --> HoleDeg_30(30deg)
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    Ti(timber)
+    Ti --> Tdim
+    Ti --> TNcuts
+
+    Tdim[timber dimensions]
+    Tdim --> Td1(140x140x2000)
+    TNcuts[timber initial number of cuts]
+    
+    TNcuts[number of cuts]
+    TNcuts --> TNcuts_1(1 joint per piece)
+    TNcuts --> TNcuts_2(2 joints per piece)
+    TNcuts --> TNcuts_3(3 joints per piece)
+    TNcuts --> TNcuts_4(4 joints per piece)
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    T(tags)
+    T --> TDt
+    T --> TDd
+
+    TDt[tag distribution]
+    TDt --> TDt1(longitudinal to beam's length)
+    TDt --> TDt2(horizontal to beam's length)
+
+    TDd[tag density]
+    TDd --> TDd1(low)
+    TDd --> TDd2(medium)
+    TDd --> TDd3(high)
+```
+
+Given the previous variables the following table shows the specimens set and parameters values for each repetition.
+<table border="1" class="dataframe">
+  <tbody>
+    <tr>
+      <td>speciment index</td>
+      <td>timber dimensions</td>
+      <td>cuts itype/number in initial state</td>
+      <td>drills type/number to execute</td>
+      <td>tags distribution</td>
+      <td>tags density</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>14x14x2000</td>
+      <td>[]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>stripe layout</td>
+      <td>medium density</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>14x14x2000</td>
+      <td>[]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>stripe layout</td>
+      <td>high density</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>14x14x2000</td>
+      <td>[]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>ring layout</td>
+      <td>low density</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>14x14x2000</td>
+      <td>[]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>ring layout</td>
+      <td>medium density</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>14x14x2000</td>
+      <td>[]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>ring layout</td>
+      <td>high density</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>14x14x2000</td>
+      <td>[1xscar]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>stripe layout</td>
+      <td>low density</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>14x14x2000</td>
+      <td>[1xscar]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>stripe layout</td>
+      <td>medium density</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>14x14x2000</td>
+      <td>[1xscar]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>stripe layout</td>
+      <td>high density</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>14x14x2000</td>
+      <td>[1xscar]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>ring layout</td>
+      <td>low density</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>14x14x2000</td>
+      <td>[1xscar]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>ring layout</td>
+      <td>medium density</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>14x14x2000</td>
+      <td>[1xscar]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>ring layout</td>
+      <td>high density</td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>stripe layout</td>
+      <td>low density</td>
+    </tr>
+    <tr>
+      <td>13</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>stripe layout</td>
+      <td>medium density</td>
+    </tr>
+    <tr>
+      <td>14</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>stripe layout</td>
+      <td>high density</td>
+    </tr>
+    <tr>
+      <td>15</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>ring layout</td>
+      <td>low density</td>
+    </tr>
+    <tr>
+      <td>16</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>ring layout</td>
+      <td>medium density</td>
+    </tr>
+    <tr>
+      <td>17</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>ring layout</td>
+      <td>high density</td>
+    </tr>
+    <tr>
+      <td>18</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>stripe layout</td>
+      <td>low density</td>
+    </tr>
+    <tr>
+      <td>19</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>stripe layout</td>
+      <td>medium density</td>
+    </tr>
+    <tr>
+      <td>20</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>stripe layout</td>
+      <td>high density</td>
+    </tr>
+    <tr>
+      <td>21</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>ring layout</td>
+      <td>low density</td>
+    </tr>
+    <tr>
+      <td>22</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>ring layout</td>
+      <td>medium density</td>
+    </tr>
+    <tr>
+      <td>23</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>ring layout</td>
+      <td>high density</td>
+    </tr>
+    <tr>
+      <td>24</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>stripe layout</td>
+      <td>low density</td>
+    </tr>
+    <tr>
+      <td>25</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>stripe layout</td>
+      <td>medium density</td>
+    </tr>
+    <tr>
+      <td>26</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>stripe layout</td>
+      <td>high density</td>
+    </tr>
+    <tr>
+      <td>27</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>ring layout</td>
+      <td>low density</td>
+    </tr>
+    <tr>
+      <td>28</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>ring layout</td>
+      <td>medium density</td>
+    </tr>
+    <tr>
+      <td>29</td>
+      <td>14x14x2000</td>
+      <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
+      <td>[10xdrilling, 2xwasher]</td>
+      <td>ring layout</td>
+      <td>high density</td>
+    </tr>
+  </tbody>
+</table>
+
+
 
 * (A) timber length: 14x14cm length 2m (defined by the optitrack capture area): 18 pieces in total
 
@@ -93,6 +428,7 @@ graph LR
 | ![](./img/stripe_1.png) | ![](./img/ring_1.png)  |
 | ![](./img/stripe_2.png) | ![](./img/ring_2.png)  |
 | ![](./img/stripe_3.png) | ![](./img/ring_3.png)  |
+
 
 
 ---
