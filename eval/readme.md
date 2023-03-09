@@ -537,7 +537,7 @@ graph LR
 In this section we go into details of the data processing phase where we collect all the raw data out of the experimental activity, process it transform the data so that can be used in the next step for the analysis.
 
 #### (i) TSlam reconstruction
-THIS NEEDS TO BE DEFINED
+THIS NEEDS TO BE DEFINED----> ALLIIGNEMENT OF MODELS WHICH METHOD, NEEDS STATE-OF-THE-ART?
 
 #### (ii) Camera trajectories
 After the Optitrack tracking of the fabrication we obtain the following data:
