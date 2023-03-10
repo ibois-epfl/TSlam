@@ -478,6 +478,12 @@ graph LR
     %% classDef subGStylI padding-left:30em fill:#f9f;
     %% classDef subGStylII padding-left:30em;
 
+    subG_prefab ==> 
+    subG_prep ==>
+    subG_exec ==>
+    subG_post ==>
+    subG_data ==>
+    subG_analysis
 
     O[timber beam]
     OO[camera]
@@ -559,43 +565,54 @@ graph LR
       proc1_orbR1{{Tc: ORBSLAM3 camera \n trajectory}}
       proc1_orb --> proc1_orbR1
       proc1_orbR1 --> proc2
-      tslamR1 --> proc2
+      tslamR1 -.-> proc2
       
       proc2(allign trajectories)
       proc2 --> proc2ATE(realligned \n entire trajectory)
       proc2 --> proc2RE(realligned only \n fabrication sequences)
-      proc2ATE --> Ts_ar_gt{{Ts_ar_orb: TSlam \n trajectory alligned to GT}}
-      proc2RE --> Ts_rr_gt{{Ts_rr_orb: TSlam trajectory \n sequences alligned to GT}}
+      proc2ATE --> Ts_ar_gt{{Ts_ar_gt: TSlam \n trajectory alligned to GT}}
+      proc2RE --> Ts_rr_gt{{Ts_rr_gt: TSlam trajectory \n sequences alligned to GT}}
+      proc2ATE --> To_ar_gt{{To_ar_gt: TSlam \n trajectory alligned to GT}}
+      proc2RE --> To_rr_gt{{To_rr_gt: TSlam trajectory \n sequences alligned to GT}}
 
     end
 
     subgraph subG_analysis[5, data anlysis]
-      %% errors
-      compareT_ATE(ATE: absolute trajectory error)
-      %% Ts_ar_gt --> compareT_ATE
-      %% procR1 --> compareT_ATE
-      %% Ts_ar_gt --> compareT_ATE
+      %%%%%%%%%%%%%% trajectory errors %%%%%%%%%%%%%%
+      compareT_ATE_TSLAM_GT(compare absolute trajectory \n error TSlam/GT)
+      Ts_ar_gt -.-> compareT_ATE_TSLAM_GT
+      procR1 -.-> compareT_ATE_TSLAM_GT
+
+      compareT_RE_TSLAM_GT(compare relative trajectory \n errors TSlam/GT)
+      Ts_rr_gt -.-> compareT_RE_TSLAM_GT
+      procR1 -.-> compareT_RE_TSLAM_GT
+
+      compareT_ATE_ORBSLAM_GT(compare absolute trajectory \n error ORBSLAM/GT)
+      To_ar_gt -.-> compareT_ATE_ORBSLAM_GT
+      procR1 -.-> compareT_ATE_ORBSLAM_GT
+
+      compareT_RE_ORBSLAM_GT(compare relative trajectory \n errors ORBSLAM/GT)
+      To_rr_gt -.-> compareT_RE_ORBSLAM_GT
+      procR1 -.-> compareT_RE_ORBSLAM_GT
 
 
-
-      compareT_ATE_R1_A(GT/Tslam error \n absolute error)
-      compareT_ATE --> compareT_ATE_R1_A
+      compareT_ATE_TSLAM_GT_R1_A(GT/Tslam error \n absolute error)
+      compareT_ATE_TSLAM_GT --> compareT_ATE_TSLAM_GT_R1_A
 
       compareT_ATE_R2_A(GT/ORBSLAM3 error \n absolute error)
       compareT_ATE --> compareT_ATE_R2_A
 
-      compareT_ATE_R1_R(GT/Tslam error \n relative error)
-      compareT_ATE --> compareT_ATE_R1_R
+      compareT_RE_R1_R(GT/Tslam error \n relative error)
+      compareT_RE --> compareT_RE_R1_R
 
-      compareT_ATE_R2_R(GT/ORBSLAM3 error \n relative error)
-      compareT_ATE --> compareT_ATE_R2_R
+      compareT_RE_R2_R(GT/ORBSLAM3 error \n relative error)
+      compareT_RE --> compareT_RE_R2_R
 
-
+      %%%%%%%%%%%%%% reconstruction errors %%%%%%%%%%%%%%
       compareM(compare models)
       tslamR2-.-> compareM
       scanR-.-> compareM
       compareMR1(models \n error)
-      style compareMR1 stroke:#f66,stroke-width:2px,color:#fff,stroke-dasharray: 5 5
       compareM --> compareMR1
     end
 
