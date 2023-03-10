@@ -27,7 +27,7 @@
       - [(i) TSlam reconstruction](#i-tslam-reconstruction)
       - [(ii) Camera trajectory](#ii-camera-trajectory-2)
   - [General Notes](#general-notes)
-  - [Questions](#questions)
+  - [Annexe](#annexe)
 
 
 ---
@@ -494,8 +494,8 @@ graph LR
     subgraph subG_prefab[0. pre-fabrication]
       mark(apply marks \n for cutting/drilling)
       mark --> prefab(make cuts \n before fabrication)
-
     end
+
 
     subgraph subG_prep[1. preparation]
       optPrep1(apply Optitrack beacons on objects)
@@ -578,44 +578,58 @@ graph LR
     end
 
     subgraph subG_analysis[5, data anlysis]
+      %% style result
+      classDef resultClass fill:#f66, color:#234F 
+
       %%%%%%%%%%%%%% trajectory errors %%%%%%%%%%%%%%
-      compareT_ATE_TSLAM_GT(compare absolute trajectory \n error TSlam/GT)
+      compareT_ATE_TSLAM_GT(compare ATE TSlam/GT)
       Ts_ar_gt -.-> compareT_ATE_TSLAM_GT
       procR1 -.-> compareT_ATE_TSLAM_GT
 
-      compareT_RE_TSLAM_GT(compare relative trajectory \n errors TSlam/GT)
+      compareT_RE_TSLAM_GT(compare RE TSlam/GT)
       Ts_rr_gt -.-> compareT_RE_TSLAM_GT
       procR1 -.-> compareT_RE_TSLAM_GT
 
-      compareT_ATE_ORBSLAM_GT(compare absolute trajectory \n error ORBSLAM/GT)
+      compareT_ATE_ORBSLAM_GT(compare ATE ORBSLAM/GT)
       To_ar_gt -.-> compareT_ATE_ORBSLAM_GT
       procR1 -.-> compareT_ATE_ORBSLAM_GT
 
-      compareT_RE_ORBSLAM_GT(compare relative trajectory \n errors ORBSLAM/GT)
+      compareT_RE_ORBSLAM_GT(compare RE ORBSLAM/GT)
       To_rr_gt -.-> compareT_RE_ORBSLAM_GT
       procR1 -.-> compareT_RE_ORBSLAM_GT
 
+      compareT_ATE_TSLAM_GT --> ATE_TSLAM_translation{{ATE error for translation \n x,y,z}}:::resultClass %% <------ R
+      compareT_ATE_TSLAM_GT --> ATE_TSLAM_rotation{{ATE error for rotation \n axis x,y,z}}:::resultClass %% <------- R
+      compareT_RE_TSLAM_GT --> RE_TSLAM_translation{{RE error for translation \n x,y,z}}:::resultClass %% <--------- R
+      compareT_RE_TSLAM_GT --> RE_TSLAM_rotation{{RE error for rotation \n axis x,y,z}}:::resultClass %% <---------- R
 
-      compareT_ATE_TSLAM_GT_R1_A(GT/Tslam error \n absolute error)
-      compareT_ATE_TSLAM_GT --> compareT_ATE_TSLAM_GT_R1_A
+      compareT_ATE_ORBSLAM_GT --> ATE_ORBSLAM_translation{{ATE error for translation \n x,y,z}}:::resultClass %% <-- R
+      compareT_ATE_ORBSLAM_GT --> ATE_ORBSLAM_rotation{{ATE error for rotation \n axis x,y,z}}:::resultClass %% <--- R
+      compareT_RE_ORBSLAM_GT --> RE_ORBSLAM_translation{{RE error for translation \n x,y,z}}:::resultClass %% <----- R
+      compareT_RE_ORBSLAM_GT --> RE_ORBSLAM_rotation{{RE error for rotation \n axis x,y,z}}:::resultClass %% <------ R
 
-      compareT_ATE_R2_A(GT/ORBSLAM3 error \n absolute error)
-      compareT_ATE --> compareT_ATE_R2_A
+      %%%%%%%%%%%%%% comparison TSLMA/ORBSLAM errors %%%%%%%%%%%%%%
+      compareTOSLAM_ATE(ATE comparison TSLAM/ORBSLAM)
+      ATE_TSLAM_translation --> compareTOSLAM_ATE
+      ATE_TSLAM_rotation --> compareTOSLAM_ATE
+      ATE_ORBSLAM_translation --> compareTOSLAM_ATE
+      ATE_ORBSLAM_rotation --> compareTOSLAM_ATE
+      compareTOSLAM_ATE --> compareTOSLAM_ATE_R{{ATE diff TSLAM/ORBSLAM}}:::resultClass  %% <----------------------- R
 
-      compareT_RE_R1_R(GT/Tslam error \n relative error)
-      compareT_RE --> compareT_RE_R1_R
-
-      compareT_RE_R2_R(GT/ORBSLAM3 error \n relative error)
-      compareT_RE --> compareT_RE_R2_R
+      compareTOSLAM_RE(RE comparison TSLAM/ORBSLAM)
+      RE_TSLAM_translation --> compareTOSLAM_RE
+      RE_ORBSLAM_translation --> compareTOSLAM_RE
+      RE_TSLAM_rotation --> compareTOSLAM_RE
+      RE_ORBSLAM_rotation --> compareTOSLAM_RE
+      compareTOSLAM_RE --> compareTOSLAM_RE_R{{RE diff TSLAM/ORBSLAM}}:::resultClass  %% <-------------------------- R
 
       %%%%%%%%%%%%%% reconstruction errors %%%%%%%%%%%%%%
       compareM(compare models)
       tslamR2-.-> compareM
       scanR-.-> compareM
-      compareMR1(models \n error)
+      compareMR1{{models \n error}}:::resultClass  %% <------------------------------------------------------------- R
       compareM --> compareMR1
     end
-
 ```
 
 ---
@@ -623,7 +637,7 @@ graph LR
 In this section we go into details of the data processing phase where we collect all the raw data out of the experimental activity, process it so that it can be used in the next step for the analysis.
 
 #### (i) Reconstruction
-THIS NEEDS TO BE DEFINED----> ALLIIGNEMENT OF MODELS WHICH METHOD, NEEDS STATE-OF-THE-ART?
+After the two models
 
 #### (ii) Camera trajectory
 After the Optitrack tracking of the fabrication we obtain the following data:
@@ -668,5 +682,6 @@ https://github.com/uzh-rpg/rpg_trajectory_evaluation
 ## General Notes
 The evaluation protocol is designed to assess parameters that are important for the fabrication process. As every other SLAM, also TSlam could be evaluated under many other aspects and criteria proper to the computer vision domain. Nevertheless, we limit the evaluation to the obtention of quantitative data only for those parameters impacting operational aspects of the developed SLAM pipeline. We will mention all relevant state-of-the-art evaluation methods and will make public the collected data and source code for further computer-vision fundamental analysis on TSlam.
 
-## Questions
-- [ ] if we use all the same identical beam there is no interest in testing the same shape for the reconstruction. What if we do a synthetic evaluation easier, rather than comparing a point cloud with all the referencing and meshing problems. Since it seems to be seperate.
+## Annexe
+- most relevant state of the art on evaluation of SLAM algorithms
+- the "ordre de commande" for the  needed timber for the experience
