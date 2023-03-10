@@ -1,16 +1,31 @@
+
+# TODOs
+
+- [ ] draw 3d rhino of piece and define location, dimensions and number of holes
+- [ ] prepare detailed planning for evaluation
+- [ ] write to Anna for help cutting
+- [ ] finish protocol for data processing and analysis
+- [ ] add chapter predictions
+- [ ] prepare ppt presentation
+- [ ] adapt chapter methodology
+- [ ] read state of the art for model comparison
+
 # Evaluation protocol of TSlam
 
+- [TODOs](#todos)
 - [Evaluation protocol of TSlam](#evaluation-protocol-of-tslam)
   - [Objectives](#objectives)
   - [Methodology](#methodology)
     - [Evaluation variables and repetitions](#evaluation-variables-and-repetitions)
     - [Evaluation pipeline](#evaluation-pipeline)
+      - [(i) Reconstruction](#i-reconstruction)
+      - [(ii) Camera trajectory](#ii-camera-trajectory)
     - [Data processing](#data-processing)
-      - [(i) TSlam reconstruction](#i-tslam-reconstruction)
-      - [(ii) Camera trajectories](#ii-camera-trajectories)
+      - [(i) Reconstruction](#i-reconstruction-1)
+      - [(ii) Camera trajectory](#ii-camera-trajectory-1)
     - [Data analysis (error metrics)](#data-analysis-error-metrics)
-      - [(i) TSlam reconstruction](#i-tslam-reconstruction-1)
-      - [(ii) Camera trajectories](#ii-camera-trajectories-1)
+      - [(i) TSlam reconstruction](#i-tslam-reconstruction)
+      - [(ii) Camera trajectory](#ii-camera-trajectory-2)
   - [General Notes](#general-notes)
   - [Questions](#questions)
 
@@ -20,7 +35,7 @@
 This folder contains all the documents describing the evaluation designed for TSlam.
 The TSlam *is an hybrid monocular camera's pose localization algorithm based on both direct feature detection and fiducial markers*.
 
-The scope of the current evaluation protocol is limited to assest the two most important criteria for fabrication in wood working:
+The scope of the current evaluation protocol is limited to assist the two most important criteria for fabrication in woodworking:
 - **i)** the accuracy of the reconstruction model, useful to produce fabrication drawings
 - **ii)** the accuracy of the camera to locate itself at runtime during fabrication.
 
@@ -29,7 +44,7 @@ To gauge these metrics, we will test TSlam in multiple real-life scenarios where
 
 To evaluate the two enounced evaluation targets we designed an evaluation pipeline identical for each repetition, independently from the experimental parameters identified as worthy of variation. The evaluation pipeline will always outcome the two error target values informing about (**i**) the accuracy of the reconstruction model, and (**ii**) the accuracy of the calculated camera's trajectory.
 
-The first error value (**i**), it will be obtained by comparing the reconstructed model from TSlam and a ground truth model obtained by high-precision laser scanning. For gauging the second goal **(ii)**, we will record the fabrication with an Optitrack system able of recording the ground truth camera's pose per frame. The recorded video during the fabrication will be fed to the TSlam and the computed pose will be calculated. Finally, the TSlam's recorded trajectory and its corresponding ground truth will be evaluated following state-of-the-art SLAM metrics.
+The first error value (**i**), it will be obtained by comparing the reconstructed model from TSlam and a ground truth model obtained by high-precision laser scanning. For gauging the second goal **(ii)**, we will record the fabrication with an Optitrack system able of recording the ground truth camera's pose per frame. The recorded video during the fabrication will be fed to the TSlam and the computed pose will be calculated. Finally, the TSlam's recorded trajectory and its corresponding ground truth will be evaluated following state-of-the-art SLAM metrics. For term of comparison, the same dataset will be run with a state-of-the-art markless SLAM alternative (ORB-SLAM3) and the results will be compared to TSLAM.
 
 To resume the evaluation design:
 ```mermaid
@@ -79,8 +94,16 @@ graph LR
 
 ---
 ### Evaluation variables and repetitions
+In this chapter we present the variables and fix parameters identified in TSlam. The following scheme defines all the variables. Here's some clarifications on some choices made for selecting determined intervals or defined values for the parameters:
 
-Type of variables
+* `fabrication tools`: we will limit the fabrication to the use of a saber saw and drill(with different mesh bits).
+* `timber dimensions`: 14x14x200cm. This size is defined by the maximal tracking area of the Optitrack set up. The square session 
+* `type of joineries`: we selected 4 of the most famous type of joineries for carpentry (scarf, full, half-, and sliced lap). One for each face so that we need to turn the piece. For holes we want a variation in angles (30-60 deg) and two types of drilling (for washers and pegs/dowels) with 3 different types of the most commonly used mesh bits (spiral mesh bits in two lengths, and a washer mesh bit).
+* `distribution and density of tags`: we limit the scope of the use of tags by stripes because we consider this as a plausible use rather than attaching tags one by one. We explore two orientations (long and short axis) and 3 densities.
+* `timber shape`: it is worthy of note also that we considered as a variable the initial shape of the timber piece at the beginning of each fabrication session. The timber piece will be processed so that to present either 1,2,3, or 4 joints before the recording session will start. This is not so influential in the evaluation of tracking (**ii**) but rather for evaluating the reconstruction capabilities of TSlam (**i**) of obtaining 3D models of pre-processed and complex geometries (i.e. timber elements presenting irregularities or joineries). Each specimen will present the complete number and types of drilling and cutting joinery (12 holes + 4 joints).
+
+Next, we combined the selected parameters to obtain a combination matrix for the evaluation.
+
 ```mermaid
   flowchart LR
 
@@ -105,11 +128,14 @@ Type of variables
     Cuts[Cuts]
     Cuts --> CutsT
     Cuts --> CutsNum
+    Cuts --> CutsTH
     CutsT[types]
     CutsT_S(joint scar)
     CutsT_H(joint half lap)
-    CutsT_L(joint lap)
-    CutsT_N(joint notch)
+    CutsT_L(joint full lap)
+    CutsT_N(joint sliced lap)
+    CutsTH(toolhead)
+    CutsTH --> CutsTH_1(sabersaw blade)
     CutsT --> CutsT_S
     CutsT --> CutsT_H
     CutsT --> CutsT_L
@@ -124,12 +150,12 @@ Type of variables
     Hole --> HoleT
     Hole --> HoleN
     Hole --> HoleDeg
-    HoleT[type]
-    HoleT --> HoleT1(washer head d:50mm)
-    HoleT --> HoleT2(spiral piercing head d:20mm)
+    HoleT[toolhead]
+    HoleT --> HoleT1(washer head d:50mm, L:15cm)
+    HoleT --> HoleT2(spiral piercing head d:20mm, L:20 cm)
+    HoleT --> HoleT3(spiral piercing head d:20mm, L:30 cm)
     HoleN[number]
-    HoleN --> HoleN_10(10 per piece)
-    HoleN --> HoleN_2(2 per piece)
+    HoleN --> HoleN_10(15 per piece)
     HoleDeg(angle)
     HoleDeg --> HoleDeg_90(90deg)
     HoleDeg --> HoleDeg_45(45deg)
@@ -145,7 +171,7 @@ Type of variables
     Tdim --> Td1(140x140x2000)
     TNcuts[timber initial number of cuts]
     
-    TNcuts[number of cuts]
+    TNcuts[number of pre-existing cuts]
     TNcuts --> TNcuts_1(1 joint per piece)
     TNcuts --> TNcuts_2(2 joints per piece)
     TNcuts --> TNcuts_3(3 joints per piece)
@@ -166,8 +192,24 @@ Type of variables
     TDd --> TDd2(medium)
     TDd --> TDd3(high)
 ```
+<p align = "center">
+  <i>Fig.# - Scheme of all the variations of parameters selected for the study.</i>
+</p>
 
-Given the previous variables the following table shows the specimens set and parameters values for each repetition.
+![image_joineries](./img/sketch1.png)
+<p align = "center">
+  <i>Fig.# - Image of all the joineries that will be done on each timber at the end of the repetition. Some timber pieces will present either 1,2,3, or 4 joints before the recorded fabrication session will start to test mainly the 3D reconstruction algorithm of TSlam.</i>
+</p>
+
+|        stripe distribution           |          ring distribution           |
+|:----------------------:|:-----------------------:|
+| ![](./img/stripe_1.png) | ![](./img/ring_1.png)  |
+| ![](./img/stripe_2.png) | ![](./img/ring_2.png)  |
+| ![](./img/stripe_3.png) | ![](./img/ring_3.png)  |
+<p align = "center">
+  <i>Fig.# - Illustrations of the two layouts defined for the evaluation. For each layout we define 3 different level of densities. Tags' distribution and density will impact both the reconstruction (**i**) and tracking (**ii**) accuracy.</i>
+</p>
+
 <table border="1" class="dataframe">
   <tbody>
     <tr>
@@ -182,7 +224,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>1</td>
       <td>14x14x2000</td>
       <td>[]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>stripe layout</td>
       <td>medium density</td>
     </tr>
@@ -190,7 +232,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>2</td>
       <td>14x14x2000</td>
       <td>[]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>stripe layout</td>
       <td>high density</td>
     </tr>
@@ -198,7 +240,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>3</td>
       <td>14x14x2000</td>
       <td>[]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>ring layout</td>
       <td>low density</td>
     </tr>
@@ -206,7 +248,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>4</td>
       <td>14x14x2000</td>
       <td>[]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>ring layout</td>
       <td>medium density</td>
     </tr>
@@ -214,7 +256,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>5</td>
       <td>14x14x2000</td>
       <td>[]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>ring layout</td>
       <td>high density</td>
     </tr>
@@ -222,7 +264,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>6</td>
       <td>14x14x2000</td>
       <td>[1xscar]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>stripe layout</td>
       <td>low density</td>
     </tr>
@@ -230,7 +272,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>7</td>
       <td>14x14x2000</td>
       <td>[1xscar]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>stripe layout</td>
       <td>medium density</td>
     </tr>
@@ -238,7 +280,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>8</td>
       <td>14x14x2000</td>
       <td>[1xscar]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>stripe layout</td>
       <td>high density</td>
     </tr>
@@ -246,7 +288,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>9</td>
       <td>14x14x2000</td>
       <td>[1xscar]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>ring layout</td>
       <td>low density</td>
     </tr>
@@ -254,7 +296,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>10</td>
       <td>14x14x2000</td>
       <td>[1xscar]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>ring layout</td>
       <td>medium density</td>
     </tr>
@@ -262,7 +304,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>11</td>
       <td>14x14x2000</td>
       <td>[1xscar]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>ring layout</td>
       <td>high density</td>
     </tr>
@@ -270,7 +312,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>12</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>stripe layout</td>
       <td>low density</td>
     </tr>
@@ -278,7 +320,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>13</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>stripe layout</td>
       <td>medium density</td>
     </tr>
@@ -286,7 +328,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>14</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>stripe layout</td>
       <td>high density</td>
     </tr>
@@ -294,7 +336,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>15</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>ring layout</td>
       <td>low density</td>
     </tr>
@@ -302,7 +344,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>16</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>ring layout</td>
       <td>medium density</td>
     </tr>
@@ -310,7 +352,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>17</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>ring layout</td>
       <td>high density</td>
     </tr>
@@ -318,7 +360,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>18</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>stripe layout</td>
       <td>low density</td>
     </tr>
@@ -326,7 +368,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>19</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>stripe layout</td>
       <td>medium density</td>
     </tr>
@@ -334,7 +376,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>20</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>stripe layout</td>
       <td>high density</td>
     </tr>
@@ -342,7 +384,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>21</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>ring layout</td>
       <td>low density</td>
     </tr>
@@ -350,7 +392,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>22</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>ring layout</td>
       <td>medium density</td>
     </tr>
@@ -358,7 +400,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>23</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>ring layout</td>
       <td>high density</td>
     </tr>
@@ -366,7 +408,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>24</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>stripe layout</td>
       <td>low density</td>
     </tr>
@@ -374,7 +416,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>25</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>stripe layout</td>
       <td>medium density</td>
     </tr>
@@ -382,7 +424,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>26</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>stripe layout</td>
       <td>high density</td>
     </tr>
@@ -390,7 +432,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>27</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>ring layout</td>
       <td>low density</td>
     </tr>
@@ -398,7 +440,7 @@ Given the previous variables the following table shows the specimens set and par
       <td>28</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>ring layout</td>
       <td>medium density</td>
     </tr>
@@ -406,140 +448,167 @@ Given the previous variables the following table shows the specimens set and par
       <td>29</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
-      <td>[10xdrilling, 2xwasher]</td>
+      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
       <td>ring layout</td>
       <td>high density</td>
     </tr>
   </tbody>
 </table>
 
-
-
-* (A) timber length: 14x14cm length 2m (defined by the optitrack capture area): 18 pieces in total
-
-* (B) Same cuts and holes on each beam with the most popular types of joineries for carpentry. One for each phase so that we need to turn the piece. For holes we want a variation in angles (30-60 deg) and two types of drilling (for washers and pegs/dowels).
-
-* (C) the distribution and density of tags. We limit the scope of the use of tags by stripes because we identify this as a plausible use rather than single ones. We explore two orientations (long and short axis) and 3 densities.
-
-![](./img/sketch1.png)
-
-|        stripe distribution           |          ring distribution           |
-|:----------------------:|:-----------------------:|
-| ![](./img/stripe_1.png) | ![](./img/ring_1.png)  |
-| ![](./img/stripe_2.png) | ![](./img/ring_2.png)  |
-| ![](./img/stripe_3.png) | ![](./img/ring_3.png)  |
-
+<p align = "center">
+  <i>Fig.# - Matrix of all possible combinations to test.</i>
+</p>
 
 
 ---
 ### Evaluation pipeline
+Each. The two outcomes will always be (**i**) the accuracy of the reconstructed model, and the accuracy of the TSlam tracking, i.e. the camera's trajectory (**ii**).
 
-The evaluation pipeline for each iteration and it is independent from the values of the evaluation parameters. The two outcomes will always be (**i**) the accuracy of the reconstructed model, and the accuracy of the TSlam tracking, i.e. the camera's trajectory (**ii**).
+#### (i) Reconstruction
+Each timber at different initial shapes will be mapped and reconstruction will happen 
 
-- **i**) <u>the reconstruction needs to be clarified</u>
-- **ii**) after the application of the Optitrack and TSlam tracking beacons and the preparation of the necessary set-up for the MotiveOptitrack software to be operative, the beam is mapped with TSlam. The piece will be marked manually as in traditional carpentry practice. The fabrication will be carried out with manual electric tools (saber saw and drill). <u>The operator will not follow any augmented instructions and they will not be provided with any graphical support. The fabrication will be carried out by following the precedently applied marks</u>. This will get rid of any biases in the evaluation of TSlam. in fact, if the operator had visual feedback informing them on the TSlam tracking health, they might have the tendancy of modifying the current wood-working action to ameliorate the visual feedback at their disposal, hence the tracking signal. Our goal for the construction of the dataset is to have a video sequence of common and unbiased wood-working movements.
+#### (ii) Camera trajectory
+After the application of the Optitrack and TSlam tracking beacons and the preparation of the necessary set-up for the MotiveOptitrack software to be operative, the beam is mapped with TSlam. The piece will be marked manually as in traditional carpentry practice. The fabrication will be carried out with manual electric tools (saber saw and drill). <u>The operator will not follow any augmented instructions and they will not be provided with any graphical support. The fabrication will be carried out by following the precedently applied marks</u>. This will get rid of any biases in the evaluation of TSlam. If the operator had visual feedback informing them on the TSlam tracking health, they might tend to modify the current wood-working action to ameliorate the visual feedback at their disposal, hence the tracking signal. Our goal for the construction of the dataset is to have a video sequence of common and unbiased woodworking movements.
 
 ```mermaid
 graph LR
 
     %% styling
-    subG_prep:::subGStyl
-    %% classDef subGStylI padding-left:30em;
+    subG_prep:::subGStylI
+    %% classDef subGStylI padding-left:30em fill:#f9f;
     %% classDef subGStylII padding-left:30em;
 
 
-    subgraph  
-      O[timber beam]
-      OO[camera]
-      O -.-> optPrep1
-      O -.-> mark
-      O -.-> tslamPr1
-      OO -.-> optPrep1
+    O[timber beam]
+    OO[camera]
+    O -.-> optPrep1
+    O -.-> mark
+    OO -.-> optPrep1
 
-
-      subgraph subG_prep[1. preparation]
-        optPrep1(apply Optitrack beacons on objects)
-        optPrep2(register objects in Optitrack)
-        optPrep1 --> optPrep2
-
-        rigidB1[camera rigid body]
-        rigidB2[timber rigid body]
-        optPrep2 --> rigidB1
-        optPrep2 --> rigidB2
-
-        mark(apply marks \n for cutting/drilling)
-        tslamPr1(apply STags on the timber piece)
-        tslamPr2(run tslam mapping)
-        tslamPr1 --> tslamPr2
-        tslamPrR{{Tslam map}}
-        tslamPr2 --> tslamPrR
-
-        scan(scan the timber)
-        tslamPr1 --> scan
-        scanR{{Scan model}}
-        scan --> scanR
-      end
-
-
-      subgraph subG_exec[2. execution of cutting/drilling]
-        opti1(Optitrack tracking)
-        rigidB1 -.-> opti1
-        rigidB2 -.-> opti1
-        optR1{{RGB \n frames}}
-        optR2{{Tr: GT raw camera \n transform}}
-        optR3{{Tt: GT timber \n transform}}
-        opti1 --> optR1
-        opti1 --> optR2
-        opti1 --> optR3
-      end
-
-
-      subgraph subG_post[3. post fabrication]
-        tslam1(TSlam tracking)
-        optR1 -.-> tslam1
-        tslamPrR -.-> tslam1
-        tslamR1{{Ts: camera \n pose}}
-        tslam1 --> tslamR1
-
-        tslam2(TSlam model \n reconstruction)
-        tslamPrR -.-> tslam2
-        tslamR2{{Reconstructed model}}
-        tslam2 --> tslamR2
-      end
-
-
-      subgraph subG_data[4. data processing]
-        proc1(* combine transform: Tr x Tt)
-        optR2 -.-> proc1
-        optR3 -.-> proc1
-        procR1{{Tc: GT camera \n transform}}
-        proc1 --> procR1
-
-        compareT(** compare trajectories)
-        procR1 --> compareT
-        tslamR1 -.-> compareT
-        compareTR1{trajectories \n error}
-        compareT --> compareTR1
-
-        compareM(*** compare models)
-        tslamR2-.-> compareM
-        scanR-.-> compareM
-        compareMR1{models \n error}
-        compareM --> compareMR1
-      end
+    subgraph subG_prefab[0. pre-fabrication]
+      mark(apply marks \n for cutting/drilling)
+      mark --> prefab(make cuts \n before fabrication)
 
     end
+
+    subgraph subG_prep[1. preparation]
+      optPrep1(apply Optitrack beacons on objects)
+      optPrep2(register objects in Optitrack)
+      optPrep1 --> optPrep2
+
+      rigidB1[camera rigid body]
+      rigidB2[timber rigid body]
+      optPrep2 --> rigidB1
+      optPrep2 --> rigidB2
+
+      prefab -.-> tslamPr1(apply STags on the timber piece)
+      
+      tslamPr2(run tslam mapping)
+      tslamPr1 --> tslamPr2
+      tslamPrR{{Tslam map}}
+      tslamPr2 --> tslamPrR
+
+      scan(scan the timber)
+      tslamPr1 --> scan
+      scanR{{Scan model}}
+      scan --> scanR
+    end
+
+
+    subgraph subG_exec[2. recorded fabrication]
+      opti1(Optitrack tracking)
+      rigidB1 -.-> opti1
+      rigidB2 -.-> opti1
+      optR1{{RGB \n frames}}
+      optR2{{Tr: GT raw camera \n transform}}
+      optR3{{Tt: GT timber \n transform}}
+      opti1 --> optR1
+      opti1 --> optR2
+      opti1 --> optR3
+    end
+
+
+    subgraph subG_post[3. post fabrication]
+      tslam1(TSlam tracking)
+      optR1 -.-> tslam1
+      tslamPrR -.-> tslam1
+      tslamR1{{Ts: camera \n pose}}
+      tslam1 --> tslamR1
+
+      ORBSLAM3(ORBSLAM3 tracking)
+      ORBSLAM3 --> ORBSLAM3_R1{{To: camera pose}}
+
+      tslam2(TSlam model \n reconstruction)
+      tslamPrR -.-> tslam2
+      tslamR2{{Reconstructed model}}
+      tslam2 --> tslamR2
+    end
+
+
+    subgraph subG_data[4. data processing]
+      proc1(combine transform: Tr x Tt)
+      optR2 -.-> proc1
+      optR3 -.-> proc1
+      procR1{{Tc: GT camera \n trajectory}}
+      proc1 --> procR1
+      procR1 --> proc2
+
+      proc1_orb(combine transform: Tr x To)
+      optR2 -.-> proc1_orb
+      ORBSLAM3_R1 -.-> proc1_orb
+      proc1_orbR1{{Tc: ORBSLAM3 camera \n trajectory}}
+      proc1_orb --> proc1_orbR1
+      proc1_orbR1 --> proc2
+      tslamR1 --> proc2
+      
+      proc2(allign trajectories)
+      proc2 --> proc2ATE(realligned \n entire trajectory)
+      proc2 --> proc2RE(realligned only \n fabrication sequences)
+      proc2ATE --> Ts_ar_gt{{Ts_ar_orb: TSlam \n trajectory alligned to GT}}
+      proc2RE --> Ts_rr_gt{{Ts_rr_orb: TSlam trajectory \n sequences alligned to GT}}
+
+    end
+
+    subgraph subG_analysis[5, data anlysis]
+      %% errors
+      compareT_ATE(ATE: absolute trajectory error)
+      %% Ts_ar_gt --> compareT_ATE
+      %% procR1 --> compareT_ATE
+      %% Ts_ar_gt --> compareT_ATE
+
+
+
+      compareT_ATE_R1_A(GT/Tslam error \n absolute error)
+      compareT_ATE --> compareT_ATE_R1_A
+
+      compareT_ATE_R2_A(GT/ORBSLAM3 error \n absolute error)
+      compareT_ATE --> compareT_ATE_R2_A
+
+      compareT_ATE_R1_R(GT/Tslam error \n relative error)
+      compareT_ATE --> compareT_ATE_R1_R
+
+      compareT_ATE_R2_R(GT/ORBSLAM3 error \n relative error)
+      compareT_ATE --> compareT_ATE_R2_R
+
+
+      compareM(compare models)
+      tslamR2-.-> compareM
+      scanR-.-> compareM
+      compareMR1(models \n error)
+      style compareMR1 stroke:#f66,stroke-width:2px,color:#fff,stroke-dasharray: 5 5
+      compareM --> compareMR1
+    end
+
 ```
 
 ---
-
 ### Data processing
-In this section we go into details of the data processing phase where we collect all the raw data out of the experimental activity, process it transform the data so that can be used in the next step for the analysis.
+In this section we go into details of the data processing phase where we collect all the raw data out of the experimental activity, process it so that it can be used in the next step for the analysis.
 
-#### (i) TSlam reconstruction
+#### (i) Reconstruction
 THIS NEEDS TO BE DEFINED----> ALLIIGNEMENT OF MODELS WHICH METHOD, NEEDS STATE-OF-THE-ART?
 
-#### (ii) Camera trajectories
+#### (ii) Camera trajectory
 After the Optitrack tracking of the fabrication we obtain the following data:
 - `Tt`: the transformation records from the Optitrack of the timber rigid body (translation + quaternions) expressed in a global coordinate system
 - `Tr`: the transformation records from the Optitrack of the camera rigid body (translation + quaternions) expressed in a global coordinate system
@@ -572,7 +641,7 @@ In this section we run analysis on the processed data to obtain the final evalua
 THIS NEEDS TO BE DEFINED
 
 
-#### (ii) Camera trajectories
+#### (ii) Camera trajectory
 To compare the two trajectories, state-of-the-art SLAM evaluations propose
 
 https://github.com/uzh-rpg/rpg_trajectory_evaluation
