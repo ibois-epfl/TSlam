@@ -1,18 +1,6 @@
 
-# TODOs
-
-- [ ] draw 3d rhino of piece and define location, dimensions and number of holes
-- [ ] prepare detailed planning for evaluation
-- [ ] write to Anna for help cutting
-- [ ] finish protocol for data processing and analysis
-- [ ] add chapter predictions
-- [ ] prepare ppt presentation
-- [ ] adapt chapter methodology
-- [ ] read state of the art for model comparison
-
 # Evaluation protocol of TSlam
 
-- [TODOs](#todos)
 - [Evaluation protocol of TSlam](#evaluation-protocol-of-tslam)
   - [Objectives](#objectives)
   - [Methodology](#methodology)
