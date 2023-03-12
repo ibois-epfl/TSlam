@@ -35,9 +35,42 @@ To evaluate the two enounced evaluation targets we designed an evaluation pipeli
 The first error value (**i**), it will be obtained by comparing the reconstructed model from TSlam and a ground truth model obtained by high-precision laser scanning. For gauging the second goal **(ii)**, we will record the fabrication with an Optitrack system able of recording the ground truth camera's pose per frame. The recorded video during the fabrication will be fed to the TSlam and the computed pose will be calculated. Finally, the TSlam's recorded trajectory and its corresponding ground truth will be evaluated following state-of-the-art SLAM metrics. For term of comparison, the same dataset will be run with a state-of-the-art markless SLAM alternative (ORB-SLAM3) and the results will be compared to TSLAM.
 
 To resume the evaluation design:
-<p align = "center">
-  <img src=graphs/methodology.png> </img>
-</p>
+```mermaid
+graph LR
+    subgraph Evaluation objectives
+        A(i. accuracy of 3D model)
+        B(ii. accuracy of tracking)
+    end
+
+    subgraph TSlam software
+      a(1. Mapping)
+      b(2. Reconstruction)
+      c(3. Tracking)
+
+      z((map))
+      k((3D \n model))
+      j((camera \n trajectory))
+
+      a --> z
+      b --> k
+      c --> j
+
+      z --> b
+      z --> c
+      k --> c
+    end
+
+    subgraph Evaluation methodology
+      AA(Scanning and model comparison)
+      BB(Optitrack dataset and trajectory comparison)
+
+    k --> A
+    j --> B
+
+    A --> AA
+    B --> BB
+  end
+```
 <p align = "center">
   <i>Fig.1 - Overview of the objectives and methodology for the evaluation.</i>
 </p>
@@ -54,9 +87,96 @@ In this chapter we present the variables and fix parameters identified in TSlam.
 
 Next, we combined the selected parameters to obtain a combination matrix for the evaluation.
 
-<p align = "center">
-  <img src=graphs/variations.png> </img>
-</p>
+
+```mermaid
+  flowchart LR
+
+    Variables
+    Variables --> Cc
+    Variables --> J
+    Variables --> Ti
+    Variables --> T
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    Cc(camera)
+    Cc --> Ccr(resolution)
+    Ccr --> Ccr1(1280 x 720)
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    J[joinery]
+    J --> Cuts
+    J --> Hole
+
+    Cuts[Cuts]
+    Cuts --> CutsT
+    Cuts --> CutsNum
+    Cuts --> CutsTH
+    CutsT[types]
+    CutsT_S(joint scar)
+    CutsT_H(joint half lap)
+    CutsT_L(joint full lap)
+    CutsT_N(joint sliced lap)
+    CutsTH(toolhead)
+    CutsTH --> CutsTH_1(sabersaw blade)
+    CutsT --> CutsT_S
+    CutsT --> CutsT_H
+    CutsT --> CutsT_L
+    CutsT --> CutsT_N
+    CutsNum[number]
+    CutsNum --> CutsNum_1(1 per piece)
+    CutsNum --> CutsNum_2(2 per piece)
+    CutsNum --> CutsNum_3(3 per piece)
+    CutsNum --> CutsNum_4(4 per piece)
+
+    Hole[Hole]
+    Hole --> HoleT
+    Hole --> HoleN
+    Hole --> HoleDeg
+    HoleT[toolhead]
+    HoleT --> HoleT1(washer head d:50mm, L:15cm)
+    HoleT --> HoleT2(spiral piercing head d:20mm, L:20 cm)
+    HoleT --> HoleT3(spiral piercing head d:20mm, L:35 cm)
+    HoleT --> HoleT4(timber screws d:20mm, L:10 cm)
+    HoleN[number]
+    HoleN --> HoleN_10(25 per piece)
+    HoleDeg(angle)
+    HoleDeg --> HoleDeg_90(90deg)
+    HoleDeg --> HoleDeg_45(45deg)
+    HoleDeg --> HoleDeg_30(30deg)
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    Ti(timber)
+    Ti --> Tdim
+    Ti --> TNcuts
+
+    Tdim[timber dimensions]
+    Tdim --> Td1(140x140x2000)
+    TNcuts[timber initial number of cuts]
+    
+    TNcuts[number of pre-existing cuts]
+    TNcuts --> TNcuts_1(1 joint per piece)
+    TNcuts --> TNcuts_2(2 joints per piece)
+    TNcuts --> TNcuts_3(3 joints per piece)
+    TNcuts --> TNcuts_4(4 joints per piece)
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    T(tags)
+    T --> TDt
+    T --> TDd
+
+    TDt[tag distribution]
+    TDt --> TDt1(longitudinal to beam's length)
+    TDt --> TDt2(horizontal to beam's length)
+
+    TDd[tag density]
+    TDd --> TDd1(low)
+    TDd --> TDd2(medium)
+    TDd --> TDd3(high)
+```
 <p align = "center">
   <i>Fig.2 - Scheme of all the variations of parameters selected for the study.</i>
 </p>
@@ -89,7 +209,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>1</td>
       <td>14x14x2000</td>
       <td>[]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>stripe layout</td>
       <td>medium density</td>
     </tr>
@@ -97,7 +217,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>2</td>
       <td>14x14x2000</td>
       <td>[]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>stripe layout</td>
       <td>high density</td>
     </tr>
@@ -105,7 +225,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>3</td>
       <td>14x14x2000</td>
       <td>[]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>ring layout</td>
       <td>low density</td>
     </tr>
@@ -113,7 +233,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>4</td>
       <td>14x14x2000</td>
       <td>[]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>ring layout</td>
       <td>medium density</td>
     </tr>
@@ -121,7 +241,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>5</td>
       <td>14x14x2000</td>
       <td>[]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>ring layout</td>
       <td>high density</td>
     </tr>
@@ -129,7 +249,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>6</td>
       <td>14x14x2000</td>
       <td>[1xscar]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>stripe layout</td>
       <td>low density</td>
     </tr>
@@ -137,7 +257,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>7</td>
       <td>14x14x2000</td>
       <td>[1xscar]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>stripe layout</td>
       <td>medium density</td>
     </tr>
@@ -145,7 +265,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>8</td>
       <td>14x14x2000</td>
       <td>[1xscar]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>stripe layout</td>
       <td>high density</td>
     </tr>
@@ -153,7 +273,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>9</td>
       <td>14x14x2000</td>
       <td>[1xscar]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>ring layout</td>
       <td>low density</td>
     </tr>
@@ -161,7 +281,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>10</td>
       <td>14x14x2000</td>
       <td>[1xscar]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>ring layout</td>
       <td>medium density</td>
     </tr>
@@ -169,7 +289,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>11</td>
       <td>14x14x2000</td>
       <td>[1xscar]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>ring layout</td>
       <td>high density</td>
     </tr>
@@ -177,7 +297,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>12</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>stripe layout</td>
       <td>low density</td>
     </tr>
@@ -185,7 +305,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>13</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>stripe layout</td>
       <td>medium density</td>
     </tr>
@@ -193,7 +313,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>14</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>stripe layout</td>
       <td>high density</td>
     </tr>
@@ -201,7 +321,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>15</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>ring layout</td>
       <td>low density</td>
     </tr>
@@ -209,7 +329,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>16</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>ring layout</td>
       <td>medium density</td>
     </tr>
@@ -217,7 +337,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>17</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>ring layout</td>
       <td>high density</td>
     </tr>
@@ -225,7 +345,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>18</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>stripe layout</td>
       <td>low density</td>
     </tr>
@@ -233,7 +353,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>19</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>stripe layout</td>
       <td>medium density</td>
     </tr>
@@ -241,7 +361,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>20</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>stripe layout</td>
       <td>high density</td>
     </tr>
@@ -249,7 +369,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>21</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>ring layout</td>
       <td>low density</td>
     </tr>
@@ -257,7 +377,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>22</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>ring layout</td>
       <td>medium density</td>
     </tr>
@@ -265,7 +385,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>23</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>ring layout</td>
       <td>high density</td>
     </tr>
@@ -273,7 +393,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>24</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>stripe layout</td>
       <td>low density</td>
     </tr>
@@ -281,7 +401,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>25</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>stripe layout</td>
       <td>medium density</td>
     </tr>
@@ -289,7 +409,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>26</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>stripe layout</td>
       <td>high density</td>
     </tr>
@@ -297,7 +417,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>27</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>ring layout</td>
       <td>low density</td>
     </tr>
@@ -305,7 +425,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>28</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>ring layout</td>
       <td>medium density</td>
     </tr>
@@ -313,7 +433,7 @@ Next, we combined the selected parameters to obtain a combination matrix for the
       <td>29</td>
       <td>14x14x2000</td>
       <td>[1xscar, 1xhalf-lap, 1xfull-lap, 1xspliced]</td>
-      <td>[10xspiral20, 3xspiral30, 2xwasher]</td>
+      <td>[8xspiral20, 2xspiral20, 2xwasher50, 12xscrews]</td>
       <td>ring layout</td>
       <td>high density</td>
     </tr>
@@ -335,9 +455,160 @@ Each timber will be scanned to obtain a point cloud of the object. This will con
 #### (ii) Camera trajectory
 After the application of the Optitrack and TSlam tracking beacons and the preparation of the necessary set-up for the MotiveOptitrack software to be operative, the beam is mapped with TSlam. The piece will be marked manually as in traditional carpentry practice. The fabrication will be carried out with manual electric tools (saber saw and drill). <u>The operator will not follow any augmented instructions and they will not be provided with any graphical support. The fabrication will be carried out by following the precedently applied marks</u>. This will get rid of any biases in the evaluation of TSlam. If the operator had visual feedback informing them on the TSlam tracking health, they might tend to modify the current wood-working action to ameliorate the visual feedback at their disposal, hence the tracking signal. Our goal for the construction of the dataset is to have a video sequence of common and unbiased woodworking movements. This very sequence will be fed to TSlam and ORBSlam for estimating camera trajectories that will be processed and evaluated in the last section.
 
-<p align = "center">
-  <img src=graphs/evalpipeline.png> </img>
-</p>
+
+```mermaid
+graph LR
+
+    %% styling
+    subG_prep:::subGStylI
+    %% classDef subGStylI padding-left:30em fill:#f9f;
+    %% classDef subGStylII padding-left:30em;
+
+    subG_prefab ==> 
+    subG_prep ==>
+    subG_exec ==>
+    subG_post ==>
+    subG_data ==>
+    subG_analysis
+
+    O[timber beam]
+    OO[camera]
+    O -.-> optPrep1
+    O -.-> mark
+    OO -.-> optPrep1
+
+    subgraph subG_prefab[0. pre-fabrication]
+      mark(apply marks \n for cutting/drilling)
+      mark --> prefab(make cuts \n before fabrication)
+    end
+
+
+    subgraph subG_prep[1. preparation]
+      optPrep1(apply Optitrack beacons on objects)
+      optPrep2(register objects in Optitrack)
+      optPrep1 --> optPrep2
+
+      rigidB1[camera rigid body]
+      rigidB2[timber rigid body]
+      optPrep2 --> rigidB1
+      optPrep2 --> rigidB2
+
+      prefab -.-> tslamPr1(apply STags on the timber piece)
+      
+      tslamPr2(run tslam mapping)
+      tslamPr1 --> tslamPr2
+      tslamPrR{{Tslam map}}
+      tslamPr2 --> tslamPrR
+
+      scan(scan the timber)
+      tslamPr1 --> scan
+      scanR{{Scan model}}
+      scan --> scanR
+    end
+
+
+    subgraph subG_exec[2. recorded fabrication]
+      opti1(Optitrack tracking)
+      rigidB1 -.-> opti1
+      rigidB2 -.-> opti1
+      optR1{{RGB \n frames}}
+      optR2{{Tr: GT raw camera \n transform}}
+      optR3{{Tt: GT timber \n transform}}
+      opti1 --> optR1
+      opti1 --> optR2
+      opti1 --> optR3
+    end
+
+
+    subgraph subG_post[3. post fabrication]
+      tslam1(TSlam tracking)
+      optR1 -.-> tslam1
+      tslamPrR -.-> tslam1
+      tslamR1{{Ts: camera \n pose}}
+      tslam1 --> tslamR1
+
+      ORBSLAM3(ORBSLAM3 tracking)
+      ORBSLAM3 --> ORBSLAM3_R1{{To: camera pose}}
+
+      tslam2(TSlam model \n reconstruction)
+      tslamPrR -.-> tslam2
+      tslamR2{{Reconstructed model}}
+      tslam2 --> tslamR2
+    end
+
+
+    subgraph subG_data[4. data processing]
+      proc1(combine transform: Tr x Tt)
+      optR2 -.-> proc1
+      optR3 -.-> proc1
+      procR1{{Tc: GT camera \n trajectory}}
+      proc1 --> procR1
+      procR1 --> proc2
+
+      proc2(allign trajectories)
+      proc2 --> proc2ATE(realligned \n entire trajectory)
+      proc2 --> proc2RE(realligned only \n fabrication sequences)
+      proc2ATE --> Ts_ar_gt{{Ts_ar_gt: TSlam \n trajectory alligned to GT}}
+      proc2RE --> Ts_rr_gt{{Ts_rr_gt: TSlam trajectory \n sequences alligned to GT}}
+      proc2ATE --> To_ar_gt{{To_ar_gt: TSlam \n trajectory alligned to GT}}
+      proc2RE --> To_rr_gt{{To_rr_gt: TSlam trajectory \n sequences alligned to GT}}
+
+    end
+
+    subgraph subG_analysis[5, data anlysis]
+      %% style result
+      classDef resultClass fill:#f66, color:#234F 
+
+      %%%%%%%%%%%%%% trajectory errors %%%%%%%%%%%%%%
+      compareT_ATE_TSLAM_GT(compare ATE TSlam/GT)
+      Ts_ar_gt -.-> compareT_ATE_TSLAM_GT
+      procR1 -.-> compareT_ATE_TSLAM_GT
+
+      compareT_RE_TSLAM_GT(compare RE TSlam/GT)
+      Ts_rr_gt -.-> compareT_RE_TSLAM_GT
+      procR1 -.-> compareT_RE_TSLAM_GT
+
+      compareT_ATE_ORBSLAM_GT(compare ATE ORBSLAM/GT)
+      To_ar_gt -.-> compareT_ATE_ORBSLAM_GT
+      procR1 -.-> compareT_ATE_ORBSLAM_GT
+
+      compareT_RE_ORBSLAM_GT(compare RE ORBSLAM/GT)
+      To_rr_gt -.-> compareT_RE_ORBSLAM_GT
+      procR1 -.-> compareT_RE_ORBSLAM_GT
+
+      compareT_ATE_TSLAM_GT --> ATE_TSLAM_translation{{ATE error for translation \n x,y,z}}:::resultClass %% <------ R
+      compareT_ATE_TSLAM_GT --> ATE_TSLAM_rotation{{ATE error for rotation \n axis x,y,z}}:::resultClass %% <------- R
+      compareT_RE_TSLAM_GT --> RE_TSLAM_translation{{RE error for translation \n x,y,z}}:::resultClass %% <--------- R
+      compareT_RE_TSLAM_GT --> RE_TSLAM_rotation{{RE error for rotation \n axis x,y,z}}:::resultClass %% <---------- R
+
+      compareT_ATE_ORBSLAM_GT --> ATE_ORBSLAM_translation{{ATE error for translation \n x,y,z}}:::resultClass %% <-- R
+      compareT_ATE_ORBSLAM_GT --> ATE_ORBSLAM_rotation{{ATE error for rotation \n axis x,y,z}}:::resultClass %% <--- R
+      compareT_RE_ORBSLAM_GT --> RE_ORBSLAM_translation{{RE error for translation \n x,y,z}}:::resultClass %% <----- R
+      compareT_RE_ORBSLAM_GT --> RE_ORBSLAM_rotation{{RE error for rotation \n axis x,y,z}}:::resultClass %% <------ R
+
+      %%%%%%%%%%%%%% comparison TSLMA/ORBSLAM errors %%%%%%%%%%%%%%
+      compareTOSLAM_ATE(ATE comparison TSLAM/ORBSLAM)
+      ATE_TSLAM_translation --> compareTOSLAM_ATE
+      ATE_TSLAM_rotation --> compareTOSLAM_ATE
+      ATE_ORBSLAM_translation --> compareTOSLAM_ATE
+      ATE_ORBSLAM_rotation --> compareTOSLAM_ATE
+      compareTOSLAM_ATE --> compareTOSLAM_ATE_R{{ATE diff TSLAM/ORBSLAM}}:::resultClass  %% <----------------------- R
+
+      compareTOSLAM_RE(RE comparison TSLAM/ORBSLAM)
+      RE_TSLAM_translation --> compareTOSLAM_RE
+      RE_ORBSLAM_translation --> compareTOSLAM_RE
+      RE_TSLAM_rotation --> compareTOSLAM_RE
+      RE_ORBSLAM_rotation --> compareTOSLAM_RE
+      compareTOSLAM_RE --> compareTOSLAM_RE_R{{RE diff TSLAM/ORBSLAM}}:::resultClass  %% <-------------------------- R
+
+      %%%%%%%%%%%%%% reconstruction errors %%%%%%%%%%%%%%
+      compareM(compare models)
+      tslamR2-.-> compareM
+      scanR-.-> compareM
+      compareMR1{{models \n error}}:::resultClass  %% <------------------------------------------------------------- R
+      compareM --> compareMR1
+    end
+```
 <p align = "center">
   <i>Fig.6 - Description of the evaluation pipeline step by step.</i>
 </p>

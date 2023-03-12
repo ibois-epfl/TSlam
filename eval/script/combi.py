@@ -32,9 +32,10 @@ def main():
                        "high density"]
 
     ## type of holes
-    holes : list = ["10xspiral20",
-                    "3xspiral30",
-                    "2xwasher"]
+    holes : list = ["8xspiral20",
+                    "2xspiral20",
+                    "2xwasher50",
+                    "12xscrews"]
 
     # create a list of all possible combinations
     combi : list = []
