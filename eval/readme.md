@@ -683,28 +683,28 @@ for the ATE:
 - $ATE^{tslam}_{transY}$: the absolute trajectory error for the translation Y component of TSlam
 - $ATE^{tslam}_{transZ}$: the absolute trajectory error for the translation Z component of TSlam
 - $ATE^{tslam}_{rotX}$: the absolute rotation error for the translation X component of TSlam
-- $ATE^{tslam}_{rotY}$: the absolute rotation error for the translation X component of TSlam
-- $ATE^{tslam}_{rotZ}$: the absolute rotation error for the translation X component of TSlam
+- $ATE^{tslam}_{rotY}$: the absolute rotation error for the translation Y component of TSlam
+- $ATE^{tslam}_{rotZ}$: the absolute rotation error for the translation Z component of TSlam
 - $ATE^{orbslam}_{transX}$: the absolute trajectory error for the translation X component of ORBSLAM3
 - $ATE^{orbslam}_{transY}$: the absolute trajectory error for the translation Y component of ORBSLAM3
 - $ATE^{orbslam}_{transZ}$: the absolute trajectory error for the translation Z component of ORBSLAM3
 - $ATE^{orbslam}_{rotX}$: the absolute rotation error for the translation X component of ORBSLAM3
-- $ATE^{orbslam}_{rotY}$: the absolute rotation error for the translation X component of ORBSLAM3
-- $ATE^{orbslam}_{rotZ}$: the absolute rotation error for the translation X component of ORBSLAM3
+- $ATE^{orbslam}_{rotY}$: the absolute rotation error for the translation Y component of ORBSLAM3
+- $ATE^{orbslam}_{rotZ}$: the absolute rotation error for the translation Z component of ORBSLAM3
 
 and for the RE:
 - $RE^{tslam}_{transX}$: the ensemble of the absolute trajectory errors for the translation X component of TSlam
 - $RE^{tslam}_{transY}$: the ensemble of the absolute trajectory errors for the translation Y component of TSlam
 - $RE^{tslam}_{transZ}$: the ensemble of the absolute trajectory errors for the translation Z component of TSlam
 - $RE^{tslam}_{rotX}$: the ensemble of the absolute rotation errors for the translation X component of TSlam
-- $RE^{tslam}_{rotY}$: the ensemble of the absolute rotation errors for the translation X component of TSlam
-- $RE^{tslam}_{rotZ}$: the ensemble of the absolute rotation errors for the translation X component of TSlam
+- $RE^{tslam}_{rotY}$: the ensemble of the absolute rotation errors for the translation Y component of TSlam
+- $RE^{tslam}_{rotZ}$: the ensemble of the absolute rotation errors for the translation Z component of TSlam
 - $RE^{orbslam}_{transX}$: the ensemble of the absolute trajectory errors for the translation X component of ORBSLAM3
 - $RE^{orbslam}_{transY}$: the ensemble of the absolute trajectory errors for the translation Y component of ORBSLAM3
 - $RE^{orbslam}_{transZ}$: the ensemble of the absolute trajectory errors for the translation Z component of ORBSLAM3
 - $RE^{orbslam}_{rotX}$: the ensemble of the absolute rotation errors for the translation X component of ORBSLAM3
-- $RE^{orbslam}_{rotY}$: the ensemble of the absolute rotation errors for the translation X component of ORBSLAM3
-- $RE^{orbslam}_{rotZ}$: the ensemble of the absolute rotation errors for the translation X component of ORBSLAM3
+- $RE^{orbslam}_{rotY}$: the ensemble of the absolute rotation errors for the translation Y component of ORBSLAM3
+- $RE^{orbslam}_{rotZ}$: the ensemble of the absolute rotation errors for the translation Z component of ORBSLAM3
 
 
 Finally we will express the errors difference betwen TSlam and ORBSLAM across in ATE and RE as two mean values.
