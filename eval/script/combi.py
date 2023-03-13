@@ -85,5 +85,8 @@ def main():
     df.to_html(file_path_html, index=False, header=False)
 
 
+    print(df)
+
+
 if __name__ == "__main__":
     main()

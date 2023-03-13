@@ -544,14 +544,19 @@ graph LR
       procR1{{Tc: GT camera \n trajectory}}
       proc1 --> procR1
       procR1 --> proc2
+      optR2 -.-> proc3
 
-      proc2(allign trajectories)
+      proc2(allign TSLAM trajectories)
       proc2 --> proc2ATE(realligned \n entire trajectory)
       proc2 --> proc2RE(realligned only \n fabrication sequences)
       proc2ATE --> Ts_ar_gt{{Ts_ar_gt: TSlam \n trajectory alligned to GT}}
       proc2RE --> Ts_rr_gt{{Ts_rr_gt: TSlam trajectory \n sequences alligned to GT}}
-      proc2ATE --> To_ar_gt{{To_ar_gt: TSlam \n trajectory alligned to GT}}
-      proc2RE --> To_rr_gt{{To_rr_gt: TSlam trajectory \n sequences alligned to GT}}
+
+      proc3(allign ORBSLAM trajectories)
+      proc3 --> proc3ATE(realligned \n entire trajectory)
+      proc3 --> proc3RE(realligned only \n fabrication sequences)
+      proc3ATE --> To_ar_gt{{To_ar_gt: ORBSLAM3 \n trajectory alligned to GT}}
+      proc3RE --> To_rr_gt{{To_rr_gt: ORBSLAM3 trajectory \n sequences alligned to GT}}
 
     end
 
@@ -570,11 +575,11 @@ graph LR
 
       compareT_ATE_ORBSLAM_GT(compare ATE ORBSLAM/GT)
       To_ar_gt -.-> compareT_ATE_ORBSLAM_GT
-      procR1 -.-> compareT_ATE_ORBSLAM_GT
+      optR2 -.-> compareT_ATE_ORBSLAM_GT
 
       compareT_RE_ORBSLAM_GT(compare RE ORBSLAM/GT)
       To_rr_gt -.-> compareT_RE_ORBSLAM_GT
-      procR1 -.-> compareT_RE_ORBSLAM_GT
+      optR2 -.-> compareT_RE_ORBSLAM_GT
 
       compareT_ATE_TSLAM_GT --> ATE_TSLAM_translation{{ATE error for translation \n x,y,z}}:::resultClass %% <------ R
       compareT_ATE_TSLAM_GT --> ATE_TSLAM_rotation{{ATE error for rotation \n axis x,y,z}}:::resultClass %% <------- R
@@ -735,3 +740,4 @@ The evaluation protocol is designed to assess parameters that are important for 
 - planning for TSLAM working package
 - most relevant state of the art on evaluation of SLAM algorithms
 - the "ordre de commande" for the  needed timber for the experience
+§
