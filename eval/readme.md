@@ -558,6 +558,14 @@ graph LR
       proc3ATE --> To_ar_gt{{To_ar_gt: ORBSLAM3 \n trajectory alligned to GT}}
       proc3RE --> To_rr_gt{{To_rr_gt: ORBSLAM3 trajectory \n sequences alligned to GT}}
 
+      procPrep4(Subsample mesh into pcd)
+      tslamR2-.-> procPrep4
+      procPrep4 --> Pcd_ts{{Pcd_ts: point cloud}}
+      proc4(align TSlam model with scan model)
+      scanR-.-> proc4
+      Pcd_ts --> proc4
+      --> Pcd_i_ts{{Pcd_i_ts: alligned point cloud to pcd_gt}}
+
     end
 
     subgraph subG_analysis[5, data anlysis]
@@ -608,7 +616,7 @@ graph LR
 
       %%%%%%%%%%%%%% reconstruction errors %%%%%%%%%%%%%%
       compareM(compare models)
-      tslamR2-.-> compareM
+      Pcd_i_ts-.-> compareM
       scanR-.-> compareM
       compareMR1{{models \n error}}:::resultClass  %% <------------------------------------------------------------- R
       compareM --> compareMR1
