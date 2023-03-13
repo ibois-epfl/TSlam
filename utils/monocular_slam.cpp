@@ -170,75 +170,89 @@ void loadPly(string path, vector<cv::Vec3f> &vertices, vector<cv::Vec3i> &faces,
         cv::Vec3f pt2 = vertices[b];
         cv::Vec3f pt3 = vertices[c];
 
-        lines.emplace_back(make_pair(pt1, (pt1 + pt2) / 2));
-        lines.emplace_back(make_pair(pt2, (pt1 + pt2) / 2));
-        lines.emplace_back(make_pair(pt2, (pt2 + pt3) / 2));
-        lines.emplace_back(make_pair(pt3, (pt2 + pt3) / 2));
-        lines.emplace_back(make_pair(pt3, (pt3 + pt1) / 2));
-        lines.emplace_back(make_pair(pt1, (pt3 + pt1) / 2));
+//        lines.emplace_back(make_pair(pt1, (pt1 + pt2) / 2));
+//        lines.emplace_back(make_pair(pt2, (pt1 + pt2) / 2));
+//        lines.emplace_back(make_pair(pt2, (pt2 + pt3) / 2));
+//        lines.emplace_back(make_pair(pt3, (pt2 + pt3) / 2));
+//        lines.emplace_back(make_pair(pt3, (pt3 + pt1) / 2));
+//        lines.emplace_back(make_pair(pt1, (pt3 + pt1) / 2));
+        lines.emplace_back(make_pair(pt1, pt2));
+        lines.emplace_back(make_pair(pt2, pt3));
+        lines.emplace_back(make_pair(pt3, pt1));
+
     }
 }
 
-std::pair<cv::Point2f, cv::Point2f>projectToScreen(int imgW, int imgH, std::pair<cv::Vec3f, cv::Vec3f> pts, cv::Mat projectionMatrix){
-    float zNear = 1.0f;
+auto getZ(cv::Mat p){
+    return p.at<float>(2, 0);
+};
 
-    cv::Mat p1 = (cv::Mat_<float>(4, 1) << pts.first[0], pts.first[1], pts.first[2], 1);
-    p1 = projectionMatrix * p1;
+std::pair<cv::Point2f, cv::Point2f>projectToScreen(int imgW, int imgH, std::pair<cv::Vec3f, cv::Vec3f> ptsToDraw, cv::Mat projectionMatrix, cv::Mat cameraPose){
+    std::pair<cv::Vec4f, cv::Vec4f> reprojecPts;
 
-    cv::Mat p2 = (cv::Mat_<float>(4, 1) << pts.second[0], pts.second[1], pts.second[2], 1);
-    p2 = projectionMatrix * p2;
+    float zNear = 1.0f; // clip plane is at (0, 0, -1) in camera space
 
-    // cout << "p1: " << p1 << endl;
-    // cout << "p2: " << p2 << endl;
+    cv::Mat p1 = (cv::Mat_<float>(4, 1) << ptsToDraw.first[0], ptsToDraw.first[1], ptsToDraw.first[2], 1);
+    p1 = cameraPose * p1;
 
-    pts.first = cv::Vec3f(p1.at<float>(0, 0), p1.at<float>(1, 0), p1.at<float>(2, 0));
-    pts.second = cv::Vec3f(p2.at<float>(0, 0), p2.at<float>(1, 0), p2.at<float>(2, 0));
-    
-    auto reprojOnNearPlane = [&zNear](std::pair<cv::Vec3f, cv::Vec3f> pts){
-        auto ptFront = pts.first, ptBack = pts.second;
-        if (pts.first[2] < zNear) {
-            // pts.first is behind the camera
-            ptFront = pts.second;
-            ptBack = pts.first;
+    cv::Mat p2 = (cv::Mat_<float>(4, 1) << ptsToDraw.second[0], ptsToDraw.second[1], ptsToDraw.second[2], 1);
+    p2 = cameraPose * p2;
+
+    auto clipOnNearPlane = [&zNear](cv::Vec4f p1, cv::Vec4f p2) {
+        auto ptFront = p1, ptBack = p2;
+
+        // ptsToDraw.first is behind the camera
+        if (p1[2] < zNear) {
+            ptFront = p2;
+            ptBack = p1;
         }
 
         float pz;
 
         ptBack = (abs(zNear - ptBack[2]) * ptFront + abs(zNear - ptFront[2]) * ptBack) / abs(ptFront[2] - ptBack[2]);
+        ptBack[3] = 1.0f; // force w = 1
 
         return make_pair(ptBack, ptFront);
     };
 
-    if (p1.at<float>(2, 0) < zNear && p2.at<float>(2, 0) < zNear) {
+    if( (getZ(p1) < zNear && getZ(p2) < zNear) ) { // both are behind the camera, no need to render
+//        cout << "Both points are behind camera, no need to render." << endl;
         return std::make_pair(cv::Point2f(-1, -1), cv::Point2f(-1, -1));
-    } else if (p1.at<float>(2, 0) < zNear || p2.at<float>(2, 0) < zNear) {
-        pts = reprojOnNearPlane(pts);
+    } else if ( !(getZ(p1) > zNear && getZ(p2) > zNear) ) {
+//        cout << "Perform near clipping." << endl;
+        reprojecPts = clipOnNearPlane(p1, p2);
+    } else {
+        reprojecPts.first = cv::Vec4f(p1.at<float>(0, 0), p1.at<float>(1, 0), p1.at<float>(2, 0), 1.0f);
+        reprojecPts.second = cv::Vec4f(p2.at<float>(0, 0), p2.at<float>(1, 0), p2.at<float>(2, 0), 1.0f);
     }
 
-    pts.first  /= pts.first[2];  // make all z = 1
-    pts.second /= pts.second[2]; // make all z = 1
+    p1 = projectionMatrix * reprojecPts.first;
+    p2 = projectionMatrix * reprojecPts.second;
 
-//    cout << "projectionMatrix: " << projectionMatrix << endl;
-//    cout << "pts.first: " << pts.first << endl;
-//    cout << "pts.second: " << pts.second << endl;
+    reprojecPts.first = cv::Vec4f(p1.at<float>(0, 0), p1.at<float>(1, 0), p1.at<float>(2, 0), p1.at<float>(3, 0));
+    reprojecPts.second = cv::Vec4f(p2.at<float>(0, 0), p2.at<float>(1, 0), p2.at<float>(2, 0), p2.at<float>(3, 0));
 
-    int x1 = imgW - (pts.first[0] + 1.0f) / 2.0f * imgW;
-    int y1 = imgH - (pts.first[1] + 1.0f) / 2.0f * imgH;
+    reprojecPts.first  /= reprojecPts.first[2];  // make all z = 1
+    reprojecPts.second /= reprojecPts.second[2]; // make all z = 1
 
-    int x2 = imgW - (pts.second[0] + 1.0f) / 2.0f * imgW;
-    int y2 = imgH - (pts.second[1] + 1.0f) / 2.0f * imgH;
+    int x1 = int(imgW - (reprojecPts.first[0] + 1.0f) / 2.0f * imgW);
+    int y1 = int(imgH - (reprojecPts.first[1] + 1.0f) / 2.0f * imgH);
+
+    int x2 = int(imgW - (reprojecPts.second[0] + 1.0f) / 2.0f * imgW);
+    int y2 = int(imgH - (reprojecPts.second[1] + 1.0f) / 2.0f * imgH);
+
+//    cout << "x1: " << x1 << " y1: " << y1 << " x2: " << x2 << " y2: " << y2 << endl;
 
     return make_pair(cv::Point2f(x1, y1), cv::Point2f(x2, y2));
 }
 
-void drawMesh(cv::Mat img, vector<pair<cv::Vec3f, cv::Vec3f>> linesToDraw, cv::Mat projectionMatrix) {
+void drawMesh(cv::Mat img, vector<pair<cv::Vec3f, cv::Vec3f>> linesToDraw, cv::Mat projectionMatrix, cv::Mat cameraPose) {
     int flag = 0;
     int count = 0;
-    for(auto &pts:linesToDraw){
-        auto ptsScreen = projectToScreen(img.cols, img.rows, pts, projectionMatrix);
+    for(auto &ptsToDraw:linesToDraw) {
+        auto ptsScreen = projectToScreen(img.cols, img.rows, ptsToDraw, projectionMatrix, cameraPose);
         cv::line(img, ptsScreen.first, ptsScreen.second, cv::Scalar(0, 0, 255), 2);
     }
-//    cout << "---" << endl;
 }
 
 
@@ -350,8 +364,7 @@ int main(int argc,char **argv){
 
     Slam->setParams(TheMap, params, cml("-voc"));
 
-    if(!cml["-voc"]  && !cml["-map"])
-    {
+    if(!cml["-voc"]  && !cml["-map"]) {
         cerr<<"Warning!! No VOCABULARY INDICATED. KEYPOINT RELOCALIZATION IMPOSSIBLE WITHOUT A VOCABULARY FILE!!!!!"<<endl;
     }
 
@@ -386,11 +399,11 @@ int main(int argc,char **argv){
     if(cml["-drawMesh"]){
         loadPly(cml("-drawMesh"), vertices, faces, lines);
 
-//        auto l0 = lines[1];
+//        auto l0 = lines[3];
 //        lines.clear();
 //        lines.emplace_back(l0);
 
-        // for test
+        // for test => only draw one line
 //        lines.clear();
 //        lines.emplace_back(
 //                make_pair(
@@ -433,7 +446,7 @@ int main(int argc,char **argv){
     vector<cv::Mat> slamFramesToWrite;
 
     while (!finish && !in_image.empty())  {
-        try{
+//        try{
             FpsComplete.start();
 
             if (isExportingVideo) {
@@ -444,9 +457,9 @@ int main(int argc,char **argv){
             in_image = resize(in_image, vsize);
 
             //image undistortion (if required)
-           if(undistort ){
+           if(undistort){
                cv::remap(in_image,auxImage,undistMap[0],undistMap[1],cv::INTER_CUBIC);
-               in_image=auxImage;
+               in_image = auxImage;
                image_params.Distorsion.setTo(cv::Scalar::all(0));
            }
 
@@ -463,11 +476,17 @@ int main(int argc,char **argv){
             // Slam->drawMatches(in_image);
             // char k = TheViewer.show(&Slam, in_image,"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
             char k =0;
+//            cv::Mat empty(in_image);
+//            for(int i = 0 ; i < empty.rows; i++){
+//                for(int k = 0 ; k < empty.cols ; k++){
+//
+//                }
+//            }
             if(!cml["-noX"]) {
                 // draw mesh
                 if(cml["-drawMesh"] && !camPose_c2g.empty()){
 //                    cout << "CamPose: " << camPose_c2g << endl << "---" << endl;
-                    drawMesh(in_image, lines, projectionMatrix * camPose_c2g);
+                    drawMesh(in_image, lines, projectionMatrix, camPose_c2g);
                 }
 
                 // draw tags & points
@@ -500,7 +519,6 @@ int main(int argc,char **argv){
 
             //save to output video?
             if (isExportingVideo) {
-
                 slamFramesToWrite.emplace_back(TheViewer.getImage().clone());
             }
 
@@ -537,25 +555,25 @@ int main(int argc,char **argv){
                 cout << " draw=" << 1./TimerDraw.getAvrg();
                 cout << (camPose_c2g.empty()?" not tracked":" tracked") << endl;
             }
-        } catch (...) {
-        // } catch (const std::exception &ex) {
-            // cerr << ex.what() << endl;
-
-            errorFlag = true;
-            cerr << "an error occurs" << endl;
-
-            if (cml["-isInstancing"]){
-                delete Slam;
-                Slam = new tslam::TSlam;
-                TheMap = std::make_shared<tslam::Map>();
-                if (cml["-map"]){
-                    TheMap->readFromFile(cml("-map"));
-                }
-
-                Slam->setParams(TheMap, params, cml("-voc"));
-            }
-
-        }
+//        } catch (...) {
+//        // } catch (const std::exception &ex) {
+//            // cerr << ex.what() << endl;
+//
+//            errorFlag = true;
+//            cerr << "an error occurs" << endl;
+//
+//            if (cml["-isInstancing"]){
+//                delete Slam;
+//                Slam = new tslam::TSlam;
+//                TheMap = std::make_shared<tslam::Map>();
+//                if (cml["-map"]){
+//                    TheMap->readFromFile(cml("-map"));
+//                }
+//
+//                Slam->setParams(TheMap, params, cml("-voc"));
+//            }
+//
+//        }
         //read next
         vcap >> in_image;
         if(!camPose_c2g.empty()){

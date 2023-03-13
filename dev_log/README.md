@@ -321,6 +321,9 @@ The hole filling from CGAL is implemented and it patch some of the missing holes
 |:------------------------:|:------------------------:|
 | ![](./hole_patch.png) | ![](./hole_patch2.png) |
 
+## March 13: Mesh View
+The bug about clipping and perspective projection has been fixed. Mesh view is now working properly.
+![](./mesh_view.png)
 
 ---
 
