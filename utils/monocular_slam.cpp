@@ -170,12 +170,6 @@ void loadPly(string path, vector<cv::Vec3f> &vertices, vector<cv::Vec3i> &faces,
         cv::Vec3f pt2 = vertices[b];
         cv::Vec3f pt3 = vertices[c];
 
-//        lines.emplace_back(make_pair(pt1, (pt1 + pt2) / 2));
-//        lines.emplace_back(make_pair(pt2, (pt1 + pt2) / 2));
-//        lines.emplace_back(make_pair(pt2, (pt2 + pt3) / 2));
-//        lines.emplace_back(make_pair(pt3, (pt2 + pt3) / 2));
-//        lines.emplace_back(make_pair(pt3, (pt3 + pt1) / 2));
-//        lines.emplace_back(make_pair(pt1, (pt3 + pt1) / 2));
         lines.emplace_back(make_pair(pt1, pt2));
         lines.emplace_back(make_pair(pt2, pt3));
         lines.emplace_back(make_pair(pt3, pt1));
@@ -446,7 +440,7 @@ int main(int argc,char **argv){
     vector<cv::Mat> slamFramesToWrite;
 
     while (!finish && !in_image.empty())  {
-//        try{
+        try{
             FpsComplete.start();
 
             if (isExportingVideo) {
@@ -476,16 +470,9 @@ int main(int argc,char **argv){
             // Slam->drawMatches(in_image);
             // char k = TheViewer.show(&Slam, in_image,"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
             char k =0;
-//            cv::Mat empty(in_image);
-//            for(int i = 0 ; i < empty.rows; i++){
-//                for(int k = 0 ; k < empty.cols ; k++){
-//
-//                }
-//            }
             if(!cml["-noX"]) {
                 // draw mesh
                 if(cml["-drawMesh"] && !camPose_c2g.empty()){
-//                    cout << "CamPose: " << camPose_c2g << endl << "---" << endl;
                     drawMesh(in_image, lines, projectionMatrix, camPose_c2g);
                 }
 
@@ -517,7 +504,7 @@ int main(int argc,char **argv){
                 }
             }
 
-            //save to output video?
+            // save to output video?
             if (isExportingVideo) {
                 slamFramesToWrite.emplace_back(TheViewer.getImage().clone());
             }
@@ -555,25 +542,25 @@ int main(int argc,char **argv){
                 cout << " draw=" << 1./TimerDraw.getAvrg();
                 cout << (camPose_c2g.empty()?" not tracked":" tracked") << endl;
             }
-//        } catch (...) {
-//        // } catch (const std::exception &ex) {
-//            // cerr << ex.what() << endl;
-//
-//            errorFlag = true;
-//            cerr << "an error occurs" << endl;
-//
-//            if (cml["-isInstancing"]){
-//                delete Slam;
-//                Slam = new tslam::TSlam;
-//                TheMap = std::make_shared<tslam::Map>();
-//                if (cml["-map"]){
-//                    TheMap->readFromFile(cml("-map"));
-//                }
-//
-//                Slam->setParams(TheMap, params, cml("-voc"));
-//            }
-//
-//        }
+        } catch (...) {
+        // } catch (const std::exception &ex) {
+            // cerr << ex.what() << endl;
+
+            errorFlag = true;
+            cerr << "an error occurs" << endl;
+
+            if (cml["-isInstancing"]){
+                delete Slam;
+                Slam = new tslam::TSlam;
+                TheMap = std::make_shared<tslam::Map>();
+                if (cml["-map"]){
+                    TheMap->readFromFile(cml("-map"));
+                }
+
+                Slam->setParams(TheMap, params, cml("-voc"));
+            }
+
+        }
         //read next
         vcap >> in_image;
         if(!camPose_c2g.empty()){
@@ -620,7 +607,7 @@ int main(int argc,char **argv){
     if (toSaveCamPose) outCamPose.close();
 
     //optimize the map
-    TheMap->optimize();
+    if(cml["-optimizeMap"]) TheMap->optimize();
 
     //save the output
     TheMap->saveToFile(cml("-out","world") +".map");
