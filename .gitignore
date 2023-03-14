@@ -23,6 +23,11 @@ cmake-build-debug
 test.*
 core-dump*
 
+# stag dict and files
+STagHD11/
+HD11/
+
+
 # misc
 test_result
 *.map
