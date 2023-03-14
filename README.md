@@ -57,7 +57,7 @@ Here are some reference related to this project:
 - [Dev Log of this modification](./dev_log)
 
 ## STag to print
-An A0 format with all STag stripes can be downloaded [here](https://drive.google.com/file/d/1a_uYvb9TZmeg664L9f9kR5GuTU0A3bfs/view?usp=share_link).
+STag stripes of 120cm length can stripes can be downloaded [here](https://drive.google.com/file/d/1a_uYvb9TZmeg664L9f9kR5GuTU0A3bfs/view?usp=share_link). The tags goes from number 36 to 7044.
 
 ## Scanned Map
 Some scanned map can be download from [[Google Drive](https://drive.google.com/drive/folders/1wYFZq54syWwTFVQ5soJTMVUmcufcvQoT?usp=share_link)](You have to login with EPFL account to view).
