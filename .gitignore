@@ -10,6 +10,10 @@ world.yml
 # avoid to push map (too heavy ~100MB)
 assets/maps/*
 
+# vocabulary
+assets/voc/*
+*.fbow
+
 # editor config
 .archive
 .vscode
