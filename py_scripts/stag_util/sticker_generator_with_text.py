@@ -17,8 +17,10 @@ import requests
 import zipfile
 import shutil
 
-__LEN_TAG_DICT__ = 22309
 __MODULE_PATH__ = os.path.dirname(os.path.abspath(__file__))
+__URL_ZIP_TAGS__ = "https://zenodo.org/record/7738721/files/STagHD11.zip"  # where the tag dict is stored
+__LEN_TAG_DICT__ = 22309                                                   # number of tags in the dict HD11
+
 
 def create_tags_pdf(filename="",
                     tag_resolution=1000,
@@ -200,7 +202,7 @@ def _download_extract() -> list:
     Download and extract the tags from Zenodo
     """
     # make an HTTP request within a context manager
-    with requests.get("https://zenodo.org/record/7733825/files/STagHD11.zip", stream=True) as r:
+    with requests.get(__URL_ZIP_TAGS__, stream=True) as r:
         if r.status_code != 200: # check if request was successful
             print("Error: could not download tags")
             exit()
@@ -288,7 +290,7 @@ def main(_filename : str,
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
                         formatter_class=argparse.RawDescriptionHelpFormatter,
-                        epilog= "Example: python3 create_tags_pdf.py --filename=tags --tag_size=25 --tag_resolution=1000 --tag_interval=0 --paper_width=1180 --row_number=50 --tag_id_start=0 --dpi=600",
+                        epilog= "Example: sticker_generator_with_text.py --filename=tags --tag_size=25 --tag_resolution=1000 --tag_interval=0 --paper_width=1180 --row_number=50 --tag_id_start=0 --dpi=600",
                         prog="STag pdf generator for print",
                         description="Create a pdf with stickers. The tags are downloaded from Zenodo. By default the app will print all the tags on 25mm and 1180mm -A0- width. If you want to print only a sequence set --tag_id_start with the first tag id to print. It is not possible to set the y-offset to the paper stripe boarder for now.")
     parser.add_argument('--filename', type=str, default="",

@@ -65,20 +65,12 @@ Here are some reference related to this project:
 </p>
 
 There are two ways you can consume the tags:
-- `ready to print`: 450 stripes for a total of 21149 tags are available in batches of 50 stripes with an A0 format. They are ready to print (better as stickers) and can be downloaded [from this Zenodo repository](https://zenodo.org/record/7738160#.ZBH6MIDMIvM).
+- `ready to print`: 450 stripes for a total of 21149 tags are available in batches of 50 stripes with an A0 format. They are ready to print (better as stickers) and can be downloaded [here](https://zenodo.org/record/7738721/files/stag_stickers_ready.zip?download=1).
 - `generate your custom stripes`: if you need a specific tags layout you can run the python script from the terminal (from UNIX):
-  
-  ```bash
-    # you need to create/activate a new conda environement
-    $ conda env create -f ~/TSlam/py_scripts/environment_tslam.py
-    $ conda activate tslam
+  calibration_webcam.yml -voc ../../orb.fbow -out test
 
-    # make the py script executable and run it. Type -h for help
-    $ chmod +x ~/TSlam/py_scripts/stag_util/sticker_generator_with_text.py --filename=tags --tag_size=25 --tag_resolution=1000 --tag_interval=0 --paper_width=1180 --row_number=50 --tag_id_start=0 --dpi=600
-  ```
-
-## Scanned Map
-Some scanned map can be download from [[Google Drive](https://drive.google.com/drive/folders/1wYFZq54syWwTFVQ5soJTMVUmcufcvQoT?usp=share_link)](You have to login with EPFL account to view).
+## TSlam vocabulary
+To be fully functional, TSlam needs a vocabulary that can be downloaded [here](https://zenodo.org/record/7738721/files/orb.fbow?download=1) and stored preferably into the folder `TSlam/assets/voc/orb.fbow`.
 
 ## Build
 ```bash
