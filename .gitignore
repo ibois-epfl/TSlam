@@ -34,6 +34,7 @@ test_result
 *.pdf
 webcam-calib-data
 log.*
+test/
 
 #######################################################
 ## VSCode
