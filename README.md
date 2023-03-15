@@ -56,8 +56,26 @@ Here are some reference related to this project:
 - [STag ROS](https://github.com/usrl-uofsc/stag_ros): Code of STag is from this repo. This one upgrade the original STag from OpenCV 3 to OpenCV 4.
 - [Dev Log of this modification](./dev_log)
 
-## STag to print
-An A0 format with all STag stripes can be downloaded [here](https://drive.google.com/file/d/1a_uYvb9TZmeg664L9f9kR5GuTU0A3bfs/view?usp=share_link).
+## Tag stickers
+<p align = "center">
+  <img src=assets/img/stripetag.png> </img>
+</p>
+<p align = "center">
+  <i>Fig.: Example of a stripe as sticker employed in TSlam. Each stripe contains 50 fiducial markers of 20mm width. </i>
+</p>
+
+There are two ways you can consume the tags:
+- `ready to print`: 450 stripes for a total of 21149 tags are available in batches of 50 stripes with an A0 format. They are ready to print (better as stickers) and can be downloaded [from this Zenodo repository](https://zenodo.org/record/7738160#.ZBH6MIDMIvM).
+- `generate your custom stripes`: if you need a specific tags layout you can run the python script from the terminal (from UNIX):
+  
+  ```bash
+    # you need to create/activate a new conda environement
+    $ conda env create -f ~/TSlam/py_scripts/environment_tslam.py
+    $ conda activate tslam
+
+    # make the py script executable and run it. Type -h for help
+    $ chmod +x ~/TSlam/py_scripts/stag_util/sticker_generator_with_text.py --filename=tags --tag_size=25 --tag_resolution=1000 --tag_interval=0 --paper_width=1180 --row_number=50 --tag_id_start=0 --dpi=600
+  ```
 
 ## Scanned Map
 Some scanned map can be download from [[Google Drive](https://drive.google.com/drive/folders/1wYFZq54syWwTFVQ5soJTMVUmcufcvQoT?usp=share_link)](You have to login with EPFL account to view).

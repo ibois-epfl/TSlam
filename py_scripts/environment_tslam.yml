@@ -1,0 +1,19 @@
+# to create from scratch: conda env create -f environment_tslam.yml
+# to update the environment: conda env update --name myenv --file environment_tslam.yml --prune
+# or update with environment activated: conda env update --file environment_tslam.yml --prune
+
+name: tslam
+channels:
+    - conda-forge
+dependencies:
+   - python==3.7
+   - pip==22.3.1
+   - pip:
+     - opencv-python==4.7.0.72
+     - glob2==0.7
+     - numpy==1.21.4
+     - pillow==9.4.0
+     - tqdm==4.65.0
+     - requests==2.28.2
+     - zip-files==0.4.1
+   - git
