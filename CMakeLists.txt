@@ -70,7 +70,6 @@ include(cmake/display.cmake)
 # Download tslam vocabulary file
 #------------------------------------------------------------------------------------------------------------
 
-# Download vocabulary file from https://zenodo.org/record/7738721/files/orb.fbow
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/assets/voc/orb.fbow")
     message(STATUS "Downloading vocabulary file from https://zenodo.org/record/7738721/files/orb.fbow")
     file(DOWNLOAD "https://zenodo.org/record/7738721/files/orb.fbow" "${PROJECT_SOURCE_DIR}/assets/voc/orb.fbow")

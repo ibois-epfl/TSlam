@@ -26,7 +26,7 @@ gantt
     section Evaluation
     protocols design                :active, ptrd, 2023-02-24, 2023-03-20
     Protocol submission             :milestone, 2023-03-14, 0d
-    extra utilities for eval        :active, 15d
+    preparation of eval             :active, 15d
     Fabrication eval                :crit, 21d
     Data/visual processing          :15d
     Stand-up eval results           :milestone, 2d

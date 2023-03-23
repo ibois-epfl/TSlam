@@ -325,24 +325,29 @@ The hole filling from CGAL is implemented and it patch some of the missing holes
 The bug about clipping and perspective projection has been fixed. Mesh view is now working properly.
 ![](./mesh_view.png)
 
+## March 23: Set up prep
+We started to preparing the evaluation pipeline and the set up for the evaluation campaign.
+![](./evalcampaign1.jpg)
+![](./evalcampaign2.jpg)
+
+
 ---
 
 Current TODOs:
 - [x] (urgent) a piece with double stripes on edges each is not reconstructing correctly, check the bug out;
-- [ ] (urgent) establish an evaluation protocol for the tslam
-- [ ] (urgent) find a better algorithm for selecting candidate polygon faces
-- [ ] (urgent) solve reconstruction for more complex objects
+- [x] (urgent) establish an evaluation protocol for the tslam
+- [x] (urgent) find a better algorithm for selecting candidate polygon faces
+- [x] (urgent) solve reconstruction for more complex objects
 - [ ] (urgent) delete all dependecies of old UCOSlam and code labels replaced with TSLam
-- [ ] (urgent) integrate the reconstruction as a library in the main TSlam base code
-- [ ] (urgent)implement an evaluation method (mesh-mesh comparison) for the synthetic data, i.e. [Hausdorf distance for two mesh models](https://www.researchgate.net/publication/224258658_Assessing_Visual_Quality_of_3-D_Polygonal_Models)
+- [x] (urgent) integrate the reconstruction as a library in the main TSlam base code
 
-- [ ] (medium) TSLAM: adjust visualizer for overlapping mesh
-- [ ] (mdeium) TSLAM: establish scientific protocol for evaluation with optitrack
-- [ ] (medium) in reconstruction: the check mesh sanity is not wrokgin properly
-- [ ] (medium) in reconstruction: we need to implement a hole filler
+- [x] (medium) TSLAM: adjust visualizer for overlapping mesh
+- [x] (mdeium) TSLAM: establish scientific protocol for evaluation with optitrack
+- [x] (medium) in reconstruction: the check mesh sanity is not wrokgin properly
+- [x] (medium) in reconstruction: we need to implement a hole filler
 
-- [ ] (medium) set up CI/CD
-- [ ] (medium) for reconstruction sub-program: get rid of open3d and integrate a mesh I/O pipeline 
+- [x] (medium) set up CI/CD
+- [x] (medium) for reconstruction sub-program: get rid of open3d and integrate a mesh I/O pipeline 
 - [ ] (medium) package and integrate the new version of tslam in AC
 
 - [ ] (optional) implement the a `.xac` (xml based) format in `ts_geometric_solver.hh` and `tslam_reconstructor.hh`;
