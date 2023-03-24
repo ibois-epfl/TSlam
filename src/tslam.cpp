@@ -26,16 +26,6 @@ namespace tslam{
             throw  std::runtime_error("Input Image Size is Different from Image Params");
         return  reinterpret_cast<System*>(impl)->process(in_image,ip,frameseq_idx);
     }
-    cv::Mat TSlam::processStereo( cv::Mat &in_image,const cv::Mat &R_image,const ImageParams &ip,uint32_t frameseq_idx){
-        return  reinterpret_cast<System*>(impl)->process(in_image,ip,frameseq_idx,cv::Mat(),R_image);
-    }
-    cv::Mat TSlam::processRGBD( cv::Mat &in_image,const cv::Mat & depth,const ImageParams &ip,uint32_t frameseq_idx){
-        return  reinterpret_cast<System*>(impl)->process(in_image,ip,frameseq_idx,depth);
-    }
-    cv::Mat TSlam::processArray(vector<cv::Mat> &images,  ImageParams &ArrayCamParams ,uint32_t frameseq_idx)
-    {
-        return  reinterpret_cast<System*>(impl)->process(images, ArrayCamParams, frameseq_idx);
-    }
     void TSlam::resetTracker(){
         reinterpret_cast<System*>(impl)->resetTracker();
     }

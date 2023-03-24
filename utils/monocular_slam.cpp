@@ -114,12 +114,17 @@ void enhanceImageBGR(const cv::Mat &imgIn, cv::Mat &imgOut){
 
 cv::Mat projectionMatrix;
 
+/**
+ * @brief convertRotationMatrixToQuaternion
+ * @param R 4x4 matrix
+ * @return quaternion in the form (x,y,z,w)
+ */
 cv::Vec4f convertRotationMatrixToQuaternion(cv::Mat R) {
     cv::Vec4f q;
-    q[0] = sqrt(1.0 + R.at<float>(0,0) + R.at<float>(1,1) + R.at<float>(2,2)) / 2.0;
-    q[1] = (R.at<float>(2,1) - R.at<float>(1,2)) / (4.0 * q[0]);
-    q[2] = (R.at<float>(0,2) - R.at<float>(2,0)) / (4.0 * q[0]);
-    q[3] = (R.at<float>(1,0) - R.at<float>(0,1)) / (4.0 * q[0]);
+    q[3] = sqrt(1.0 + R.at<float>(0,0) + R.at<float>(1,1) + R.at<float>(2,2)) / 2.0;
+    q[0] = (R.at<float>(2,1) - R.at<float>(1,2)) / (4.0 * q[3]);
+    q[1] = (R.at<float>(0,2) - R.at<float>(2,0)) / (4.0 * q[3]);
+    q[2] = (R.at<float>(1,0) - R.at<float>(0,1)) / (4.0 * q[3]);
     return q;
 }
 
@@ -407,11 +412,9 @@ int main(int argc,char **argv){
 //        );
     }
 
-    //read the first frame if not yet
-    while (in_image.empty())
-        vcap >> in_image;
+
     //need to resize input image?
-    cv::Size vsize(0,0);
+//    cv::Size vsize(0,0);
     //need undistortion
 
     bool undistort=cml["-undistort"];
@@ -439,6 +442,12 @@ int main(int argc,char **argv){
     vector<cv::Mat> rawFramesToWrite;
     vector<cv::Mat> slamFramesToWrite;
 
+    //read the first frame if not yet
+    auto startCaptureTime = std::chrono::system_clock::now();
+    auto frameCaptureTime = startCaptureTime;
+    while (in_image.empty())
+        vcap >> in_image;
+
     while (!finish && !in_image.empty())  {
         try{
             FpsComplete.start();
@@ -448,7 +457,7 @@ int main(int argc,char **argv){
             }
 
             //image resize (if required)
-            in_image = resize(in_image, vsize);
+//            in_image = resize(in_image, vsize);
 
             //image undistortion (if required)
            if(undistort){
@@ -485,15 +494,16 @@ int main(int argc,char **argv){
 
             //save to output pose?
             if (toSaveCamPose) {
+                std::chrono::duration<double> elapsed_seconds = frameCaptureTime - startCaptureTime;
+                outCamPose << currentFrameIndex << " " << elapsed_seconds.count() << " ";
+
+                // pose[x, y, z] = (0, 0, 0) and quaternion[x, y, z, w]
                 if(camPose_c2g.empty()) {
-                    outCamPose << currentFrameIndex << " ";
-                    // pose[x, y, z] = (0, 0, 0) and quaternion[w, x, y, z] = (1, 0, 0, 0)
-                    outCamPose << "0 0 0 1 0 0 0" << endl;
+                    outCamPose << "0 0 0 0 0 0 0 1" << endl;
                 } else {
                     auto camPoseQuaternion = convertRotationMatrixToQuaternion(
                             camPose_c2g.rowRange(0, 3).colRange(0, 3));
                     outCamPose <<
-                               currentFrameIndex << " " <<
                                camPose_c2g.at<float>(0, 3) << " " <<
                                camPose_c2g.at<float>(1, 3) << " " <<
                                camPose_c2g.at<float>(2, 3) << " " <<
@@ -563,10 +573,12 @@ int main(int argc,char **argv){
         }
         //read next
         vcap >> in_image;
-        if(!camPose_c2g.empty()){
-            for(int s=0;s<vspeed-1;s++)
-                vcap >> in_image;
-        }
+        frameCaptureTime = std::chrono::system_clock::now();
+
+//        if(!camPose_c2g.empty()){
+//            for(int s=0;s<vspeed-1;s++)
+//                vcap >> in_image;
+//        }
     }
 
     //release the video output if required

@@ -1,5763 +1,1164 @@
-#include "utils/mapinitializer.h"
+/**
+* This file is part of  TSLAM
+*
+* Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
+*
+* TSLAM is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* TSLAM is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+*/
+
+#include "mapinitializer.h"
+
 #include "optimization/ippe.h"
 #include "basictypes/misc.h"
 #include "basictypes/timers.h"
 #include "basictypes/debug.h"
 #include "basictypes/hash.h"
-#include "utils/system.h"
+#include "system.h"
 #include <cmath>
 #include <opencv2/calib3d/calib3d.hpp>
 #include<thread>
 #include "basictypes/osadapter.h"
 
- using
+using namespace std;
+namespace tslam
+{
 
- namespace
 
-     std ;
+void  MapInitializer::setParams(Params &p)
+{
+     _params=p;
 
- namespace
+}
 
-tslam
- {
- void
+void MapInitializer::reset(){
+    kfmatches.clear();
+     _refFrame.clear();
+}
+bool MapInitializer::process(const Frame &frame, std::shared_ptr<Map>  map){
 
-   MapInitializer ::
+    if(frame.und_kpts.size()<10 && _params.mode==KEYPOINTS) return false;
+    //    //attempts initialization from only current frame
+    if (_params.allowArucoOneFrame)
+        if (aruco_one_frame_initialize(frame,map)) {
+            _debug_msg_("initialization from single image using aruco");
+            return true;
+        }
 
-    setParams (
 
- Params &_2654435881 )
+    //first time
+    if (!_refFrame.isValid()){
+        setReferenceFrame(frame);
+        return false;
+    }
+    else{
+        bool res= initialize_(frame, map);
+        //check if there any marker
 
- {
+        if(!res){
+            //check if any common marker between the frames
+            int nCommonMarkers=0;
+            for(auto m:frame.markers)
+                if ( _refFrame.getMarkerIndex(m.id)!=-1 )nCommonMarkers++;
+            if (kfmatches.size()<50 && nCommonMarkers==0){//not enough common references, reset reference frame
+                setReferenceFrame(frame);
+                _debug_msg_("Restart initialization");
+            }
+        }
+        return res;
+    }
+}
 
-     _params =
 
- _2654435881 ;
+void MapInitializer::setReferenceFrame(const Frame &frame){
+    kfmatches.clear();
+    frame.copyTo(_refFrame);
+    if (_params.mode!=ARUCO && frame.ids.size()!=0){//there are keypoints
+         fmatcher.setParams(frame,FrameMatcher::MODE_ALL,_params.minDescDistance,_params.nn_match_ratio,true);
+     }
+}
 
- }
+//checks if the frame passed can be used to initialize with the second one
+bool MapInitializer::initialize_(const Frame &frame2, std::shared_ptr<Map> map){
+    auto removeInvalidMatches=[&](){
+        //remove invalid matches
 
- void
+        vector<cv::DMatch> validM;
+        vector<cv::Point3f> validP;
 
-  MapInitializer ::
+        for(size_t i=0;i<kfmatches.size();i++){
+            if(isnan(matches_3d[i].x) || isnan( matches_3d[i].y)||isnan(matches_3d[i].z))
+            {
+                kfmatches[i].trainIdx=-1;
+            }
+            else{
+                validM.push_back(kfmatches[i]);
+                validP.push_back(matches_3d[i]);
+            }
+        }
+        kfmatches=validM;
+        matches_3d=validP;
+    };
 
-     reset ()
 
-   {
+    if (!_refFrame.isValid())throw std::runtime_error(string(__PRETTY_FUNCTION__)+" invalid reference frame");
+    __TSLAM_ADDTIMER__
 
-    _9860761537440310106.clear ()
+    //find matches if using keypoints
+    if (_params.mode!=ARUCO   && frame2.ids.size()>0){
+        kfmatches=fmatcher.match(frame2,FrameMatcher::MODE_ALL);
+        _debug_msg_("matches ="<<kfmatches.size());
+    }
 
- ;
 
-     _refFrame.clear ()
 
-      ;
 
- }
+    auto rt_mode=computeRt(_refFrame,  frame2, kfmatches,_params.minDistance);
 
- bool
-   MapInitializer ::
 
-     process (
+    __TSLAM_TIMER_EVENT__("computed rt");
+    if (rt_mode.first.empty())return false;
+    if(rt_mode.second==KEYPOINTS  && kfmatches.size()<_params.minNumMatches) return false;
 
- const Frame &frame, std ::
 
- shared_ptr <
+     //set proper ids
+    //add frames
+    Frame & kfframe1=map->addKeyFrame(_refFrame); //[frame2.idx]=frame2;
+     kfframe1.pose_f2g=cv::Mat::eye(4,4,CV_32F);
+    Frame & kfframe2= map->addKeyFrame(frame2); //[frame2.idx]=frame2;
+     kfframe2.pose_f2g=rt_mode.first;
 
-         Map >
-        _11093822290287 )
- {
 
-     if(
 
-frame.und_kpts.size ()
-        <
-   10 &&
-     _params.mode ==
-KEYPOINTS ) return
-       false ;
+    //now, for each marker set the the frame info in which it has been seen
+     for(auto &marker:kfframe1.markers){
+         map->addMarker(marker);
+        map->addMarkerObservation(marker.id,kfframe1.idx);
+    }
+     for(auto &marker:kfframe2.markers){
+        map->addMarker(marker);
+        map->addMarkerObservation(marker.id,kfframe2.idx);
+    }
 
-     if
+     if(rt_mode.second==KEYPOINTS){//started with matches only
+        _debug_msg_("Initialized from keypoints");
+        //need to calculate the markers locations
+    }
+    else{
+        _debug_msg_("Initialized from markers");
+        if (frame2.ids.size()>0 &&_refFrame.ids.size()>0){
+            //then, if there are two keyframes, lets match keypoints
+            kfmatches=fmatcher.matchEpipolar(frame2,FrameMatcher::MODE_ALL,rt_mode.first);
+            matches_3d=tslam::Triangulate(_refFrame,frame2,rt_mode.first,kfmatches);
+            removeInvalidMatches();
 
-          (
+        }
+    }
 
- _params.allowArucoOneFrame )
+    //set markers locations given the established location in rt
+    //add markers to the map
+    for(auto m:_marker_se3){
+        cout<<"mm :"<<m.first<<" "<<m.second<<endl;
+        map->map_markers[ m.first ].pose_g2m= m.second;
+    }
+      //set the ids
+    for(size_t i=0;i<kfmatches.size();i++){
+        if (!isnan(matches_3d[i].x)){
+            auto &mp= map->addNewPoint(kfframe2.fseq_idx);
+            mp.kfSinceAddition=1;
+            mp.setCoordinates( matches_3d[i]);
+            map->addMapPointObservation(mp.id,kfframe1.idx,kfmatches[i].trainIdx);
+            map->addMapPointObservation(mp.id,kfframe2.idx,kfmatches[i].queryIdx);
+        }
+    }
 
-         if
+    assert(map->checkConsistency());
 
-    (
+    return true;
 
-     _7274126694617365277 (
 
-frame,_11093822290287 )
+}
 
-  )
+std::pair<cv::Mat,MapInitializer::MODE> MapInitializer::computeRt(const Frame &frame1, const Frame &frame2, vector<cv::DMatch> &matches, float minDistance)  {
+
+    if (frame1.und_kpts.size()==0 && _params.mode==KEYPOINTS)     return {cv::Mat(),NONE};
+    if (frame2.und_kpts.size()==0 && _params.mode==KEYPOINTS)     return {cv::Mat(),NONE};
+    if (frame1.markers.size()==0 && _params.mode==ARUCO)     return {cv::Mat(),NONE};
+    if (frame2.markers.size()==0 && _params.mode==ARUCO)     return {cv::Mat(),NONE};
+    if (frame1.und_kpts.size()==0 && frame1.markers.size()==0  )     return {cv::Mat(),NONE};
+    if (frame2.und_kpts.size()==0 && frame2.markers.size()==0  )     return {cv::Mat(),NONE};
+
+
+    if (!frame1.imageParams.isValid())throw std::runtime_error(string(__PRETTY_FUNCTION__)+"Need to call setParams to set the camera params first");
+    if (_params.markerSize<=0)throw std::runtime_error(string(__PRETTY_FUNCTION__)+"Invalid marker size");
+    //try first using aruco
+    if (_params.mode==BOTH || _params.mode==ARUCO){
+        auto rt=ARUCO_initialize(frame1.markers,frame2.markers,frame1.imageParams.undistorted(),_params.markerSize,0.02,_params.max_makr_rep_err,_params.minDistance,_marker_se3);
+        if (!rt.empty())
+                return {rt,ARUCO};
+    }
+    if (_params.mode==BOTH || _params.mode==KEYPOINTS){
+
+        cv::Mat R33,t;
+        vector<cv::Point3f> p3d;
+        vector<bool> valid;
+        if( getRtFromMatches(frame1.imageParams.CameraMatrix,frame1.und_kpts,frame2.und_kpts,matches,R33,t,p3d,valid)){
+            //convert into a single matrix of 32f
+            cv::Mat R44=cv::Mat::eye(4,4,CV_32F);
+            R33.copyTo( R44.colRange(0,3).rowRange(0,3));
+            t*=minDistance;
+            t.copyTo(R44.rowRange(0,3).colRange(3,4));
+            //    cout<<R44<<" norm="<<cv::norm(t)<<endl;//cin.ignore();
+            return {R44,KEYPOINTS};
+        }
+    }
+    return {cv::Mat(),NONE};
+
+}
+
+MapInitializer::MapInitializer( float sigma, int iterations)
+{
+
+    mSigma = sigma;
+    mSigma2 = sigma*sigma;
+    mMaxIterations = iterations;
+}
+
+
+
+
+
+bool MapInitializer::getRtFromMatches(const cv::Mat &CamMatrix,const std::vector<cv::KeyPoint> & ReferenceFrame,
+                                      const std::vector<cv::KeyPoint> &cur_frame,   vector<cv::DMatch> &vMatches12, cv::Mat &R21, cv::Mat &t21,
+                                      vector<cv::Point3f> &vP3D, vector<bool> &vbTriangulated)
+{
+    if (vMatches12.size()<_params.minNumMatches)return false;//need a minimum number of matches
+    // Fill structures with current keypoints and matches with reference frame
+    // Reference Frame: 1, Current Frame: 2
+
+    // file.write()
+
+    mK = CamMatrix.clone();
+    mvKeys1 = ReferenceFrame;
+    mvKeys2 = cur_frame;
+
+
+
+    mvMatches12.clear();
+    mvMatches12.reserve(mvKeys2.size());
+    for(auto m:vMatches12)
+        mvMatches12.push_back(make_pair(m.trainIdx,m.queryIdx));
+
+
+    const int N = mvMatches12.size();
+
+    // Indices for minimum set selection
+    vector<size_t> vAllIndices;
+    vAllIndices.reserve(N);
+    vector<size_t> vAvailableIndices;
+
+    for(int i=0; i<N; i++)
+        vAllIndices.push_back(i);
+
+
+    // Generate sets of 8 points for each RANSAC iteration
+    mvSets = vector< vector<size_t> >(mMaxIterations,vector<size_t>(8,0));
+
+    //    DUtils::Random::SeedRandOnce(0);
+    srand(0);
+    for(int it=0; it<mMaxIterations; it++)
+    {
+        vAvailableIndices = vAllIndices;
+
+        // Select a minimum set
+        for(size_t j=0; j<8; j++)
         {
-
-             return
-
-true ;
-
-         }
-
-     if
-        (
-
-          !
-
-        _refFrame.isValid ()
-        )
-
-  {
-
-        setReferenceFrame (
-
-    frame )
-
-         ;
-         return
-       false ;
-
-     }
-
-    else {
-
-         bool
-
-     _11093822302335 =
-     initialize_ (
-
-frame, _11093822290287 )
-
-          ;
-
-         if(
-
-   !
-
- _11093822302335 )
-
-   {
-
-             int
-
-   _12854874829121162896 =
-
-    0 ;
-
-             for(
-auto _markerObservation:frame.markers )
-
-                 if
-      (
-
-      _refFrame.getMarkerIndex (
-
-_markerObservation.id )
-
-    !=
-
--1 )
-   _12854874829121162896 ++
- ;
-             if
-
-     ( _9860761537440310106.size ()
-     <
-
- 50 &&
-      _12854874829121162896 ==
-
-  0 )
-      {
-
-                setReferenceFrame (
-
- frame )
-
-     ;
-             }
-
-         }
-
-         return
-
- _11093822302335 ;
-
-     }
-
- }
-
- void
-
-    MapInitializer :: setReferenceFrame (
-   const Frame &frame )
-
-  {
-
-    _9860761537440310106.clear ()
-   ;
-
-    frame.copyTo (
-
-     _refFrame )
-
-  ;
-
-     if
-  (
-
- _params.mode !=
-
- ARUCO &&
-
- frame.ids.size ()
-
-     !=
-
-0 )
-
-   {
-
-         fmatcher.setParams (
-
- frame,FrameMatcher ::
-
-   MODE_ALL,_params.minDescDistance,_params.nn_match_ratio,true )
-      ;
-
-      }
- }
-
- bool
-
-   MapInitializer ::
-     initialize_ (
-  const Frame &_3005401603918369727, std ::
-
- shared_ptr <
-
-    Map >
-
-  _11093822290287 )
-
+            int randi = rand()% vAvailableIndices.size(); //DUtils::Random::RandomInt(0,vAvailableIndices.size()-1);
+            int idx = vAvailableIndices[randi];
+
+            mvSets[it][j] = idx;
+
+            vAvailableIndices[randi] = vAvailableIndices.back();
+            vAvailableIndices.pop_back();
+        }
+    }
+
+    // Launch threads to compute in parallel a fundamental matrix and a homography
+    vector<bool> vbMatchesInliersH, vbMatchesInliersF;
+    float SH, SF;
+    cv::Mat H, F;
+
+    thread threadH(&MapInitializer::FindHomography,this,ref(vbMatchesInliersH), ref(SH), ref(H));
+    thread threadF(&MapInitializer::FindFundamental,this,ref(vbMatchesInliersF), ref(SF), ref(F));
+
+    // Wait until both threads have finished
+    threadH.join();
+    threadF.join();
+
+    // Compute ratio of scores
+    float RH = SH/(SH+SF);
+
+
+    // Try to reconstruct from homography or fundamental depending on the ratio (0.40-0.45)
+    bool result=false;
+    if(RH>0.40)
+        result= ReconstructH(vbMatchesInliersH,H,mK,R21,t21,vP3D,vbTriangulated,1.0,50);
+    else //if(pF_HF>0.6)
+        result=ReconstructF(vbMatchesInliersF,F,mK,R21,t21,vP3D,vbTriangulated,1.0,50);
+
+    if (result){
+        for(auto &m:vMatches12)
+            if (!vbTriangulated[m.trainIdx])
+                m.queryIdx=m.trainIdx=-1;
+        remove_unused_matches(vMatches12);
+        matches_3d.reserve(vMatches12.size());
+        for(auto &m:vMatches12)
+            matches_3d.push_back(vP3D[m.trainIdx]);
+    }
+
+    return result;
+}
+
+
+void MapInitializer::FindHomography(vector<bool> &vbMatchesInliers, float &score, cv::Mat &H21)
+{
+    // Number of putative matches
+    const int N = mvMatches12.size();
+
+    // Normalize coordinates
+    vector<cv::Point2f> vPn1, vPn2;
+    cv::Mat T1, T2;
+    Normalize(mvKeys1,vPn1, T1);
+    Normalize(mvKeys2,vPn2, T2);
+    cv::Mat T2inv = T2.inv();
+
+    // Best Results variables
+    score = 0.0;
+    vbMatchesInliers = vector<bool>(N,false);
+
+    // Iteration variables
+    vector<cv::Point2f> vPn1i(8);
+    vector<cv::Point2f> vPn2i(8);
+    cv::Mat H21i, H12i;
+    vector<bool> vbCurrentInliers(N,false);
+    float currentScore;
+
+    // Perform all RANSAC iterations and save the solution with highest score
+    for(int it=0; it<mMaxIterations; it++)
+    {
+        // Select a minimum set
+        for(size_t j=0; j<8; j++)
         {
-
-     auto
-
-    _9347345574136541271 =
-
- [
-
-& ]
-
-      ()
-
-   {
-
-        vector <
-
-cv ::
-
-   DMatch >
-
-    _3005399809980531318 ;
-
-        vector <
-
-   cv ::
-
-  Point3f >
-
-   _3005399809980531321 ;
-
-         for(
-
-  size_t _2654435874 =
-
-    0 ;
-
-      _2654435874 <
-
-_9860761537440310106.size ()
-
-   ;
-
-_2654435874 ++
-
-      ) {
-
-             if( isnan (
-
- _11999208601973379867 [ _2654435874 ]
-
-  .x )
-
-      ||
-
-    isnan (
-
- _11999208601973379867 [
-
-  _2654435874 ]
-
-   .y )
-
-    ||
-   isnan (
-
-     _11999208601973379867 [
-
-  _2654435874 ]
-   .z )
-
-    )
-
-             {
-
-                _9860761537440310106 [
-
-     _2654435874 ]
-
- .trainIdx =
-
- -1 ;
-
-             }
-
-            else {
-
-                _3005399809980531318.push_back (
-
-    _9860761537440310106 [
-       _2654435874 ]
-   )
-   ;
-
-                _3005399809980531321.push_back (
-
-     _11999208601973379867 [ _2654435874 ]
-
-   )
-
-   ;
-
-             }
-
-         }
-
-        _9860761537440310106 =
-_3005399809980531318 ;
-
-        _11999208601973379867 =
-
-  _3005399809980531321 ;
-
-     }
-  ;
-
-     if
-
-     (
-
-  !
-
-    _refFrame.isValid ()
-
-   )
-    throw std ::
-
-  runtime_error (
-  string (
-
- __PRETTY_FUNCTION__ )
-
- +R"( invalid reference frame)" )
-
-  ;
-
-     if
-
-     (
-
-   _params.mode !=
-
-  ARUCO &&
-
-     _3005401603918369727.ids.size ()
-
- >
-  0 )
-
-       {
-
-        _9860761537440310106 =
-
- fmatcher.match (_3005401603918369727,FrameMatcher ::MODE_ALL );
-
-       }
-
-     auto
-
-_6807034019352783248 =
-
-  _9813592252344743680 ( _refFrame, _3005401603918369727, _9860761537440310106,_params.minDistance )
-
- ;
-
-     if
-     (
-
-  _6807034019352783248.first.empty ()
-
-   )
-     return false ;
-
-     if(
-
-   _6807034019352783248.second ==
-
-  KEYPOINTS &&
-
-   _9860761537440310106.size ()
-
- < _params.minNumMatches )
-
-      return
-
-    false ;
-
-    Frame & _16997199184281837438 =
-
- _11093822290287 -> addKeyFrame (_refFrame )
-
-  ;
-
-     _16997199184281837438.pose_f2g =
-
-     cv ::
-      Mat ::
-       eye (
-
-4,4,CV_32F )
-       ;
-
-    Frame & _16997199184281837433 =
- _11093822290287 -> addKeyFrame (
-
-   _3005401603918369727 )
-
-          ;
-
-     _16997199184281837433.pose_f2g =
-
-         _6807034019352783248.first ;
-
-      for(
-
-  auto &_3005399795337363304:_16997199184281837438.markers )
-
+            int idx = mvSets[it][j];
+
+            vPn1i[j] = vPn1[mvMatches12[idx].first];
+            vPn2i[j] = vPn2[mvMatches12[idx].second];
+        }
+
+        cv::Mat Hn = ComputeH21(vPn1i,vPn2i);
+        H21i = T2inv*Hn*T1;
+        H12i = H21i.inv();
+
+        currentScore = CheckHomography(H21i, H12i, vbCurrentInliers, mSigma);
+
+        if(currentScore>score)
+        {
+            H21 = H21i.clone();
+            vbMatchesInliers = vbCurrentInliers;
+            score = currentScore;
+        }
+    }
+}
+
+
+void MapInitializer::FindFundamental(vector<bool> &vbMatchesInliers, float &score, cv::Mat &F21)
+{
+    // Number of putative matches
+    const int N = vbMatchesInliers.size();
+
+    // Normalize coordinates
+    vector<cv::Point2f> vPn1, vPn2;
+    cv::Mat T1, T2;
+    Normalize(mvKeys1,vPn1, T1);
+    Normalize(mvKeys2,vPn2, T2);
+    cv::Mat T2t = T2.t();
+
+    // Best Results variables
+    score = 0.0;
+    vbMatchesInliers = vector<bool>(N,false);
+
+    // Iteration variables
+    vector<cv::Point2f> vPn1i(8);
+    vector<cv::Point2f> vPn2i(8);
+    cv::Mat F21i;
+    vector<bool> vbCurrentInliers(N,false);
+    float currentScore;
+
+    // Perform all RANSAC iterations and save the solution with highest score
+    for(int it=0; it<mMaxIterations; it++)
     {
+        // Select a minimum set
+        for(int j=0; j<8; j++)
+        {
+            int idx = mvSets[it][j];
 
-         _11093822290287 ->
+            vPn1i[j] = vPn1[mvMatches12[idx].first];
+            vPn2i[j] = vPn2[mvMatches12[idx].second];
+        }
 
- addMarker (
-    _3005399795337363304 )
+        cv::Mat Fn = ComputeF21(vPn1i,vPn2i);
 
-  ;
+        F21i = T2t*Fn*T1;
 
-        _11093822290287 ->
+        currentScore = CheckFundamental(F21i, vbCurrentInliers, mSigma);
 
-      addMarkerObservation (
-  _3005399795337363304.id,_16997199184281837438.idx )
+        if(currentScore>score)
+        {
+            F21 = F21i.clone();
+            vbMatchesInliers = vbCurrentInliers;
+            score = currentScore;
+        }
+    }
+}
 
-          ;
 
-     }
+cv::Mat MapInitializer::ComputeH21(const vector<cv::Point2f> &vP1, const vector<cv::Point2f> &vP2)
+{
+    const int N = vP1.size();
 
-      for(
+    cv::Mat A(2*N,9,CV_32F);
 
-  auto &_3005399795337363304:_16997199184281837433.markers )
-
-  {
-        _11093822290287 ->
-
-  addMarker (
-
-   _3005399795337363304 )
-
-         ;
-
-        _11093822290287 ->
-
-addMarkerObservation (
-
-    _3005399795337363304.id,_16997199184281837433.idx )
-        ;
-
-     }
-
-      if(
-
- _6807034019352783248.second ==
-
-KEYPOINTS )
-       {
-
-     }
-
-    else {
-
-         if
-   (
-
-     _3005401603918369727.ids.size () >
-     0 &&
-  _refFrame.ids.size ()
-
-  > 0 )
-
-   {
-
-            _9860761537440310106 =
-
-        fmatcher.matchEpipolar (
-
-   _3005401603918369727,FrameMatcher ::
-
-MODE_ALL,_6807034019352783248.first )
-
-    ;
-
-            _11999208601973379867 =
-   tslam ::
-
-    Triangulate (
-     _refFrame,_3005401603918369727,_6807034019352783248.first,_9860761537440310106 )
-
-      ;
-
-            _9347345574136541271 ()
-     ;
-         }
-
-     }
-
-     for(
-
-   auto _markerObservation:_4498230092506100729 )
-
- {
-
-        cout <<
-      "\x6d\x6d\x20\x3a" <<
-
-_markerObservation.first <<
-"\x20" <<
-_markerObservation.second <<
-
-    endl ;
-        _11093822290287 -> map_markers [
-
- _markerObservation.first ]
-
-.pose_g2m =
-
-    _markerObservation.second ;
-
-     }
-
-     for(
-
- size_t _2654435874 =
-
-  0 ;
-  _2654435874 <
-     _9860761537440310106.size ()
-
-     ;
-
-     _2654435874 ++
-
- )
-
- {
-
-         if
-
- ( !
-
-isnan (
-     _11999208601973379867 [
-
-  _2654435874 ]
-
- .x ) )
-       {
-
-             auto
-
-  &_175247759380 =
-       _11093822290287 ->
-  addNewPoint (
-       _16997199184281837433.fseq_idx )
-
-        ;
-
-            _175247759380.kfSinceAddition =
-    1 ;
-
-            _175247759380.setCoordinates (
-        _11999208601973379867 [
-
-     _2654435874 ]
-
-  )
-    ;
-
-            _11093822290287 ->
-
-addMapPointObservation (
-
-  _175247759380.id,_16997199184281837438.idx,_9860761537440310106 [
- _2654435874 ]
-
-   .trainIdx )
-
-   ;
-
-            _11093822290287 ->
-
-    addMapPointObservation (
-  _175247759380.id,_16997199184281837433.idx,_9860761537440310106 [
-
- _2654435874 ]
-
-.queryIdx )
-
-    ;
-
-         }
-
-     }
-     return
-
- true ;
-
- }
-
-std ::
-       pair <
-
-    cv ::
- Mat,MapInitializer ::
-
-MODE >
-
-  MapInitializer ::
-
- _9813592252344743680 (
-
-    const Frame &_3005401603918369712, const Frame &_3005401603918369727, vector <
-
-cv ::
-
-  DMatch > &_6807036698572949990, float
-  _1686524438688096954 )
-
+    for(int i=0; i<N; i++)
     {
+        const float u1 = vP1[i].x;
+        const float v1 = vP1[i].y;
+        const float u2 = vP2[i].x;
+        const float v2 = vP2[i].y;
 
-     if
+        A.at<float>(2*i,0) = 0.0;
+        A.at<float>(2*i,1) = 0.0;
+        A.at<float>(2*i,2) = 0.0;
+        A.at<float>(2*i,3) = -u1;
+        A.at<float>(2*i,4) = -v1;
+        A.at<float>(2*i,5) = -1;
+        A.at<float>(2*i,6) = v2*u1;
+        A.at<float>(2*i,7) = v2*v1;
+        A.at<float>(2*i,8) = v2;
 
-    (
+        A.at<float>(2*i+1,0) = u1;
+        A.at<float>(2*i+1,1) = v1;
+        A.at<float>(2*i+1,2) = 1;
+        A.at<float>(2*i+1,3) = 0.0;
+        A.at<float>(2*i+1,4) = 0.0;
+        A.at<float>(2*i+1,5) = 0.0;
+        A.at<float>(2*i+1,6) = -u2*u1;
+        A.at<float>(2*i+1,7) = -u2*v1;
+        A.at<float>(2*i+1,8) = -u2;
 
-_3005401603918369712.und_kpts.size ()
+    }
 
-  == 0 &&
+    cv::Mat u,w,vt;
 
-    _params.mode ==
+    cv::SVDecomp(A,w,u,vt,cv::SVD::MODIFY_A | cv::SVD::FULL_UV);
 
- KEYPOINTS )
+    return vt.row(8).reshape(0, 3);
+}
 
-           return
+cv::Mat MapInitializer::ComputeF21(const vector<cv::Point2f> &vP1,const vector<cv::Point2f> &vP2)
+{
+    const int N = vP1.size();
 
-  {
+    cv::Mat A(N,9,CV_32F);
 
-   cv ::
- Mat () ,NONE }
-
- ;
-
-     if
- (
-
-   _3005401603918369727.und_kpts.size () ==
-
-    0 &&
-
-  _params.mode ==
-
-     KEYPOINTS )
-        return
-
+    for(int i=0; i<N; i++)
     {
+        const float u1 = vP1[i].x;
+        const float v1 = vP1[i].y;
+        const float u2 = vP2[i].x;
+        const float v2 = vP2[i].y;
 
-     cv ::
+        A.at<float>(i,0) = u2*u1;
+        A.at<float>(i,1) = u2*v1;
+        A.at<float>(i,2) = u2;
+        A.at<float>(i,3) = v2*u1;
+        A.at<float>(i,4) = v2*v1;
+        A.at<float>(i,5) = v2;
+        A.at<float>(i,6) = u1;
+        A.at<float>(i,7) = v1;
+        A.at<float>(i,8) = 1;
+    }
 
-       Mat ()
+    cv::Mat u,w,vt;
 
- ,NONE }
+    cv::SVDecomp(A,w,u,vt,cv::SVD::MODIFY_A | cv::SVD::FULL_UV);
 
-      ;
+    cv::Mat Fpre = vt.row(8).reshape(0, 3);
 
-     if
+    cv::SVDecomp(Fpre,w,u,vt,cv::SVD::MODIFY_A | cv::SVD::FULL_UV);
 
-    (
-     _3005401603918369712.markers.size ()
+    w.at<float>(2)=0;
 
-        == 0 &&
+    return  u*cv::Mat::diag(w)*vt;
+}
 
-   _params.mode ==
+float MapInitializer::CheckHomography(const cv::Mat &H21, const cv::Mat &H12, vector<bool> &vbMatchesInliers, float sigma)
+{   
+    const int N = mvMatches12.size();
 
-         ARUCO )
+    const float h11 = H21.at<float>(0,0);
+    const float h12 = H21.at<float>(0,1);
+    const float h13 = H21.at<float>(0,2);
+    const float h21 = H21.at<float>(1,0);
+    const float h22 = H21.at<float>(1,1);
+    const float h23 = H21.at<float>(1,2);
+    const float h31 = H21.at<float>(2,0);
+    const float h32 = H21.at<float>(2,1);
+    const float h33 = H21.at<float>(2,2);
 
-       return
-  {
+    const float h11inv = H12.at<float>(0,0);
+    const float h12inv = H12.at<float>(0,1);
+    const float h13inv = H12.at<float>(0,2);
+    const float h21inv = H12.at<float>(1,0);
+    const float h22inv = H12.at<float>(1,1);
+    const float h23inv = H12.at<float>(1,2);
+    const float h31inv = H12.at<float>(2,0);
+    const float h32inv = H12.at<float>(2,1);
+    const float h33inv = H12.at<float>(2,2);
 
-   cv ::
- Mat () ,NONE }
+    vbMatchesInliers.resize(N);
 
-   ;
+    float score = 0;
 
-     if
+    const float th = 5.991;
 
-        (
+    const float invSigmaSquare = 1.0/(sigma*sigma);
 
- _3005401603918369727.markers.size ()
-
-     ==
-
-0 &&
-
-  _params.mode ==
-
-  ARUCO )
-
-           return
-   {
-
-cv ::
-     Mat ()
-
-,NONE }
-
- ;
-
-     if (
-
-  _3005401603918369712.und_kpts.size ()
-
-  ==
-    0 &&
-
- _3005401603918369712.markers.size ()
-
-   ==
-
-    0 )
-
-             return
-
-   {
-
- cv ::
-       Mat ()
-
-    ,NONE } ;
-
-     if
-
-         (
-      _3005401603918369727.und_kpts.size ()
-        ==
-
-0 &&
-
-   _3005401603918369727.markers.size ()
-
-   ==
-
- 0 )
-        return
-
+    for(int i=0; i<N; i++)
     {
+        bool bIn = true;
 
-cv ::
+        const cv::KeyPoint &kp1 = mvKeys1[mvMatches12[i].first];
+        const cv::KeyPoint &kp2 = mvKeys2[mvMatches12[i].second];
 
-  Mat ()
+        const float u1 = kp1.pt.x;
+        const float v1 = kp1.pt.y;
+        const float u2 = kp2.pt.x;
+        const float v2 = kp2.pt.y;
 
-       ,NONE }
+        // Reprojection error in first image
+        // x2in1 = H12*x2
 
-      ;
+        const float w2in1inv = 1.0/(h31inv*u2+h32inv*v2+h33inv);
+        const float u2in1 = (h11inv*u2+h12inv*v2+h13inv)*w2in1inv;
+        const float v2in1 = (h21inv*u2+h22inv*v2+h23inv)*w2in1inv;
 
-     if
-    (
+        const float squareDist1 = (u1-u2in1)*(u1-u2in1)+(v1-v2in1)*(v1-v2in1);
 
-         !
+        const float chiSquare1 = squareDist1*invSigmaSquare;
 
-   _3005401603918369712.imageParams.isValid ()
-   )
-
-     throw std ::
-
- runtime_error (
-     string (
-
-  __PRETTY_FUNCTION__ )
-
-  +"\x4e\x65\x65\x64\x20\x74\x6f\x20\x63\x61\x6c\x6c\x20\x73\x65\x74\x50\x61\x72\x61\x6d\x73\x20\x74\x6f\x20\x73\x65\x74\x20\x74\x68\x65\x20\x63\x61\x6d\x65\x72\x61\x20\x70\x61\x72\x61\x6d\x73\x20\x66\x69\x72\x73\x74" )
-
-   ;
-
-     if
-
-  (
-
-    _params.markerSize <=
-0 )
-
- throw std ::
-
- runtime_error (
-
-        string (
-
-       __PRETTY_FUNCTION__ )
-
- +"\x49\x6e\x76\x61\x6c\x69\x64\x20\x6d\x61\x72\x6b\x65\x72\x20\x73\x69\x7a\x65" )
-
-     ;
-
-     if
-
-   (
-_params.mode ==
-
-    BOTH ||
-
-  _params.mode ==
-
-       ARUCO ) {
-
-         auto
-
-_175247759708 =
-
-    ARUCO_initialize ( _3005401603918369712.markers,_3005401603918369727.markers,_3005401603918369712.imageParams.undistorted ()
-
-     ,_params.markerSize,0.02,_params.max_makr_rep_err,_params.minDistance,_4498230092506100729 )
-
- ;
-
-         if (
-      !
-     _175247759708.empty () )
-
-                 return {
-
-      _175247759708,ARUCO }
-
- ;
-     }
-
-     if
-
-       (
-
-  _params.mode ==
-
- BOTH ||
-
-  _params.mode ==
-
-    KEYPOINTS )
-      {
-
-        cv :: Mat _11093821901392,_2654435885 ;
-        vector <
-
- cv ::
-
-   Point3f >
- _11093822296219 ;
-
-        vector < bool >
-
-    _46082576203004608 ;
-
-         if(
-
-     _11671783024730682148 (
-
-       _3005401603918369712.imageParams.CameraMatrix,_3005401603918369712.und_kpts,_3005401603918369727.und_kpts,_6807036698572949990,_11093821901392,_2654435885,_11093822296219,_46082576203004608 )
-
-   )
-
-   {
-
-            cv ::
-    Mat _11093821901330 =
-
-         cv ::
-
-       Mat ::
-  eye (
-
-   4,4,CV_32F )
-       ;
-
-            _11093821901392.copyTo (
-  _11093821901330.colRange (
-
-  0,3 )
-
-     .rowRange (
-
-  0,3 )
-
-   )
-      ;
-            _2654435885 *=
-
-       _1686524438688096954 ;
-            _2654435885.copyTo (
-
-    _11093821901330.rowRange (
-
-  0,3 )
-
- .colRange (
-
-3,4 )
-
-       )
-
-    ;
-
-             return
-
- { _11093821901330,KEYPOINTS }
- ;
-
-         }
-
-     }
-
-     return
-
- {
-
- cv ::
-
-    Mat ()
-
- ,NONE } ;
-
- }
-
-MapInitializer ::
-
-        MapInitializer ( float
-
-   _46082543171087264, int
-
-  _18204643580383888731 )
-
- {
-
-    _10193178724179165899 =
-
-         _46082543171087264 ;
-
-    _994360216124235670 =
-
-     _46082543171087264*_46082543171087264 ;
-
-    _3513368080762767352 =
-
- _18204643580383888731 ;
-
- }
-
- bool
-  MapInitializer ::
-
-      _11671783024730682148 (
-
-const cv ::
-
-    Mat &_1646854292500902885,const std ::
-
-     vector <
-
-        cv ::
- KeyPoint > & _594645163826321276,
-                                      const std ::
-
-    vector <
-
-   cv ::
-      KeyPoint > &_16987994083097500267, vector <
-
- cv ::
-
-   DMatch >
-
- &_5507076421631549640, cv ::
-       Mat &_11093821901461, cv ::
-
-         Mat &_11093822381707,
-                                      vector <
-
-         cv ::
- Point3f >
-
- &_706246337618936, vector <
-
-    bool > &_1883142761634074017 )
-
- {
-
-     if
-
-  ( _5507076421631549640.size ()
-
-   <
-
- _params.minNumMatches )
-
- return false ;
-
-    _8168161081211572021 =
-
- _1646854292500902885.clone ()
-
-    ;
-
-    _994360233184819249 =
-     _594645163826321276 ;
-
-    _994360233184819248 =
-
-    _16987994083097500267 ;
-
-    _7917477704619030428.clear ()
-
-    ;
-    _7917477704619030428.reserve (
-
-  _994360233184819248.size ()
-
-      )
-
-  ;
-
-     for(
-
-      auto _markerObservation:_5507076421631549640 )
-
-        _7917477704619030428.push_back ( make_pair (
-
-    _markerObservation.trainIdx,_markerObservation.queryIdx )
-
-   )
-
-   ;
-
-    const int
-
-_2654435847 =
-
- _7917477704619030428.size ()
-
-        ;
-
-    vector <
-
-   size_t > _14217074617584083842 ;
-
-    _14217074617584083842.reserve (
-
-       _2654435847 )
-
- ;
-
-    vector <
-
-     size_t >
-
-  _8060054801680167475 ;
-
-     for(
-
-int _2654435874 =
-
-      0 ;
-
- _2654435874 <
-
-    _2654435847 ;
-      _2654435874 ++
-
-        )
-
-        _14217074617584083842.push_back (
-
-_2654435874 )
-
-     ;
-
-    _10193178724467558310 =
-
-        vector < vector <
-
-    size_t >
-
-      >
-
-     (
-
-  _3513368080762767352,vector <
-
-    size_t >
-
-       (
-
-    8,0 )
-
-  )
-
-      ;
-
-    srand (
-
-   0 )
-
-   ;
-
-     for( int _175247760151 =
-
-   0 ; _175247760151 <
-   _3513368080762767352 ;
-     _175247760151 ++
-
-   )
-
-     {
-
-        _8060054801680167475 =
-
-   _14217074617584083842 ;
-
-         for( size_t _2654435875 =
-   0 ;
-
- _2654435875 <
-     8 ;
-
-    _2654435875 ++ )
-
-         {
-
-             int
-
- _46082576082856474 =
-
-   rand ()
-
-      % _8060054801680167475.size ()
-
-   ;
-
-             int
-
-_11093822405045 =
-
-  _8060054801680167475 [
-   _46082576082856474 ]
-     ;
-
-            _10193178724467558310 [
-
-   _175247760151 ]
-  [
-
-_2654435875 ]
-    =
-
-  _11093822405045 ;
-
-            _8060054801680167475 [
-   _46082576082856474 ]
-
-    =
-
-      _8060054801680167475.back ()
-
-    ;
-
-            _8060054801680167475.pop_back ()
-
-  ;
-
-         }
-
-     }
-
-    vector <
-
-  bool >
-
- _14433965424915739325, _14433965424915739327 ;
-
-     float
-     _175247761800, _175247761806 ;
-
-    cv ::
-
-   Mat _2654435841, _2654435839 ;
-
-    thread _6807155497357734564 (
-
-   &MapInitializer ::
-_5668215658172178667,this,ref ( _14433965424915739325 )
-
-    , ref (
-
-    _175247761800 )
-
-, ref ( _2654435841 )
-
-  )
-
-   ;
-
-    thread _6807155497357734562 (
-       &MapInitializer ::
-    _11788074806349018216,this,ref (
-
-         _14433965424915739327 )
-
-     , ref (
-
-      _175247761806 )
-
-   , ref (
-
- _2654435839 )
-  )
-
- ;
-
-    _6807155497357734564.join ()
-     ;
-
-    _6807155497357734562.join ()
-
-      ;
-
-     float
-    _175247761736 =
-
-   _175247761800/ (
-
-       _175247761800+_175247761806 )
-
-  ;
-
-     bool _3005399805025936106 =
-
-  false ;
-
-     if(
-
-  _175247761736 >
-
-  0.40 )
-        _3005399805025936106 =
-
-   _1187546224459158348 (
-   _14433965424915739325,_2654435841,_8168161081211572021,_11093821901461,_11093822381707,_706246337618936,_1883142761634074017,1.0,50 )
-     ;
-
-     else
-
-        _3005399805025936106 =
-
- _1187546224459158354 (
-_14433965424915739327,_2654435839,_8168161081211572021,_11093821901461,_11093822381707,_706246337618936,_1883142761634074017,1.0,50 ) ;
-
-     if
-   (
-      _3005399805025936106 )
-
-  {
-
-         for( auto &_markerObservation:_5507076421631549640 )
-
-             if
-    (
-
- !
-
-  _1883142761634074017 [
-
- _markerObservation.trainIdx ]
-    )
-                _markerObservation.queryIdx =
-      _markerObservation.trainIdx =
-
-      -1 ;
-
-        remove_unused_matches (
-
-         _5507076421631549640 )
-
-  ;
-
-        _11999208601973379867.reserve (
-
-     _5507076421631549640.size ()
-
-       )
-
-   ;
-
-         for(
-
-      auto &_markerObservation:_5507076421631549640 )
-
-            _11999208601973379867.push_back (
-
- _706246337618936 [
-
- _markerObservation.trainIdx ]
-
- )
-    ;
-
-     }
-
-     return
-
- _3005399805025936106 ;
-
- }
- void
-
- MapInitializer ::
-
-   _5668215658172178667 (
-       vector <
-
-   bool >
-
-  &_17271253899155467930, float
-   &_46082543172245582, cv ::
-
-  Mat &_11093822009278 )
-
- {
-
-    const int
-
-    _2654435847 =
-
-     _7917477704619030428.size ()
-
-   ;
-
-    vector < cv :: Point2f >
-
-  _706246337605591, _706246337605588 ;
-
-    cv ::
-
- Mat _175247761824, _175247761827 ;
-
-    _12337435833092867029 (
-
-  _994360233184819249,_706246337605591, _175247761824 )
-
-       ;
-
-    _12337435833092867029 (
-
- _994360233184819248,_706246337605588, _175247761827 )
-
-  ;
-
-    cv ::
-
-  Mat _46082575930330217 =
-
-      _175247761827.inv ()
-  ;
-
-    _46082543172245582 =
-
-     0.0 ;
-
-    _17271253899155467930 =
-
-        vector <
-
-    bool >
-       (
-
- _2654435847,false )
-
-    ;
-
-    vector <
-
-  cv ::
-    Point2f >
-
-    _46082576183194624 (
-
- 8 )
-   ;
-
-    vector <
-
-cv :: Point2f >
-
-      _46082576183194819 ( 8 )
-      ;
-
-    cv ::
- Mat _706246350342703, _706246350346847 ;
-
-    vector <
-
- bool >
-
-  _1200715365640636762 (
-
-     _2654435847,false )
-
- ;
-
-     float
-
-      _16104291604305712718 ;
-
-     for(
-
- int _175247760151 = 0 ;
-
-        _175247760151 <
-      _3513368080762767352 ;
-
-   _175247760151 ++
- )
-
-     {
-
-         for(
-
-size_t _2654435875 =
-
-   0 ;
-        _2654435875 <
-
-8 ;
-
- _2654435875 ++
-
-  )
-
-         {
-
-             int
-
-        _11093822405045 = _10193178724467558310 [
-   _175247760151 ]
-       [
-
-   _2654435875 ]
-
-    ;
-
-            _46082576183194624 [
-
-_2654435875 ]
-
-    =
-
-  _706246337605591 [
-
-_7917477704619030428 [
-
-     _11093822405045 ]
-
-    .first ] ;
-
-            _46082576183194819 [
-
-_2654435875 ]
-
-      =
-   _706246337605588 [
-
-   _7917477704619030428 [
-
-        _11093822405045 ]
-
-     .second ]
-   ;
-
-         }
-
-        cv ::
-
- Mat _175247762150 =
-     _5082483593203424965 (
-
-_46082576183194624,_46082576183194819 )
-
-     ;
-
-        _706246350342703 =
-
-   _46082575930330217*_175247762150*_175247761824 ;
-
-        _706246350346847 =
-
-  _706246350342703.inv ()
-        ;
-
-        _16104291604305712718 =
-   _17785459191918434301 (
-
-    _706246350342703, _706246350346847, _1200715365640636762, _10193178724179165899 )
-        ;
-
-         if(
-      _16104291604305712718 >
-
-        _46082543172245582 )
-
-         {
-
-            _11093822009278 =
-
-        _706246350342703.clone ()
-
-  ;
-
-            _17271253899155467930 =
-
-    _1200715365640636762 ;
-
-            _46082543172245582 =
-
-   _16104291604305712718 ;
-
-         }
-
-     }
- }
-
- void
-
-MapInitializer ::
-
- _11788074806349018216 (
-
- vector <
-      bool >
-        &_17271253899155467930, float
-
-    &_46082543172245582, cv ::
-
-  Mat &_11093821994570 )
-
- {
-
-    const int
-
-_2654435847 =
-
-     _17271253899155467930.size ()
-
- ;
-
-    vector <
-
-         cv ::
-
-    Point2f >
-
-      _706246337605591, _706246337605588 ;
-
-    cv ::
-
-     Mat _175247761824, _175247761827 ;
-
-    _12337435833092867029 (
-
-_994360233184819249,_706246337605591, _175247761824 )
-
-   ;
-
-    _12337435833092867029 (
-
-  _994360233184819248,_706246337605588, _175247761827 )
-
-     ;
-
-    cv ::
-   Mat _11093821991670 =
-
-     _175247761827.t ()
-  ;
-
-    _46082543172245582 =
-
-          0.0 ;
-
-    _17271253899155467930 =
-  vector < bool >
-
-   (
-
-   _2654435847,false )
-
-  ;
-
-    vector <
-
-   cv ::
-
-  Point2f > _46082576183194624 ( 8 )
-    ;
-
-    vector <
-
-  cv ::
-
-Point2f >
-      _46082576183194819 (
-
- 8 )
-
-      ;
-
-    cv ::
-
-Mat _706246338989182 ;
-
-    vector <
-
-       bool >
-
-  _1200715365640636762 (
- _2654435847,false )
-
-     ;
-
-     float
-
-   _16104291604305712718 ;
-
-     for(
-
-     int _175247760151 =
-
- 0 ;
-
-  _175247760151 <
-
-        _3513368080762767352 ;
-
-        _175247760151 ++
-
-  )
-
-     {
-
-         for(
-
-   int _2654435875 =
-
-    0 ;
-
-    _2654435875 <
-
- 8 ;
-
-          _2654435875 ++
-
-   )
-
-         {
-
-             int
-
- _11093822405045 =
-
- _10193178724467558310 [ _175247760151 ]
-
-  [
-
-  _2654435875 ]
-
-      ;
-
-            _46082576183194624 [
-    _2654435875 ]
-
-  =
-
-    _706246337605591 [
-
-   _7917477704619030428 [
-
-   _11093822405045 ] .first ]
-
-    ;
-
-            _46082576183194819 [
-
-     _2654435875 ]
-
-  =
-
-          _706246337605588 [
-
-    _7917477704619030428 [
-
- _11093822405045 ]
-
-.second ]
-
-   ;
-
-         }
-
-        cv ::
-
-   Mat _175247761817 =
-
-  _5082483593203429753 (
-   _46082576183194624,_46082576183194819 )
-
-      ;
-
-        _706246338989182 =
-    _11093821991670*_175247761817*_175247761824 ;
-
-        _16104291604305712718 = _9516949822686382330 (
-
-_706246338989182, _1200715365640636762, _10193178724179165899 )
-
-          ;
-         if(
-
-      _16104291604305712718 >
-
-   _46082543172245582 )
-
-         {
-
-            _11093821994570 =
-
-  _706246338989182.clone ()
-
-      ;
-
-            _17271253899155467930 =
-
-     _1200715365640636762 ;
-
-            _46082543172245582 =
- _16104291604305712718 ;
-
-         }
-
-     }
-
- }
-
-cv ::
-
- Mat MapInitializer ::
-     _5082483593203424965 (
-
-     const vector <
-
- cv ::
-
-     Point2f > &_11093821939251, const vector <
-
-  cv ::
-
-Point2f >
-
-     &_11093821939250 )
-
- {
-    const int
-      _2654435847 =
-
-       _11093821939251.size ()
-
-   ;
-
-    cv ::
-
-      Mat _2654435834 (
-    2*_2654435847,9,CV_32F )
-
-     ;
-
-     for(
-
-   int _2654435874 =
-   0 ;
-
- _2654435874 <
-_2654435847 ;
-
-  _2654435874 ++
-
-  )
-
-     {
-
-        const float
-
-  _175247759835 = _11093821939251 [
-
-    _2654435874 ]
-
-  .x ;
-
-        const float
-
- _175247760922 =
-
-   _11093821939251 [
-
-_2654435874 ]
-
-.y ;
-
-        const float
-
-_175247759832 = _11093821939250 [
-
- _2654435874 ]
-
-.x ;
-
-        const float
-
- _175247760921 =
-
-        _11093821939250 [
-
-  _2654435874 ]
-
-    .y ;
-
-        _2654435834.at <
-
- float >
-
- (
-
-      2*_2654435874,0 )
-
-       =
-
-  0.0 ;
-        _2654435834.at <
-
-float >
-
-      (
-
-    2*_2654435874,1 )
-
-    =
-
-      0.0 ;
-
-        _2654435834.at <
-    float >
-
-     (
-
- 2*_2654435874,2 )
-
-    =
-
-         0.0 ;
-
-        _2654435834.at <
-   float >
-
-   (
-
-   2*_2654435874,3 )
-
-     =
-
- -_175247759835 ;
-
-        _2654435834.at <
-    float >
-       (
-
- 2*_2654435874,4 )
-
-    =
-
-      -_175247760922 ;
-
-        _2654435834.at <
-
- float >
-
-      (
-
- 2*_2654435874,5 )
-
-    =
-
-          -1 ;
-
-        _2654435834.at <
-
-   float >
-
-        (
-
-2*_2654435874,6 )
-   =
-       _175247760921*_175247759835 ;
-
-        _2654435834.at <
-
-        float >
-
-      (
-
- 2*_2654435874,7 )
-
-     =
-
-         _175247760921*_175247760922 ;
-
-        _2654435834.at <
-
-   float >
-
-  (
-       2*_2654435874,8 )
-
-  =
-
-    _175247760921 ;
-
-        _2654435834.at <
-
-  float >
-
-     (
-
-     2*_2654435874+1,0 ) = _175247759835 ;
-
-        _2654435834.at <
-
- float > (
-     2*_2654435874+1,1 )
-  =
-
- _175247760922 ;
-
-        _2654435834.at <
- float >
-
-    (
-
- 2*_2654435874+1,2 )
-
-    =
-
-     1 ;
-
-        _2654435834.at <
-
-         float >
-
-      (
-2*_2654435874+1,3 )
-
-        =
-
-         0.0 ;
-
-        _2654435834.at <
-
- float > (
-  2*_2654435874+1,4 )
-
-  =
-
-      0.0 ;
-
-        _2654435834.at <
-
-  float >
-        (
-
-   2*_2654435874+1,5 ) =
-      0.0 ;
-
-        _2654435834.at <
-
- float >
-     (
-
- 2*_2654435874+1,6 )
-
-    =
-
- -_175247759832*_175247759835 ;
-
-        _2654435834.at <
-
-  float >
-
-  (
-
-         2*_2654435874+1,7 )
-
-     =
-
- -_175247759832*_175247760922 ;
-
-        _2654435834.at <
-
- float >
-
- (
-
-        2*_2654435874+1,8 )
-  =
-
- -_175247759832 ;
-
-     }
-
-    cv ::
-
- Mat _2654435886,_2654435888,_175247760983 ;
-
-    cv ::
-
-    SVDecomp (
-   _2654435834,_2654435888,_2654435886,_175247760983,cv ::
-
-    SVD ::
-
-MODIFY_A | cv :: SVD ::
-  FULL_UV )
-
- ;
-
-     return
-
-        _175247760983.row ( 8 )
-
- .reshape (
-     0, 3 )
-
-      ;
-
- }
-cv ::
-
-     Mat MapInitializer :: _5082483593203429753 (
-
-  const vector <
-
-  cv ::
-
- Point2f >
-
-  &_11093821939251,const vector < cv :: Point2f >
-      &_11093821939250 )
-
- {
-
-    const int
-
-   _2654435847 = _11093821939251.size ()
-
- ;
-
-    cv ::
-
-   Mat _2654435834 (
-      _2654435847,9,CV_32F )
-
-  ;
-
-     for(
-
-    int _2654435874 =
-   0 ;
-
-     _2654435874 < _2654435847 ;
-
-    _2654435874 ++ )
-
-     {
-
-        const float
-    _175247759835 =
-   _11093821939251 [
-
-     _2654435874 ]
-.x ;
-
-        const float
-    _175247760922 = _11093821939251 [
-
-    _2654435874 ]
-
-       .y ;
-
-        const float
-
-_175247759832 =
-
-  _11093821939250 [
-   _2654435874 ]
-
- .x ;
-
-        const float
-
-    _175247760921 =
-
- _11093821939250 [
-
-_2654435874 ]
-
- .y ;
-
-        _2654435834.at <
-   float >
-
-      (
-
- _2654435874,0 ) =
-  _175247759832*_175247759835 ;
-
-        _2654435834.at <
-      float >
-
-      (
-
-  _2654435874,1 )
-
-    =
-
-     _175247759832*_175247760922 ;
-
-        _2654435834.at <
-
-float >
- (
-
-  _2654435874,2 )
-
-      =
-
-   _175247759832 ;
-
-        _2654435834.at <
-   float >
-
-   (
-    _2654435874,3 )
-
-     =
-
-  _175247760921*_175247759835 ;
-
-        _2654435834.at <
-
-   float >
-
-      (
-
-_2654435874,4 )
-
-    =
-
- _175247760921*_175247760922 ;
-
-        _2654435834.at <
-
-      float >
-
- (
-
-  _2654435874,5 )
-
-   =
-
-    _175247760921 ;
-
-        _2654435834.at <
-float >
-
-      (
-
-    _2654435874,6 )
-       =
-
-    _175247759835 ;
-
-        _2654435834.at <
-
-   float >
-
-     ( _2654435874,7 )
-
-        = _175247760922 ;
-
-        _2654435834.at <
-
- float >
-
- (
-
-  _2654435874,8 )
-
-  =
-
-    1 ;
-
-     }
-    cv ::
-   Mat _2654435886,_2654435888,_175247760983 ;
-
-    cv ::
-
-    SVDecomp (
-
- _2654435834,_2654435888,_2654435886,_175247760983,cv ::
-
-SVD ::
-
-     MODIFY_A | cv ::
-
-    SVD ::
-      FULL_UV )
-
-       ;
-
-    cv ::
-
-Mat _706246338936712 =
-
-   _175247760983.row (
-       8 )
-
-   .reshape (
-
-    0, 3 ) ;
-    cv ::
-    SVDecomp (
-
-  _706246338936712,_2654435888,_2654435886,_175247760983,cv ::
-
-      SVD ::
-
-MODIFY_A | cv ::
-
-SVD ::
-
-     FULL_UV )
- ;
-
-    _2654435888.at <
-
-   float >
-
-     (
-
-   2 )
-
-       =
-
-  0 ;
-
-     return _2654435886*cv ::
-
-      Mat ::
-    diag (
-
-  _2654435888 )
-
-   *_175247760983 ;
-
- }
-
- float
-    MapInitializer ::
-
-      _17785459191918434301 (
- const cv ::
-
-         Mat &_11093822009278, const cv :: Mat &_11093822009342, vector <
-
-bool >
-
- &_17271253899155467930, float
-
-  _46082543171087264 )
-
- {
-
-    const int
-
-   _2654435847 = _7917477704619030428.size ()
-     ;
-
-    const float
-       _11093822398429 =
-
-  _11093822009278.at <
-
-         float >
-
-    (
-
-     0,0 )
-
-  ;
-
-    const float
-
-       _11093822398428 =
-     _11093822009278.at <
-  float >
-
-  (
-
-0,1 )
-
-  ;
-
-    const float
-
-      _11093822398403 =
-
- _11093822009278.at <
-
-  float >
-
-   (
-
-     0,2 )
-   ;
-
-    const float
-
-  _11093822398364 =
-
-        _11093822009278.at <
-       float >
-
-  (
-   1,0 )
- ;
-
-    const float
-
- _11093822398365 =
-
- _11093822009278.at <
-
-     float >
-
-       (
-
- 1,1 )
-
-      ;
-
-    const float
-
-   _11093822398338 = _11093822009278.at < float >
-
-      (
-
-       1,2 )
-
-          ;
-
-    const float
-
-       _11093822398298 =
-
-    _11093822009278.at <
-
-    float >
-
-  (
-
-    2,0 )
-
-    ;
-
-    const float
-  _11093822398277 =
-
-      _11093822009278.at <
-
-  float >
-
-   (
-
-2,1 )
-
-       ;
-
-    const float
-
-   _11093822398276 =
-
-          _11093822009278.at <
-float >
-
-      (
-
-    2,2 )
-
-   ;
-
-    const float
-       _3005401529427071630 = _11093822009342.at <
-
-        float > (
-
-  0,0 )
-  ;
-
-    const float
-
-  _3005401529421472443 =
-
- _11093822009342.at <
-
-         float >
-
-     (
-
-  0,1 )
-
- ;
-
-    const float
-       _3005401529537514599 =
-
-     _11093822009342.at <
-
-   float >
-
- (
-    0,2 )
-  ;
-
-    const float
-
-    _3005401529370179020 =
-
-          _11093822009342.at <
-
-     float >
-
-  (
-  1,0 )
-
- ;
-
-    const float
-
- _3005401529369987001 =
-
-   _11093822009342.at <
-    float >
- ( 1,1 )
-
- ;
-
-    const float
-
-   _3005401529351329903 =
-
-     _11093822009342.at <
-     float >
-
-    (
-    1,2 )
-
-    ;
-
-    const float
-
-  _3005401529527259663 =
-        _11093822009342.at <
-
-float > (
-
-      2,0 )
-
-     ;
-
-    const float
-
- _3005401529502477801 = _11093822009342.at <
-
-        float >
-
-  (
-
- 2,1 )
-
- ;
-
-    const float
-
- _3005401529495938372 =
-    _11093822009342.at <
-
-     float >
-
-        (
-
-     2,2 )
-
-   ;
-
-    _17271253899155467930.resize (
-
-    _2654435847 )
-
- ;
-
-     float
-
-         _46082543172245582 =
-
-  0 ;
-
-    const float _175247759809 =
-
-  5.991 ;
-
-    const float
-
-    _9395000106275793626 =
-
-    1.0/ (
-
-     _46082543171087264*_46082543171087264 )
-
-     ;
-
-     for( int _2654435874 =
-  0 ;
-
-    _2654435874 < _2654435847 ;
-    _2654435874 ++
-
-          )
-
-     {
-
-         bool
-
- _11093821971816 =
-
-  true ;
-
-        const cv ::
-
-     KeyPoint &_11093822348761 =
-
-  _994360233184819249 [
-      _7917477704619030428 [
-       _2654435874 ]
-
-     .first ]
-
- ;
-
-        const cv ::
-
-    KeyPoint &_11093822348742 =
-
-  _994360233184819248 [
-
-     _7917477704619030428 [
-
-      _2654435874 ] .second ]
-
-     ;
-
-        const float
-
-_175247759835 =
-        _11093822348761.pt.x ;
-
-        const float
-
-_175247760922 =
-
-      _11093822348761.pt.y ;
-
-        const float
-
-    _175247759832 =
-
-    _11093822348742.pt.x ;
-
-        const float
-
- _175247760921 =
-
-      _11093822348742.pt.y ;
-
-        const float _16937440141356181747 =
-   1.0/ (
-
-   _3005401529527259663*_175247759832+_3005401529502477801*_175247760921+_3005401529495938372 )
-
-      ;
-
-        const float
-
-      _46082543236117216 = (
-
-     _3005401529427071630*_175247759832+_3005401529421472443*_175247760921+_3005401529537514599 ) *_16937440141356181747 ;
-
-        const float
-
- _46082576205740220 =
-
-     (
-
-    _3005401529370179020*_175247759832+_3005401529369987001*_175247760921+_3005401529351329903 )
-
- *_16937440141356181747 ;
-
-        const float
-
-  _13812273414234552516 =
-
-   ( _175247759835-_46082543236117216 ) * (
-
-_175247759835-_46082543236117216 )
-
- + (
-
-_175247760922-_46082576205740220 )
-
-* (
-
-  _175247760922-_46082576205740220 )
-     ;
-
-        const float
-
-  _14226755087262694000 =
-
-     _13812273414234552516*_9395000106275793626 ;
-
-         if(
-  _14226755087262694000 >
-
-  _175247759809 )
-
-            _11093821971816 =
-
-  false ;
-
+        if(chiSquare1>th)
+            bIn = false;
         else
-            _46082543172245582 +=
+            score += th - chiSquare1;
 
-  _175247759809 - _14226755087262694000 ;
+        // Reprojection error in second image
+        // x1in2 = H21*x1
 
-        const float
+        const float w1in2inv = 1.0/(h31*u1+h32*v1+h33);
+        const float u1in2 = (h11*u1+h12*v1+h13)*w1in2inv;
+        const float v1in2 = (h21*u1+h22*v1+h23)*w1in2inv;
 
-    _16937445645353283937 =
+        const float squareDist2 = (u2-u1in2)*(u2-u1in2)+(v2-v1in2)*(v2-v1in2);
 
-         1.0/ (
-_11093822398298*_175247759835+_11093822398277*_175247760922+_11093822398276 )
+        const float chiSquare2 = squareDist2*invSigmaSquare;
 
- ;
-
-        const float
-       _46082543234721512 =
-
-      (
-
-     _11093822398429*_175247759835+_11093822398428*_175247760922+_11093822398403 )
-
-    *_16937445645353283937 ;
-
-        const float
-
- _46082576210450602 =
-
-       (
-
-    _11093822398364*_175247759835+_11093822398365*_175247760922+_11093822398338 )
-
-        *_16937445645353283937 ;
-        const float
-    _13812273414234552517 =
-
-   (
-
-_175247759832-_46082543234721512 )
-
-* (
-
-  _175247759832-_46082543234721512 )
-
-  + (
-
-      _175247760921-_46082576210450602 )
-
-  * (
-_175247760921-_46082576210450602 )
-
-  ;
-
-        const float
-
-  _14226755087262694015 =
-
-     _13812273414234552517*_9395000106275793626 ;
-
-         if(
-
-_14226755087262694015 >
-
-     _175247759809 )
-
-            _11093821971816 =
-
-    false ;
-
+        if(chiSquare2>th)
+            bIn = false;
         else
-            _46082543172245582 +=
+            score += th - chiSquare2;
 
-     _175247759809 - _14226755087262694015 ;
-
-         if(
-
-_11093821971816 )
-
-            _17271253899155467930 [
-
-_2654435874 ] =
-
-true ;
-
+        if(bIn)
+            vbMatchesInliers[i]=true;
         else
-            _17271253899155467930 [
+            vbMatchesInliers[i]=false;
+    }
 
- _2654435874 ]
+    return score;
+}
 
-       =
-      false ;
+float MapInitializer::CheckFundamental(const cv::Mat &F21, vector<bool> &vbMatchesInliers, float sigma)
+{
+    const int N = mvMatches12.size();
 
-     }
+    const float f11 = F21.at<float>(0,0);
+    const float f12 = F21.at<float>(0,1);
+    const float f13 = F21.at<float>(0,2);
+    const float f21 = F21.at<float>(1,0);
+    const float f22 = F21.at<float>(1,1);
+    const float f23 = F21.at<float>(1,2);
+    const float f31 = F21.at<float>(2,0);
+    const float f32 = F21.at<float>(2,1);
+    const float f33 = F21.at<float>(2,2);
 
-     return
+    vbMatchesInliers.resize(N);
 
-     _46082543172245582 ;
+    float score = 0;
 
- }
+    const float th = 3.841;
+    const float thScore = 5.991;
 
- float
+    const float invSigmaSquare = 1.0/(sigma*sigma);
 
- MapInitializer ::
+    for(int i=0; i<N; i++)
+    {
+        bool bIn = true;
 
- _9516949822686382330 (
+        const cv::KeyPoint &kp1 = mvKeys1[mvMatches12[i].first];
+        const cv::KeyPoint &kp2 = mvKeys2[mvMatches12[i].second];
 
-const cv :: Mat &_11093821994570, vector <
+        const float u1 = kp1.pt.x;
+        const float v1 = kp1.pt.y;
+        const float u2 = kp2.pt.x;
+        const float v2 = kp2.pt.y;
 
-  bool >
+        // Reprojection error in second image
+        // l2=F21x1=(a2,b2,c2)
 
-    &_17271253899155467930, float
+        const float a2 = f11*u1+f12*v1+f13;
+        const float b2 = f21*u1+f22*v1+f23;
+        const float c2 = f31*u1+f32*v1+f33;
 
-    _46082543171087264 )
+        const float num2 = a2*u2+b2*v2+c2;
 
- {
-    const int
+        const float squareDist1 = num2*num2/(a2*a2+b2*b2);
 
- _2654435847 =
+        const float chiSquare1 = squareDist1*invSigmaSquare;
 
-   _7917477704619030428.size ()
-
-          ;
-
-    const float
-
-     _11093822386651 =
-
-   _11093821994570.at <
-    float >
-
-     (
-
-0,0 )
-
-     ;
-
-    const float
-
-     _11093822386648 =
-     _11093821994570.at <
-     float >
-
-  (
-
-  0,1 )
-
-  ;
-
-    const float
-
-    _11093822386649 =
-
- _11093821994570.at <
-   float >
- (
-
- 0,2 )
-  ;
-
-    const float
-    _11093822386584 =
-
-        _11093821994570.at <
-      float >
-
-      (
-
-     1,0 )
-
-  ;
-    const float
-
-  _11093822386587 =
-   _11093821994570.at <
-   float >
-
-  (
-
- 1,1 )
-
-    ;
-    const float
-
-       _11093822386586 =
-
-    _11093821994570.at <
-
-      float >
-
-      (
-
-      1,2 )
-
-          ;
-
-    const float
-
- _11093822386521 =
-   _11093821994570.at <
-
-float >
-
-  (
-   2,0 ) ;
-
-    const float
-
-   _11093822386522 =
-
-    _11093821994570.at <
-
-       float >
-
-       (
-
-2,1 )
-
-  ;
-
-    const float
-
-   _11093822386523 =
-
-    _11093821994570.at <
-
-     float >
-
-   (
-
- 2,2 )
-
-   ;
-
-    _17271253899155467930.resize (
-
- _2654435847 )
-
-   ;
-
-     float
-
-        _46082543172245582 =
-
-  0 ;
-    const float
-
-  _175247759809 =
-
-       3.841 ;
-
-    const float
-
-   _6807155495820199660 =
-
- 5.991 ;
-
-    const float
-
- _9395000106275793626 =
-
-     1.0/ (
-
- _46082543171087264*_46082543171087264 )
-
-         ;
-
-     for(
-
-   int _2654435874 = 0 ;
- _2654435874 <
-  _2654435847 ;
-        _2654435874 ++
-
-      )
-     {
-
-         bool
-
-      _11093821971816 =
-
- true ;
-
-        const cv ::
-   KeyPoint &_11093822348761 = _994360233184819249 [
-    _7917477704619030428 [
-
-  _2654435874 ]
-
-.first ]
-  ;
-
-        const cv ::
-
- KeyPoint &_11093822348742 =
-
- _994360233184819248 [
-
-_7917477704619030428 [
-
-    _2654435874 ]
-
-         .second ]
-   ;
-
-        const float
-
- _175247759835 =
-
-  _11093822348761.pt.x ;
-
-        const float
-
-   _175247760922 =
-
- _11093822348761.pt.y ;
-
-        const float _175247759832 =
-       _11093822348742.pt.x ;
-
-        const float
-
-_175247760921 =
-
-  _11093822348742.pt.y ;
-
-        const float _175247762667 =
-
-    _11093822386651*_175247759835+_11093822386648*_175247760922+_11093822386649 ;
-
-        const float
-   _175247762730 =
-
-       _11093822386584*_175247759835+_11093822386587*_175247760922+_11093822386586 ;
-
-        const float
-
-       _175247762798 =
-
-  _11093822386521*_175247759835+_11093822386522*_175247760922+_11093822386523 ;
-
-        const float
-
-         _706246333051887 =
-
-    _175247762667*_175247759832+_175247762730*_175247760921+_175247762798 ;
-
-        const float
-_13812273414234552516 =
-     _706246333051887*_706246333051887/ (
- _175247762667*_175247762667+_175247762730*_175247762730 )
-
-   ;
-
-        const float
-
-   _14226755087262694000 =
-        _13812273414234552516*_9395000106275793626 ;
-
-         if(
-    _14226755087262694000 >
-
-_175247759809 )
-
-            _11093821971816 =
-
-          false ;
-
+        if(chiSquare1>th)
+            bIn = false;
         else
-            _46082543172245582 +=
-       _6807155495820199660 - _14226755087262694000 ;
+            score += thScore - chiSquare1;
 
-        const float
+        // Reprojection error in second image
+        // l1 =x2tF21=(a1,b1,c1)
 
- _175247762666 =
-    _11093822386651*_175247759832+_11093822386584*_175247760921+_11093822386521 ;
+        const float a1 = f11*u2+f21*v2+f31;
+        const float b1 = f12*u2+f22*v2+f32;
+        const float c1 = f13*u2+f23*v2+f33;
 
-        const float
+        const float num1 = a1*u1+b1*v1+c1;
 
- _175247762731 =
-      _11093822386648*_175247759832+_11093822386587*_175247760921+_11093822386522 ;
+        const float squareDist2 = num1*num1/(a1*a1+b1*b1);
 
-        const float
+        const float chiSquare2 = squareDist2*invSigmaSquare;
 
-    _175247762797 =
-
-         _11093822386649*_175247759832+_11093822386586*_175247760921+_11093822386523 ;
-
-        const float _706246333051886 =
-
- _175247762666*_175247759835+_175247762731*_175247760922+_175247762797 ;
-
-        const float
-
- _13812273414234552517 =
-
-      _706246333051886*_706246333051886/ (
-
- _175247762666*_175247762666+_175247762731*_175247762731 )
-      ;
-
-        const float
-
-_14226755087262694015 =
-
- _13812273414234552517*_9395000106275793626 ;
-         if(
-
-     _14226755087262694015 >
-
-   _175247759809 )
-
-            _11093821971816 =
-  false ;
-
+        if(chiSquare2>th)
+            bIn = false;
         else
-            _46082543172245582 +=
-       _6807155495820199660 - _14226755087262694015 ;
+            score += thScore - chiSquare2;
 
-         if(
-
-    _11093821971816 )
-
-            _17271253899155467930 [
-
-  _2654435874 ]
- =
-
-    true ;
-
+        if(bIn)
+            vbMatchesInliers[i]=true;
         else
-            _17271253899155467930 [
-
-    _2654435874 ]
-       =
-
- false ;
-
-     }
-
-     return
-
-    _46082543172245582 ;
-
- }
-
- bool
-
- MapInitializer ::
- _1187546224459158354 (
-
-   vector <
-
-     bool >
-
-          &_17271253899155467930, cv ::
-
-   Mat &_11093821994570, cv ::
-
- Mat &_2654435844,
-                            cv ::
-
-   Mat &_11093821901461, cv ::
-
-     Mat &_11093822381707, vector <
-cv ::
-
-       Point3f >
-
-       &_706246337618936, vector <
-
-    bool >
-
-  &_1883142761634074017, float
-
- _1686011036669914721, int
-
-    _3782192360946256634 )
-
- {
-
-     int
-
-_2654435847 =
-
-      0 ;
-
-     for(
-       size_t _2654435874 =
-
-0, _706246308776244 =
-
-    _17271253899155467930.size ()
-
-   ;
-
-    _2654435874 <
-
- _706246308776244 ;
-
-       _2654435874 ++
-
- )
-
-         if(
-
-    _17271253899155467930 [
-
-_2654435874 ]
-
-  )
-
-            _2654435847 ++
-
-     ;
-
-    cv ::
-
-  Mat _11093822702715 = _2654435844.t ()
-
-   *_11093821994570*_2654435844 ;
-
-    cv ::
-
- Mat _175247761703, _175247761702, _2654435885 ;
-
-    _11668855431419298303 (
-
-        _11093822702715,_175247761703,_175247761702,_2654435885 ) ;
-
-    cv ::
-
- Mat _175247759768 =
-       _2654435885 ;
-
-    cv ::
-
-   Mat _175247759771 =
-
-   -_2654435885 ;
-
-    vector <
-cv ::
-
- Point3f >
-
-  _46082576181793552, _46082576181793553, _46082576181793554, _46082576181793555 ;
-
-    vector < bool >
-
-    _10753448257785030707,_10753448257785030706,_10753448257785030709, _10753448257785030708 ;
-
-     float
-    _1516225754718738891,_1516225754718738890, _1516225754718738889, _1516225754718738888 ;
-
-     int
-  _3005399802399529536 =
-
-    _993392631849970936 (
-_175247761703,_175247759768,_994360233184819249,_994360233184819248,_7917477704619030428,_17271253899155467930,_2654435844, _46082576181793552, 4.0*_994360216124235670, _10753448257785030707, _1516225754718738891 )
-
- ;
-
-     int
-    _3005399802399529537 =
-
-       _993392631849970936 (
-
-     _175247761702,_175247759768,_994360233184819249,_994360233184819248,_7917477704619030428,_17271253899155467930,_2654435844, _46082576181793553, 4.0*_994360216124235670, _10753448257785030706, _1516225754718738890 )
-   ;
-
-     int _3005399802399529542 =
-
- _993392631849970936 (
-
-       _175247761703,_175247759771,_994360233184819249,_994360233184819248,_7917477704619030428,_17271253899155467930,_2654435844, _46082576181793554, 4.0*_994360216124235670, _10753448257785030709, _1516225754718738889 )
-
- ;
-
-     int _3005399802399529543 =
-  _993392631849970936 (
-
-  _175247761702,_175247759771,_994360233184819249,_994360233184819248,_7917477704619030428,_17271253899155467930,_2654435844, _46082576181793555, 4.0*_994360216124235670, _10753448257785030708, _1516225754718738888 )
-
- ;
-
-     int _6807036690970283909 =
-
-   max (
-
-        _3005399802399529536,max (
-
-  _3005399802399529537,max (
-
-  _3005399802399529542,_3005399802399529543 )
-
-      )
-
-         )
-
-    ;
-    _11093821901461 =
-    cv ::
-Mat () ;
-
-    _11093822381707 =
-  cv ::
-
-    Mat ()
-
-  ;
-
-     int
-
- _16937194945473087812 =
-        max ( static_cast <
-
-    int >
-
-      (
- 0.9*_2654435847 )
-
-         ,_3782192360946256634 )
-
-   ;
-
-     int
-       _16937373785260612085 =
-
-    0 ;
-
-     if(
-
-      _3005399802399529536 >
-
- 0.7*_6807036690970283909 )
-
-        _16937373785260612085 ++
-
-        ;
-
-     if(
-
-_3005399802399529537 >
-0.7*_6807036690970283909 )
-
-        _16937373785260612085 ++
-
-   ;
-
-     if(
-    _3005399802399529542 >
-
-0.7*_6807036690970283909 )
-
-        _16937373785260612085 ++
-        ;
-
-     if(
-       _3005399802399529543 >
-
-     0.7*_6807036690970283909 )
-
-        _16937373785260612085 ++
-
-      ;
-
-     if(
-     _6807036690970283909 <
-
-    _16937194945473087812 ||
-
-   _16937373785260612085 >
-      1 )
-
-     {
-
-         return
-false ;
-
-     }
-
-     if( _6807036690970283909 ==
-
- _3005399802399529536 )
-
-     {
-
-         if(
-
-   _1516225754718738891 >
-
- _1686011036669914721 )
-
-         {
-
-            _706246337618936 = _46082576181793552 ;
-
-            _1883142761634074017 =
-
-  _10753448257785030707 ;
-            _175247761703.copyTo (
-_11093821901461 )
-
-  ;
-
-            _175247759768.copyTo (
-
- _11093822381707 )
-
-    ;
-
-             return
-
-   true ;
-
-         }
-
-     }
-
-  else if(
-
-_6807036690970283909 ==
-
-      _3005399802399529537 )
-
-     {
-
-         if(
-
-_1516225754718738890 >
-
-       _1686011036669914721 )
-
-         {
-
-            _706246337618936 =
-
- _46082576181793553 ;
-
-            _1883142761634074017 =
-
-  _10753448257785030706 ;
-
-            _175247761702.copyTo (
-
-  _11093821901461 )
-
- ;
-
-            _175247759768.copyTo (
-
-_11093822381707 )
-
-     ;
-
-             return
-
-         true ;
-
-         }
-
-     }
-
-  else if(
-
-   _6807036690970283909 ==
-     _3005399802399529542 )
-
-     {
-         if(
-
-   _1516225754718738889 >
-    _1686011036669914721 )
-
-         {
-
-            _706246337618936 =
-
-      _46082576181793554 ;
-
-            _1883142761634074017 =
-
-      _10753448257785030709 ;
-
-            _175247761703.copyTo (
-
-  _11093821901461 )
-      ;
-
-            _175247759771.copyTo (
-
- _11093822381707 )
-
-    ;
-             return
-
-    true ;
-
-         }
-
-     }
-
- else if(
-
-    _6807036690970283909 == _3005399802399529543 )
-     {
-
-         if(
-
-_1516225754718738888 >
-
-_1686011036669914721 )
-
-         {
-
-            _706246337618936 = _46082576181793555 ;
-
-            _1883142761634074017 =
-
-  _10753448257785030708 ;
-
-            _175247761702.copyTo (
-    _11093821901461 )
-
-      ;
-
-            _175247759771.copyTo (
-
-  _11093822381707 )
-  ;
-
-             return
-
-    true ;
-
-         }
-
-     }
-
-     return
-
- false ;
-
- }
- bool
-
-        MapInitializer ::
-
- _1187546224459158348 (
-
-     vector <
-
- bool >
-
-    &_17271253899155467930, cv ::
-
-  Mat &_11093822009278, cv ::
-
-   Mat &_2654435844,
-                      cv ::
-Mat &_11093821901461, cv ::
-Mat &_11093822381707, vector <
-
-   cv ::
-
-    Point3f > &_706246337618936, vector <
-
-   bool >
-
-      &_1883142761634074017, float _1686011036669914721, int
-  _3782192360946256634 )
-
- {
-
-     int
-
-_2654435847 =
-
-0 ;
-
-     for(
-
-size_t _2654435874 =
-
-     0, _706246308776244 =
-
-  _17271253899155467930.size ()
-
-   ;
-
-     _2654435874 <
-
-_706246308776244 ;
-
-     _2654435874 ++
-
-    )
-
-         if(
-      _17271253899155467930 [
-
-    _2654435874 ]
-  )
-
-            _2654435847 ++
-
-  ;
-
-    cv ::
-
-    Mat _706246308705964 =
-
-   _2654435844.inv ()
-
- ;
-
-    cv ::
-
-    Mat _2654435834 =
-
-   _706246308705964*_11093822009278*_2654435844 ;
-
-    cv ::
-
-Mat _2654435854,_2654435888,_175247763071,_2654435855 ;
-
-    cv ::
- SVD ::
-
-     compute (
-
- _2654435834,_2654435888,_2654435854,_175247763071,cv ::
-
-         SVD ::
-
-  FULL_UV )
-
-  ;
-
-    _2654435855 =
-
-        _175247763071.t ()
-
-   ;
-
-     float
-       _2654435884 =
-       cv ::
-
-       determinant (
-
-   _2654435854 )
-
-  *cv :: determinant (
-
- _175247763071 )
-
- ;
-     float
-
-_175247762860 =
-
-      _2654435888.at <
-  float >
-
- (
-
-0 )
-
- ;
-
-     float
-
-_175247762863 =
-
-  _2654435888.at <
-
-float >
-        (
-       1 )
-
-  ;
-
-     float
-
-_175247762862 =
-
-   _2654435888.at <
-
-float >
-       (
-
- 2 )
-        ;
-
-     if(
-
-    _175247762860/_175247762863 <
-
-1.00001 ||
-
-   _175247762863/_175247762862 <
-     1.00001 )
-
-     {
-
-         return
-
-   false ;
-
-     }
-
-    vector <
-
-cv ::
-
-     Mat >
-
-    _175247761017, _175247760983, _175247760989 ;
-
-    _175247761017.reserve (
-
-    8 )
-   ;
-
-    _175247760983.reserve (
-
-  8 )
-
-  ;
-
-    _175247760989.reserve (
-
-        8 )
-
-        ;
-
-     float
-
- _706246337333900 =
-
-   sqrt (
-
-    (
-
-   _175247762860*_175247762860-_175247762863*_175247762863 )
-
- / ( _175247762860*_175247762860-_175247762862*_175247762862 )
-
-    )
-
- ;
-
-     float
-
-        _706246337333938 =
-
- sqrt (
-        (
-    _175247762863*_175247762863-_175247762862*_175247762862 ) / (
-
- _175247762860*_175247762860-_175247762862*_175247762862 )
-
- )
-
-     ;
-
-     float
-  _175247761031 [
-
-  ] =
-     {
-      _706246337333900,_706246337333900,-_706246337333900,-_706246337333900 }
-
-  ;
-
-     float
-      _175247761033 [
-
-         ]
-
-  = {
-  _706246337333938,-_706246337333938,_706246337333938,-_706246337333938 }
-
- ;
-
-     float
-
-     _6864651305897832470 =
-
-  sqrt (
-
-  (
-
-    _175247762860*_175247762860-_175247762863*_175247762863 )
-
-   * (
-
-       _175247762863*_175247762863-_175247762862*_175247762862 )
-
- )
-       / (
-
- (
-
-  _175247762860+_175247762862 )
-
-        *_175247762863 )
-
- ;
-
-     float
-
-    _3005399638337628843 = (
-
- _175247762863*_175247762863+_175247762860*_175247762862 )
-
-    / (
-
-   (
-
-    _175247762860+_175247762862 )
-
- *_175247762863 )
-
- ;
-
-     float
-
-_3005401602454656653 [
-
-   ]
-
-  =
-
-   {
-       _6864651305897832470, -_6864651305897832470, -_6864651305897832470, _6864651305897832470 }
-   ;
-
-     for(
-
-     int _2654435874 =
-
- 0 ;
-
-      _2654435874 <
-
- 4 ;
-
-  _2654435874 ++
-
-     )
-
-     {
-
-        cv ::
-    Mat _175247761760 =
-
-   cv ::
-
-     Mat ::
-
-    eye (
-       3,3,CV_32F )
- ;
-
-        _175247761760.at <
-float >
-  ( 0,0 )
-
-    =
-
-   _3005399638337628843 ;
-
-        _175247761760.at <
- float >
-
-  (
-
-     0,2 )
-  =
- -_3005401602454656653 [
- _2654435874 ]
-       ;
-
-        _175247761760.at <
-
- float >
- (
-
- 2,0 )
-
-     = _3005401602454656653 [
-
-  _2654435874 ]
-
-     ;
-
-        _175247761760.at <
-
-   float >
-     (
-
-    2,2 )
-        =
-
-  _3005399638337628843 ;
-
-        cv :: Mat _2654435851 =
-    _2654435884*_2654435854*_175247761760*_175247763071 ;
-
-        _175247761017.push_back (
-
-_2654435851 )
-
- ;
-
-        cv ::
-Mat _175247759833 (
-
- 3,1,CV_32F ) ;
-        _175247759833.at <
-
- float >
-
-         ( 0 )
-     =
-
- _175247761031 [
-
- _2654435874 ]
-
-      ;
-
-        _175247759833.at <
-
-       float >
-
-  (
-
-  1 ) =
-
-    0 ;
-        _175247759833.at <
-
-   float >
-
-   (
-       2 ) =
-
-   -_175247761033 [
-     _2654435874 ]
-
-     ;
-
-        _175247759833 *=
-     _175247762860-_175247762862 ;
-
-        cv :: Mat _2654435885 =
-
- _2654435854*_175247759833 ;
-
-        _175247760983.push_back (
-
-_2654435885/cv ::
- norm (
-
-   _2654435885 )
-        )
-
-  ;
-
-        cv ::
-
-    Mat _175247759445 (
-
-   3,1,CV_32F )
-
-       ;
-
-        _175247759445.at <
-     float >
-
-         (
-
-         0 )
-
-      =
-
-     _175247761031 [
-
-   _2654435874 ]
-
- ;
-
-        _175247759445.at <
-
-         float >
-
-         (
-1 )
-
-   =
-
-   0 ;
-
-        _175247759445.at <
-
-  float >
-
-  ( 2 )
-
-   =
-  _175247761033 [
-
-  _2654435874 ]
-       ;
-
-        cv ::
-     Mat _2654435879 =
-
-        _2654435855*_175247759445 ;
-
-         if(
-
-  _2654435879.at <
-      float >
-       (
-
-    2 )
-  <
-
-  0 )
-            _2654435879 =
-
-       -_2654435879 ;
-
-        _175247760989.push_back (
-
-  _2654435879 )
-
-  ;
-     }
-
-     float
-
-    _16937291051106099375 =
-
- sqrt (
-       (
-   _175247762860*_175247762860-_175247762863*_175247762863 )
-
- * (
-
-     _175247762863*_175247762863-_175247762862*_175247762862 )
-
-   )
-
-   / (
-
-  (
-    _175247762860-_175247762862 )
-
-      *_175247762863 )
-
-  ;
-
-     float
-
-   _706246351275978 =
-
-      (
-
-_175247762860*_175247762862-_175247762863*_175247762863 )
-
- / (
-
-  (
-
- _175247762860-_175247762862 )
-
-*_175247762863 )
-
-  ;
-
-     float
-
-_706246330201782 [
-
-          ]
-
-  =
-      {
-
-   _16937291051106099375, -_16937291051106099375, -_16937291051106099375, _16937291051106099375 }
-  ;
-
-     for(
-
-  int _2654435874 =
-       0 ;
-
-  _2654435874 <
-  4 ;
-     _2654435874 ++
-
-   )
-
-     {
-
-        cv ::
-
- Mat _175247761760 =
-
-      cv ::
-     Mat ::
-    eye (
-
- 3,3,CV_32F )
-
-   ;
-        _175247761760.at <
-
-     float >
-
-   (
- 0,0 )
-  =
-      _706246351275978 ;
-
-        _175247761760.at <
-
-float >
-     (
-
-  0,2 )
-
-      =
-
-    _706246330201782 [
-
- _2654435874 ]
-     ;
-
-        _175247761760.at <
-float >
-      (
-      1,1 )
-
-    = -1 ;
-
-        _175247761760.at <
-
-float >
-
- (
-
-        2,0 )
-       =
-
-   _706246330201782 [
-
-  _2654435874 ]
-
- ;
-        _175247761760.at <
-
-       float >
-
-     (
-  2,2 )
-        =
-
-        -_706246351275978 ;
-
-        cv ::
-
-     Mat _2654435851 =
-       _2654435884*_2654435854*_175247761760*_175247763071 ;
-
-        _175247761017.push_back (
-
-   _2654435851 )
-
- ;
-
-        cv ::
-
-         Mat _175247759833 ( 3,1,CV_32F )
-
- ;
-
-        _175247759833.at <
-
- float >
-
-   (
-
-  0 )
-
-     = _175247761031 [ _2654435874 ]
- ;
-
-        _175247759833.at < float >
-
-         ( 1 )
-
-     = 0 ;
-        _175247759833.at <
-
-      float >
-
-     (
-
- 2 )
-
-       =
-
-_175247761033 [
-_2654435874 ]
-    ;
-
-        _175247759833 *=
-
-_175247762860+_175247762862 ;
-
-        cv ::
-
-      Mat _2654435885 =
-
-          _2654435854*_175247759833 ;
-
-        _175247760983.push_back (
-    _2654435885/cv ::
-
-norm (
-
-         _2654435885 )
-
-      )
-
-       ;
-
-        cv ::
-
-    Mat _175247759445 (
-
-    3,1,CV_32F )
-
-         ;
-
-        _175247759445.at <
-
-   float >
-        (
-  0 )
-
-  =
-
-   _175247761031 [
-
-    _2654435874 ]
-
-   ;
-
-        _175247759445.at <
-float >
-
-     (
-
-        1 ) =
-
-     0 ;
-
-        _175247759445.at <
-
-  float >
-
-     (
-
- 2 )
-
- =
-
-     _175247761033 [
-
-    _2654435874 ]
-
-  ;
-
-        cv ::
-
-       Mat _2654435879 =
-
-    _2654435855*_175247759445 ;
-
-         if(
-
-   _2654435879.at <
-
-    float >
-
-     ( 2 )
-     <
-  0 )
-            _2654435879 =
-
-  -_2654435879 ;
-
-        _175247760989.push_back (
-
-   _2654435879 )
-
-  ;
-
-     }
-
-     int
-
-  _16940367568810760802 =
-
-   0 ;
-
-     int
-
-    _9505321537286276156 =
-
-    0 ;
-
-     int
-_2570993952652048401 =
- -1 ;
-
-     float
-
-      _5965360956970359603 =
-
-   -1 ;
-
-    vector < cv ::
-
- Point3f >
-    _6806984971934296172 ;
-
-    vector <
-
-bool > _13793248373315477956 ;
-
-     for(
-
-  size_t _2654435874 =
-
- 0 ;
-
-     _2654435874 <
-
-8 ;
-
- _2654435874 ++
-
-    )
-
-     {
-
-         float
-
-   _1516225754718738707 ;
-
-        vector <
-
-        cv :: Point3f >
-
-   _46082576181793496 ;
-
-        vector <
-  bool >
-
- _10753448257785030763 ;
-         int
-
-   _46082575790776546 =
-
-        _993392631849970936 (
-
-_175247761017 [
-    _2654435874 ]
-
-,_175247760983 [
-
-      _2654435874 ]
-
- ,_994360233184819249,_994360233184819248,_7917477704619030428,_17271253899155467930,_2654435844,_46082576181793496, 4.0*_994360216124235670, _10753448257785030763, _1516225754718738707 )
-
-  ;
-
-         if(
-
-      _46082575790776546 >
-    _16940367568810760802 )
-
-         {
-
-            _9505321537286276156 =
-
-   _16940367568810760802 ;
-
-            _16940367568810760802 =
-
-          _46082575790776546 ;
-            _2570993952652048401 =
-   _2654435874 ;
-
-            _5965360956970359603 =
-
-    _1516225754718738707 ;
-
-            _6806984971934296172 =
-
-   _46082576181793496 ;
-
-            _13793248373315477956 =
- _10753448257785030763 ;
-
-         }
-
-         else
-      if(
-
-_46082575790776546 >
-
- _9505321537286276156 )
-
-         {
-
-            _9505321537286276156 =
-
-    _46082575790776546 ;
-
-         }
-     }
-
-     if(
-
-   _9505321537286276156 < 0.75*_16940367568810760802 &&
-
-   _5965360956970359603 >= _1686011036669914721 &&
-
-  _16940367568810760802 >
-
-_3782192360946256634 &&
-
-     _16940367568810760802 >
-
-   0.9*_2654435847 )
-     {
-
-        _175247761017 [
- _2570993952652048401 ]
-
-  .copyTo (
-      _11093821901461 )
- ;
-
-        _175247760983 [
-
-       _2570993952652048401 ]
-
-     .copyTo (
-     _11093822381707 )
-
-    ;
-
-        _706246337618936 =
- _6806984971934296172 ;
-
-        _1883142761634074017 =
-
-    _13793248373315477956 ;
-
-         return
-
-    true ;
-
-     }
-
-     return
-   false ;
-
- }
-
- void
-
- MapInitializer :: _13188689179917490056 (
-      const cv ::
- KeyPoint &_11093822348761, const cv ::
-    KeyPoint &_11093822348742, const cv ::
-
-      Mat &_175247761573, const cv ::
-
-Mat &_175247761572, cv ::
-
-         Mat &_11093821939030 )
-
- {
-    cv ::
-
- Mat _2654435834 (
-
- 4,4,CV_32F )
-    ;
-
-    _2654435834.row (
-
-  0 )
-      =
-
-   _11093822348761.pt.x*_175247761573.row (
-
-        2 )
-
-     -_175247761573.row (
-     0 )
-
-  ;
-    _2654435834.row (
-
-  1 ) = _11093822348761.pt.y*_175247761573.row (
-
-  2 )
-
-   -_175247761573.row (
- 1 )
-
-    ;
-
-    _2654435834.row (
-
- 2 )
-
-      =
-
-   _11093822348742.pt.x*_175247761572.row (
-
-     2 )
-       -_175247761572.row ( 0 )
-
- ;
-
-    _2654435834.row (
-
-  3 )
-
-     = _11093822348742.pt.y*_175247761572.row (
-
-  2 )
-
- -_175247761572.row (
-
-    1 )
-      ;
-
-    cv ::
-
-        Mat _2654435886,_2654435888,_175247760983 ;
-
-    cv ::
-
-    SVD ::
-
-  compute (
-
-    _2654435834,_2654435888,_2654435886,_175247760983,cv ::
-
-  SVD ::
-
-   MODIFY_A| cv ::
-       SVD ::
-
-   FULL_UV )
-
-   ;
-
-    _11093821939030 =
-
- _175247760983.row (
-
-   3 )
-
-    .t ()
- ;
-
-    _11093821939030 =
-
- _11093821939030.rowRange (
-
-  0,3 )
-     /_11093821939030.at <
-
-  float > (
-
-    3 )
-
-          ;
-
- }
-
- void
-
-  MapInitializer ::
-
-     _12337435833092867029 (
-
-const vector <
-
-    cv ::
-
-         KeyPoint >
-
- &_46082576192198777, vector <
-  cv ::
-
-     Point2f >
-
-  &_11959346835625416039, cv ::
-
-    Mat &_2654435853 )
-
- {
-
-     float
-
-_46082575822310300 =
-       0 ;
-
-     float
-
- _46082575822310301 =
-
-  0 ;
-
-    const int
-
-_2654435847 =
-
-  _46082576192198777.size ()
-
-         ;
-
-    _11959346835625416039.resize (
-    _2654435847 )
-
-  ;
-
-     for(
- int _2654435874 =
-
-     0 ;
-
-      _2654435874 <
-
-  _2654435847 ;
-
-  _2654435874 ++
- )
-
-     {
-
-        _46082575822310300 +=
-   _46082576192198777 [
-
-    _2654435874 ]
-
-    .pt.x ;
-
-        _46082575822310301 +=
-
-  _46082576192198777 [
-   _2654435874 ]
-
-.pt.y ;
-
-     }
-
-    _46082575822310300 = _46082575822310300/_2654435847 ;
-
-    _46082575822310301 =
-  _46082575822310301/_2654435847 ;
-     float
-      _16937206910726371261 =
-      0 ;
-
-     float
-     _16937206910726371262 =
-
-     0 ;
-     for( int _2654435874 =
-
-0 ;
-
-    _2654435874 <
-
- _2654435847 ; _2654435874 ++
-
- )
-
-     {
-
-        _11959346835625416039 [
-
-  _2654435874 ]
-
-.x =
-
-   _46082576192198777 [
-     _2654435874 ]
-     .pt.x - _46082575822310300 ;
-
-        _11959346835625416039 [
-
-   _2654435874 ]
-     .y =
-
-   _46082576192198777 [
-
-     _2654435874 ]
-
-   .pt.y - _46082575822310301 ;
-
-        _16937206910726371261 +=
-
-      fabs (
-
-       _11959346835625416039 [
-
-_2654435874 ]
-
-  .x )
-
-         ;
-
-        _16937206910726371262 +=
-
-  fabs (
-       _11959346835625416039 [
-  _2654435874 ]
-.y )
-
-     ;
-
-     }
-
-    _16937206910726371261 =
-        _16937206910726371261/_2654435847 ;
-
-    _16937206910726371262 =
-
-    _16937206910726371262/_2654435847 ;
-
-     float
-
-_175247759792 =
-
- 1.0/_16937206910726371261 ;
-     float
-
-  _175247759793 =
-
-        1.0/_16937206910726371262 ;
-
-     for( int _2654435874 =
-   0 ;
-
- _2654435874 <
-
-   _2654435847 ;
-
-     _2654435874 ++
-    )
-
-     {
-
-        _11959346835625416039 [
-
-  _2654435874 ]
-
-     .x =
-
-    _11959346835625416039 [
-
-_2654435874 ]
-.x * _175247759792 ;
-
-        _11959346835625416039 [
-
-     _2654435874 ]
-  .y =
-
-          _11959346835625416039 [
-
-_2654435874 ]
-.y * _175247759793 ;
-
-     }
-
-    _2654435853 =
-
- cv ::
-
- Mat ::
-
-    eye (
-
-3,3,CV_32F )
-
-   ;
-
-    _2654435853.at <
-
-       float >
-
-    (
-
-     0,0 ) =
-
-         _175247759792 ;
-
-    _2654435853.at <
-
-float > (
-
-    1,1 )
-
-  =
-
- _175247759793 ;
-
-    _2654435853.at <
-
-  float > (
-      0,2 )
-         =
-
-   -_46082575822310300*_175247759792 ;
-
-    _2654435853.at <
-
- float >
-     (
-
-1,2 )
-
-   =
-
-     -_46082575822310301*_175247759793 ;
-
- }
-
- int
-
-     MapInitializer ::
-
-       _993392631849970936 (
-
-     const cv ::
-
-     Mat &_2654435851, const cv ::
-
-Mat &_2654435885, const vector <
-
-   cv ::
-
- KeyPoint >
-  &_3005399810348660273, const vector <
-
- cv ::
-
-      KeyPoint >
-
-        &_3005399810348660272,
-                       const vector <
-
-   Match >
-
-   &_5507076421631549640, vector < bool >
-
- &_17271253899155467930,
-                       const cv ::
-
- Mat &_2654435844, vector <
-
-       cv ::
-
-        Point3f >
-
-  &_706246337618936, float
-
-  _11093822376282, vector <
-
- bool >
-   &_3005399809928654743, float
-
-    &_16937213055926717083 )
-
- {
-
-    const float
-
-_175247759975 =
-
-   _2654435844.at <
-
-    float >
-
-      (
-
-0,0 )
-
- ;
-    const float
-
-  _175247759974 =
-    _2654435844.at <
-
-   float >
-
-     (
-
-  1,1 )
-
-      ;
-
-    const float
-
-         _175247762852 =
-
- _2654435844.at < float > (
-
-0,2 )
-
-     ;
-    const float
-
-     _175247762853 =
-
- _2654435844.at <
-      float >
-
-   (
-
-     1,2 )
-     ;
-
-    _3005399809928654743 =
-
-  vector <
-
-      bool >
-        ( _3005399810348660273.size ()
-
-    ,false )
-
- ;
-
-    _706246337618936.resize (
-
- _3005399810348660273.size ()
-
-  )
-
-      ;
-
-    vector <
-
-   float >
-
-    _5800553007209659840 ;
-
-    _5800553007209659840.reserve (
-_3005399810348660273.size ()
-
-     )
-
-  ;
-
-    cv ::
-
-   Mat _175247761573 (
-       3,4,CV_32F,cv ::
-
- Scalar (
-
- 0 )
-      ) ;
-
-    _2654435844.copyTo (
-
-   _175247761573.rowRange (
-
- 0,3 ) .colRange (
-
-   0,3 )
-
-     )
-    ;
-
-    cv ::
-
-Mat _175247761508 =
-
-     cv ::
-
- Mat :: zeros (
-
-    3,1,CV_32F )
-        ;
-
-    cv ::
-
-        Mat _175247761572 (
-
-    3,4,CV_32F )
-
-  ;
-
-    _2654435851.copyTo (
-
-   _175247761572.rowRange (
-
-0,3 )
-     .colRange (
-
-0,3 )
-
-  )
-
-     ;
-
-    _2654435885.copyTo (
-
-_175247761572.rowRange (
-
-    0,3 )
-.col (
-
-     3 )
-
-    )
-
-        ;
-
-    _175247761572 =
-       _2654435844*_175247761572 ;
-
-    cv ::
-   Mat _175247761509 =
-    -_2654435851.t ()
-
-  *_2654435885 ;
-
-     int
-
-    _46082575790776546 =
-
-   0 ;
-
-     for( size_t _2654435874 =
-     0, _706246308776244 = _5507076421631549640.size ()
-
-  ;
-
-   _2654435874 <
-
-   _706246308776244 ;
-
- _2654435874 ++
-
-       )
-
-     {
-
-         if(
-
-         !
-
-     _17271253899155467930 [ _2654435874 ]
-
-  )
-
-            continue ;
-
-        const cv ::
-
-    KeyPoint &_11093822348761 =
-
-      _3005399810348660273 [
-
- _5507076421631549640 [
-
- _2654435874 ]
-  .first ]
-
- ;
-
-        const cv :: KeyPoint &_11093822348742 =
-
-       _3005399810348660272 [
-
-   _5507076421631549640 [
-
- _2654435874 ]
-
-  .second ]
-
- ;
-
-        cv ::
-
-  Mat _46082575776159025 ;
-
-        _13188689179917490056 (
-
-         _11093822348761,_11093822348742,_175247761573,_175247761572,_46082575776159025 )
-
- ;
-
-         if(
-
-    !
-
-   isfinite (
-
-_46082575776159025.at <
-
-         float > (
-  0 ) )
-       ||
-         !
-
-     isfinite (
-
-  _46082575776159025.at <
-
-float >
-   (
-
-1 )
-
-    )
-    ||
-        !
-
-      isfinite ( _46082575776159025.at <
-float >
-   ( 2 )
-
-    )
-
- )
-
-         {
-
-            _3005399809928654743 [
-       _5507076421631549640 [
-
-  _2654435874 ]
-
-    .first ]
-
-     =
-
-false ;
-
-            continue ;
-
-         }
-
-        cv ::
-
-   Mat _6807036687918592958 =
-
- _46082575776159025 - _175247761508 ;
-
-         float
-
- _46082575013947785 =
-
-    cv ::
- norm (
-
-     _6807036687918592958 ) ;
-
-        cv ::
-
-Mat _6807036687918592959 =
-     _46082575776159025 - _175247761509 ;
-
-         float
-
-    _46082575013947784 =
-
- cv :: norm (
-      _6807036687918592959 ) ;
-
-         float
-
-_6065268260414012491 =
-
- _6807036687918592958.dot (
-
-    _6807036687918592959 )
-
-     / (
-
-_46082575013947785*_46082575013947784 )
-
-         ;
-
-         if(
-
-   _46082575776159025.at <
-
- float >
- (
-   2 )
-
-  <=
-
-     0 &&
-
-     _6065268260414012491 <
-
- 0.99998 )
-
-            continue ;
-
-        cv ::
-
-Mat _46082575776159024 =
-
-     _2654435851*_46082575776159025+_2654435885 ;
-
-         if(
-
-_46082575776159024.at < float >
-
- (
-
-         2 )
- <=
-
-   0 &&
-
-   _6065268260414012491 <
-
-       0.99998 )
-
-            continue ;
-
-         float _706246308812856, _706246308812859 ;
-
-         float
-
-   _46082544220862540 =
-
- 1.0/_46082575776159025.at <
-
- float >
-
-  (
-     2 )
-
-     ;
-
-        _706246308812856 =
-        _175247759975*_46082575776159025.at <
-
-      float >
-
-   (
-
-       0 )
-
-     *_46082544220862540+_175247762852 ;
-
-        _706246308812859 = _175247759974*_46082575776159025.at <
-
-   float > (
-  1 )
-
-     *_46082544220862540+_175247762853 ;
-
-         float
-
-_11817497959695576683 =
-
-   (
-
-  _706246308812856-_11093822348761.pt.x )
-
-         * (
-
-   _706246308812856-_11093822348761.pt.x )
-
-+ (
-
-_706246308812859-_11093822348761.pt.y )
-
-* (
-
-     _706246308812859-_11093822348761.pt.y )
-     ;
-
-         if(
-
-   _11817497959695576683 >
-
-         _11093822376282 )
-
-            continue ;
-
-         float
-
-  _706246308812923, _706246308812920 ;
-
-         float
-
-  _46082544220862543 =
-       1.0/_46082575776159024.at <
-float >
-
-     (
-
-  2 )
-
-     ;
-
-        _706246308812923 =
-
-        _175247759975*_46082575776159024.at <
-
-        float >
-
-   (
-
-  0 )
-*_46082544220862543+_175247762852 ;
-
-        _706246308812920 =
-   _175247759974*_46082575776159024.at <
-
-    float >
-    (
-
-  1 )
-
-         *_46082544220862543+_175247762853 ;
-
-         float
-
-  _11817497959695576682 =
-        (
-_706246308812923-_11093822348742.pt.x )
-
-   * (
-     _706246308812923-_11093822348742.pt.x )
-
-   + (
-
-       _706246308812920-_11093822348742.pt.y )
-
-* (
-  _706246308812920-_11093822348742.pt.y )
-
-        ;
-
-         if(
-      _11817497959695576682 >
-
- _11093822376282 )
-
-            continue ;
-
-        _5800553007209659840.push_back (
-
-    _6065268260414012491 )
-
-    ;
-
-        _706246337618936 [
-
-   _5507076421631549640 [
-
-_2654435874 ]
-
-    .first ]
-      =
-
-     cv :: Point3f (
-
-   _46082575776159025.at < float >
-
- (
-     0 )
-
-   ,_46082575776159025.at <
-    float > (
-
-  1 )
-,_46082575776159025.at < float >
-
-    (
-
-  2 )
-  )
-
-   ;
-
-        _46082575790776546 ++
-
-  ;
-
-         if(
-
-       _6065268260414012491 <
-
-     0.99998 )
-            _3005399809928654743 [
-
- _5507076421631549640 [
-
-     _2654435874 ]
-
- .first ]
-
- =
-
- true ;
-
-     }
-
-     if(
-
-  _46082575790776546 > 0 )
-
-     {
-
-        sort (
-
-     _5800553007209659840.begin ()
-
- ,_5800553007209659840.end ()
-
-   )
-
-       ;
-
-        size_t _11093822405045 =
-
- min (
-  50,int ( _5800553007209659840.size ()
-
-   -1 )
-
-          )
-
- ;
-
-        _16937213055926717083 =
-    acos (
-
-_5800553007209659840 [
-  _11093822405045 ]
-
-  )
-
-      *180/CV_PI ;
-
-     }
-
+            vbMatchesInliers[i]=false;
+    }
+
+    return score;
+}
+
+bool MapInitializer::ReconstructF(vector<bool> &vbMatchesInliers, cv::Mat &F21, cv::Mat &K,
+                            cv::Mat &R21, cv::Mat &t21, vector<cv::Point3f> &vP3D, vector<bool> &vbTriangulated, float minParallax, int minTriangulated)
+{
+    int N=0;
+    for(size_t i=0, iend = vbMatchesInliers.size() ; i<iend; i++)
+        if(vbMatchesInliers[i])
+            N++;
+
+    // Compute Essential Matrix from Fundamental Matrix
+    cv::Mat E21 = K.t()*F21*K;
+
+    cv::Mat R1, R2, t;
+
+    // Recover the 4 motion hypotheses
+    DecomposeE(E21,R1,R2,t);  
+
+    cv::Mat t1=t;
+    cv::Mat t2=-t;
+
+    // Reconstruct with the 4 hyphoteses and check
+    vector<cv::Point3f> vP3D1, vP3D2, vP3D3, vP3D4;
+    vector<bool> vbTriangulated1,vbTriangulated2,vbTriangulated3, vbTriangulated4;
+    float parallax1,parallax2, parallax3, parallax4;
+
+    int nGood1 = CheckRT(R1,t1,mvKeys1,mvKeys2,mvMatches12,vbMatchesInliers,K, vP3D1, 4.0*mSigma2, vbTriangulated1, parallax1);
+    int nGood2 = CheckRT(R2,t1,mvKeys1,mvKeys2,mvMatches12,vbMatchesInliers,K, vP3D2, 4.0*mSigma2, vbTriangulated2, parallax2);
+    int nGood3 = CheckRT(R1,t2,mvKeys1,mvKeys2,mvMatches12,vbMatchesInliers,K, vP3D3, 4.0*mSigma2, vbTriangulated3, parallax3);
+    int nGood4 = CheckRT(R2,t2,mvKeys1,mvKeys2,mvMatches12,vbMatchesInliers,K, vP3D4, 4.0*mSigma2, vbTriangulated4, parallax4);
+
+    int maxGood = max(nGood1,max(nGood2,max(nGood3,nGood4)));
+
+    R21 = cv::Mat();
+    t21 = cv::Mat();
+
+    int nMinGood =  max(static_cast<int>(0.85*N),minTriangulated);
+
+    int nsimilar = 0;
+    if(nGood1>0.7*maxGood)
+        nsimilar++;
+    if(nGood2>0.7*maxGood)
+        nsimilar++;
+    if(nGood3>0.7*maxGood)
+        nsimilar++;
+    if(nGood4>0.7*maxGood)
+        nsimilar++;
+
+    // If there is not a clear winner or not enough triangulated points reject initialization
+    if(maxGood<nMinGood || nsimilar>1)
+    {
+        return false;
+    }
+
+    // If best reconstruction has enough parallax initialize
+    if(maxGood==nGood1)
+    {
+        if(parallax1>minParallax)
+        {
+            vP3D = vP3D1;
+            vbTriangulated = vbTriangulated1;
+
+            R1.copyTo(R21);
+            t1.copyTo(t21);
+            return true;
+        }
+    }else if(maxGood==nGood2)
+    {
+        if(parallax2>minParallax)
+        {
+            vP3D = vP3D2;
+            vbTriangulated = vbTriangulated2;
+
+            R2.copyTo(R21);
+            t1.copyTo(t21);
+            return true;
+        }
+    }else if(maxGood==nGood3)
+    {
+        if(parallax3>minParallax)
+        {
+            vP3D = vP3D3;
+            vbTriangulated = vbTriangulated3;
+
+            R1.copyTo(R21);
+            t2.copyTo(t21);
+            return true;
+        }
+    }else if(maxGood==nGood4)
+    {
+        if(parallax4>minParallax)
+        {
+            vP3D = vP3D4;
+            vbTriangulated = vbTriangulated4;
+
+            R2.copyTo(R21);
+            t2.copyTo(t21);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool MapInitializer::ReconstructH(vector<bool> &vbMatchesInliers, cv::Mat &H21, cv::Mat &K,
+                      cv::Mat &R21, cv::Mat &t21, vector<cv::Point3f> &vP3D, vector<bool> &vbTriangulated, float minParallax, int minTriangulated)
+{
+    int N=0;
+    for(size_t i=0, iend = vbMatchesInliers.size() ; i<iend; i++)
+        if(vbMatchesInliers[i])
+            N++;
+
+    // We recover 8 motion hypotheses using the method of Faugeras et al.
+    // Motion and structure from motion in a piecewise planar environment.
+    // International Journal of Pattern Recognition and Artificial Intelligence, 1988
+
+    cv::Mat invK = K.inv();
+    cv::Mat A = invK*H21*K;
+
+    cv::Mat U,w,Vt,V;
+    cv::SVD::compute(A,w,U,Vt,cv::SVD::FULL_UV);
+    V=Vt.t();
+
+    float s = cv::determinant(U)*cv::determinant(Vt);
+
+    float d1 = w.at<float>(0);
+    float d2 = w.at<float>(1);
+    float d3 = w.at<float>(2);
+
+    if(d1/d2<1.00001 || d2/d3<1.00001)
+    {
+        return false;
+    }
+
+    vector<cv::Mat> vR, vt, vn;
+    vR.reserve(8);
+    vt.reserve(8);
+    vn.reserve(8);
+
+    //n'=[x1 0 x3] 4 posibilities e1=e3=1, e1=1 e3=-1, e1=-1 e3=1, e1=e3=-1
+    float aux1 = sqrt((d1*d1-d2*d2)/(d1*d1-d3*d3));
+    float aux3 = sqrt((d2*d2-d3*d3)/(d1*d1-d3*d3));
+    float x1[] = {aux1,aux1,-aux1,-aux1};
+    float x3[] = {aux3,-aux3,aux3,-aux3};
+
+    //case d'=d2
+    float aux_stheta = sqrt((d1*d1-d2*d2)*(d2*d2-d3*d3))/((d1+d3)*d2);
+
+    float ctheta = (d2*d2+d1*d3)/((d1+d3)*d2);
+    float stheta[] = {aux_stheta, -aux_stheta, -aux_stheta, aux_stheta};
+
+    for(int i=0; i<4; i++)
+    {
+        cv::Mat Rp=cv::Mat::eye(3,3,CV_32F);
+        Rp.at<float>(0,0)=ctheta;
+        Rp.at<float>(0,2)=-stheta[i];
+        Rp.at<float>(2,0)=stheta[i];
+        Rp.at<float>(2,2)=ctheta;
+
+        cv::Mat R = s*U*Rp*Vt;
+        vR.push_back(R);
+
+        cv::Mat tp(3,1,CV_32F);
+        tp.at<float>(0)=x1[i];
+        tp.at<float>(1)=0;
+        tp.at<float>(2)=-x3[i];
+        tp*=d1-d3;
+
+        cv::Mat t = U*tp;
+        vt.push_back(t/cv::norm(t));
+
+        cv::Mat np(3,1,CV_32F);
+        np.at<float>(0)=x1[i];
+        np.at<float>(1)=0;
+        np.at<float>(2)=x3[i];
+
+        cv::Mat n = V*np;
+        if(n.at<float>(2)<0)
+            n=-n;
+        vn.push_back(n);
+    }
+
+    //case d'=-d2
+    float aux_sphi = sqrt((d1*d1-d2*d2)*(d2*d2-d3*d3))/((d1-d3)*d2);
+
+    float cphi = (d1*d3-d2*d2)/((d1-d3)*d2);
+    float sphi[] = {aux_sphi, -aux_sphi, -aux_sphi, aux_sphi};
+
+    for(int i=0; i<4; i++)
+    {
+        cv::Mat Rp=cv::Mat::eye(3,3,CV_32F);
+        Rp.at<float>(0,0)=cphi;
+        Rp.at<float>(0,2)=sphi[i];
+        Rp.at<float>(1,1)=-1;
+        Rp.at<float>(2,0)=sphi[i];
+        Rp.at<float>(2,2)=-cphi;
+
+        cv::Mat R = s*U*Rp*Vt;
+        vR.push_back(R);
+
+        cv::Mat tp(3,1,CV_32F);
+        tp.at<float>(0)=x1[i];
+        tp.at<float>(1)=0;
+        tp.at<float>(2)=x3[i];
+        tp*=d1+d3;
+
+        cv::Mat t = U*tp;
+        vt.push_back(t/cv::norm(t));
+
+        cv::Mat np(3,1,CV_32F);
+        np.at<float>(0)=x1[i];
+        np.at<float>(1)=0;
+        np.at<float>(2)=x3[i];
+
+        cv::Mat n = V*np;
+        if(n.at<float>(2)<0)
+            n=-n;
+        vn.push_back(n);
+    }
+
+
+    int bestGood = 0;
+    int secondBestGood = 0;    
+    int bestSolutionIdx = -1;
+    float bestParallax = -1;
+    vector<cv::Point3f> bestP3D;
+    vector<bool> bestTriangulated;
+
+    // Instead of applying the visibility constraints proposed in the Faugeras' paper (which could fail for points seen with low parallax)
+    // We reconstruct all hypotheses and check in terms of triangulated points and parallax
+    for(size_t i=0; i<8; i++)
+    {
+        float parallaxi;
+        vector<cv::Point3f> vP3Di;
+        vector<bool> vbTriangulatedi;
+        int nGood = CheckRT(vR[i],vt[i],mvKeys1,mvKeys2,mvMatches12,vbMatchesInliers,K,vP3Di, 4.0*mSigma2, vbTriangulatedi, parallaxi);
+
+        if(nGood>bestGood)
+        {
+            secondBestGood = bestGood;
+            bestGood = nGood;
+            bestSolutionIdx = i;
+            bestParallax = parallaxi;
+            bestP3D = vP3Di;
+            bestTriangulated = vbTriangulatedi;
+        }
+        else if(nGood>secondBestGood)
+        {
+            secondBestGood = nGood;
+        }
+    }
+
+
+    if(secondBestGood<0.75*bestGood && bestParallax>=minParallax && bestGood>minTriangulated && bestGood>0.9*N)
+    {
+        vR[bestSolutionIdx].copyTo(R21);
+        vt[bestSolutionIdx].copyTo(t21);
+        vP3D = bestP3D;
+        vbTriangulated = bestTriangulated;
+
+        return true;
+    }
+
+    return false;
+}
+
+void MapInitializer::Triangulate(const cv::KeyPoint &kp1, const cv::KeyPoint &kp2, const cv::Mat &P1, const cv::Mat &P2, cv::Mat &x3D)
+{
+    cv::Mat A(4,4,CV_32F);
+
+    A.row(0) = kp1.pt.x*P1.row(2)-P1.row(0);
+    A.row(1) = kp1.pt.y*P1.row(2)-P1.row(1);
+    A.row(2) = kp2.pt.x*P2.row(2)-P2.row(0);
+    A.row(3) = kp2.pt.y*P2.row(2)-P2.row(1);
+
+    cv::Mat u,w,vt;
+    cv::SVD::compute(A,w,u,vt,cv::SVD::MODIFY_A| cv::SVD::FULL_UV);
+    x3D = vt.row(3).t();
+    x3D = x3D.rowRange(0,3)/x3D.at<float>(3);
+}
+
+void MapInitializer::Normalize(const vector<cv::KeyPoint> &vKeys, vector<cv::Point2f> &vNormalizedPoints, cv::Mat &T)
+{
+    float meanX = 0;
+    float meanY = 0;
+    const int N = vKeys.size();
+
+    vNormalizedPoints.resize(N);
+
+    for(int i=0; i<N; i++)
+    {
+        meanX += vKeys[i].pt.x;
+        meanY += vKeys[i].pt.y;
+    }
+
+    meanX = meanX/N;
+    meanY = meanY/N;
+
+    float meanDevX = 0;
+    float meanDevY = 0;
+
+    for(int i=0; i<N; i++)
+    {
+        vNormalizedPoints[i].x = vKeys[i].pt.x - meanX;
+        vNormalizedPoints[i].y = vKeys[i].pt.y - meanY;
+
+        meanDevX += fabs(vNormalizedPoints[i].x);
+        meanDevY += fabs(vNormalizedPoints[i].y);
+    }
+
+    meanDevX = meanDevX/N;
+    meanDevY = meanDevY/N;
+
+    float sX = 1.0/meanDevX;
+    float sY = 1.0/meanDevY;
+
+    for(int i=0; i<N; i++)
+    {
+        vNormalizedPoints[i].x = vNormalizedPoints[i].x * sX;
+        vNormalizedPoints[i].y = vNormalizedPoints[i].y * sY;
+    }
+
+    T = cv::Mat::eye(3,3,CV_32F);
+    T.at<float>(0,0) = sX;
+    T.at<float>(1,1) = sY;
+    T.at<float>(0,2) = -meanX*sX;
+    T.at<float>(1,2) = -meanY*sY;
+}
+
+
+int MapInitializer::CheckRT(const cv::Mat &R, const cv::Mat &t, const vector<cv::KeyPoint> &vKeys1, const vector<cv::KeyPoint> &vKeys2,
+                       const vector<Match> &vMatches12, vector<bool> &vbMatchesInliers,
+                       const cv::Mat &K, vector<cv::Point3f> &vP3D, float th2, vector<bool> &vbGood, float &parallax)
+{
+    // Calibration parameters
+    const float fx = K.at<float>(0,0);
+    const float fy = K.at<float>(1,1);
+    const float cx = K.at<float>(0,2);
+    const float cy = K.at<float>(1,2);
+
+    vbGood = vector<bool>(vKeys1.size(),false);
+    vP3D.resize(vKeys1.size());
+
+    vector<float> vCosParallax;
+    vCosParallax.reserve(vKeys1.size());
+
+    // Camera 1 Projection Matrix K[I|0]
+    cv::Mat P1(3,4,CV_32F,cv::Scalar(0));
+    K.copyTo(P1.rowRange(0,3).colRange(0,3));
+
+    cv::Mat O1 = cv::Mat::zeros(3,1,CV_32F);
+
+    // Camera 2 Projection Matrix K[R|t]
+    cv::Mat P2(3,4,CV_32F);
+    R.copyTo(P2.rowRange(0,3).colRange(0,3));
+    t.copyTo(P2.rowRange(0,3).col(3));
+    P2 = K*P2;
+
+    cv::Mat O2 = -R.t()*t;
+
+    int nGood=0;
+
+    for(size_t i=0, iend=vMatches12.size();i<iend;i++)
+    {
+        if(!vbMatchesInliers[i])
+            continue;
+
+        const cv::KeyPoint &kp1 = vKeys1[vMatches12[i].first];
+        const cv::KeyPoint &kp2 = vKeys2[vMatches12[i].second];
+        cv::Mat p3dC1;
+
+        Triangulate(kp1,kp2,P1,P2,p3dC1);
+
+        if(!isfinite(p3dC1.at<float>(0)) || !isfinite(p3dC1.at<float>(1)) || !isfinite(p3dC1.at<float>(2)))
+        {
+            vbGood[vMatches12[i].first]=false;
+            continue;
+        }
+
+        // Check parallax
+        cv::Mat normal1 = p3dC1 - O1;
+        float dist1 = cv::norm(normal1);
+
+        cv::Mat normal2 = p3dC1 - O2;
+        float dist2 = cv::norm(normal2);
+
+        float cosParallax = normal1.dot(normal2)/(dist1*dist2);
+
+        // Check depth in front of first camera (only if enough parallax, as "infinite" points can easily go to negative depth)
+        if(p3dC1.at<float>(2)<=0 && cosParallax<0.99998)
+            continue;
+
+        // Check depth in front of second camera (only if enough parallax, as "infinite" points can easily go to negative depth)
+        cv::Mat p3dC2 = R*p3dC1+t;
+
+        if(p3dC2.at<float>(2)<=0 && cosParallax<0.99998)
+            continue;
+
+        // Check reprojection error in first image
+        float im1x, im1y;
+        float invZ1 = 1.0/p3dC1.at<float>(2);
+        im1x = fx*p3dC1.at<float>(0)*invZ1+cx;
+        im1y = fy*p3dC1.at<float>(1)*invZ1+cy;
+
+        float squareError1 = (im1x-kp1.pt.x)*(im1x-kp1.pt.x)+(im1y-kp1.pt.y)*(im1y-kp1.pt.y);
+
+        if(squareError1>th2)
+            continue;
+
+        // Check reprojection error in second image
+        float im2x, im2y;
+        float invZ2 = 1.0/p3dC2.at<float>(2);
+        im2x = fx*p3dC2.at<float>(0)*invZ2+cx;
+        im2y = fy*p3dC2.at<float>(1)*invZ2+cy;
+
+        float squareError2 = (im2x-kp2.pt.x)*(im2x-kp2.pt.x)+(im2y-kp2.pt.y)*(im2y-kp2.pt.y);
+
+        if(squareError2>th2)
+            continue;
+
+        vCosParallax.push_back(cosParallax);
+        vP3D[vMatches12[i].first] = cv::Point3f(p3dC1.at<float>(0),p3dC1.at<float>(1),p3dC1.at<float>(2));
+        nGood++;
+
+        if(cosParallax<0.99998)
+            vbGood[vMatches12[i].first]=true;
+    }
+
+    if(nGood>0)
+    {
+        sort(vCosParallax.begin(),vCosParallax.end());
+
+        size_t idx = min(50,int(vCosParallax.size()-1));
+        parallax = acos(vCosParallax[idx])*180/CV_PI;
+    }
     else
-        _16937213055926717083 =
-     0 ;
-
-     return
-
-  _46082575790776546 ;
-
- }
-
- void
-
-MapInitializer ::
-
- _11668855431419298303 (
-
-         const cv ::
-
- Mat &_2654435838, cv ::
- Mat &_175247761703, cv ::
-
-  Mat &_175247761702, cv ::
-
-  Mat &_2654435885 )
-
- {
-
-    cv ::
-
-Mat _2654435886,_2654435888,_175247760983 ;
-
-    cv ::
-
-SVD ::
-
- compute (
-
- _2654435838,_2654435888,_2654435886,_175247760983 )
-
-          ;
-
-    _2654435886.col (
-
-     2 )
-
-   .copyTo (
-
-        _2654435885 )
-
-   ;
-
-    _2654435885 =
-
- _2654435885/cv ::
-
-norm (
-
-_2654435885 )
- ;
-
-    cv :: Mat _2654435856 (
-
-  3,3,CV_32F,cv ::
-Scalar (
-
-     0 ) )
-
-  ;
-
-    _2654435856.at <
-
-    float >
-
-   (
-
-  0,1 )
-
- =
-
-    -1 ;
-
-    _2654435856.at < float >
-     (
-     1,0 )
-
-  =
-    1 ;
-
-    _2654435856.at <
-
-  float >
-
-  (
-
-    2,2 )
-
-     =
-
-    1 ;
-
-    _175247761703 =
-
-          _2654435886*_2654435856*_175247760983 ;
-
-     if(
-
-cv ::
-
-  determinant (
-
-    _175247761703 )
-
- <
-
- 0 )
-
-        _175247761703 =
-    -_175247761703 ;
-
-    _175247761702 =
-
-    _2654435886*_2654435856.t ()
-
- *_175247760983 ;
-
-     if(
-
- cv :: determinant (
-
-     _175247761702 )
-
- <
-
-      0 )
-
-        _175247761702 =
-
-     -_175247761702 ;
-
- }
-
- bool
-
-MapInitializer :: _7274126694617365277 (
-const Frame &frame, std ::
-
- shared_ptr <
-
- Map >
-
-         _11093822290287 ) {
-
-     int
-
- _18242569162703393014 =
-
-0 ;
-
-     for(
-
-   size_t _markerObservation =
-
-  0 ;
-
-     _markerObservation <
-
-frame.markers.size ()
-
-     ;
-
-       _markerObservation ++
-
-        )
-     {
-
-         if
-
-   ( frame.markers [
-
-  _markerObservation ]
-
-  .poses.err_ratio >
-
-      _params.aruco_minerrratio_valid )
-
-            _18242569162703393014 ++
-
-     ;
-
-     }
-
-     if
-
-      (
-
-  _18242569162703393014 ==
-0 )
-     return false ;
-
-     auto
-
-&_18139480568557707913 =
-
- _11093822290287 ->
-
-     addKeyFrame ( frame ) ;
-
-    _18139480568557707913.pose_f2g =
-       se3 (
-
-        0,0,0,0,0,0 )
-
-   ;
-
-     for(
-
-    size_t _markerObservation =
-
-        0 ; _markerObservation <
-
-   frame.markers.size ()
-     ;
-
-  _markerObservation ++
-
-   )
-
-      {
-
-         auto
-
-   &_1681469518277799077 =
-
- _11093822290287 ->
-
-       addMarker (
-
-     frame.markers [
-    _markerObservation ]
-
-  )
-
- ;
-
-        _11093822290287 -> addMarkerObservation (
-
-         _1681469518277799077.id,_18139480568557707913.idx )
-
-         ;
-
-         if
-
-    (
-
-        frame.markers [
-
-_markerObservation ]
-
-  .poses.err_ratio >
-
- _params.aruco_minerrratio_valid )
-
-            _1681469518277799077.pose_g2m =
-
- frame.markers [ _markerObservation ]
-
-    .poses.sols [
-
-0 ]
-
-  ;
-
-         }
-     return
-
- true ;
-
- }
-
- }
+        parallax=0;
+
+    return nGood;
+}
+
+void MapInitializer::DecomposeE(const cv::Mat &E, cv::Mat &R1, cv::Mat &R2, cv::Mat &t)
+{
+
+    cv::Mat u,w,vt;
+    cv::SVD::compute(E,w,u,vt);
+
+    u.col(2).copyTo(t);
+    t=t/cv::norm(t);
+
+    cv::Mat W(3,3,CV_32F,cv::Scalar(0));
+    W.at<float>(0,1)=-1;
+    W.at<float>(1,0)=1;
+    W.at<float>(2,2)=1;
+
+    R1 = u*W*vt;
+    if(cv::determinant(R1)<0)
+        R1=-R1;
+
+    R2 = u*W.t()*vt;
+    if(cv::determinant(R2)<0)
+        R2=-R2;
+}
+
+bool MapInitializer::aruco_one_frame_initialize(const Frame &frame, std::shared_ptr<Map> map){
+//see if with the available markers, it is possible to do initialization
+    //detect camera-poses and see if they are robust enough
+
+    int nGoodMarkers=0;
+    for(size_t m=0;m<frame.markers.size();m++){
+        if ( frame.markers[m].poses.err_ratio> _params.aruco_minerrratio_valid)
+            nGoodMarkers++;
+    }
+    if (nGoodMarkers==0)return false;
+
+    auto &MapKeyFrame=map->addKeyFrame(frame);
+    MapKeyFrame.pose_f2g=se3(0,0,0,0,0,0);
+
+    for(size_t m=0;m<frame.markers.size();m++){
+        auto &MapMarker=map->addMarker( frame.markers[m]);
+        map->addMarkerObservation(MapMarker.id,MapKeyFrame.idx);
+        if ( frame.markers[m].poses.err_ratio> _params.aruco_minerrratio_valid)
+            MapMarker.pose_g2m=frame.markers[m].poses.sols[0];
+        }
+    return true;
+
+}
+} //namespace ORB_SLAM

@@ -1,3 +1,25 @@
+/**
+* This file is part of  TSLAM
+*
+* Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
+*
+* TSLAM is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* TSLAM is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+*/
+
+#ifndef MapManager_H
+#define MapManager_H
+
 #include <memory>
 #include <mutex>
 #include <thread>
@@ -5,358 +27,108 @@
 #include <atomic>
 #include "basictypes/tsqueue.h"
 #include "utils/loopdetector.h"
-#include <queue>
+namespace  tslam {
 
-namespace tslam {
-
+//Class that runs in parallel taking care of the map
 class Map;
-class GlobalOptimizer ;
-class MapManager {
-  struct NewPointInfo {
-    cv :: Point3d pose ;
+class GlobalOptimizer;
+class MapManager{
 
-    bool isStereo = false ;
+struct NewPointInfo{
 
-    vector < pair < uint32_t,uint32_t >    >   frame_kpt ;
-
-    float  dist = std ::numeric_limits <float >  :: max ()    ;
-  };
+    cv::Point3d pose;
+    bool isStereo=false;
+    vector<pair<uint32_t,uint32_t> > frame_kpt;
+    float dist=std::numeric_limits<float>::max();
+};
 
 public:
-  enum STATE { IDLE,WORKING,WAITINGFORUPDATE };
 
-  MapManager ();
-  ~MapManager ();
-  void setParams ( std::shared_ptr<Map> map, bool EnableLoopClosure );
+    enum STATE { IDLE,WORKING,WAITINGFORUPDATE};
 
-  bool hasMap ()  const ;
-  void  start ()    ;
+    MapManager();
+    ~MapManager();
+    void setParams(std::shared_ptr<Map> map,bool EnableLoopClosure);
+    bool hasMap()const;
+     void start();
+    void stop();
+    void reset();
+    //call whenever a new frame is avaiable.
+    //return 0 if nothing is done
+    int newFrame(Frame &kf,  int32_t curkeyFrame);
+    Frame &addKeyFrame(Frame *f);
 
-  void     stop ()   ;
+    //applies the changes to map require tracking to be stoped, such as removing frames  or points
+    bool mapUpdate(void);
+    //returns true if a big change in the map has happened. Call after mapUpdate only and before next call to newFrame
+    bool bigChange()const;
+    //get the pose of the last frame added
+    Se3Transform getLastAddedKFPose();
+    uint32_t getLastAddedKeyFrameIdx()const;
+    void toStream(std::ostream &str) ;
+    void fromStream(istream &str);
 
-  void reset () ;
-
-  int    newFrame (Frame &kf, int32_t curkeyFrame );
-
-     bool
-
-   mapUpdate (
-
-     void )
-
-       ;
-
-     bool
-     bigChange ()
-
- const ;
-
-    Se3Transform getLastAddedKFPose ()
-   ;
-
-     uint32_t
-
-getLastAddedKeyFrameIdx ()
-      const ;
-
-     void
-
-        toStream (
-   std ::
- ostream &str )
-        ;
-
-     void
-
-      fromStream (
-
- istream &str )
-
-     ;
-
-  uint64_t getSignature ();
-  Frame &addKeyFrame (Frame *_2654435871) ;
+    uint64_t getSignature();
 
 private:
-  void _8669746328630631075 () ;
-  void mainFunction ();
-  bool _668185896188051300 ( const Frame &_16997228172148074791 , uint32_t _16940374161587532565 );
-
-     bool
-     _5906010176873986459 (
-
-    const Frame & _16997228172148074791 , uint32_t
-
-  _16940374161587532565 )
-        ;
-
-     bool
-
-     _16884568726948844929 (
-  const Frame & _16997228172148074791, uint32_t
-
-  _16940374161587532565 )
-
- ;
-
-     bool
-
-         _11138245882866350888 (
-    const Frame &_16997228172148074791, uint32_t
-
-_16940374161587532565 )
-
-     ;
-
-    std ::
-
-    vector <
-
-   NewPointInfo >
-
-     createNewPoints (
-
-   Frame &_16935669825082873233 , uint32_t
-
- nn =
-
-    20, uint32_t
-
-  _1522768807369958241 =
-
-  std ::
-
-     numeric_limits <
-       uint32_t >
-
-         ::
-
-    max ()
-
-  )
-
-     ;
-
-    std ::
-
-     list <
-
-     NewPointInfo >
-
-  _8820655757626307961 (
-
-   Frame & keyframe_169372 )
-      ;
-
-    vector <
- uint32_t >
-
-  _8352839093262355382 () ;
-
-     void
-
-  _11362629803814604768 (
-
-      uint32_t _16937255065087280628, int
-
-     _3005399802176474746 =
-    5 )
- ;
-
-     void
-
-       _10758134674558762512 (
-
-        int _3005399800582873013 =
-
-  10 )
-
-  ;
-
-    set <
-   uint32_t >
-
-   keyFrameCulling (
-
-    uint32_t _13776525365726664701 )
-
-    ;
-
-    set < uint32_t >
-    _17920146964341780569 (
-
-    uint32_t _13776525365726664701 )
- ;
-
-    set < uint32_t > _5122744303662631154 (
-       uint32_t _13776525365726664701, int
-
- _11093822290295 =
-
-   1 )
-
-         ;
-
-    vector <
-      uint32_t >
-    _489363023531416435 (
-   Frame &_16935669825082873233, size_t _2654435879 )
-
-        ;
-
-     void
-
-     loopClosurePostProcessing (
-
- Frame &frame, const LoopDetector ::
-
-LoopClosureInfo &_11093822343890 )
-
-    ;
-
-    vector < uint32_t >
-
-        _17400054198872595804 (
-
-     Frame &_9083779410036955469 )
- ;
-
-    std ::
-
-     shared_ptr <
-
-BaseLoopDetector >
-        createLoopDetector_464485 (
-
-     bool _18278402211387234209 )
-
-         ;
-
-    std ::
-
-   thread _4098354751575524583 ;
-
-    std ::
-
-    mutex _5496678766866853603 ;
-
-    TSQueue <
-
-Frame* >
-
-  keyframesToAdd ;
-
-    std ::
-
-  shared_ptr <
-      Map >
-
-    TheMap ;
-
-     bool
-
-  _12303014364795142948 =
-   false ;
-
-     int
-
- _9728777609121731073 =
-
-  0 ;
-
-    std ::
-
-  atomic <
-
-   STATE >
-
- _curState ;
-
-     bool
-       _4090819199315697352 =
-
-      false ;
-
-      uint32_t
-
- _CurkeyFrame =
-std ::
-
-    numeric_limits <
-
-      uint32_t > ::
-
-      max ()
-   ;
-
-    vector <
-
- uint32_t >
-
-   PointsToRemove ;
-
-  queue<uint32_t> newInsertedKeyFrames;
-  // unordered_map<uint32_t, list<uint32_t>::iterator> newInsertedKeyFramesMap;
-
-  set<uint32_t> KeyFramesToRemove;
-
-    std :: shared_ptr < GlobalOptimizer >
-    Gopt ;
-
-    std :: map <
-
-   uint32_t, uint32_t
-
-  >
-
-   youngKeyFrames ;
-
-    Se3Transform _lastAddedKFPose ;
-
-     bool
-    bigChangeHasHappen =
-
- false ;
-
-    std ::
-
-   shared_ptr <
-
-  BaseLoopDetector >
-      _TheLoopDetector_141391 ;
-
-    LoopDetector ::
-
-        LoopClosureInfo _LoopClosureInfo ;
-
-     uint32_t
-  _lastAddedKeyFrame =
-
-   std ::
-
-  numeric_limits <
-uint32_t >
-
- ::
-max ()
-
-   ;
-
-     bool
-
-   _hasMapBeenScaled =
-    false ;
-
-     bool
-  _hurryUp =
-       false ;
-
-     bool
-
- _loopClosureEnabled_100469 =
-      true ;
-
- }
-       ;
-
- }
+    //obfuscate start
+    void runThread();
+    void mainFunction();
+    bool mustAddKeyFrame(const Frame &frame_in , uint32_t curKFRef);
+    bool mustAddKeyFrame_Markers(const Frame & frame_in , uint32_t curKFRef);
+    bool mustAddKeyFrame_KeyPoints(const Frame & frame_in, uint32_t curKFRef );
+    bool  mustAddKeyFrame_stereo(const Frame &frame_in,uint32_t curKFRef);
+
+
+    std::vector<NewPointInfo> createNewPoints(Frame &NewFrame , uint32_t nn=20,uint32_t maxPoints=std::numeric_limits<uint32_t>::max());
+    std::list<NewPointInfo> createCloseStereoPoints(Frame & newFrame);
+    vector<uint32_t>  mapPointsCulling();
+    void  localOptimization(uint32_t _newKFId,int nIters=5);
+    void  globalOptimization(int niters=10 );
+
+    set<uint32_t> keyFrameCulling(uint32_t keyframe_idx) ;
+    set<uint32_t> keyFrameCulling_Markers(uint32_t keyframe_idx);
+    set<uint32_t> keyFrameCulling_KeyPoints(uint32_t keyframe_idx, int max=1);
+
+
+    vector<uint32_t> getMatchingFrames(Frame &NewFrame, size_t n)    ;
+    //  void correctLoop(Frame &f, int32_t curRefKf, uint32_t matchingFrameIdx, cv::Mat estimatedPose);
+    //adds the keyframe, remove useless points, and do global optimization
+    void loopClosurePostProcessing(Frame &frame, const LoopDetector::LoopClosureInfo &lci);
+    vector<uint32_t> searchInNeighbors(Frame &mpCurrentKeyFrame);
+
+
+    std::shared_ptr<BaseLoopDetector> createLoopDetector(bool loopClosureEnabled);
+    //////////////////////////////////////////////////
+    /// variables
+    //////////////////////////////////////////////////
+
+    std::thread _TThread;
+    std::mutex mutex_addKf;
+    TSQueue<Frame*>  keyframesToAdd;
+
+    std::shared_ptr<Map> TheMap;
+    bool _mustAddKeyFrame=false;
+    int nFramesAnalyzedWithoutAddingKF=0;
+    std::atomic<STATE> _curState;
+    bool mustExit=false;
+     uint32_t _CurkeyFrame=std::numeric_limits<uint32_t>::max();//current keyframe of the tracker
+    vector<uint32_t> PointsToRemove;
+    set<uint32_t> KeyFramesToRemove;
+    //we need to save now
+    std::shared_ptr<GlobalOptimizer> Gopt;
+    std::map<uint32_t,uint32_t > youngKeyFrames;
+    Se3Transform _lastAddedKFPose;
+    bool bigChangeHasHappen=false;
+    std::shared_ptr<BaseLoopDetector> _TheLoopDetector;
+    LoopDetector::LoopClosureInfo _LoopClosureInfo;
+    uint32_t _lastAddedKeyFrame=std::numeric_limits<uint32_t>::max();
+    bool _hasMapBeenScaled=false;
+    bool _hurryUp=false;//activated when a new keyframe should be added
+    bool _loopClosureEnabled=true;
+    //obfuscate end
+};
+
+}
+
+#endif

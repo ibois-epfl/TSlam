@@ -54,6 +54,8 @@ public:
     //maxSearch number of comparisons in the  approximated search
     std::vector<cv::DMatch> matchEpipolar(const Frame &queryFrame, Mode mode, const cv::Mat &FQ2T );
 
+    cv::Mat getFund12(const cv::Mat &trainCamMatrix, const cv::Mat queryCamMatrix, const cv::Mat &FQ2T );
+
 private:
     Type _type;
 

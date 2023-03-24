@@ -34,9 +34,6 @@ namespace tslam{
         /// parameter is the index of the sequence
         /// Returns the camera pose estimated. The pose is the transform moving points from the global reference sytem to the camera reference ssytem
         cv::Mat process( cv::Mat &in_image,const ImageParams &ip,uint32_t frameseq_idx);
-        cv::Mat processStereo( cv::Mat &left_image,const cv::Mat &right_image,const ImageParams &ip,uint32_t frameseq_idx);
-        cv::Mat processRGBD( cv::Mat &in_image,const cv::Mat & depth,const ImageParams &ip,uint32_t frameseq_idx);
-        cv::Mat processArray(vector<cv::Mat> &images,  ImageParams &ArrayCamParams ,uint32_t frameseq_idx);
 
         /// Reset the current frame pose. Use it to start tracking in a known map
         void resetTracker();
