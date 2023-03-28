@@ -108,11 +108,11 @@ namespace tslam{
         /**
          * Set the status of the map
          *
-         * Set the status of the map. If "isInstancing" is set to true global optimization will be off and the
+         * Set the status of the map. If "localizeOnly" is set to true global optimization will be off and the
          * new added keyframes will be kept in a fixed number
-         * @param isInstancing true/false
+         * @param localizeOnly true/false
          */
-        void setInstancing(bool isInstancing);
+        void setInstancing(bool localizeOnly);
 
         /**
          * @brief Get the last tracked camera pose (not guarentee to be the last frame)

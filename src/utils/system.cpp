@@ -54,11 +54,10 @@ namespace tslam{
 
 
 System::System(){
-    fextractor=std::make_shared<FrameExtractor>();
+     fextractor=std::make_shared<FrameExtractor>();
      map_initializer=std::make_shared<MapInitializer>();
      TheMapManager=std::make_shared<MapManager>();
-     marker_detector=std::make_shared<tslam::ArucoMarkerDetector>();
-
+     marker_detector=std::make_shared<tslam::STagMarkerDetector>();
 }
 
 System::~System(){
@@ -89,7 +88,7 @@ void System::setParams( std::shared_ptr<Map> map, const  Params &p,const string 
     _params=p;
     marker_detector=mdetector;
     if(!marker_detector)
-        marker_detector=std::make_shared<ArucoMarkerDetector>(_params);
+        marker_detector=std::make_shared<STagMarkerDetector>(_params);
     createFrameExtractor();
 
     //now, the vocabulary

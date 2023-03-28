@@ -152,10 +152,10 @@ Here we should add the path to the mesh model to visualize
 ```bash
 # first unzip the map
 unzip ../../example/example.map.zip -d ../../example/
-./tslam_monocular ../../example/video.mp4 ../../example/calibration_webcam.yml -map ../../example/example.map -isInstancing
+./tslam_monocular ../../example/video.mp4 ../../example/calibration_webcam.yml -map ../../example/example.map -localizeOnly
 ```
 - `map`: Path to the map.
-- `isInstancing`: Indicating it's not mapping, so we can skip some operations.
+- `localizeOnly`: Indicating it's not mapping, so we can skip some operations.
 
 ### Util Programs
 `>>>>>>>>>>>>>>>>>> this is for me not clear why we need to show this, maybe the previous section needs to be explained better. We should replace it with the typical routine with all the steps to map, reconstruct and run tslam. <<<<<<<<<<<<<<<<<<<<`

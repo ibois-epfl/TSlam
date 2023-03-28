@@ -61,7 +61,7 @@ void overwriteParamsByCommandLine(CmdLineParser &cml,tslam::Params &params){
     if (cml["-KFMinConfidence"])            params.KFMinConfidence =stof(cml("-KFMinConfidence"));
     if (cml["-nonmax"])                     params.KPNonMaximaSuppresion=true;
     if (cml["-saveImages"])                 params.saveImageInMap=true;
-    if (cml["-isInstancing"])               params.isInstancing=true;
+    if (cml["-localizeOnly"])               params.localizeOnly=true;
     if (cml["-autoAdjustKpSensitivity"])    params.autoAdjustKpSensitivity=true;
     if (cml["-extra_params"])               params.extraParams=cml("-extra_params");
     if (cml["-scale"])                      params.kptImageScaleFactor=stof(cml("-scale"));
@@ -559,7 +559,7 @@ int main(int argc,char **argv){
             errorFlag = true;
             cerr << "an error occurs" << endl;
 
-            if (cml["-isInstancing"]){
+            if (cml["-localizeOnly"]){
                 delete Slam;
                 Slam = new tslam::TSlam;
                 TheMap = std::make_shared<tslam::Map>();
@@ -637,4 +637,4 @@ int main(int argc,char **argv){
     }
 }
 
-// /home/tpp/Downloads/long-beam-1-480p-2.mp4 /home/tpp/UCOSlam-IBOIS/test_result/calibration_pixel_480p.yml -voc /home/tpp/UCOSlam-IBOIS/orb.fbow -out test.map -map /home/tpp/UCOSlam-IBOIS/build/utils/long1-px-480p-combine-compressed.map -isInstancing
+// /home/tpp/Downloads/long-beam-1-480p-2.mp4 /home/tpp/UCOSlam-IBOIS/test_result/calibration_pixel_480p.yml -voc /home/tpp/UCOSlam-IBOIS/orb.fbow -out test.map -map /home/tpp/UCOSlam-IBOIS/build/utils/long1-px-480p-combine-compressed.map -localizeOnly

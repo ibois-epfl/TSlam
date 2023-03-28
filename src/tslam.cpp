@@ -93,8 +93,8 @@ namespace tslam{
         imageParams.readFromXMLFile(pathToCamParamFile);
     }
 
-    void TSlam::setInstancing(bool isInstancing){
-        systemParams.isInstancing = isInstancing;
+    void TSlam::setInstancing(bool localizeOnly){
+        systemParams.localizeOnly = localizeOnly;
         toUpdateSystem = true;
     }
 

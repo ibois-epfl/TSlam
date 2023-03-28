@@ -94,7 +94,7 @@ std::string info;
         - Not updating Map -> lower accuracy
         - Move the code cause the lag into another thread, and let the main thread keep going
         - ✔️ Just cancel it
-            > This has been tackled down by adding a system-scale parameter "-isInstancing", which disables the optimization process.
+            > This has been tackled down by adding a system-scale parameter "-localizeOnly", which disables the optimization process.
 
 ## Merge 2 maps
 - Takes two tag maps (the exported .yml file) as input
