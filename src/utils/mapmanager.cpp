@@ -230,6 +230,7 @@ Frame& MapManager::addKeyFrame(Frame *newPtrFrame){
     ///ADD KEYFRAME
     __TSLAM_ADDTIMER__
     Frame &newFrame=TheMap->addKeyFrame(*newPtrFrame);
+    newInsertedKeyFrames.push(newFrame.idx);
     _lastAddedKeyFrame=newFrame.idx;
 
     __TSLAM_TIMER_EVENT__("Add frame  ");
@@ -524,8 +525,17 @@ set<uint32_t> MapManager::keyFrameCulling(uint32_t keyframe_idx) {
 
     set<uint32_t> KFtoRemove;
 
-    //both markers and keypoints
-    if( System::getParams().detectMarkers  && TheMap->map_markers.size()!=0 ){//must be in both
+    if (System::getParams().localizeOnly) {
+        // if there is > the specified number of new added frame, remove them
+        while (newInsertedKeyFrames.size() > 30) {
+            auto kfIdxToBeRemoved = newInsertedKeyFrames.front();
+            newInsertedKeyFrames.pop();
+            KFtoRemove.insert(kfIdxToBeRemoved);
+        }
+
+    }
+    //both markers and key points
+    else if( System::getParams().detectMarkers  && TheMap->map_markers.size()!=0 ){ //must be in both
         vector<uint32_t> NotRedundant;
 
         KFtoRemove=keyFrameCulling_KeyPoints(keyframe_idx);
