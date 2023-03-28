@@ -25,6 +25,7 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
+#include <queue>
 #include "basictypes/tsqueue.h"
 #include "utils/loopdetector.h"
 namespace  tslam {
@@ -115,6 +116,7 @@ private:
      uint32_t _CurkeyFrame=std::numeric_limits<uint32_t>::max();//current keyframe of the tracker
     vector<uint32_t> PointsToRemove;
     set<uint32_t> KeyFramesToRemove;
+    queue<uint32_t> newInsertedKeyFrames;
     //we need to save now
     std::shared_ptr<GlobalOptimizer> Gopt;
     std::map<uint32_t,uint32_t > youngKeyFrames;
