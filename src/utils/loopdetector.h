@@ -48,7 +48,7 @@ public:
 
 
     virtual void setParams(std::shared_ptr<Map> map)=0;
-    virtual LoopClosureInfo  detectLoopFromMarkers(Frame &frame, int32_t curRefKf )=0;
+    virtual LoopClosureInfo detectLoopFromMarkers(Frame &frame, int32_t curRefKf )=0;
     virtual LoopClosureInfo detectLoopFromKeyPoints(Frame &frame, int32_t curRefKf)=0;
     virtual void correctMap(const LoopClosureInfo &lcsol)=0;
 

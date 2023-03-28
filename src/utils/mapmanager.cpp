@@ -68,15 +68,17 @@ int MapManager::newFrame(Frame &kf, int32_t curkeyFrame  ){
 
     if (  _curState.load()==IDLE ){
 #pragma message "warning : in non-sequential mode detected markers in loop closure are not proceesed properly?"
-        if(System::getParams().reLocalizationWithMarkers)
+        if(System::getParams().reLocalizationWithMarkers && System::getParams().enableLoopClosure ){
+            cout << "Detecting loop closure from markers..." << endl;
             _LoopClosureInfo=_TheLoopDetector->detectLoopFromMarkers(kf,curkeyFrame);
-        if (_LoopClosureInfo.foundLoop()){
-            _debug_msg_("Loop closure from markers");
-            _TheLoopDetector->correctMap(_LoopClosureInfo);//
-            loopClosurePostProcessing(kf,_LoopClosureInfo);//the keyframe is added here
-            bigChangeHasHappen=true;
-            __TSLAM_TIMER_EVENT__("detectLoop");
-            returnValue=2;
+            if (_LoopClosureInfo.foundLoop()){
+                _debug_msg_("Loop closure from markers");
+                _TheLoopDetector->correctMap(_LoopClosureInfo);//
+                loopClosurePostProcessing(kf,_LoopClosureInfo);//the keyframe is added here
+                bigChangeHasHappen=true;
+                __TSLAM_TIMER_EVENT__("detectLoop");
+                returnValue=2;
+            }
         }
         else{
             __TSLAM_TIMER_EVENT__("detectLoop");
@@ -100,19 +102,19 @@ int MapManager::newFrame(Frame &kf, int32_t curkeyFrame  ){
         if ( mustAddKeyFrame(kf,curkeyFrame)   ){
          //   _hurryUp=true;
         }
-        if(System::getParams().reLocalizationWithMarkers)
-            _LoopClosureInfo=_TheLoopDetector->detectLoopFromMarkers(kf,curkeyFrame);
-        if( _LoopClosureInfo.foundLoop()){
-         //   _hurryUp=true;
+        if(System::getParams().reLocalizationWithMarkers && System::getParams().enableLoopClosure) {
+            _LoopClosureInfo = _TheLoopDetector->detectLoopFromMarkers(kf, curkeyFrame);
+            if (_LoopClosureInfo.foundLoop()) {
+                //   _hurryUp=true;
+            }
         }
-
     }
     return returnValue;
 }
 
 
 
-bool MapManager::mapUpdate(   ){
+bool MapManager::mapUpdate(){
 
     if (_curState!=WAITINGFORUPDATE)
         return  false  ;
@@ -122,7 +124,7 @@ bool MapManager::mapUpdate(   ){
 
     TheMap->lock(__FUNCTION__,__FILE__,__LINE__);
 
-    if (_LoopClosureInfo.foundLoop()){
+    if (System::getParams().enableLoopClosure && _LoopClosureInfo.foundLoop()){
         //get the detection and correct the map
         _TheLoopDetector->correctMap(_LoopClosureInfo);
         loopClosurePostProcessing(TheMap->keyframes[_lastAddedKeyFrame],_LoopClosureInfo  );
@@ -407,9 +409,8 @@ void MapManager::mainFunction(){
     __TSLAM_TIMER_EVENT__("add keyframe");
 
     //start the thread to search for loop closures
-    if(System::getParams().reLocalizationWithKeyPoints)
-
-    _LoopClosureInfo=_TheLoopDetector->detectLoopFromKeyPoints(newFrame,_CurkeyFrame);
+    if(System::getParams().enableLoopClosure && System::getParams().reLocalizationWithKeyPoints)
+        _LoopClosureInfo=_TheLoopDetector->detectLoopFromKeyPoints(newFrame,_CurkeyFrame);
 
 
     __TSLAM_TIMER_EVENT__("loop detection ");

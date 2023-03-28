@@ -34,7 +34,7 @@ Params::Params(){
       KFCulling=0.8;// Value indicating how many redundant keypoints must be in a keyframe to remove it. Range [0,1]. If low, few keyframes will survive. If 1, no keyframe will be removed once added.
       aruco_markerSize=1;//Size of markers in meters
       maxNewPoints=350;//maximum number of new points created when a new keyframe is added
-      enableLoopClosure=true;
+      enableLoopClosure=false;
 
       forceInitializationFromMarkers=false;//If true, the system will not initialize until a good initialization from markers is obtained
       nthreads_feature_detector=2;//number of threads employed in keypoint detection
