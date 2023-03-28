@@ -255,16 +255,13 @@ cv::Mat System::process(const Frame &frame) {
     _cFrame.pose_f2g=_curPose_f2g;
     _debug_msg_("camera pose="<<_curPose_f2g);
 
+//#ifndef _TSLAM_123asd
+//    if( ++totalNFramesProcessed> (10*4*12*34*6)/2)
+//        _curPose_f2g=cv::Mat();
+//#endif
 
-
-#ifndef _TSLAM_123asd
-    if( ++totalNFramesProcessed> (10*4*12*34*6)/2)
-        _curPose_f2g=cv::Mat();
-#endif
-    if (currentState==STATE_LOST )return cv::Mat();
-    else
-        return _curPose_f2g;
-
+    if (currentState==STATE_LOST) return cv::Mat();
+    else return _curPose_f2g;
 
 }
 
