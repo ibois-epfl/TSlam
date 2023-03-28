@@ -489,10 +489,19 @@ void MapManager::mainFunction(){
         __TSLAM_TIMER_EVENT__("Local optimization");
     }
     //Keyframe culling
-    if(!_hurryUp ){
+    if(!_hurryUp){
         KeyFramesToRemove=keyFrameCulling(newFrame.idx);
         for(auto kf:KeyFramesToRemove)
-            TheMap->keyframes[kf].setBad (true);
+            TheMap->keyframes[kf].setBad(true);
+    }
+
+    if (System::getParams().localizeOnly) {
+        // if there is > the specified number of new added frame, remove them
+        cout << "newInsertedKeyFrames.size() = " << newInsertedKeyFrames.size() << endl;
+        while (newInsertedKeyFrames.size() > 30) {
+            TheMap->keyframes[newInsertedKeyFrames.front()].setBad (true);
+            newInsertedKeyFrames.pop();
+        }
     }
 
 
@@ -520,30 +529,19 @@ void MapManager::runThread(){
 
 
 
-set<uint32_t> MapManager::keyFrameCulling(uint32_t keyframe_idx) {
+set<uint32_t> MapManager::keyFrameCulling(uint32_t keyframe_idx, bool checkRedundancy){
 
     __TSLAM_ADDTIMER__
 
     set<uint32_t> KFtoRemove;
 
-    if (System::getParams().localizeOnly) {
-        // if there is > the specified number of new added frame, remove them
-        while (newInsertedKeyFrames.size() > 30) {
-            auto kfIdxToBeRemoved = newInsertedKeyFrames.front();
-            newInsertedKeyFrames.pop();
-            KFtoRemove.insert(kfIdxToBeRemoved);
-        }
-
-    }
     //both markers and key points
-    else if( System::getParams().detectMarkers  && TheMap->map_markers.size()!=0 ){ //must be in both
+    if( System::getParams().detectMarkers && TheMap->map_markers.size() != 0 ){ //must be in both
         vector<uint32_t> NotRedundant;
 
         KFtoRemove=keyFrameCulling_KeyPoints(keyframe_idx);
          //check the redundant keyframe in the marker sense: the same markers are already observed in another keyframe
         for(auto kf:KFtoRemove){
-
-
             const auto &ThisKFrame=TheMap->keyframes[kf] ;
 
             //get all keyframes in which the markers of this are observed
@@ -577,7 +575,7 @@ set<uint32_t> MapManager::keyFrameCulling(uint32_t keyframe_idx) {
     //only markers
     else if (System::getParams().detectMarkers) KFtoRemove= keyFrameCulling_Markers(keyframe_idx);
 
-     return KFtoRemove;
+    return KFtoRemove;
 
 }
 
@@ -745,7 +743,7 @@ set<uint32_t> MapManager::keyFrameCulling_KeyPoints(uint32_t keyframe_idx,int ma
         }
 
         float redudantPerc=float(nRedundant)/float(nPoints);
-         if(redudantPerc>System::getParams().KFCulling ){
+        if(redudantPerc>System::getParams().KFCulling ){
             KeyFramesThatCanBeRemoved.push_back({redudantPerc,fidx });
         }
     }

@@ -57,7 +57,7 @@ public:
     //scale factor of the keypoint detector employed
     vector<float> scaleFactors;
     ImageParams imageParams;//camera with which it was taken
-    bool isBad( )const{return frame_flags.is(FLAG_BAD); }
+    bool isBad()const{return frame_flags.is(FLAG_BAD); }
     void setBad(bool v){ frame_flags.set(FLAG_BAD,v);}
     DescriptorTypes::Type KpDescType=DescriptorTypes::DESC_NONE;//keypoint descriptor type (orb,akaze,...)
     //returns a map point observation from the current information

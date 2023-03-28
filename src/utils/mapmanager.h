@@ -78,8 +78,7 @@ private:
     bool mustAddKeyFrame(const Frame &frame_in , uint32_t curKFRef);
     bool mustAddKeyFrame_Markers(const Frame & frame_in , uint32_t curKFRef);
     bool mustAddKeyFrame_KeyPoints(const Frame & frame_in, uint32_t curKFRef );
-    bool  mustAddKeyFrame_stereo(const Frame &frame_in,uint32_t curKFRef);
-
+    bool mustAddKeyFrame_stereo(const Frame &frame_in,uint32_t curKFRef);
 
     std::vector<NewPointInfo> createNewPoints(Frame &NewFrame , uint32_t nn=20,uint32_t maxPoints=std::numeric_limits<uint32_t>::max());
     std::list<NewPointInfo> createCloseStereoPoints(Frame & newFrame);
@@ -87,7 +86,7 @@ private:
     void  localOptimization(uint32_t _newKFId,int nIters=5);
     void  globalOptimization(int niters=10 );
 
-    set<uint32_t> keyFrameCulling(uint32_t keyframe_idx) ;
+    set<uint32_t> keyFrameCulling(uint32_t keyframe_idx, bool checkRedundancy = true);
     set<uint32_t> keyFrameCulling_Markers(uint32_t keyframe_idx);
     set<uint32_t> keyFrameCulling_KeyPoints(uint32_t keyframe_idx, int max=1);
 
