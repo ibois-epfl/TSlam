@@ -229,6 +229,18 @@ Frame& MapManager::addKeyFrame(Frame *newPtrFrame){
         return nValidMarkers;
     };
 
+    // in localizeOnly mode, filter out the marker that is not in the map
+    if(System::getParams().localizeOnly){
+        std::vector<tslam::MarkerObservation> filteredMarkers;
+        for(auto m : newPtrFrame->markers) {
+            if (TheMap->map_markers.count(m.id)!=0){
+                filteredMarkers.push_back(m);
+            }
+        }
+        newPtrFrame->markers = filteredMarkers;
+    }
+
+
     ///ADD KEYFRAME
     __TSLAM_ADDTIMER__
     Frame &newFrame=TheMap->addKeyFrame(*newPtrFrame);
@@ -495,14 +507,14 @@ void MapManager::mainFunction(){
             TheMap->keyframes[kf].setBad(true);
     }
 
-    if (System::getParams().localizeOnly) {
-        // if there is > the specified number of new added frame, remove them
-        cout << "newInsertedKeyFrames.size() = " << newInsertedKeyFrames.size() << endl;
-        while (newInsertedKeyFrames.size() > 30) {
-            TheMap->keyframes[newInsertedKeyFrames.front()].setBad (true);
-            newInsertedKeyFrames.pop();
-        }
-    }
+//    if (System::getParams().localizeOnly) {
+//        // if there is > the specified number of new added frame, remove them
+//        cout << "newInsertedKeyFrames.size() = " << newInsertedKeyFrames.size() << endl;
+//        while (newInsertedKeyFrames.size() > 30) {
+//            TheMap->keyframes[newInsertedKeyFrames.front()].setBad (true);
+//            newInsertedKeyFrames.pop();
+//        }
+//    }
 
 
     _curState=WAITINGFORUPDATE;
@@ -841,12 +853,12 @@ bool MapManager::mustAddKeyFrame_stereo(const Frame &frame_in,uint32_t curKFRef)
 }
 
 bool MapManager::mustAddKeyFrame_Markers(const Frame & frame_in ,uint32_t curKFRef){
-    //if no marker in the system yet, skip this
-    if (TheMap->map_markers.size()==0)return false;
-     ///if a new marker, not ever seen, add this!
+    // if no marker in the system yet, skip this
+    if (TheMap->map_markers.size()==0) return false;
+    // if a new marker, not ever seen, add this!
     for(auto m:frame_in.markers){
-        if (TheMap->map_markers.count (m.id)==0){
-             return true;
+        if (TheMap->map_markers.count(m.id)==0){
+            return true;
         }
     }
 
