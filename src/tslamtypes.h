@@ -102,7 +102,7 @@ struct TSLAM_API Params{
     int maxNewPoints;//maximum number of new points created when a new keyframe is added
     bool reLocalizationWithKeyPoints=true;
     bool reLocalizationWithMarkers=true;
-    bool isInstancing=false;
+    bool localizeOnly=false;
     bool inPlaneMarkers=false;//special case in which all markers are in the same plane.
     bool saveImageInMap=false;//saves in the keyframes of the map the compressed jpeg images. This will consumes tons of memory!
 

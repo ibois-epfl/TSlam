@@ -1,0 +1,30 @@
+speciment index,timber dimensions,cuts itype/number in initial state,drills type/number to execute,tags distribution,tags density
+1,14x14x2000,[],"['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",stripe layout,medium density
+2,14x14x2000,[],"['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",stripe layout,high density
+3,14x14x2000,[],"['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",ring layout,low density
+4,14x14x2000,[],"['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",ring layout,medium density
+5,14x14x2000,[],"['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",ring layout,high density
+6,14x14x2000,['1xscar'],"['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",stripe layout,low density
+7,14x14x2000,['1xscar'],"['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",stripe layout,medium density
+8,14x14x2000,['1xscar'],"['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",stripe layout,high density
+9,14x14x2000,['1xscar'],"['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",ring layout,low density
+10,14x14x2000,['1xscar'],"['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",ring layout,medium density
+11,14x14x2000,['1xscar'],"['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",ring layout,high density
+12,14x14x2000,"['1xscar', '1xhalf-lap']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",stripe layout,low density
+13,14x14x2000,"['1xscar', '1xhalf-lap']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",stripe layout,medium density
+14,14x14x2000,"['1xscar', '1xhalf-lap']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",stripe layout,high density
+15,14x14x2000,"['1xscar', '1xhalf-lap']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",ring layout,low density
+16,14x14x2000,"['1xscar', '1xhalf-lap']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",ring layout,medium density
+17,14x14x2000,"['1xscar', '1xhalf-lap']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",ring layout,high density
+18,14x14x2000,"['1xscar', '1xhalf-lap', '1xfull-lap']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",stripe layout,low density
+19,14x14x2000,"['1xscar', '1xhalf-lap', '1xfull-lap']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",stripe layout,medium density
+20,14x14x2000,"['1xscar', '1xhalf-lap', '1xfull-lap']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",stripe layout,high density
+21,14x14x2000,"['1xscar', '1xhalf-lap', '1xfull-lap']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",ring layout,low density
+22,14x14x2000,"['1xscar', '1xhalf-lap', '1xfull-lap']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",ring layout,medium density
+23,14x14x2000,"['1xscar', '1xhalf-lap', '1xfull-lap']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",ring layout,high density
+24,14x14x2000,"['1xscar', '1xhalf-lap', '1xfull-lap', '1xspliced']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",stripe layout,low density
+25,14x14x2000,"['1xscar', '1xhalf-lap', '1xfull-lap', '1xspliced']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",stripe layout,medium density
+26,14x14x2000,"['1xscar', '1xhalf-lap', '1xfull-lap', '1xspliced']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",stripe layout,high density
+27,14x14x2000,"['1xscar', '1xhalf-lap', '1xfull-lap', '1xspliced']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",ring layout,low density
+28,14x14x2000,"['1xscar', '1xhalf-lap', '1xfull-lap', '1xspliced']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",ring layout,medium density
+29,14x14x2000,"['1xscar', '1xhalf-lap', '1xfull-lap', '1xspliced']","['8xspiral20', '2xspiral20', '2xwasher50', '12xscrews']",ring layout,high density

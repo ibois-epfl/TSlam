@@ -47,31 +47,32 @@ public: CmdLineParser(int _argc,char **_argv):argc(_argc),argv(_argv){}  bool op
 };
 
 void overwriteParamsByCommandLine(CmdLineParser &cml,tslam::Params &params){
-    if (cml["-aruco-markerSize"])   params.aruco_markerSize = stof(cml("-aruco-markerSize", "1"));
-    if (cml["-marker_minsize"])     params.aruco_minMarkerSize= stod(cml("-marker_minsize", "0.025"));
-    if (cml["-nokeypoints"])        params.detectKeyPoints=false;
-    if (cml["-nomarkers"])          params.detectMarkers =false;
-    if (cml["-sequential"])         params.runSequential=true;
-    if (cml["-maxFeatures"])        params.maxFeatures = stoi(cml("-maxFeatures","4000"));
-    if (cml["-nOct"])               params.nOctaveLevels = stoi(cml("-nOct","8"));
-    if (cml["-fdt"])                params.nthreads_feature_detector = stoi(cml("-fdt", "1"));
-    if (cml["-desc"])               params.kpDescriptorType = tslam::DescriptorTypes::fromString(cml("-desc", "orb"));
-    if (cml["-dict"])               params.aruco_Dictionary = cml("-dict");
-    if (cml["-tfocus"])             params.targetFocus =stof(cml("-tfocus","-1"));
-    if (cml["-KFMinConfidence"])    params.KFMinConfidence =stof(cml("-KFMinConfidence"));
-    if(cml["-nonmax"])              params.KPNonMaximaSuppresion=true;
-    if(cml["-saveImages"])          params.saveImageInMap=true;
-    if(cml["-isInstancing"])        params.isInstancing=true;
-    if(cml["-autoAdjustKpSensitivity"])    params.autoAdjustKpSensitivity=true;
-    if(cml["-extra_params"])        params.extraParams=cml("-extra_params");
-    if(cml["-scale"])               params.kptImageScaleFactor=stof(cml("-scale"));
-    if(cml["-nokploopclosure"])     params.reLocalizationWithKeyPoints=false;
-    if(cml["-inplanemarkers"])      params.inPlaneMarkers=true;
+    if (cml["-aruco-markerSize"])           params.aruco_markerSize = stof(cml("-aruco-markerSize", "1"));
+    if (cml["-marker_minsize"])             params.aruco_minMarkerSize= stod(cml("-marker_minsize", "0.025"));
+    if (cml["-nokeypoints"])                params.detectKeyPoints=false;
+    if (cml["-nomarkers"])                  params.detectMarkers =false;
+    if (cml["-sequential"])                 params.runSequential=true;
+    if (cml["-maxFeatures"])                params.maxFeatures = stoi(cml("-maxFeatures","4000"));
+    if (cml["-nOct"])                       params.nOctaveLevels = stoi(cml("-nOct","8"));
+    if (cml["-fdt"])                        params.nthreads_feature_detector = stoi(cml("-fdt", "1"));
+    if (cml["-desc"])                       params.kpDescriptorType = tslam::DescriptorTypes::fromString(cml("-desc", "orb"));
+    if (cml["-dict"])                       params.aruco_Dictionary = cml("-dict");
+    if (cml["-tfocus"])                     params.targetFocus =stof(cml("-tfocus","-1"));
+    if (cml["-KFMinConfidence"])            params.KFMinConfidence =stof(cml("-KFMinConfidence"));
+    if (cml["-nonmax"])                     params.KPNonMaximaSuppresion=true;
+    if (cml["-saveImages"])                 params.saveImageInMap=true;
+    if (cml["-localizeOnly"])               params.localizeOnly=true;
+    if (cml["-autoAdjustKpSensitivity"])    params.autoAdjustKpSensitivity=true;
+    if (cml["-extra_params"])               params.extraParams=cml("-extra_params");
+    if (cml["-scale"])                      params.kptImageScaleFactor=stof(cml("-scale"));
+    if (cml["-nokploopclosure"])            params.reLocalizationWithKeyPoints=false;
+    if(cml["-enableLoopClosure"])           params.enableLoopClosure=true;
+    else                                    params.enableLoopClosure=false;
+    if (cml["-inplanemarkers"])             params.inPlaneMarkers=true;
 
     params.aruco_CornerRefimentMethod=cml("-aruco-cornerRefinementM","CORNER_SUBPIX");
 
-    if(cml["-enableLoopClosure"]) params.enableLoopClosure=true;
-    else params.enableLoopClosure=false;
+
 
     if (cml["-dbg_str"]) tslam::debug::Debug::addString(cml("-dbg_str"),"");
 }
@@ -114,12 +115,17 @@ void enhanceImageBGR(const cv::Mat &imgIn, cv::Mat &imgOut){
 
 cv::Mat projectionMatrix;
 
+/**
+ * @brief convertRotationMatrixToQuaternion
+ * @param R 4x4 matrix
+ * @return quaternion in the form (x,y,z,w)
+ */
 cv::Vec4f convertRotationMatrixToQuaternion(cv::Mat R) {
     cv::Vec4f q;
-    q[0] = sqrt(1.0 + R.at<float>(0,0) + R.at<float>(1,1) + R.at<float>(2,2)) / 2.0;
-    q[1] = (R.at<float>(2,1) - R.at<float>(1,2)) / (4.0 * q[0]);
-    q[2] = (R.at<float>(0,2) - R.at<float>(2,0)) / (4.0 * q[0]);
-    q[3] = (R.at<float>(1,0) - R.at<float>(0,1)) / (4.0 * q[0]);
+    q[3] = sqrt(1.0 + R.at<float>(0,0) + R.at<float>(1,1) + R.at<float>(2,2)) / 2.0;
+    q[0] = (R.at<float>(2,1) - R.at<float>(1,2)) / (4.0 * q[3]);
+    q[1] = (R.at<float>(0,2) - R.at<float>(2,0)) / (4.0 * q[3]);
+    q[2] = (R.at<float>(1,0) - R.at<float>(0,1)) / (4.0 * q[3]);
     return q;
 }
 
@@ -169,66 +175,84 @@ void loadPly(string path, vector<cv::Vec3f> &vertices, vector<cv::Vec3i> &faces,
         cv::Vec3f pt1 = vertices[a];
         cv::Vec3f pt2 = vertices[b];
         cv::Vec3f pt3 = vertices[c];
+
         lines.emplace_back(make_pair(pt1, pt2));
         lines.emplace_back(make_pair(pt2, pt3));
         lines.emplace_back(make_pair(pt3, pt1));
+
     }
 }
 
-std::pair<cv::Point2f, cv::Point2f>projectToScreen(int imgW, int imgH, std::pair<cv::Vec3f, cv::Vec3f> pts, cv::Mat projectionMatrix){
-    float zNear = 0.1f;
+auto getZ(cv::Mat p){
+    return p.at<float>(2, 0);
+};
 
-    cv::Mat p1 = (cv::Mat_<float>(4, 1) << pts.first[0], pts.first[1], pts.first[2], 1);
-    p1 = projectionMatrix * p1;
+std::pair<cv::Point2f, cv::Point2f>projectToScreen(int imgW, int imgH, std::pair<cv::Vec3f, cv::Vec3f> ptsToDraw, cv::Mat projectionMatrix, cv::Mat cameraPose){
+    std::pair<cv::Vec4f, cv::Vec4f> reprojecPts;
 
-    cv::Mat p2 = (cv::Mat_<float>(4, 1) << pts.second[0], pts.second[1], pts.second[2], 1);
-    p2 = projectionMatrix * p2;
+    float zNear = 1.0f; // clip plane is at (0, 0, -1) in camera space
 
-    // if both points are behind the camera, return pair<(-1, -1), (-1, -1)>
-    if ( p1.at<float>(2, 0) < zNear && p2.at<float>(2, 0) < zNear) {
-        return std::make_pair(cv::Point2f(-1, -1), cv::Point2f(-1, -1));
-    }
+    cv::Mat p1 = (cv::Mat_<float>(4, 1) << ptsToDraw.first[0], ptsToDraw.first[1], ptsToDraw.first[2], 1);
+    p1 = cameraPose * p1;
 
-    auto reprojOnNearPlane = [&zNear](std::pair<cv::Vec3f, cv::Vec3f> pts){
-        cv::Vec3f basePt;
-        cv::Vec3f vec;
+    cv::Mat p2 = (cv::Mat_<float>(4, 1) << ptsToDraw.second[0], ptsToDraw.second[1], ptsToDraw.second[2], 1);
+    p2 = cameraPose * p2;
 
-        if (pts.first[2] < zNear) {
-            basePt = pts.second;
-            vec = pts.first - pts.second;
-        } else {
-            basePt = pts.first;
-            vec = pts.second - pts.first;
+    auto clipOnNearPlane = [&zNear](cv::Vec4f p1, cv::Vec4f p2) {
+        auto ptFront = p1, ptBack = p2;
+
+        // ptsToDraw.first is behind the camera
+        if (p1[2] < zNear) {
+            ptFront = p2;
+            ptBack = p1;
         }
 
-        float t = (zNear - basePt[2]) / vec[2];
-        return make_pair(basePt + t * vec, basePt);
+        float pz;
+
+        ptBack = (abs(zNear - ptBack[2]) * ptFront + abs(zNear - ptFront[2]) * ptBack) / abs(ptFront[2] - ptBack[2]);
+        ptBack[3] = 1.0f; // force w = 1
+
+        return make_pair(ptBack, ptFront);
     };
 
-    // if the point is behind the camera, project the point onto the near plane
-    if (p2.at<float>(2, 0) < zNear || p1.at<float>(2, 0) < zNear) {
-        pts = reprojOnNearPlane(pts);
+    if( (getZ(p1) < zNear && getZ(p2) < zNear) ) { // both are behind the camera, no need to render
+//        cout << "Both points are behind camera, no need to render." << endl;
+        return std::make_pair(cv::Point2f(-1, -1), cv::Point2f(-1, -1));
+    } else if ( !(getZ(p1) > zNear && getZ(p2) > zNear) ) {
+//        cout << "Perform near clipping." << endl;
+        reprojecPts = clipOnNearPlane(p1, p2);
+    } else {
+        reprojecPts.first = cv::Vec4f(p1.at<float>(0, 0), p1.at<float>(1, 0), p1.at<float>(2, 0), 1.0f);
+        reprojecPts.second = cv::Vec4f(p2.at<float>(0, 0), p2.at<float>(1, 0), p2.at<float>(2, 0), 1.0f);
     }
 
-    pts.first  /= -pts.first[2];  // make all z = 1
-    pts.second /= -pts.second[2]; // make all z = 1
+    p1 = projectionMatrix * reprojecPts.first;
+    p2 = projectionMatrix * reprojecPts.second;
 
-    int x1 = (pts.first[0] + 1.0f) / 2.0f * imgW;
-    int y1 = (pts.first[1] + 1.0f) / 2.0f * imgH;
-    int x2 = (pts.second[0] + 1.0f) / 2.0f * imgW;
-    int y2 = (pts.second[1] + 1.0f) / 2.0f * imgH;
+    reprojecPts.first = cv::Vec4f(p1.at<float>(0, 0), p1.at<float>(1, 0), p1.at<float>(2, 0), p1.at<float>(3, 0));
+    reprojecPts.second = cv::Vec4f(p2.at<float>(0, 0), p2.at<float>(1, 0), p2.at<float>(2, 0), p2.at<float>(3, 0));
+
+    reprojecPts.first  /= reprojecPts.first[2];  // make all z = 1
+    reprojecPts.second /= reprojecPts.second[2]; // make all z = 1
+
+    int x1 = int(imgW - (reprojecPts.first[0] + 1.0f) / 2.0f * imgW);
+    int y1 = int(imgH - (reprojecPts.first[1] + 1.0f) / 2.0f * imgH);
+
+    int x2 = int(imgW - (reprojecPts.second[0] + 1.0f) / 2.0f * imgW);
+    int y2 = int(imgH - (reprojecPts.second[1] + 1.0f) / 2.0f * imgH);
+
+//    cout << "x1: " << x1 << " y1: " << y1 << " x2: " << x2 << " y2: " << y2 << endl;
 
     return make_pair(cv::Point2f(x1, y1), cv::Point2f(x2, y2));
 }
 
-void drawMesh(cv::Mat img, vector<pair<cv::Vec3f, cv::Vec3f>> linesToDraw, cv::Mat projectionMatrix) {
+void drawMesh(cv::Mat img, vector<pair<cv::Vec3f, cv::Vec3f>> linesToDraw, cv::Mat projectionMatrix, cv::Mat cameraPose) {
     int flag = 0;
     int count = 0;
-    for(auto &pts:linesToDraw){
-        auto ptsScreen = projectToScreen(img.cols, img.rows, pts, projectionMatrix);
+    for(auto &ptsToDraw:linesToDraw) {
+        auto ptsScreen = projectToScreen(img.cols, img.rows, ptsToDraw, projectionMatrix, cameraPose);
         cv::line(img, ptsScreen.first, ptsScreen.second, cv::Scalar(0, 0, 255), 2);
     }
-    cout << "---" << endl;
 }
 
 
@@ -268,18 +292,23 @@ int main(int argc,char **argv){
 
     bool liveVideo = false;
     InputReader vcap;
-    cv::VideoWriter videoout;
-    string TheInputVideo = string(argv[1]);
-    string TheOutputVideo = cml("-outvideo");
-    if (TheInputVideo.find("live") != std::string::npos)
+
+    bool isExportingVideo = !cml("-outvideo").empty();
+    cv::VideoWriter outVideoWriter;
+    cv::VideoWriter outRawVideoWriter;
+    string inputVideo = string(argv[1]);
+    string outputVideoPath = cml("-outvideo") + ".mp4";
+    string outputRawVideoPath = cml("-outvideo") + "_raw.mp4";
+
+    if (inputVideo.find("live") != std::string::npos)
     {
         int vIdx = 0;
         // check if the :idx is here
         char cad[100];
-        if (TheInputVideo.find(":") != string::npos)
+        if (inputVideo.find(":") != string::npos)
         {
-            std::replace(TheInputVideo.begin(), TheInputVideo.end(), ':', ' ');
-            sscanf(TheInputVideo.c_str(), "%s %d", cad, &vIdx);
+            std::replace(inputVideo.begin(), inputVideo.end(), ':', ' ');
+            sscanf(inputVideo.c_str(), "%s %d", cad, &vIdx);
         }
         cout << "Opening camera index " << vIdx << endl;
         vcap.open(vIdx);
@@ -316,15 +345,13 @@ int main(int argc,char **argv){
             2.0f * fovX / camW,    0, ( camW - 2 * cX + 2 * x0) / camW,                         0,
             0,    2.0f * fovY / camH, (-camH + 2 * cY + 2 * y0) / camH,                         0,
             0,                  0,             (-zF - zN)/(zF - zN),  -2 * zF * zN / (zF - zN),
-            0,                  0,                               1,                         0
+            0,                  0,                               -1,                         0
     };
 
     projectionMatrix = cv::Mat(4, 4, CV_32F, perspectiveProjMatrixData);
 
     if( cml["-params"]) params.readFromYMLFile(cml("-params"));
     overwriteParamsByCommandLine(cml,params);
-
-    params.enableLoopClosure = false;
 
     auto TheMap = std::make_shared<tslam::Map>();
     //read the map from file?
@@ -335,8 +362,7 @@ int main(int argc,char **argv){
 
     Slam->setParams(TheMap, params, cml("-voc"));
 
-    if(!cml["-voc"]  && !cml["-map"])
-    {
+    if(!cml["-voc"]  && !cml["-map"]) {
         cerr<<"Warning!! No VOCABULARY INDICATED. KEYPOINT RELOCALIZATION IMPOSSIBLE WITHOUT A VOCABULARY FILE!!!!!"<<endl;
     }
 
@@ -370,13 +396,24 @@ int main(int argc,char **argv){
     vector<pair<cv::Vec3f, cv::Vec3f>> lines;
     if(cml["-drawMesh"]){
         loadPly(cml("-drawMesh"), vertices, faces, lines);
+
+//        auto l0 = lines[3];
+//        lines.clear();
+//        lines.emplace_back(l0);
+
+        // for test => only draw one line
+//        lines.clear();
+//        lines.emplace_back(
+//                make_pair(
+//                        cv::Vec3f(-4.3453914642333984e+01, -1.2498917579650879e+01, 3.6316684722900391e+01),
+//                        cv::Vec3f(-4.4349357604980469e+01, -1.2652835845947266e+01, 3.6734409332275391e+01)
+//                )
+//        );
     }
 
-    //read the first frame if not yet
-    while (in_image.empty())
-        vcap >> in_image;
+
     //need to resize input image?
-    cv::Size vsize(0,0);
+//    cv::Size vsize(0,0);
     //need undistortion
 
     bool undistort=cml["-undistort"];
@@ -400,17 +437,31 @@ int main(int argc,char **argv){
     bool finish = false;
     cv::Mat camPose_c2g;
     int vspeed = stoi(cml("-vspeed","1"));
+
+    vector<cv::Mat> rawFramesToWrite;
+    vector<cv::Mat> slamFramesToWrite;
+
+    //read the first frame if not yet
+    auto startCaptureTime = std::chrono::system_clock::now();
+    auto frameCaptureTime = startCaptureTime;
+    while (in_image.empty())
+        vcap >> in_image;
+
     while (!finish && !in_image.empty())  {
         try{
             FpsComplete.start();
 
+            if (isExportingVideo) {
+                rawFramesToWrite.emplace_back(in_image.clone());
+            }
+
             //image resize (if required)
-            in_image = resize(in_image, vsize);
+//            in_image = resize(in_image, vsize);
 
             //image undistortion (if required)
-           if(undistort ){
+           if(undistort){
                cv::remap(in_image,auxImage,undistMap[0],undistMap[1],cv::INTER_CUBIC);
-               in_image=auxImage;
+               in_image = auxImage;
                image_params.Distorsion.setTo(cv::Scalar::all(0));
            }
 
@@ -430,8 +481,7 @@ int main(int argc,char **argv){
             if(!cml["-noX"]) {
                 // draw mesh
                 if(cml["-drawMesh"] && !camPose_c2g.empty()){
-                    cout << "CamPose: " << camPose_c2g << endl << "---" << endl;
-                    drawMesh(in_image, lines, projectionMatrix * camPose_c2g);
+                    drawMesh(in_image, lines, projectionMatrix, camPose_c2g);
                 }
 
                 // draw tags & points
@@ -443,15 +493,16 @@ int main(int argc,char **argv){
 
             //save to output pose?
             if (toSaveCamPose) {
+                std::chrono::duration<double> elapsed_seconds = frameCaptureTime - startCaptureTime;
+                outCamPose << currentFrameIndex << " " << elapsed_seconds.count() << " ";
+
+                // pose[x, y, z] = (0, 0, 0) and quaternion[x, y, z, w]
                 if(camPose_c2g.empty()) {
-                    outCamPose << currentFrameIndex << " ";
-                    // pose[x, y, z] = (0, 0, 0) and quaternion[w, x, y, z] = (1, 0, 0, 0)
-                    outCamPose << "0 0 0 1 0 0 0" << endl;
+                    outCamPose << "0 0 0 0 0 0 0 1" << endl;
                 } else {
                     auto camPoseQuaternion = convertRotationMatrixToQuaternion(
                             camPose_c2g.rowRange(0, 3).colRange(0, 3));
                     outCamPose <<
-                               currentFrameIndex << " " <<
                                camPose_c2g.at<float>(0, 3) << " " <<
                                camPose_c2g.at<float>(1, 3) << " " <<
                                camPose_c2g.at<float>(2, 3) << " " <<
@@ -462,17 +513,9 @@ int main(int argc,char **argv){
                 }
             }
 
-            //save to output video?
-            if (!TheOutputVideo.empty()){
-                auto image=TheViewer.getImage();
-                if(!videoout.isOpened()){
-                    videoout.open(TheOutputVideo, CV_FOURCC('X', '2', '6', '4'), stof(cml("-fps","30")),image.size()  , image.channels()!=1);
-                    cout << "open!";
-                }
-
-                if(videoout.isOpened()) {
-                    videoout.write(image);
-                }
+            // save to output video?
+            if (isExportingVideo) {
+                slamFramesToWrite.emplace_back(TheViewer.getImage().clone());
             }
 
             //reset?
@@ -490,6 +533,9 @@ int main(int argc,char **argv){
             if(k=='s'){
                 TheMap->saveToFile(cml("-out","world") +".map");
             }
+            if(k=='c'){
+
+            }
             // if(k=='o'){
             //     TheMap->saveToFile(cml("-out","world") +".map");
             //     fullbaOptimization(*TheMap);
@@ -505,11 +551,14 @@ int main(int argc,char **argv){
                 cout << " draw=" << 1./TimerDraw.getAvrg();
                 cout << (camPose_c2g.empty()?" not tracked":" tracked") << endl;
             }
-        } catch (...) { //const std::exception &ex) {
+        } catch (...) {
+        // } catch (const std::exception &ex) {
+            // cerr << ex.what() << endl;
+
             errorFlag = true;
             cerr << "an error occurs" << endl;
 
-            if (cml["-isInstancing"]){
+            if (cml["-localizeOnly"]){
                 delete Slam;
                 Slam = new tslam::TSlam;
                 TheMap = std::make_shared<tslam::Map>();
@@ -523,33 +572,68 @@ int main(int argc,char **argv){
         }
         //read next
         vcap >> in_image;
-        if(!camPose_c2g.empty()){
-            for(int s=0;s<vspeed-1;s++)
-                vcap >> in_image;
-        }
+        frameCaptureTime = std::chrono::system_clock::now();
+
+//        if(!camPose_c2g.empty()){
+//            for(int s=0;s<vspeed-1;s++)
+//                vcap >> in_image;
+//        }
     }
 
     //release the video output if required
-    if(videoout.isOpened()) videoout.release();
+    if(isExportingVideo){
+        cout << "Exporting Video..." << endl;
+        bool errFlag = false;
+        if(slamFramesToWrite.empty() || rawFramesToWrite.empty()){
+            cerr << "No frames to write" << endl;
+            errFlag = true;
+        }
+        if(!errFlag){
+            outVideoWriter.open(
+                    outputVideoPath,
+                    CV_FOURCC('m', 'p', '4', 'v'),
+                    stof(cml("-fps","10")),
+                    slamFramesToWrite.at(0).size(), slamFramesToWrite.at(0).channels()!=1);
+            outRawVideoWriter.open(
+                    outputRawVideoPath,
+                    CV_FOURCC('m', 'p', '4', 'v'),
+                    stof(cml("-fps","10")),
+                    rawFramesToWrite.at(0).size(), rawFramesToWrite.at(0).channels()!=1);
+
+            for(auto image : slamFramesToWrite){
+                outVideoWriter.write(image);
+            }
+
+            for(auto image : rawFramesToWrite){
+                outRawVideoWriter.write(image);
+            }
+
+            outVideoWriter.release();
+            outRawVideoWriter.release();
+        }
+    }
+
 
     //close the output file
     if (toSaveCamPose) outCamPose.close();
 
     //optimize the map
-    // fullbaOptimization(*TheMap);
+    if(cml["-optimizeMap"]) TheMap->optimize();
 
     //save the output
     TheMap->saveToFile(cml("-out","world") +".map");
+    TheMap->saveToMarkerMap(cml("-out","world") +".yml");
+
     //save also the parameters finally employed
     params.saveToYMLFile("tslam_params_"+cml("-out","world") +".yml");
     if (debugLevel >=10){
         Slam->saveToFile("Slam->slm");
     }
-    TheMap->saveToMarkerMap("markermap.yml");
+
 
     if (errorFlag) {
         cout << "Program ends with an error." << endl;
     }
 }
 
-// /home/tpp/Downloads/long-beam-1-480p-2.mp4 /home/tpp/UCOSlam-IBOIS/test_result/calibration_pixel_480p.yml -voc /home/tpp/UCOSlam-IBOIS/orb.fbow -out test.map -map /home/tpp/UCOSlam-IBOIS/build/utils/long1-px-480p-combine-compressed.map -isInstancing
+// /home/tpp/Downloads/long-beam-1-480p-2.mp4 /home/tpp/UCOSlam-IBOIS/test_result/calibration_pixel_480p.yml -voc /home/tpp/UCOSlam-IBOIS/orb.fbow -out test.map -map /home/tpp/UCOSlam-IBOIS/build/utils/long1-px-480p-combine-compressed.map -localizeOnly

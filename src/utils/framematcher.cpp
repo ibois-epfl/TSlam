@@ -243,6 +243,8 @@ std::vector<cv::DMatch> FrameMatcher_Flann::matchEpipolar(const Frame &queryFram
     vector<cv::DMatch> matches;
     if ( distances.type()==CV_32S)
         distances.convertTo(distances,CV_32F);
+
+
     vector<float> scaleFactor2(queryFrame.scaleFactors);
     for(auto &v:scaleFactor2) v=v*v;
     for(int i = 0; i < indices.rows; i++) {
@@ -405,135 +407,130 @@ void FrameMatcher_BoW::setParams(const Frame &trainFrame, FrameMatcher::Mode tra
 
 
 std::vector<cv::DMatch> FrameMatcher_BoW::matchEpipolar(  const Frame &queryFrame, FrameMatcher::Mode queryMode,const cv::Mat &FQ2T){
+
+    assert(_trainKF!=nullptr);
+    const Frame &trainFrame=*_trainKF;
+    assert(!trainFrame.bowvector_level->empty());
+    assert(!queryFrame.bowvector_level->empty());
+
+
     std::vector<cv::DMatch>  matches;
-
-    if(queryFrame.bowvector_level->empty()){
-        return matches;
-    }
+    vector<float> scaleFactor2(queryFrame.scaleFactors);
+    for(auto &v:scaleFactor2) v=v*v;
 
 
-        assert(_trainKF!=nullptr);
-        const Frame &trainFrame=*_trainKF;
-        assert(!trainFrame.bowvector_level->empty());
-        assert(!queryFrame.bowvector_level->empty());
+    fbow::fBow2::const_iterator query_it, train_it;
+    const fbow::fBow2::const_iterator query_end = queryFrame.bowvector_level->end();
+    const fbow::fBow2::const_iterator train_end = trainFrame.bowvector_level->end();
+
+    query_it = queryFrame.bowvector_level->begin();
+    train_it = trainFrame.bowvector_level->begin();
+    cv::Mat F12=getFund12(_trainImageParams.CameraMatrix,queryFrame.imageParams.CameraMatrix,FQ2T);
 
 
-        vector<float> scaleFactor2(queryFrame.scaleFactors);
-        for(auto &v:scaleFactor2) v=v*v;
+    while(query_it != query_end && train_it != train_end)
+    {
 
-
-        fbow::fBow2::const_iterator query_it, train_it;
-        const fbow::fBow2::const_iterator query_end = queryFrame.bowvector_level->end();
-        const fbow::fBow2::const_iterator train_end = trainFrame.bowvector_level->end();
-
-        query_it = queryFrame.bowvector_level->begin();
-        train_it = trainFrame.bowvector_level->begin();
-        cv::Mat F12=getFund12(_trainImageParams.CameraMatrix,queryFrame.imageParams.CameraMatrix,FQ2T);
-
-
-        while(query_it != query_end && train_it != train_end)
+        if(query_it->first == train_it->first)//same word
         {
 
-            if(query_it->first == train_it->first)//same word
-            {
+            //check here the elements
+            const auto &query_vidx=query_it->second;//indices of the keypoints in the trainframe
+            const auto &train_vidx=train_it->second;//indices of the keypoints in the queryframe
+            if ( query_vidx.size()==0 || train_vidx.size()==0)continue;
+            //match query to train
 
-                //check here the elements
-                const auto &query_vidx=query_it->second;//indices of the keypoints in the trainframe
-                const auto &train_vidx=train_it->second;//indices of the keypoints in the queryframe
-                if ( query_vidx.size()==0 || train_vidx.size()==0)continue;
-                //match query to train
+            for(auto qidx:query_vidx){
+                //can be used?
+                if(!isUsed(queryFrame,qidx,queryMode)) continue;
 
-                for(auto qidx:query_vidx){
-                    //can be used?
-                    if(!isUsed(queryFrame,qidx,queryMode)) continue;
+                const auto &queryKp=queryFrame.und_kpts[qidx];
+                float bestDist=_minDescDist,bestDist2=std::numeric_limits<float>::max();
+                int64_t bestQuery=-1,bestTrain=-1;
+                int octaveBest2=-1;
 
-                    const auto &queryKp=queryFrame.und_kpts[qidx];
-                    float bestDist=_minDescDist,bestDist2=std::numeric_limits<float>::max();
-                    int64_t bestQuery=-1,bestTrain=-1;
-                    int octaveBest2=-1;
+                for(auto tidx:train_vidx){
+                    if(!isUsed(trainFrame,tidx,_trainMode)) continue;
+                    const auto &trainKp=trainFrame.und_kpts[tidx];
+                    if ( std::abs(trainKp.octave-queryKp.octave)>_maxOctaveDiff) continue;
 
-                    for(auto tidx:train_vidx){
-                        if(!isUsed(trainFrame,tidx,_trainMode)) continue;
-                        const auto &trainKp=trainFrame.und_kpts[tidx];
-                        if ( std::abs(trainKp.octave-queryKp.octave)>_maxOctaveDiff) continue;
+                    if(!F12.empty())
+                     if (epipolarLineSqDist(trainKp.pt ,queryKp.pt,F12 ) >=3.84*scaleFactor2[queryKp.octave])continue;
+                    //compute actual distace
+                    assert( tidx<trainFrame.desc.rows);
+                    assert( qidx<queryFrame.desc.rows);
+                    float dist=MapPoint::getDescDistance(trainFrame.desc.row(tidx),queryFrame.desc.row(qidx));
 
-                        if(!F12.empty())
-                        if (epipolarLineSqDist(trainKp.pt ,queryKp.pt,F12 ) >=3.84*scaleFactor2[queryKp.octave])continue;
-                        //compute actual distace
-                        assert( tidx<trainFrame.desc.rows);
-                        assert( qidx<queryFrame.desc.rows);
-                        float dist=MapPoint::getDescDistance(trainFrame.desc.row(tidx),queryFrame.desc.row(qidx));
-
-                        if (dist<bestDist){
-                            bestDist=dist;
-                            bestQuery=qidx;
-                            bestTrain=tidx;
-                        }
-                        else{
-                            bestDist2=dist;
-                            octaveBest2=trainKp.octave;
-                        }
+                    if (dist<bestDist){
+                        bestDist=dist;
+                        bestQuery=qidx;
+                        bestTrain=tidx;
                     }
-                    if ( bestQuery!=-1){
-                        if(!( octaveBest2==queryFrame.und_kpts[bestQuery].octave &&  bestDist > bestDist2*_nn_match_ratio  ))
-                        {
-                            cv::DMatch  match;
-                            match.queryIdx=bestQuery;
-                            match.trainIdx=bestTrain;
-                            match.distance=bestDist;
-                            matches.push_back(match);
-                        }
+                    else{
+                        bestDist2=dist;
+                        octaveBest2=trainKp.octave;
                     }
-
-
+                }
+                if ( bestQuery!=-1){
+                    if(!( octaveBest2==queryFrame.und_kpts[bestQuery].octave &&  bestDist > bestDist2*_nn_match_ratio  ))
+                    {
+                        cv::DMatch  match;
+                        match.queryIdx=bestQuery;
+                        match.trainIdx=bestTrain;
+                        match.distance=bestDist;
+                        matches.push_back(match);
+                    }
                 }
 
-                // move v1 and v2 forward
-                ++query_it;
-                ++train_it;
-            }
-            else if(query_it->first < train_it->first)// move v1 forward
-            {
-                while(query_it!=query_end&& query_it->first<train_it->first) ++query_it;
-            }
-            else// move v2 forward
 
-            {
-                while(train_it!=train_end && train_it->first<query_it->first) ++train_it;
             }
+
+            // move v1 and v2 forward
+            ++query_it;
+            ++train_it;
         }
-
-        filter_ambiguous_train(matches);
-
-
-
-        if(_checkOrientation)
+        else if(query_it->first < train_it->first)// move v1 forward
         {
-            vector<vector<int>> rotHist(30);
-            for(auto &v:rotHist) v.reserve(500);
-            const float factor = 1.0f/float(rotHist.size());
-            for(size_t midx=0;midx<matches.size();midx++){
-                const auto &match=matches[midx];
-                float rot =trainFrame.und_kpts[match.trainIdx].angle-queryFrame.und_kpts[match.queryIdx].angle;
-                if(rot<0.0)
-                    rot+=360.0f;
-                size_t bin = round(rot*factor);
-                if(bin==rotHist.size())
-                    bin=0;
-                assert(bin>=0 && bin<rotHist.size());
-                rotHist[bin].push_back(midx);
-            }
-
-            int ind1=-1,ind2=-1,ind3=-1;
-            tslam_FM___computeThreeMaxima(rotHist,ind1,ind2,ind3);
-            for(int i=0; i<int(rotHist.size()); i++)
-            {
-                if(i==ind1 || i==ind2 || i==ind3) continue;
-                for(auto midx : rotHist[i] )
-                    matches[midx].queryIdx=matches[midx].trainIdx=-1;//mark as unused
-            }
-            remove_unused_matches(matches);
+            while(query_it!=query_end&& query_it->first<train_it->first) ++query_it;
         }
+        else// move v2 forward
+
+        {
+            while(train_it!=train_end && train_it->first<query_it->first) ++train_it;
+        }
+    }
+
+    filter_ambiguous_train(matches);
+
+
+
+    if(_checkOrientation)
+    {
+        vector<vector<int>> rotHist(30);
+        for(auto &v:rotHist) v.reserve(500);
+        const float factor = 1.0f/float(rotHist.size());
+        for(size_t midx=0;midx<matches.size();midx++){
+            const auto &match=matches[midx];
+            float rot =trainFrame.und_kpts[match.trainIdx].angle-queryFrame.und_kpts[match.queryIdx].angle;
+            if(rot<0.0)
+                rot+=360.0f;
+            size_t bin = round(rot*factor);
+            if(bin==rotHist.size())
+                bin=0;
+            assert(bin>=0 && bin<rotHist.size());
+            rotHist[bin].push_back(midx);
+        }
+
+        int ind1=-1,ind2=-1,ind3=-1;
+        tslam_FM___computeThreeMaxima(rotHist,ind1,ind2,ind3);
+        for(int i=0; i<int(rotHist.size()); i++)
+        {
+            if(i==ind1 || i==ind2 || i==ind3) continue;
+            for(auto midx : rotHist[i] )
+                matches[midx].queryIdx=matches[midx].trainIdx=-1;//mark as unused
+        }
+        remove_unused_matches(matches);
+    }
 
     return matches;
 
@@ -590,11 +587,6 @@ std::vector<cv::DMatch> FrameMatcher::match(const Frame &queryFrame, Mode mode )
 std::vector<cv::DMatch> FrameMatcher::matchEpipolar(const Frame &queryFrame, Mode mode, const cv::Mat &FQ2T ){
     assert(_impl);
     return _impl->matchEpipolar(queryFrame,mode,FQ2T);
-}
-
-cv::Mat FrameMatcher::getFund12(const cv::Mat &trainCamMatrix, cv::Mat queryCamMatrix, const cv::Mat &FQ2T ){
-    assert(_impl);
-    return _impl->getFund12(trainCamMatrix, queryCamMatrix, FQ2T);
 }
 
 

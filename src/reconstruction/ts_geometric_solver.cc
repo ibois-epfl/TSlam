@@ -1,6 +1,8 @@
 #include "ts_geometric_solver.hh"
 
-#include<open3d/Open3D.h>
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
+    #include<open3d/Open3D.h>
+#endif
 #include <stdexcept>
 #include <algorithm>
 #include <math.h>
@@ -26,6 +28,7 @@ namespace tslam::Reconstruction
         this->rCreatePolysurface();
         this->rCreateMesh();
 
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
         this->visualize(this->m_ShowVisualizer,
                         this->m_DrawTags,
                         this->m_DrawTagNormals,
@@ -34,8 +37,10 @@ namespace tslam::Reconstruction
                         this->m_DrawSplittingSegments,
                         this->m_DrawSelectedFace,
                         this->m_DrawFinalMesh);
+#endif
     }
 
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
     void TSGeometricSolver::visualize(bool showVisualizer,
                                       bool drawTags,
                                       bool drawTagNormals,
@@ -68,7 +73,16 @@ namespace tslam::Reconstruction
                 auto& stripe = this->m_Timber.getTSRTagsStripes()[j];
                 for (auto& tag : *stripe)
                 {
-                    open3d::geometry::TriangleMesh tagBase = tag.getOpen3dMesh();
+                    open3d::geometry::TriangleMesh tagBase;
+                    tagBase.vertices_.push_back(tag.getCornerA());
+                    tagBase.vertices_.push_back(tag.getCornerB());
+                    tagBase.vertices_.push_back(tag.getCornerC());
+                    tagBase.triangles_.push_back(Eigen::Vector3i(0, 1, 2));
+                    tagBase.vertices_.push_back(tag.getCornerC());
+                    tagBase.vertices_.push_back(tag.getCornerD());
+                    tagBase.vertices_.push_back(tag.getCornerA());
+                    tagBase.triangles_.push_back(Eigen::Vector3i(3, 4, 5));
+
                     auto planeTagsLineset1 = open3d::geometry::LineSet::CreateFromTriangleMesh(tagBase);
                     planeTagsLineset1->PaintUniformColor(clr);
 
@@ -90,7 +104,18 @@ namespace tslam::Reconstruction
         }
         
         if (drawAabb)
+        {
             std::shared_ptr<open3d::geometry::LineSet> aabbLineset = std::make_shared<open3d::geometry::LineSet>();
+
+            Eigen::Vector3d p1 = this->m_Timber.getAABBMin();
+            Eigen::Vector3d p2 = this->m_Timber.getAABBMax();
+
+            aabbLineset->points_.push_back(p1);
+            aabbLineset->points_.push_back(p2);
+            aabbLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+
+            vis->AddGeometry(aabbLineset);
+        }
 
         if (drawIntersectedPoly)
         {
@@ -150,29 +175,31 @@ namespace tslam::Reconstruction
                     segLineset->PaintUniformColor(color);
                     vis->AddGeometry(segLineset);
                 }
+
+                // draw normal of the face
+                std::shared_ptr<open3d::geometry::LineSet> crossLineset = std::make_shared<open3d::geometry::LineSet>();
+                crossLineset->points_.push_back(pg.getCenter());
+                crossLineset->points_.push_back(pg.getCenter() + pg.getNormal() * 1.0);
+                crossLineset->lines_.push_back(Eigen::Vector2i(0, 1));
+                crossLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+                crossLineset->colors_.push_back(Eigen::Vector3d(0, 1, 0));
+                crossLineset->PaintUniformColor(color);
+                vis->AddGeometry(crossLineset);
             }
         }
         
         if (drawFinalMesh)
         {
-            std::shared_ptr<open3d::geometry::TriangleMesh> mesh = std::make_shared<open3d::geometry::TriangleMesh>(this->m_MeshOut);
+            std::shared_ptr<open3d::geometry::TriangleMesh> mesh = std::make_shared<open3d::geometry::TriangleMesh>(this->m_MeshOutO3d);
             mesh->PaintUniformColor(Eigen::Vector3d(0.5, 0.5, 0.5));
             vis->AddGeometry(mesh);
-
-            std::shared_ptr<open3d::geometry::PointCloud> pcdMeshCenters = std::make_shared<open3d::geometry::PointCloud>();
-            for (auto& tri : mesh->triangles_)
-            {
-                Eigen::Vector3d ctr = (mesh->vertices_[tri(0)] + mesh->vertices_[tri(1)] + mesh->vertices_[tri(2)]) / 3.;
-                pcdMeshCenters->points_.push_back(ctr);
-            }
-            pcdMeshCenters->PaintUniformColor(Eigen::Vector3d(1., 0., 0.));
-            vis->AddGeometry(pcdMeshCenters);
         }
 
         vis->Run();
         vis->Close();
         vis->DestroyVisualizerWindow();
     }
+#endif
 
     void TSGeometricSolver::rDetectFacesStripes()
     {
@@ -285,10 +312,11 @@ namespace tslam::Reconstruction
             const TSPlane& meanStripePlane = this->m_Timber.getTSRTagsStripes()[i]->getMeanPlane();
             
             TSPlane::plane2AABBSegmentIntersect(meanStripePlane,
-                                                this->m_Timber.getAABB().min_bound_,
-                                                this->m_Timber.getAABB().max_bound_,
+                                                this->m_Timber.getAABBMin(),
+                                                this->m_Timber.getAABBMax(),
                                                 outPtsPtr,
                                                 outPtsCount);
+            
             // b. save the result into a polygon
             planeIntersections->reserve(outPtsCount);
             planeIntersections->clear();
@@ -339,7 +367,7 @@ namespace tslam::Reconstruction
         this->rSelectFacePolygons(this->m_SplitPolygons,
                                   this->m_FacePolygons,
                                   this->m_MaxPolyTagDist,
-                                  this->m_MaxPlnDist2Merge
+                                  this->m_MaxPlnAngle2Merge
                                   );
     }
     void TSGeometricSolver::rIntersectPolygons(std::vector<TSPolygon> &polygons,
@@ -436,7 +464,6 @@ namespace tslam::Reconstruction
         );
         this->m_TasselatorPtr->tassellate();
     }
-    
     void TSGeometricSolver::rSelectFacePolygons(std::vector<TSPolygon>& polygons,
                                                 std::vector<TSPolygon>& facePolygons,
                                                 double tolerance,
@@ -453,27 +480,28 @@ namespace tslam::Reconstruction
             TSPlane& polyPln = polygons[i].getLinkedPlane();
             Eigen::Vector3d& polyPlnNormal = polyPln.Normal;
 
-            // (a) find an adaptive threshold based on the median distance to consider a point belonging to the plane
-            std::vector<double> distances;
+            // project points to the plane
+            std::vector<Eigen::Vector3d> tagCentersProj;
             for (auto& ctr : tagCenters)
-                distances.push_back(polyPln.distance(ctr));
-            std::sort(distances.begin(), distances.end());
-            double median = distances[distances.size() / 2];
-            double thresholdDist = tolerance * median + tolerance;
+                tagCentersProj.push_back(polyPln.projectPoint(ctr));
+            
 
+            uint tagCounter = 0;
             for (uint j = 0; j < tagCenters.size(); j++)
             {
-                if (polyPln.distance(tagCenters[j]) < thresholdDist)  // ori: tolerance
+                // (a) check the distance between the tag's center and the plane
+                double dist = polyPln.distance(tagCenters[j]);
+                if (dist < tolerance)
                 {
                     // (b) check the angle between the normal of the point and the plane's normal
                     double angle = TSVector::angleBetweenVectors(polyPlnNormal, 
                                                                  this->m_Timber.getPlaneTags()[j].getNormal().normalized());
-
-                    if (angle < (angleToleranceDeg))
+                    if (angle < angleToleranceDeg)
                     {
                         // (c) check if the point is inside the polygon
                         Eigen::Vector3d ctrProj = polyPln.projectPoint(tagCenters[j]);
-                        if (polygons[i].isPointInsidePolygon(ctrProj, tolerance))
+                        bool isInside = polygons[i].isPointInsidePolygon(ctrProj);
+                        if (isInside)
                         {
                             facePolygons.push_back(polygons[i]);
                             break;
@@ -486,19 +514,18 @@ namespace tslam::Reconstruction
 
     void TSGeometricSolver::rCreateMesh()
     {
-        this->rJoinPolygons(this->m_FacePolygons, this->m_MeshOut);
+        this->rJoinPolygons(this->m_FacePolygons, this->m_MeshOutCGAL);
     }
     void TSGeometricSolver::rJoinPolygons(std::vector<TSPolygon>& facePolygons,
-                                          open3d::geometry::TriangleMesh& mesh)
+                                          Mesh_srf& mesh)
     {
-        for (auto& poly : this->m_FacePolygons)
-        {
-            mesh += poly.cvtPoly2O3dMesh();
-            mesh.MergeCloseVertices(0.001);
-            mesh.RemoveDuplicatedTriangles();
-            mesh.RemoveDuplicatedVertices();
-            mesh.RemoveNonManifoldEdges();
-            mesh.RemoveDegenerateTriangles();
-        }
+        TSMeshHolesFiller::cvtPolygon2CGALMesh(facePolygons, mesh);
+
+        TSMeshHolesFiller::cleanOutCGALMesh(mesh);
+        TSMeshHolesFiller::fillHoles(mesh);
+
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
+        TSMeshHolesFiller::cvtCGAL2O3dMesh(mesh, this->m_MeshOutO3d);
+#endif
     }
 }

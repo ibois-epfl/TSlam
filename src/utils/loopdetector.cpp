@@ -1,7 +1,25 @@
-#include "utils/loopdetector.h"
+/**
+* This file is part of  TSLAM
+*
+* Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
+*
+* TSLAM is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* TSLAM is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+*/
+#include "loopdetector.h"
 #include "optimization/graphoptsim3.h"
 #include "basictypes/misc.h"
-#include "utils/system.h"
+#include "system.h"
 #include "basictypes/timers.h"
 #include "optimization/pnpsolver.h"
 #include "basictypes/io_utils.h"
@@ -9,2339 +27,538 @@
 #include "utils/framematcher.h"
 #include "basictypes/osadapter.h"
 #include <xflann/xflann.h>
+namespace  tslam {
 
- namespace
 
-     tslam {
 
- void
-LoopDetector ::
- setParams (
+void LoopDetector::setParams(std::shared_ptr<Map> map){
+    TheMap=map;
+}
 
-    std ::
+LoopDetector::LoopClosureInfo  LoopDetector::detectLoopFromMarkers(Frame &frame, int32_t curRefKf){
+    assert(TheMap);
+    __TSLAM_ADDTIMER__
 
-    shared_ptr <
-       Map >
 
-        _11093822290287 )
-   {
-
-    TheMap =
-      _11093822290287 ;
-
- }
-LoopDetector ::
-
-LoopClosureInfo LoopDetector :: detectLoopFromMarkers (
-
-      Frame &frame, int32_t _16940374156599401875 )
-    {
-
-    vector <
-    LoopClosureInfo >
-
-   _16706088932759058680 ;
-
-     if
-
-     (
-
- TheMap ->
-    map_markers.size ()
-
-      >
-
-     0 &&
-
-     frame.markers.size ()
-
-        !=
-  0 )
-  {
-
-        _16706088932759058680 =
-    _15750007572696103223 (
-       frame,_16940374156599401875 )
-        ;
-
-     }
-
-     if
-       (
-
-     _16706088932759058680.size ()
-
-      ==
-
-     0 )
-
-   return
-       LoopDetector ::
-
-     LoopClosureInfo ()
- ;
-
-     for(
-   auto &_175247760320:_16706088932759058680 )
-
-      _6767859416531794787 (
-
-    frame,_175247760320 )
-
-          ;
-
-     int
-
-  _12757532744592678648 =
-0 ;
-
-     if
-
-     (
-
-         _16706088932759058680.size ()
-
-     >
-
-1 )
-
-   {
-
-         double
-
-     _706246330973514 =
-
-    _16495135671838418327 ( _16706088932759058680 [
-
-0 ]
-
-  )
-
-      ;
-         double
-
-   _706246330973515 =
-   _16495135671838418327 (
-    _16706088932759058680 [
-
-1 ]
-
-  )
-
-     ;
-
-         if
-      (
-
- _706246330973515 <
-
- _706246330973514 )
-  _12757532744592678648 =
-
-         1 ;
-
-     }
-
-     auto
-
-   &_11461848853397085657 =
-
-    _16706088932759058680 [
- _12757532744592678648 ]
-
-        ;
-
-    _11461848853397085657.map_matches =
-
-    TheMap ->
-       matchFrameToMapPoints (
-  TheMap ->
-
-         TheKpGraph.getNeighborsV (
-
-_11461848853397085657.matchingFrameIdx,true )
-
-     ,
-                                                               frame, _11461848853397085657.expectedPos ,System ::
-
-   getParams ()
-
-  .maxDescDistance*1.5, 2.5,false,true )
-
-      ;
-     return
-
-     _11461848853397085657 ;
-
- }
-
-LoopDetector ::
-
- LoopClosureInfo LoopDetector ::detectLoopFromKeyPoints (Frame &frame, int32_t _16940374156599401875 ) {
-     vector <
-
-  LoopClosureInfo >
-
-    _16706088932759058680 ;
-
-     if
-
- (
-
-     frame.ids.size ()
-
-   !=
-
-    0 ) {
-
-        _16706088932759058680 =
-
- _8671179296205241382 ( frame,_16940374156599401875 );
-     }
-
-     if
-
-         (
-    _16706088932759058680.size ()
-
-      ==
-
-0 )
-
-   return
-
-    LoopDetector ::
-
- LoopClosureInfo ()
-
-          ;
-
-    else {
-
-        _6767859416531794787 (
-frame,_16706088932759058680 [
-
- 0 ]
-
-     )
-
-    ;
-
-          return
-
-     _16706088932759058680 [
-
-     0 ]
-    ;
-
-     }
- }
-
-vector <
-
-     LoopDetector :: LoopClosureInfo >
-
-   LoopDetector ::
-       _15750007572696103223 (
-
- Frame & frame,int64_t _10707402390114315114 )
-
-  {
-
-     auto _12199283336148296505 = [
-
-     & ]
-
-      (
-
-  const vector <
-
- uint32_t >
-
-    &_2654435887 )
-
-  {
-
-         int
-
-     _2654435884 =
-
-   0 ;
-
-         for(
-
-       auto _175247760135:_2654435887 )
-
-             if(
-
-  TheMap ->
-
-map_markers [
-       _175247760135 ] .pose_g2m.isValid ()
-
-      )
-
-  _2654435884 ++
-       ;
-
-         return
-
-     _2654435884 ;
-
-     }
-      ;
-
-    LoopClosureInfo _11093822343890 ;
-
-    std ::
-
-set <
-
-    uint32_t >
-
- _6807155638352842943 =
-
-   TheMap ->
-     getNeighborKeyFrames (
-
-      _10707402390114315114,true )
-
-      ;
-
-    std ::
-
-  set < uint32_t >
-    _2244535309377015454 ;
-     for(
-
-   auto _2654435879:_6807155638352842943 )
-
-         for(
-
-   auto _markerObservation:TheMap -> keyframes [
-   _2654435879 ]
-
-.markers )
-
-            _2244535309377015454.insert (
-
- _markerObservation.id )
-
-     ;
-
-    vector <
-
-  uint32_t >
-
- _2655203937566607062 ;
-
-     for(
-
-size_t _175247759373 = 0 ;
-
-  _175247759373 <
-
-      frame.markers.size ()
-
-  ;
-
-      _175247759373 ++
-
-     )
-
-    {
-
-         auto
-   &_3005399795337363304 =
-
-     frame.markers [
-
-    _175247759373 ]
-
-  ;
-
-          if
-
-  (
-     _2244535309377015454.count ( _3005399795337363304.id )
-
-         !=
-
-  0 )
-
-       continue ;
-
-         auto
-
- _11093822290813 =
-
- TheMap ->
-
-       map_markers.find (
-
- _3005399795337363304.id )
-
-  ;
-
-          if(
-
-_11093822290813 !=
-    TheMap ->
-
-   map_markers.end ()
-
- )
- {
-
-                _2655203937566607062.push_back (
-
-  _3005399795337363304.id )
-
- ;
-
-             }
-
-     }
-
-     if
-     (
-
-    _12199283336148296505 (
-
-      _2655203937566607062 )
-      == 0 ) return
-
-       {
-
-  }
-
-    ;
-    vector <
-
-  se3 >
-
- _15853982152702744598 ;
-
-    se3 _14756128340231943706 =
-
-  TheMap ->
-
-        getBestPoseFromValidMarkers (
-
-frame,_2655203937566607062,4 )
-
-    ;
-
-     if
-    (
-
-          !
-
-     _14756128340231943706.isValid ()
-
-          &&
-
-   _12199283336148296505 (
-
-    _2655203937566607062 )
-        <
-
-    3 )
-        {
-
-         for(
-
-auto _markerObservation:_2655203937566607062 )
-
- {
-
-             auto
-
- _175247760151 =
-
-std :: find_if (
-
-     frame.markers.begin () ,frame.markers.end ()
-
-, [
-
-    & ]
-
- (
-  const tslam ::
-
-    MarkerObservation &_175247759383 )
-
-   {
-
- return _175247759383.id ==
-       _markerObservation ;
-
-  }
-
-     ) ;
-
-             if(
-
- _175247760151 !=
-
-  frame.markers.end ()
-
-    )
-
-                frame.markers.erase (
-
-_175247760151 )
-
-      ;
-
-         }
-
-         return
-      {
-  }
-
- ;
-
-     }
-
-     if
-
-     (
-
-    _14756128340231943706.isValid ()
-
-          )
-
-        _15853982152702744598.push_back (
-     _14756128340231943706 )
-
- ;
-
-    else {
-
-         int
-
-  _46082574582412711 =
-
-         0 ;
-
-         for(
-
-     size_t _2654435874 =
-
-  1 ;
-
-    _2654435874 <
-
- _2655203937566607062.size ()
-
-  ;
-
- _2654435874 ++
-
-  )
-
-             if (
-
-      frame.getMarkerPoseIPPE (
-    _2655203937566607062 [
-
- _2654435874 ]
-
-      )
-
-    .err_ratio >
-
-  frame.getMarkerPoseIPPE (
-
-   _2655203937566607062 [
-
-    _46082574582412711 ]
-
-     )
-
- .err_ratio )
-
-                _46082574582412711 =
-
- _2654435874 ;
-
-         int
-       _6806984971934914252 =
-    _2655203937566607062 [
-
- _46082574582412711 ]
-
-     ;
-
-        cv ::
-       Mat _706246308705962 =
-
-     TheMap ->
-    map_markers [
-
-     _6806984971934914252 ]
-
-     .pose_g2m.inv ()
-    ;
-
-        se3 _46082575775659958 =
-
-       se3 (
-
- frame.getMarkerPoseIPPE (
-
- _6806984971934914252 )
-
-        .sols [
-
-   0 ]
-
-  * _706246308705962 )
-
- ;
-        se3 _46082575775659953 =
-
-        se3 (
-
-      frame.getMarkerPoseIPPE (
-
-        _6806984971934914252 )
-
-  .sols [
-
-   1 ]
-
- * _706246308705962 )
-
-          ;
-
-        _15853982152702744598.push_back (
-   _46082575775659958 )
-
-        ;
-
-        _15853982152702744598.push_back (
-
- _46082575775659953 )
-
-     ;
-
-     }
-      uint32_t
-
-  _10881656904441569450 =
-
-   std ::
-
-         numeric_limits < uint32_t >
-
-      ::
-
-  max ()
-
-  ,_1688034558339125662 =
-
-std ::
-    numeric_limits <
-uint32_t >
-
-  ::
-
-    max ()
-
-    ;
-
-      for(
-
-   auto _markerObservation:_2655203937566607062 )
-
-      {
-
-          for(
-
- auto _15593881797448880805:TheMap ->
-
-    map_markers [
-
-    _markerObservation ]
-
-    .frames )
-
- {
-
-              if
-        (
-
-   _10881656904441569450 >
-
-     TheMap ->
-
- keyframes [
-
-    _15593881797448880805 ]
-
-   .fseq_idx ) {
-
-                 _10881656904441569450 =
-
-TheMap ->
-
-  keyframes [ _15593881797448880805 ]
-
-    .fseq_idx ;
-
-                 _1688034558339125662 = _15593881797448880805 ;
-
-              }
-
-          }
-
-      }
-
-vector <
-  LoopClosureInfo >
-
-  _706246342986177 ;
-
- for(
-
-    size_t _2654435874 =
-
-  0 ;
-
-    _2654435874 <
-   _15853982152702744598.size ()
-     ;
-
- _2654435874 ++
-    )
-
-   {
-    LoopClosureInfo _11093822343890 ;
-    _11093822343890.curRefFrame = _10707402390114315114 ;
-
-    _11093822343890.expectedPos =
-
-  _15853982152702744598 [ _2654435874 ]
-
-     ;
-
-    _11093822343890.matchingFrameIdx =
-
- _1688034558339125662 ;
-
-    _706246342986177.push_back (
-
-       _11093822343890 )
-  ;
-
- }
-
-     return
- _706246342986177 ;
-
- }
-
- void
-
-  LoopDetector ::
-
-        _6767859416531794787 (
-
-  Frame &frame, LoopClosureInfo &_10148777732430291359 )
-
-     {
-
-    CovisGraph &_16937374370235587530 =
-
-  TheMap ->
-
-    TheKpGraph ;
-
-      if
-
-        (
-
-     frame.idx ==
-
-std ::
-
-    numeric_limits <
-
-        uint32_t >
-
-       ::
- max ()
-   )
-
-        frame.idx = TheMap ->
-
-    getNextFrameIndex ()
-
-  ;
-
-    vector <
-
-pair <
-
-   uint32_t,uint32_t >
-
-      >
-
-        _46082543208105790 =
- _16937374370235587530.getAllEdges ()
-
-    ;
-
-     if
-
- (
-
-  !
-
-        _16937374370235587530.isEdge (
-
-    _10148777732430291359.curRefFrame,frame.idx )
-
-     )
-
-    ;
-
-    _46082543208105790.push_back (
-  {
-
-  _10148777732430291359.curRefFrame,frame.idx }
-
-   )
-
- ;
-
-     auto
-
-&_5606711953216325711 =
-
-_10148777732430291359.optimPoses ;
-
-    std :: map <
-    uint64_t,float >
-
-     _4835184743873567059 ;
-
-     float
-
-   _1522768810319552178 =
-
-  0 ;
-
-     for(
-
- auto _2654435870:_46082543208105790 )
-
-       {
-
-         if
-
-      (
-
-    _5606711953216325711.count (
-  _2654435870.first )
-
-      ==
-
-    0 &&
-
-         TheMap ->
-
-       keyframes.is (
-
- _2654435870.first )
-
-    )
-
-            _5606711953216325711 [
-
-         _2654435870.first ]
-   =
-
-TheMap ->
-
-     keyframes [
-
-  _2654435870.first ]
-
-   .pose_f2g ;
-
-         if
-
-   ( _5606711953216325711.count (
-
-  _2654435870.second )
-
-    ==
-
-0 && TheMap ->
-
-    keyframes.is (
-
-       _2654435870.second )
-
-  )_5606711953216325711 [ _2654435870.second ] = TheMap -> keyframes [ _2654435870.second ].pose_f2g ;
-
-      float _6807153911819033284 = 0 ;
-
-      if ( TheMap -> TheKpGraph.isEdge ( _2654435870.first,_2654435870.second ) )
-        _6807153911819033284 = TheMap -> TheKpGraph.getEdge ( _2654435870.first,_2654435870.second ) ;
-      _1522768810319552178 = std :: max ( _6807153911819033284,_1522768810319552178 );
-
-      _4835184743873567059 [ CovisGraph :: join ( _2654435870.first,_2654435870.second ) ] = _6807153911819033284 ; 
+    vector<LoopClosureInfo> loopClosurePossibilities;
+    //first, try with markers
+    if (TheMap->map_markers.size()>0 && frame.markers.size()!=0){
+        loopClosurePossibilities= detectLoopClosure_Markers(frame,curRefKf);
+        __TSLAM_TIMER_EVENT__("detectLoopClosure_Markers");
     }
 
-    if ( !_16937374370235587530.isEdge ( frame.idx,_10148777732430291359.matchingFrameIdx ) )
-    {
-      _46082543208105790.push_back ( { frame.idx,_10148777732430291359.matchingFrameIdx } ) ;
-      _4835184743873567059 [ CovisGraph :: join ( frame.idx,_10148777732430291359.matchingFrameIdx ) ] = _1522768810319552178 ;
+    if (loopClosurePossibilities.size()==0) return  LoopDetector::LoopClosureInfo();
+
+    for(auto &lc:loopClosurePossibilities) solve(frame,lc);
+
+    int best_solution=0;
+    if (loopClosurePossibilities.size()>1){
+        double err1=testCorrection(loopClosurePossibilities[0]);
+        double err2=testCorrection(loopClosurePossibilities[1]);
+        if (err2<err1) best_solution=1;
+
     }
+    __TSLAM_TIMER_EVENT__("test solutions");
 
-    _5606711953216325711 [ frame.idx ] = frame.pose_f2g ;
+    //now, lets find keypoint matches between the sides of the loop
 
-    loopClosurePathOptimizationg2o ( _46082543208105790,frame.idx,_10148777732430291359.matchingFrameIdx,_10148777732430291359.expectedPos, _5606711953216325711,false );
 
- }
+    auto &LoopSolution=loopClosurePossibilities[best_solution];
+    LoopSolution.map_matches = TheMap->matchFrameToMapPoints(TheMap->TheKpGraph.getNeighborsV(LoopSolution.matchingFrameIdx,true),
+                                                               frame,  LoopSolution.expectedPos ,System::getParams().maxDescDistance*1.5, 2.5,false,true);
 
- void
-
-      LoopDetector ::
-      correctMap (
-
-     const LoopClosureInfo &_46082543426142246 )
-  {
-
-     auto
-
-  _1524145530871351014 =
-
-    [
-
-     ]
-
-  (
-
- const cv ::
-
-       Mat &_706246338866931 )
-
-    {
-
-         float
-
-       _175247759755 =
-
-   cv ::
-
-  norm (
-
-          _706246338866931.col ( 0 )
-
- )
-        ;
-
-        cv ::
-Mat _175247761732 = _706246338866931 ;
-
-        cv ::
-    Mat _2654435851 =
-  _706246338866931.rowRange (
- 0,3 )
-
-.colRange (
-
-   0,3 )
-
-    ;
-
-        _2654435851 =
-
- (
-
-   1./_175247759755 )
-
- *_2654435851 ;
-
-         return
-
-   _175247761732 ;
-
-     }
-
-      ;
-
-     for(
-
-    auto &_16119328343212373368:TheMap ->
-
-    map_markers )
-
-          {
-
-        Marker &_3005399795337363304 =
-
- _16119328343212373368.second ;
-
-         if
-
-  (
-
-      !
-
-    _3005399795337363304.pose_g2m.isValid ()
-
-         )
-     continue ;
-
-         bool
-       _2477911609060771483 =
-
-     false ;
-
-         for(
-
- auto _706246330143240:_3005399795337363304.frames )
-
-    {
-
-             if(
-
-    _46082543426142246.optimPoses.count (
- _706246330143240 )
-
-     ==
-
- 0 )
-
-continue ;
-
-            const Frame &frame =
-   TheMap ->
-
-    keyframes [
-
-       _706246330143240 ]
-    ;
-
-            cv ::
-
-    Mat _11093822386652 =
-       frame.pose_f2g* _3005399795337363304.pose_g2m ;
-
-             auto _3005399769884158829 =
-
-    _1524145530871351014 (
- _46082543426142246.optimPoses.at (
-
-   _706246330143240 )
-
-  )
-
-  ;
-
-            _3005399795337363304.pose_g2m =
-
-          _3005399769884158829.inv ()
-
-     * _11093822386652 ;
-
-            _2477911609060771483 =
-
- true ;
-
-            break ;
-
-         }
-
-         if
-
-      (
-
-     !
-       _2477911609060771483 )
-
-    throw std :: runtime_error (
-      string (
-      __PRETTY_FUNCTION__ )
-
- +"\x49\x6e\x74\x65\x72\x6e\x61\x6c\x20\x65\x72\x72\x6f\x72\x2e\x20\x43\x6f\x75\x6c\x64\x20\x6e\x6f\x74\x20\x63\x6f\x72\x72\x65\x63\x74\x20\x6d\x61\x72\x6b\x65\x72" )
-
-      ;
-
-     }
-
-     for(
-
-   auto &_175247759380:TheMap ->
-
-    map_points )
- {
-
-            Frame& _175247760268 =
- TheMap ->
-
-     keyframes [
-  _175247759380.getObservingFrames ()
-     .front ()
-
-    .first ]
-
-   ;
-
-            cv ::
-
-  Point3f _11093822296219 =
-
-   _175247760268.pose_f2g*_175247759380.getCoordinates () ;
-
-            cv ::
-
-       Mat _706246338866931 =
-
-     _46082543426142246.optimPoses.at (
-
- _175247760268.idx )
-
-      ;
-
-             float
-
-    _175247759755 =
-
-    cv ::
-
-norm (
-
-    _706246338866931.col (
-
-0 )
-
- )
-
-  ;
-
-            cv ::
-
-     Mat _2654435851 =
-
-_706246338866931.rowRange ( 0,3 )
-
-.colRange (
-
- 0,3 ) ;
-
-            _2654435851 *=
-
-    (
-
-1./_175247759755 )
-
-       ;
-
-            cv :: Mat _46082576298233916 =
-
-      _706246338866931.inv ()
-  ;
-
-            _2654435851 =
-
-       _46082576298233916.rowRange (
-
-0,3 )
-  .colRange (
-
-0,3 )
-
-    ;
-
-            _2654435851 *=
-
-  (
-
-1./_175247759755 )
-
-  ;
-
-            _175247759380.setCoordinates ( _46082576298233916*_11093822296219 )
-
- ;
-
-     }
-
-     for(
-
-const auto _175247759515:_46082543426142246.optimPoses )
-
-   {
-
-         if
- (
-
-   TheMap -> keyframes.count (
-
- _175247759515.first )
-
- )
-   {
-
-            TheMap ->
-
-     keyframes [
-      _175247759515.first ]
-
-.pose_f2g =
-
-_1524145530871351014 (
-
-  _175247759515.second )
-
- ;
-
-         }
-
-     }
-
- }
-
- double
-
-LoopDetector ::
-
-   _16495135671838418327 (
-
-        const LoopClosureInfo &_46082543426142246 )
-
-     {
-
-    std ::
-
-    map <
- uint32_t,se3 >
-
-      _16750267944735343466 ;
-
-    std ::
-
-  map <
-
-   uint32_t,cv ::
-
-Point3f > _2772135658178669155 ;
-
-    std ::
-
-    map <
-
-   uint32_t,Se3Transform >
-
-  _11822840474894279984 ;
-     for(
-
-     auto _markerObservation:TheMap ->
-
-   map_markers )
-
-        _16750267944735343466 [
-
-     _markerObservation.first ]
-     =
-
-  _markerObservation.second.pose_g2m ;
-
-     for(
-       auto _2654435881:TheMap ->
-
-        map_points )
-
-        _2772135658178669155.insert (
-
-  {
-  _2654435881.id,_2654435881.getCoordinates ()
-
-  }
-
-        )
-
-     ;
-
-     for(
-
-   auto _2654435871:TheMap ->
-     keyframes )
-
-        _11822840474894279984 [
-
-_2654435871.idx ]
-
-   =
-
- _2654435871.pose_f2g ;
-
-    correctMap ( _46082543426142246 )
-
-     ;
-
-    vector <
-
-    uint32_t > _15593615755193215935 ;
-
-     for(
-       auto _175247760268:_46082543426142246.optimPoses )
-
-         if
-      (
-
- TheMap ->
-
-  keyframes.is (
-
- _175247760268.first )
-  )
-
-            _15593615755193215935.push_back (
-
-   _175247760268.first )
-        ;
-     auto
- _11093822386586 =
-
-  TheMap ->
-
- globalReprojChi2 (
-    _15593615755193215935,0,0,true,true )
- ;
-
-     for(
-
- auto &_markerObservation:TheMap ->
-
-    map_markers )
-
-        _markerObservation.second.pose_g2m =
-
-  _16750267944735343466 [
-
-    _markerObservation.first ]
-
-      ;
-
-     for(
-
-auto &_2654435876:TheMap ->
-
-   keyframes )
-
-        _2654435876.pose_f2g =
-
- _11822840474894279984 [
-
-  _2654435876.idx ]
-
-  ;
-
-     for( auto &_175247759380:TheMap ->
-
-    map_points )
-
-        _175247759380.setCoordinates (
-
-   _2772135658178669155 [
-
-  _175247759380.id ]
-
-    ) ;
-
-     return
-    _11093822386586 ;
-
- }
-
-vector <
-
-       cv :: DMatch >
-
- LoopDetector ::
-
-_15519652129875366702 (
-
-    std ::
-shared_ptr <
-    Map >
-
- _11093822290287, const Frame&, uint32_t
-
-    _175247760268, float
-  _1686565542397313973,void*_16614902379131698322 )
-
- {
-
-    xflann ::
-
-      Index *_6806993289704731004 =
-
-     (
-
-     xflann ::
-
-    Index * )
-
-          _16614902379131698322 ;
-
-    Frame &_3005401612717573609 =
-
-_11093822290287 ->
-
-   keyframes [
-
-         _175247760268 ]
-
-        ;
-
-    vector <
-
-    uint32_t >
-
- _706246332805075 ;
-
-     _706246332805075.reserve (
-
-       _3005401612717573609.und_kpts.size ()
-
- ) ;
-
-     for(
-
- auto _46082543320896749:_3005401612717573609.ids )
-     {
-
-         if
-
-    (
-_46082543320896749 !=
-
-  std ::
-
-   numeric_limits <
-
-    uint32_t >
-
-      ::
-
-    max () )
-
-            _706246332805075.push_back (
-
-        _46082543320896749 )
-
-   ;
-
-     }
-
-     if
-
-    (
-
-      _706246332805075.size ()
-
-      ==
-
-         0 )
-
-    return {
-   }
-
-   ;
-
-    cv ::
-
-Mat _2341894709189292181 ;
-
-    _11093822290287 ->
-
-map_points [
-
-  _706246332805075 [
-
-      0 ]
-
- ]
-.getDescriptor (
-
- _2341894709189292181 )
-
- ;
-
-    cv :: Mat _7690820325099119768 (
-
-_706246332805075.size ()
-
-       ,_2341894709189292181.cols,_2341894709189292181.type ()
-
-  ) ;
-
-     for(
-
-    size_t _2654435874 =
-0 ;
-
-  _2654435874 <
-
- _706246332805075.size () ;
-
- _2654435874 ++
-       )
-       {
-        cv ::
-
-Mat _11093822304159 =
-
-  _7690820325099119768.row (
-   _2654435874 )
-    ;
-
-        _11093822290287 ->
-    map_points [
-
-  _706246332805075 [
-
-   _2654435874 ]
-        ]
-
-  .getDescriptor (
-     _11093822304159 )
-
-    ;
-
-     }
-
-    cv ::
-
-    Mat _6807141016749312283,_16988745808691518194 ;
-
-    _6806993289704731004 ->
-       search (
-
-    _7690820325099119768,2,_6807141016749312283,_16988745808691518194,xflann ::
-
-     KnnSearchParams (
-
-     32,true )
-  )
-
-    ;
-
-     if
-
-     (
-
-  _16988745808691518194.type () ==
-
-    CV_32S ) _16988745808691518194.convertTo (
-
-  _16988745808691518194,CV_32F )
-
-      ;
-
-     float
-
-_16988745808737061586 =
-
-    _1686565542397313973 ;
-
-     float
-
-  _14756094128870157179 =
-
-    0.9 ;
-
-    vector <
-
-cv ::
-
-        DMatch >
-
-      _6807036698572949990 ;
-
-     for(
-    int _2654435874 =
-
-  0 ;
-
-     _2654435874 <
-
-    _6807141016749312283.rows ;
-     _2654435874 ++
-
-    )
-   {
-
-         if
-
-  (
- _16988745808691518194.at <
-
-    float >
-
-    (
-    _2654435874,0 ) <
-
-  _16988745808737061586 )
-
-      {
-
-             if(
- _16988745808691518194.at <
-
-   float >
-      (
-
-_2654435874,0 )
-
-       <
-
-         float (
-
-_14756094128870157179 * float ( _16988745808691518194.at <
-  float >
-
-     (
-
-    _2654435874,1 )
-
-        )
-
-     )
-
-     )
-
-       {
-
-                cv ::
-
- DMatch _46082575882272165 ;
-
-                _46082575882272165.queryIdx =
-
- _6807141016749312283.at <
-    int >
-
- (
-
-  _2654435874,0 )
-
-        ;
-
-                _46082575882272165.trainIdx =
-
-       _706246332805075 [ _2654435874 ]
-      ;
-
-                _46082575882272165.distance =
-
-        _16988745808691518194.at <
-
-      float >
-
-    (
-
-       _2654435874,0 )
-
-    ;
-
-                _6807036698572949990.push_back (
-   _46082575882272165 )
-
-  ;
-
-             }
-
-         }
-
-     }
-
-    filter_ambiguous_query (
-
- _6807036698572949990 )
-
-  ;
-
-    return _6807036698572949990;
+    return LoopSolution;
 }
 
 
-std::vector<LoopDetector::LoopClosureInfo> LoopDetector::_8671179296205241382 (
-        Frame &frame, int32_t _16940374156599401875 ) {
-          
-     return {};
-     
-    auto _5829441678613027716 = [](const uint32_t&_11093821926013){
-       std ::stringstream _706246330191125 ;
-       _706246330191125 << _11093821926013 ;
-       return _706246330191125.str ();
+
+LoopDetector::LoopClosureInfo LoopDetector::detectLoopFromKeyPoints(Frame &frame, int32_t curRefKf ){
+        __TSLAM_ADDTIMER__
+        vector<LoopClosureInfo> loopClosurePossibilities;
+    if ( frame.ids.size()!=0){
+        loopClosurePossibilities=detectLoopClosure_KeyPoints(frame,curRefKf);
+        __TSLAM_TIMER_EVENT__("detectLoopClosure_KeyPoints");
+    }
+    if (loopClosurePossibilities.size()==0) return LoopDetector::LoopClosureInfo() ;
+    else{
+        _debug_msg_("Loop closure found with frame "<<TheMap->keyframes[ loopClosurePossibilities[0].matchingFrameIdx].fseq_idx);
+        solve(frame,loopClosurePossibilities[0]);
+         return loopClosurePossibilities[0];
+    }
+}
+
+
+
+
+
+
+vector<LoopDetector::LoopClosureInfo>  LoopDetector::detectLoopClosure_Markers(Frame & frame,int64_t curkeyframe){
+
+    auto WithValidPose=[&](const vector<uint32_t> &v){
+        int s=0;
+        for(auto id:v)
+            if( TheMap->map_markers[id].pose_g2m.isValid())  s++;
+        return s;
     };
-
-    if(!System ::getParams ().detectKeyPoints ) return{};
-
-    if(TheMap ->TheKFDataBase.isEmpty ()) return {};
-
-    auto _1702552708676489766 = TheMap -> TheKpGraph.getNeighbors (_16940374156599401875,true );
-
-    if(_1702552708676489766.size ()== TheMap ->keyframes.size ()) return {};
-
-    float _16937373706612713730 = 1;
-
-    for(auto _46082575804458778:_1702552708676489766 )
-        _16937373706612713730 = std::min (_16937373706612713730, TheMap ->
-
-     TheKFDataBase.score ( frame,TheMap -> keyframes [
-
-   _46082575804458778 ]
-
-      )
-
- )
-
-        ;
-
-     auto
-_13899933296976059300 = TheMap ->
-
-  TheKFDataBase.relocalizationCandidates (
-
- frame,TheMap ->
-
- keyframes,TheMap ->
-     TheKpGraph,true,_16937373706612713730/2.,_1702552708676489766 )
-
-     ;
-
-     if(
-
-_13899933296976059300.size ()
-
-     ==
-
-       0 )
-
-       return
-
- {
-
-      }
-
-        ;
-
-     struct _1648036655000763724 {
-
-        _1648036655000763724 (
-
-  uint32_t _2654435871 )
-   {
-
- _17013904265820854 =
-
-       _2654435871 ; }
-
-         uint32_t
-
-  _17013904265820854 ;
-
-    cv ::
-
-     Mat _9332970625915525982 =
-
-   cv ::
-
-Mat ()
-
- ;
-
-     uint32_t
-
- _1994458605759073584 =
-   0 ;
-
-    bool
-
-       _1087568825552921310 = false ;
-
-        vector <
-
- cv ::
-
-       DMatch >
-
-         _6744006314306065854 ;
-
-     }
-   ;
-
-    vector <
-
-  _1648036655000763724 >
-
- _7244985490283130860 ;
-     for(
-     auto _175247760320:_13899933296976059300 )
-
-            _7244985490283130860.push_back ( _1648036655000763724 (
-
-   _175247760320 )
-
-  )
-  ;
-
-    FrameMatcher _16937386958649118140 ;
-
-    _16937386958649118140.setParams (
-
-  frame,FrameMatcher ::
-
-    MODE_ALL,System ::
-
-       getParams ()
-
-   .maxDescDistance*2 )
-
-  ;
-
-#pragma message "warning: Check the loop detector is correct with the FrameMatcher"
-
-
-     for(
-
-auto &_706246351566300:_7244985490283130860 )
-
-    {
-
-        vector <
-  cv ::
- Point2f >
-
- _16937225740828189009 ;
-
-        vector < cv ::
-
- Point3f >
-   _16937225740828192533 ;
-
-        vector <
-
-   cv ::
-
- DMatch >
-
-    _6807036698572949990 ;
-
-         if(
-   1 )
-
-          {
-
-             auto
-
-  &_3005399814901981436 =
-TheMap ->
-
-       keyframes [
-
-_706246351566300._17013904265820854 ]
-
-  ;
-
-            _6807036698572949990 =
-   _16937386958649118140.match (
-   _3005399814901981436,FrameMatcher ::
-
-MODE_ASSIGNED )
- ;
-
-             if(
-
-     _6807036698572949990.size ()
-
-  < 30 )
-     {
-
-                _706246351566300._1087568825552921310 =
-true ;
-
-                continue ;
-
-             }
-
-             for(
-
-auto _markerObservation:_6807036698572949990 )
-
-   {
-
-                _16937225740828189009.push_back (
-
-     frame.und_kpts [
-
-    _markerObservation.trainIdx ]
-
-    .pt )
-
-  ;
-
-                _16937225740828192533.push_back (
-       TheMap ->
-
-    map_points [
-       _3005399814901981436.ids [
-
-      _markerObservation.queryIdx ]
-
-        ]
-
- .getCoordinates ()
-
-   )
-        ;
-
-             }
-         }
-
-        cv ::
-
-     Mat _175247759698,_175247759831 ;
-        vector <int> _6807141016080266659 ;
-
-        cout <<"PNPR=" << _16937225740828192533.size () <<
-
-      endl ;
-      
-      cv :: solvePnPRansac (
-          _16937225740828192533,_16937225740828189009, frame.imageParams.CameraMatrix,cv ::
-
-    Mat :: zeros ( 1,5,CV_32F ) ,_175247759698,_175247759831,false,100,2.5,0.99,_6807141016080266659, cv::USAC_MAGSAC )
-
-   ;
-         if
-
- (
-
- _6807141016080266659.size ()
-
-  <
-
- 15 )
-
-        {
-
-            _706246351566300._1087568825552921310 =
-
-   true ;
-
-            continue ;
-         }
-
-        _706246351566300._1994458605759073584 =
-
-     _6807141016080266659.size ()
-  ;
-
-        _706246351566300._9332970625915525982 =
-
-    getRTMatrix (
-
-    _175247759698,_175247759831,CV_32F )
-
-      ;
-
-        _706246351566300._6744006314306065854.reserve (
-
-    _6807141016080266659.size ()
-
-         )
-   ;
-
-         for(
- auto _175247760141:_6807141016080266659 )
-
-            _706246351566300._6744006314306065854.push_back (
-
-  _6807036698572949990 [
-
-    _175247760141 ]
-
-  )
-    ;
-
-     }
-
-    _7244985490283130860.erase (
-
-     std :: remove_if (
-
-     _7244985490283130860.begin () ,_7244985490283130860.end ()
-
-     , [
-
- ]
-
-     (
-
-    const _1648036655000763724& _2654435868 )
-
-    {
-
-    return _2654435868._1087568825552921310 ;
-
-      }
-
-  )
-
-,_7244985490283130860.end ()
-
- )
-  ;
-     if
-
-  (
-
- _7244985490283130860.size ()
-
-      ==
-   0 )
-
-      return
-
-    {
-
-   }
-
- ;
-
-    std ::
-
-  sort (
-
-     _7244985490283130860.begin ()
-
-    ,_7244985490283130860.end ()
- , [
-        ]
-      (
-      const _1648036655000763724 &_175247762797,const _1648036655000763724 &_175247762798 ) {
-
- return _175247762797._1994458605759073584 >
-
-    _175247762798._1994458605759073584 ;
-       } )
-     ;
-
-     for(
-
-   auto &_16119892890339758111:_7244985490283130860 )
-
-  {
-
-         for(
-     auto &_175247759380:TheMap ->
-
-         map_points )
-
- _175247759380.lastFIdxSeen =
-
- std ::
-
-   numeric_limits <
-
-     uint32_t >
-       ::
-       max ()
-
-   ;
-
-        _16119892890339758111._6744006314306065854 =
-       TheMap ->
-  matchFrameToMapPoints (
-
-    TheMap ->
-
-        TheKpGraph.getNeighborsV (
-
-    _7244985490283130860 [
-
-   0 ]
-   ._17013904265820854,true )
-
-, frame, _7244985490283130860 [
-    0 ]
-    ._9332970625915525982 ,System ::
-
- getParams ()
-
-   .maxDescDistance*1.5, 2.5,false,true )
-
-     ;
-
-         if( _16119892890339758111._6744006314306065854.size ()
-
-     <
-
-    40 )
-
-    continue ;
-
-        se3 _6807035026667062616 =
-
-  _16119892890339758111._9332970625915525982 ;
-
-        PnPSolver ::
-
-  solvePnp (
-
-        frame, TheMap,_16119892890339758111._6744006314306065854, _6807035026667062616,_16940374156599401875 )
-
- ;
-
-        _16119892890339758111._9332970625915525982 =
-
-  _6807035026667062616 ;
-
-     }
-
-    std ::
-
-     sort (
-
-  _7244985490283130860.begin ()
-
-         ,_7244985490283130860.end ()
-
- , [
-
- ]
-
-  (
-
-  const _1648036655000763724 &_175247762797,const _1648036655000763724 &_175247762798 )
-     {
-
-  return _175247762797._6744006314306065854.size ()
-    >
-
-      _175247762798._6744006314306065854.size ()
-
-    ;
-      }
-
-      )
-
- ;
-
-     if
-
-  (
-   _7244985490283130860 [
-
-   0 ]
-
-._6744006314306065854.size () <
-
-  30 )
-
-    return {
-
+    //we detect a loop closure if there a valid marker in the view, with good localization, that is not connected in the graph to curkeyframe
+    //so first, see if the case holds
+    LoopClosureInfo lci;
+    std::set<uint32_t> l1neigh=TheMap->getNeighborKeyFrames(curkeyframe,true);
+     //find all markers in the neighbors and in this
+    std::set<uint32_t> visibleMarkers;
+    for(auto n:l1neigh)
+        for(auto m:TheMap->keyframes[n].markers)
+            visibleMarkers.insert(m.id);
+
+
+    //now, find these causing the loop closure
+    vector<uint32_t> markersCausingLoopClosure;
+    for(size_t mi=0;mi< frame.markers.size();mi++){
+        auto &marker=frame.markers[mi];
+         if (  visibleMarkers.count(marker.id)!=0)continue;//has already been seen
+        auto mit=TheMap->map_markers.find(marker.id);//is in the system???
+         if(mit!=TheMap->map_markers.end()){//yes
+           //  if (mit->second.pose_g2m.isValid()){//is valid??
+                 //                        if ( frame.markers_solutions[mi].err_ratio>_params.aruco_minerrratio_valid) //is it reliable?
+                markersCausingLoopClosure.push_back(marker.id);
+            }
     }
 
-       ;
 
-    LoopClosureInfo _11093822343890 ;
-
-    _11093822343890.curRefFrame =
-_16940374156599401875 ;
-
-    _11093822343890.matchingFrameIdx =
-
-       _7244985490283130860 [
-
-0 ]
-     ._17013904265820854 ;
-
-    _11093822343890.expectedPos = _7244985490283130860 [
-
- 0 ]
-       ._9332970625915525982 ;
-
-    _11093822343890.map_matches = _7244985490283130860 [
-
-   0 ]
-
-._6744006314306065854 ;
-
-     return
-
-  {
-
- _11093822343890 }
-
-      ;
-
- }
-
- void
- LoopDetector ::
-
-    LoopClosureInfo ::
-
- toStream (
-
-     ostream &_11093822381060 )
-
-     const {
-
-    _11093822381060.write (
-      (
-
-    char* )
-&curRefFrame,sizeof (
-
-   curRefFrame ) )
-
-          ;
-
-    _11093822381060.write (
-
-          (
-
-    char* )
-
-   &matchingFrameIdx,sizeof (
-       matchingFrameIdx )
-      )
-
-       ;
-    toStream__ (
-
-     expectedPos,_11093822381060 )
-       ;
-
-    toStream__ (
-
-       map_matches,_11093822381060 )
-
-     ;
-
-    toStream__kv ( optimPoses,_11093822381060 )
-
-         ;
-
-  }
-
- void
-LoopDetector ::
-   LoopClosureInfo ::
-
- fromStream (
-
-istream &_11093822381060 ) {
-
-    _11093822381060.read (
-
-       (
-      char* )
-
-&curRefFrame,sizeof (
-
-     curRefFrame )
-
- )
-  ;
-
-    _11093822381060.read (
-
-     (
-
- char* )
-
-  &matchingFrameIdx,sizeof ( matchingFrameIdx ) )
-  ;
-
-    fromStream__ (
-
- expectedPos,_11093822381060 )
-
-   ;
-
-    fromStream__ (
-       map_matches,_11093822381060 )
-
-  ;
-
-    fromStream__kv ( optimPoses,_11093822381060 )
- ;
-
- }
-
-uint64_t LoopDetector ::
-   LoopClosureInfo :: getSignature ()
-
-  {
-
-    Hash _11093822380353 ;
-
-    _11093822380353 +=
-   curRefFrame ;
-
-    _11093822380353 +=
-   matchingFrameIdx ;
-
-    _11093822380353 +=
-
-    expectedPos ;
-     for(
-
- const auto
-
-    &_2654435870:map_matches )
-
-      {
-
-        _11093822380353 +=
-     _2654435870.distance ;
-
-        _11093822380353 +=
-
-   _2654435870.imgIdx ;
-
-        _11093822380353 +=
-
-     _2654435870.trainIdx ;
-
-        _11093822380353 +=
-
- _2654435870.queryIdx ;
-
+    if ( WithValidPose(markersCausingLoopClosure)==0) return  {};
+
+
+    //now, well try to solve the problem we have.
+    //current frame has two possible locations,
+    //first, the one estimated with drift (which is in frame)
+    //and the one calculated using the markers seen already (expected)
+     //determine this original location using the frames that caused the loop closure
+    vector<se3> expectedposes;
+
+    se3 safe_expectedpose=TheMap->getBestPoseFromValidMarkers(frame,markersCausingLoopClosure,4);
+    //a minimum confidence is required in order to do the loop closure.
+    if (   !safe_expectedpose.isValid()  && WithValidPose(markersCausingLoopClosure)<3){
+     //the markers are there, but the confidence is low. Better not to do it. Lets remove the markers from the frame
+        //to avoid ruining the process
+        _debug_msg_("Unsafe Loop closure. Removing Markers involved ");
+        for(auto m:markersCausingLoopClosure){
+            auto it=std::find_if( frame.markers.begin(),frame.markers.end(), [&](const tslam::MarkerObservation &mo){return mo.id==m;});
+            if( it!=frame.markers.end())
+                frame.markers.erase(it);
+        }
+        return {};
+    }
+
+
+
+     //is the pose  good enough?
+    if (   safe_expectedpose.isValid())
+        expectedposes.push_back(safe_expectedpose);
+    //if not, it is safer to fo optimization using the two possible ways
+    else{
+        int bestM=0;
+        for(size_t i=1;i< markersCausingLoopClosure.size();i++)
+            if ( frame.getMarkerPoseIPPE(markersCausingLoopClosure[i]).err_ratio>frame.getMarkerPoseIPPE(markersCausingLoopClosure[bestM]).err_ratio )
+                bestM=i;
+        //compute current pose based on the two solutions
+        //F2G
+        int bestMId=markersCausingLoopClosure[bestM];
+        cv::Mat  invM=TheMap->map_markers[bestMId].pose_g2m.inv() ;
+        se3 pose1=       se3(frame.getMarkerPoseIPPE(bestMId).sols[0]* invM);
+        se3 pose2=       se3(frame.getMarkerPoseIPPE(bestMId).sols[1]* invM);
+        expectedposes.push_back(pose1);
+        expectedposes.push_back(pose2);
+
+    }
+ //    if(!expectedpose.isValid());
+
+
+
+     //so, the frame is at frame.pose_f2g but it should be at orgpose also
+     //loop closure consists in making these two estimations identical by distributing the errors equally amongst the nodes in the
+     //path connecting the orignal location and current one
+     //But, which is the 'original location'? There are many possibilities in our problem, since the marker has been seen from
+     //many other frames probably.
+     //So, let us take as origin node the first one in  the video in which it was seen
+     uint32_t minFrameSeqIdx=std::numeric_limits<uint32_t>::max(),minFrameIdx=std::numeric_limits<uint32_t>::max();
+     for(auto m:markersCausingLoopClosure){
+         assert(TheMap->map_markers.count(m)!=0);//the marker must be and be valid
+         assert(TheMap->map_markers.at(m).pose_g2m.isValid());
+         for(auto frame_idx:TheMap->map_markers[m].frames){
+             if ( minFrameSeqIdx>TheMap->keyframes[frame_idx].fseq_idx){
+                 minFrameSeqIdx=TheMap->keyframes[frame_idx].fseq_idx;
+                 minFrameIdx=frame_idx;
+             }
+         }
      }
 
-     for(
+vector<LoopClosureInfo> vlci;
+for(size_t i=0;i<expectedposes.size();i++){
+    LoopClosureInfo lci;
+    lci.curRefFrame=curkeyframe;
+    lci.expectedPos=expectedposes[i];
+    lci.matchingFrameIdx=minFrameIdx;
+    vlci.push_back(lci);
+}
 
-const auto
-&_2654435870:optimPoses )
+    return vlci;
 
-   {
+}
 
-  _11093822380353 +=
-      _2654435870.first ;
+void LoopDetector::solve(Frame &frame,   LoopClosureInfo &loopc_info){
+    CovisGraph &TheGraph=TheMap->TheKpGraph;
 
-_11093822380353 += _2654435870.second ;
-   }
 
-     return
+     if ( frame.idx==std::numeric_limits<uint32_t>::max())//in case it is from markers, get an id(required for optimization with g2o)
+        frame.idx=TheMap->getNextFrameIndex();
 
- _11093822380353 ;
+    vector<pair<uint32_t,uint32_t> > edges=TheGraph.getAllEdges();
+    if (!TheGraph.isEdge(loopc_info.curRefFrame,frame.idx));
+    edges.push_back({loopc_info.curRefFrame,frame.idx});
+    auto &optimPoses=loopc_info.optimPoses;
+    std::map<uint64_t,float> edge_weights;
+    float maxWeight=0;
+    for(auto e:edges){
+        if ( optimPoses.count(e.first)==0 && TheMap->keyframes.is(e.first))
+            optimPoses[e.first]=TheMap->keyframes[e.first].pose_f2g;
+        if ( optimPoses.count(e.second)==0 && TheMap->keyframes.is(e.second))
+            optimPoses[e.second]=TheMap->keyframes[e.second].pose_f2g;
+        float eWeight=0;
+        if ( TheMap->TheKpGraph.isEdge(e.first,e.second))//case when loop closure detection is given by marker (excluded)
+            eWeight=TheMap->TheKpGraph.getEdge(e.first,e.second);
+        maxWeight=std::max(eWeight,maxWeight);
+        edge_weights[ CovisGraph::join(e.first,e.second)]=eWeight;
+    }
+
+    if (!TheGraph.isEdge(frame.idx,loopc_info.matchingFrameIdx)){
+        edges.push_back({frame.idx,loopc_info.matchingFrameIdx});
+        edge_weights[ CovisGraph::join(frame.idx,loopc_info.matchingFrameIdx)]=maxWeight;
+    }
+    optimPoses[frame.idx]=frame.pose_f2g;
+
+
+#pragma message "warning: must check fixscale"
+
+    loopClosurePathOptimizationg2o(edges,frame.idx,loopc_info.matchingFrameIdx,loopc_info.expectedPos, optimPoses,false);
+
+
+}
+
+void LoopDetector::correctMap(  const LoopClosureInfo &lcsol){
+    //move markers
+    auto Sim3ToSE3=[](const cv::Mat &Sim3){
+        float sc= cv::norm( Sim3.col(0));
+        cv::Mat RT=Sim3;
+        cv::Mat R=Sim3.rowRange(0,3).colRange(0,3);
+        R=(1./sc)*R;
+        return RT;
+    };
+
+
+    //move markers
+    for(auto &id_marker:TheMap->map_markers){
+        Marker &marker=id_marker.second;
+        assert(marker.frames.size()>0);
+        if (!marker.pose_g2m.isValid()) continue;
+       //take an observing frame and transform the marker
+
+        bool isBeingCorrected=false;
+        for(auto fidx:marker.frames){
+            if( lcsol.optimPoses.count(fidx)==0)continue;
+            const Frame &frame=TheMap->keyframes[fidx];
+            //move the marker pose to the frame
+            cv::Mat f2m=frame.pose_f2g*  marker.pose_g2m;//marker to frame transform
+            //remove the scale from the optim pose
+            auto RT_f2g=Sim3ToSE3(lcsol.optimPoses.at(fidx));//new optim pose for the fraem
+            //now, obtain the new marker pose
+            marker.pose_g2m=      RT_f2g.inv() *  f2m;//new marker pose
+            isBeingCorrected=true;
+
+            break;
+        }
+        if (!isBeingCorrected)throw std::runtime_error(string(__PRETTY_FUNCTION__)+"Internal error. Could not correct marker");
+        assert(isBeingCorrected);
+    }
+
+     //move points
+    for(auto &mp:TheMap->map_points){
+            //move to one of the observing frames and correct using its pose
+            Frame& kf=TheMap->keyframes[ mp.getObservingFrames().front().first];
+            cv::Point3f p3d=kf.pose_f2g*mp.getCoordinates();
+            //now, correct with new sim3 transform
+            cv::Mat Sim3=lcsol.optimPoses.at(kf.idx);
+            float sc= cv::norm( Sim3.col(0));
+            cv::Mat R=Sim3.rowRange(0,3).colRange(0,3);
+            R*=(1./sc);
+            cv::Mat RTinv=Sim3.inv();
+            R=RTinv.rowRange(0,3).colRange(0,3);
+            R*=(1./sc);
+            mp.setCoordinates( RTinv*p3d );
+    }
+
+    //move keyframes
+    for(const auto op:lcsol.optimPoses){
+        if ( TheMap->keyframes.count(op.first)){
+            //get normalized version of transform
+            TheMap->keyframes[op.first].pose_f2g=Sim3ToSE3(op.second  );// RT
+        }
+    }
+}
+
+
+double LoopDetector::testCorrection(const LoopClosureInfo &lcsol){
+
+    std::map<uint32_t,se3> marker_poses;
+    std::map<uint32_t,cv::Point3f> point_coordinates;
+    std::map<uint32_t,Se3Transform> frame_poses;
+
+    for(auto m:TheMap->map_markers)
+        marker_poses[m.first]=m.second.pose_g2m;
+    for(auto p:TheMap->map_points)
+        point_coordinates.insert({p.id,p.getCoordinates()});
+    for(auto f:TheMap->keyframes)
+        frame_poses[f.idx]=f.pose_f2g;
+
+    correctMap(lcsol);
+
+
+    //compute the error
+    vector<uint32_t> keyframes;
+    for(auto kf:lcsol.optimPoses )
+        if (TheMap->keyframes.is(kf.first))
+            keyframes.push_back(kf.first);
+    auto err=TheMap->globalReprojChi2(keyframes,0,0,true,true);
+    _debug_msg("err sol ="<<err ,10);
+
+    //restore
+    for(auto &m:TheMap->map_markers)
+        m.second.pose_g2m = marker_poses[m.first];
+    for(auto &k:TheMap->keyframes)
+        k.pose_f2g= frame_poses[k.idx];
+    for(auto &mp:TheMap->map_points)
+        mp.setCoordinates(point_coordinates[mp.id]);
+
+    return err;
+}
+vector<cv::DMatch> LoopDetector::matchFrameToKeyFrame(std::shared_ptr<Map> map, const Frame&, uint32_t kf, float minDescDist,void*xfindexPtr)
+{
+    xflann::Index *xfindex=(  xflann::Index *) xfindexPtr;
+    //take all the descriptors of the mappoints seen and put them in a matrix. Then create a index for fast search
+    Frame &kframe=map->keyframes[kf];
+    //save the indices of the map points in mpts
+    vector<uint32_t> mpts;mpts.reserve(kframe.und_kpts.size());
+    for(auto kpidx:kframe.ids){
+        if (kpidx!=std::numeric_limits<uint32_t>::max())
+            mpts.push_back(kpidx);
+    }
+    if (mpts.size()==0)return{};
+    //create the matrix MapPointDescriptors where the descritors are copied
+    cv::Mat ADescriptor;
+    map->map_points[ mpts[0]].getDescriptor(ADescriptor);//take a descriptor to know its size and type
+    cv::Mat MapPointDescriptors(mpts.size(),ADescriptor.cols,ADescriptor.type() );
+    //start the copy
+    for(size_t i=0;i<mpts.size();i++){
+        cv::Mat row=MapPointDescriptors.row(i);
+        map->map_points[ mpts[i]].getDescriptor(row);
+    }
+
+    //now, do a search amonts the descriptors in this the search frame f
+
+    cv::Mat indices,distances;
+    xfindex->search(MapPointDescriptors,2,indices,distances,xflann::KnnSearchParams(32,true));
+    if ( distances.type()==CV_32S) distances.convertTo(distances,CV_32F);
+
+    float distThres= minDescDist;
+    float nn_match_ratio=0.9;
+
+    vector<cv::DMatch> matches;
+    for(int i = 0; i < indices.rows; i++) {
+        if ( distances.at<float>(i,0)<distThres){
+            if(distances.at<float>(i,0)  < float(nn_match_ratio * float(distances.at<float>(i,1)))) {
+                cv::DMatch  match;
+                match.queryIdx= indices.at<int>(i,0);
+                match.trainIdx= mpts[ i];
+                match.distance=distances.at<float>(i,0);
+                matches.push_back(match);
+            }
+        }
+    }
+    filter_ambiguous_query(matches);
+
+    return matches;
+}
+
+std::vector<LoopDetector::LoopClosureInfo> LoopDetector::detectLoopClosure_KeyPoints( Frame &frame, int32_t curRefKf){
+    auto _to_string=[](const uint32_t&val){ std::stringstream sstr;sstr<<val;return sstr.str();};
+
+    __TSLAM_ADDTIMER__
+            if (!System::getParams().detectKeyPoints) return {};
+    if (TheMap->TheKFDataBase.isEmpty())return {};
+
+    auto Neighbors=TheMap->TheKpGraph.getNeighbors(curRefKf,true);
+    if (Neighbors.size()==TheMap->keyframes.size()) return {};//case in which all keyframes are connected
+    __TSLAM_TIMER_EVENT__("find neighbors");
+    // cout<<"neighbors=";for(auto n:Neighbors)cout<<n<<" ";cout<<endl;
+    float minScore = 1;
+    for(auto neigh:Neighbors)
+        minScore=std::min(minScore, TheMap->TheKFDataBase.score( frame,TheMap->keyframes[neigh]));
+    __TSLAM_TIMER_EVENT__("min score in "+_to_string(Neighbors.size())+" neighbors");
+    auto candidates=TheMap->TheKFDataBase.relocalizationCandidates(frame,TheMap->keyframes,TheMap->TheKpGraph,true,minScore/2.,Neighbors);
+ //   _debug_exec_(cout<<"candidates:";for(auto c:candidates)cout<<c<<" ";cout<<endl;);
+    if(candidates.size()==0) return {};
+    //SCORE TO CANDIDATES
+    __TSLAM_TIMER_EVENT__("find best candidates");
+
+
+
+    //check for any candidate has strong evidence
+    struct Candidate{
+        Candidate(uint32_t f){frame=f;}
+        uint32_t frame;cv::Mat pose=cv::Mat();uint32_t nInliers=0;bool remove=false;
+        vector<cv::DMatch> map_matches;
+    };
+    vector<Candidate> goodLoopCandidates;
+    for(auto lc:candidates)
+            goodLoopCandidates.push_back(Candidate(lc));
+
+
+
+
+
+    FrameMatcher FMatcher;//(FrameMatcher::TYPE_FLANN);
+    FMatcher.setParams(frame,FrameMatcher::MODE_ALL,System::getParams().maxDescDistance*2);
+#pragma message "warning: Check the loop detector is correct with the FrameMatcher"
+  //  xflann::Index FrameXFlannIndex (frame.desc,xflann::HKMeansParams(8,0));
+    __TSLAM_TIMER_EVENT__("build index  ");
+
+    for(auto &cand:goodLoopCandidates){
+
+        vector<cv::Point2f> points2d;
+        vector<cv::Point3f> points3d;
+        vector<cv::DMatch> matches;
+        if(1){//new method using frame matcher (needs testing)
+            auto &KFrame=TheMap->keyframes[cand.frame];
+            matches=FMatcher.match(KFrame,FrameMatcher::MODE_ASSIGNED);
+            //change trainIdx and queryIdx to match the  solvePnpRansac requeriments
+            _debug_msg_("cand="<<cand.frame<<" matches="<<matches.size());
+            __TSLAM_TIMER_EVENT__(" matchFrameToKeyFrame");
+            if(matches.size()<30){ //if not enough matches, mark for removal
+                cand.remove=true;
+                continue;
+            }
+            for(auto m:matches){
+                points2d.push_back(frame.und_kpts[m.trainIdx].pt);
+                points3d.push_back(TheMap->map_points[ KFrame.ids[ m.queryIdx] ].getCoordinates());
+            }
+        }
+//        else{
+
+//            matches=matchFrameToKeyFrame(TheMap,frame,cand.frame,System::getParams().maxDescDistance*2,&FrameXFlannIndex);
+//            _debug_msg_("cand="<<cand.frame<<" matches="<<matches.size());
+//            __TSLAM_TIMER_EVENT__(" matchFrameToKeyFrame");
+//            if(matches.size()<30){ //if not enough matches, mark for removal
+//                cand.remove=true;
+//                continue;
+//            }
+
+//            for(auto m:matches){
+//                points2d.push_back(frame.und_kpts[m.queryIdx].pt);
+//                points3d.push_back(TheMap->map_points[ m.trainIdx].getCoordinates());
+//            }
+//        }
+
+
+        cv::Mat rv,tv;
+        vector<int> inliers;
+        //NEEDS TO REWRITE CON CONSIDER SCALE IN PROJECTION ERROR
+        cout<<"PNPR="<<points3d.size()<<endl;
+        cv::solvePnPRansac(points3d,points2d, frame.imageParams.CameraMatrix,cv::Mat::zeros(1,5,CV_32F),rv,tv,false,100,2.5,0.99,inliers,cv::USAC_MAGSAC);
+        _debug_msg_("  inliers="<<inliers.size());
+        __TSLAM_TIMER_EVENT__(" pnpransac");
+        if (inliers.size()<15 ){
+            cand.remove=true;
+            continue;
+        }
+        cand.nInliers=inliers.size();
+        cand.pose=getRTMatrix(rv,tv,CV_32F);
+        //remove the outliers
+        cand.map_matches.reserve(inliers.size());
+        for(auto in:inliers)
+            cand.map_matches.push_back( matches[in] );
+    }
+
+
+    goodLoopCandidates.erase(std::remove_if(goodLoopCandidates.begin(),goodLoopCandidates.end(),[](const Candidate& c){return c.remove;}),goodLoopCandidates.end());
+
+    if (goodLoopCandidates.size()==0) return  {};
+    //sort by number of inliers
+    std::sort(goodLoopCandidates.begin(),goodLoopCandidates.end(),[](const Candidate &c1,const Candidate &c2){return c1.nInliers>c2.nInliers;});
+
+
+
+
+
+    //Find more points among the neighbors
+    for(auto &good_cand:goodLoopCandidates){
+        //refine even further the pose
+        for(auto &mp:TheMap->map_points) mp.lastFIdxSeen=std::numeric_limits<uint32_t>::max();
+        //set as used the already seen
+        good_cand.map_matches =TheMap->matchFrameToMapPoints(TheMap->TheKpGraph.getNeighborsV(goodLoopCandidates[0].frame,true), frame,  goodLoopCandidates[0].pose ,System::getParams().maxDescDistance*1.5, 2.5,false,true);
+        if(good_cand.map_matches.size()<40) continue;
+        se3 pose_io=good_cand.pose;
+        PnPSolver::solvePnp(frame, TheMap,good_cand.map_matches, pose_io,curRefKf);
+        good_cand.pose=pose_io;
+    }
+    //sort by number of matches
+    std::sort(goodLoopCandidates.begin(),goodLoopCandidates.end(),[](const Candidate &c1,const Candidate &c2){return c1.map_matches.size()>c2.map_matches.size();});
+
+    //if the best has not at least a minimu number of mathces, then not detected
+    if ( goodLoopCandidates[0].map_matches.size()<30)return {};
+
+    //analyze the scale
+
+    //prepare the solution
+    LoopClosureInfo lci;
+    lci.curRefFrame=curRefKf;
+    lci.matchingFrameIdx=goodLoopCandidates[0].frame;
+    lci.expectedPos=goodLoopCandidates[0].pose;
+    lci.map_matches=goodLoopCandidates[0].map_matches;
+    return {lci};
+
+}
+
+
+void LoopDetector::LoopClosureInfo::toStream(ostream &str)const{
+    str.write((char*)&curRefFrame,sizeof(curRefFrame));
+    str.write((char*)&matchingFrameIdx,sizeof(matchingFrameIdx));
+    toStream__(expectedPos,str);
+    toStream__(map_matches,str);
+    toStream__kv(optimPoses,str);
+
  }
+void LoopDetector::LoopClosureInfo::fromStream(istream &str){
+    str.read((char*)&curRefFrame,sizeof(curRefFrame));
+    str.read((char*)&matchingFrameIdx,sizeof(matchingFrameIdx));
+    fromStream__(expectedPos,str);
+    fromStream__(map_matches,str);
+    fromStream__kv(optimPoses,str);
 
- }
+}
+
+
+uint64_t LoopDetector::LoopClosureInfo::getSignature(){
+    Hash sig;
+    sig+=curRefFrame;
+    sig+=matchingFrameIdx;
+    sig+=expectedPos;
+    for(const auto &e:map_matches){
+        sig+=e.distance;
+        sig+=e.imgIdx;
+        sig+=e.trainIdx;
+        sig+=e.queryIdx;
+    }
+    for(const auto &e:optimPoses) {sig+=e.first;sig+=e.second;}
+    return sig;
+}
+
+}

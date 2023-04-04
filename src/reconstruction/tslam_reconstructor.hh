@@ -8,7 +8,10 @@
 #include "ts_timber.hh"
 #include "ts_geo_util.hh"
 #include "ts_tassellation.hh"
+#include "ts_mesh_holes_filler.hh"
+#include "ts_AABB.hh"
 #include "ts_geometric_solver.hh"
+
 
 // TODO: extenralize I/O saving from geometric solver
 
@@ -74,12 +77,11 @@ namespace tslam::Reconstruction
          */
         void saveMeshAsPLY(const std::string& dir, const std::string& filename);
         /**
-         * @brief Save the reconstructed mesh as a XAC file.
-         * 
-         * @see saveMeshAsPLY
+         * @brief Save the reconstructed mesh as a PLY file.
+         *
+         * @param filepath filepath to save the mesh, the filename should be specificied and ended with .ply
          */
-        // TODO: implement the XAC file writer
-        void saveMeshAsXAC(const std::string& dir, const std::string& filename);
+        void saveMeshAsPLY(const std::string& filepath);
     
     public:  ///< engine getter
         /**
@@ -89,7 +91,7 @@ namespace tslam::Reconstruction
          */
         TSGeometricSolver& getGeometricSolver() { return this->m_GeometricSolver; };
     
-    public: __always_inline  ///< clean func
+    public: __attribute__((always_inline))  ///< clean func
         /// Clean the data attached to the reconstructor
         void clean()
         {

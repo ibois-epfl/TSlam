@@ -11,21 +11,29 @@ namespace tslam::Reconstruction
 
     void TSTimber::scaleAABB(double scale)
     {
-        this->m_AABB.Scale(scale, this->m_AABB.GetCenter());
+        this->m_AABB.scale(scale);
     }
 
     void TSTimber::removeDuplicateTags(double distancethreshold)
     {
         std::vector<TSRTag> tagsNoDuplTemp;
-        std::shared_ptr<open3d::geometry::PointCloud> pntCldTemp = std::make_shared<open3d::geometry::PointCloud>();
+        std::vector<Eigen::Vector3d> ctrs;
+
         for (auto& p : this->getPlaneTags())
+            ctrs.push_back(p.getCenter());
+
+        for (size_t i = 0; i < ctrs.size(); i++)
         {
-            pntCldTemp->points_.push_back(p.getCenter());
+            for (size_t j = i + 1; j < ctrs.size(); j++)
+            {
+                if (ctrs[i].isApprox(ctrs[j]))
+                {
+                    ctrs.erase(ctrs.begin() + j);
+                }
+            }
         }
 
-        std::shared_ptr<open3d::geometry::PointCloud> pcdDown = pntCldTemp->VoxelDownSample(distancethreshold);
-
-        for (auto& p : pcdDown->points_)
+        for (auto& p : ctrs)
         {
             for (auto& q : this->getPlaneTags())
             {
@@ -55,20 +63,19 @@ namespace tslam::Reconstruction
     }
     void TSTimber::computeAABB()
     {
-        open3d::geometry::PointCloud pntCld;
+        std::vector<Eigen::Vector3d> pts;
         for (auto& p : this->getPlaneTags())
-        {
-            pntCld.points_.push_back(p.getCenter());
-        }
-        this->m_AABB = pntCld.GetAxisAlignedBoundingBox();
+            pts.push_back(p.getCenter());
+
+        this->m_AABB = TSAABB(pts);
     }
+    
     void TSTimber::computeTagsCtrs()
     {
-        open3d::geometry::PointCloud pntCld;
+        this->m_RtagsCtrs.clear();
         for (auto& p : this->getPlaneTags())
         {
-            pntCld.points_.push_back(p.getCenter());
+            this->m_RtagsCtrs.push_back(p.getCenter());
         }
-        this->m_RtagsCtrs = pntCld;
     }
 }

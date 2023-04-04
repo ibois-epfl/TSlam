@@ -4,6 +4,8 @@
 #include "ts_compute.hh"
 
 #include <Eigen/Core>
+#include <Eigen/Geometry>
+
 #include <tuple>
 #include <vector>
 #include <iostream>
@@ -12,14 +14,12 @@
 #include <algorithm> 
 #include <math.h>
 
-#include <open3d/Open3D.h>
-
 namespace tslam::Reconstruction
 {
     /// Struct interface for vector utility function
     struct TSVector
     {
-    public: __always_inline  ///< utility static funcs
+    public: __attribute__((always_inline))  ///< utility static funcs
         /**
          * @brief Get the angle between two vectors
          * 
@@ -46,7 +46,7 @@ namespace tslam::Reconstruction
             return std::sqrt(std::pow(a(0) - b(0), 2) + std::pow(a(1) - b(1), 2) + std::pow(a(2) - b(2), 2));
         }
 
-    public: __always_inline  ///< custom WorldAxis
+    public: __attribute__((always_inline))  ///< custom WorldAxis
         /**
          * @brief Get the X axis
          * 
@@ -147,7 +147,7 @@ namespace tslam::Reconstruction
         };
         ~TSPlane() = default;
     
-    public: __always_inline  ///< modified ops
+    public: __attribute__((always_inline))  ///< modified ops
         bool operator!=(const TSPlane& other) const
         {
             if (this->Normal.isApprox(other.Normal, 1e-5) && this->Center.isApprox(other.Center, 1e-5))
@@ -166,7 +166,7 @@ namespace tslam::Reconstruction
             return os;
         };
     
-    public: __always_inline  ///< custom funcs
+    public: __attribute__((always_inline))  ///< custom funcs
         /**
          * @brief It computes the distance between a point and the plane
          * 
@@ -240,7 +240,7 @@ namespace tslam::Reconstruction
             }
         }
 
-    public: __always_inline ///< transform funcs
+    public: __attribute__((always_inline)) ///< transform funcs
         /**
          * @brief It computes the intersection between two planes
          * 
@@ -275,7 +275,7 @@ namespace tslam::Reconstruction
             this->D = normal.dot(center);
         };
 
-    public: __always_inline  ///< static funcs
+    public: __attribute__((always_inline))  ///< static funcs
         /** 
          * @brief It checks if there is intersection between a ray and a plane following the:
          * Plane: ax+by+cz=d
@@ -429,7 +429,7 @@ namespace tslam::Reconstruction
             return C * B * A;
         };
 
-    public: __always_inline  ///< bool funcs
+    public: __attribute__((always_inline))  ///< bool funcs
         /**
          * @brief Check if the point is on the plane
          * 
@@ -458,7 +458,7 @@ namespace tslam::Reconstruction
         {};
         ~TSSegment() = default;
     
-    public: __always_inline  ///< modified ops
+    public: __attribute__((always_inline))  ///< modified ops
         bool operator!=(const TSSegment& other) const
         {
             if (this->P1.isApprox(other.P1) && this->P2.isApprox(other.P2)
@@ -476,7 +476,7 @@ namespace tslam::Reconstruction
             return os;
         };
 
-    public: __always_inline  ///< bool checks
+    public: __attribute__((always_inline))  ///< bool checks
         /// it checks if a point is on a segment, also when the point is on the start or end of the segment
         bool isPointOnSegment(Eigen::Vector3d point) const
         {
@@ -505,7 +505,7 @@ namespace tslam::Reconstruction
             return this->intersect(other, tempIntersectPt);
         }
 
-    public: __always_inline  ///< getters
+    public: __attribute__((always_inline))  ///< getters
         Eigen::Vector3d getDirection() const { return (this->P2 - this->P1).normalized(); };
         Eigen::Vector3d getCenter() const { return (this->P1 + this->P2) / 2.0; };
         Eigen::Vector3d getMidPoint()
@@ -515,7 +515,7 @@ namespace tslam::Reconstruction
             return midPoint;
         };
 
-    public: __always_inline  ///< transform
+    public: __attribute__((always_inline))  ///< transform
         /**
         * @brief It transforms the segment with a given transform matrix (3x3)
         * 
@@ -538,7 +538,7 @@ namespace tslam::Reconstruction
             this->P2 = transform.block<3, 3>(0, 0) * this->P2 + transform.block<3, 1>(0, 3);
         };
 
-    public: __always_inline  ///< custom funcs
+    public: __attribute__((always_inline))  ///< custom funcs
         /**
          * @brief It computes the angle between two segments in degrees on a given plane
          * 
@@ -633,7 +633,7 @@ namespace tslam::Reconstruction
         };
         ~TSPolygon() = default;
 
-    public: __always_inline   ///< modified ops
+    public: __attribute__((always_inline))   ///< modified ops
         bool operator==(const TSPolygon& other) const
         {
             ///< (a) check for number of vertices
@@ -674,7 +674,7 @@ namespace tslam::Reconstruction
         };
         TSSegment& operator[](uint i) {return m_Segments[i]; };
 
-    private: __always_inline  ///< compute properties
+    private: __attribute__((always_inline))  ///< compute properties
         void compute() override
         {
             this->computeVertices();
@@ -757,13 +757,13 @@ namespace tslam::Reconstruction
             this->m_Area = area;
         };
 
-    public: __always_inline  ///< vertices ops
+    public: __attribute__((always_inline))  ///< vertices ops
         void addVertex(Eigen::Vector3d point) {m_Vertices.push_back(point); compute(); };
         void removeVertex(uint i) {m_Vertices.erase(m_Vertices.begin() + i); compute(); };
         void setVertices(std::vector<Eigen::Vector3d> points) {m_Vertices = points; compute(); };
         void setLinkedPlane(TSPlane linkedPlane) {m_LinkedPlane = linkedPlane; };
 
-    public:__always_inline  ///< getters
+    public:__attribute__((always_inline))  ///< getters
         std::vector<Eigen::Vector3d>& getVertices() {return m_Vertices; };
         uint getNumVertices() {return m_Vertices.size(); };
         Eigen::Vector3d& getVertex(uint i) {return m_Vertices[i]; };
@@ -791,7 +791,7 @@ namespace tslam::Reconstruction
         double getArea() {return m_Area; };
         uint size() {return m_Segments.size(); };
 
-    public: __always_inline  ///< condition checks
+    public: __attribute__((always_inline))  ///< condition checks
         /**
          * @brief Check if a point is on the polygon by checking if it's on one of the polygon's segments.
          * 
@@ -830,39 +830,38 @@ namespace tslam::Reconstruction
             return true;
         };
         /**
-         * @brief Check if a point is inside the polygon.
+         * @brief Check if a point is inside the polygon by checking if the point is on the same side of all the polygon's segments.
+         * 
+         * @ref we implemented a 3D version of the code present here:
+         *      https://inginious.org/course/competitive-programming/geometry-pointinconvex
          * 
          * @param point the point to check
          * @return true if the point is inside the polygon
          * @return false if the point is not inside the polygon
          */
-        bool isPointInsidePolygon(Eigen::Vector3d point, double EPS)
+        bool isPointInsidePolygon(Eigen::Vector3d point)
         {
-            if (this->isPointOnPolygon(point))
-                return false;
-
-            TSSegment seg = this->getSegments().front();
-            Eigen::Vector3d midPt = seg.getMidPoint();
-
-            TSSegment segment(point, midPt);
-
-            // extend the segment longer thant the mid point
-            segment.extend(1000000);
-
-            std::vector<Eigen::Vector3d> intersections;
-            Eigen::Vector3d tempIntersection;
-
-            for (auto s : this->m_Segments)
+            bool isInside = true;
+            for (uint k = 0; k < this->getVertices().size(); k++)
             {
-                if (s.intersect(segment, tempIntersection))
+                Eigen::Vector3d v1 = this->getVertices()[k];
+                Eigen::Vector3d v2 = this->getVertices()[(k + 1) % this->getVertices().size()];
+
+                Eigen::Vector3d v1v2 = v2 - v1;
+                Eigen::Vector3d v1ctr = point - v1;
+
+                Eigen::Vector3d cross = v1v2.cross(v1ctr);
+
+                Eigen::Vector3d polyPlnNormal = this->getNormal();
+
+                if (cross.dot(polyPlnNormal) < 0)
                 {
-                    intersections.push_back(tempIntersection);
+                    isInside = false;
+                    break;
                 }
             }
 
-            if (intersections.size() % 2 == 1)
-                return true;
-            return false;
+            return isInside;
         };
         /// Check if the polygon is a quadrilateral
         bool isQuadrilateral()
@@ -877,7 +876,7 @@ namespace tslam::Reconstruction
             return this->m_Center.isApprox(other.m_Center, eps);
         };
 
-    public: __always_inline  ///< transform funcs
+    public: __attribute__((always_inline))  ///< transform funcs
         /**
          * @brief It transforms the polygon by an identity matrix (3x3)
          * 
@@ -918,7 +917,7 @@ namespace tslam::Reconstruction
         Eigen::Matrix3d rotateByAxisX(double angle)
         {
             Eigen::Matrix3d rotMat;
-            rotMat = Eigen::AngleAxisd(angle, Eigen::Vector3d::UnitX());
+            rotMat = Eigen::AngleAxis(angle, Eigen::Vector3d::UnitX());
             this->transform(rotMat);
             return rotMat;
         };
@@ -931,7 +930,7 @@ namespace tslam::Reconstruction
         Eigen::Matrix3d rotateByAxisY(double angle)
         {
             Eigen::Matrix3d rotMat;
-            rotMat = Eigen::AngleAxisd(angle, Eigen::Vector3d::UnitY());
+            rotMat = Eigen::AngleAxis(angle, Eigen::Vector3d::UnitY());
             this->transform(rotMat);
             return rotMat;
         };
@@ -944,12 +943,12 @@ namespace tslam::Reconstruction
         Eigen::Matrix3d rotateByAxisZ(double angle)
         {
             Eigen::Matrix3d rotMat;
-            rotMat = Eigen::AngleAxisd(angle, Eigen::Vector3d::UnitZ());
+            rotMat = Eigen::AngleAxis(angle, Eigen::Vector3d::UnitZ());
             this->transform(rotMat);
             return rotMat;
         };
 
-    public: __always_inline  ///< custom funcs
+    public: __attribute__((always_inline))  ///< custom funcs
         /**
          * @brief It splits the polygon in two polygons given a segment.
          * ** NOTE **: the polygon must be convex and splitting is not working for segment's ends out of the polygon's contour.**
@@ -1171,28 +1170,6 @@ namespace tslam::Reconstruction
                     polyTriangles.push_back(triangle);
                 }
             }
-        };
-        /**
-         * @brief Convert a polygon to an open3d triangle mesh by triangulation
-         * 
-         * @return open3d::geometry::TriangleMesh 
-         */
-        open3d::geometry::TriangleMesh cvtPoly2O3dMesh()
-        {
-            open3d::geometry::TriangleMesh mesh;
-            std::vector<Eigen::Vector3d> polyVertices;
-            std::vector<Eigen::Vector3i> polyTriangles;
-
-            polyVertices = this->getVertices();
-            this->triangulate(polyVertices, polyTriangles);
-
-            mesh.vertices_ = polyVertices;
-            mesh.triangles_ = polyTriangles;
-            mesh.triangle_normals_.resize(polyTriangles.size());
-            for (unsigned i = 0; i < polyTriangles.size(); i++)
-                mesh.triangle_normals_[i] = this->getLinkedPlane().Normal;
-
-            return mesh;
         };
 
     private:

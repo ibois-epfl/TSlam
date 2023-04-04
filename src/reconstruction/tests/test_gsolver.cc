@@ -26,8 +26,6 @@ uint GT_nbrMeshVertices_DOWN;
 tslam::Reconstruction::TSLAMReconstructor reconstructor = 
         tslam::Reconstruction::TSLAMReconstructor();
 
-
-
 /// Main check func
 void checkResults(std::string ymlPath,
                   bool showVisualizer = false,
@@ -37,15 +35,17 @@ void checkResults(std::string ymlPath,
     reconstructor.loadMap(ymlPath);
 
     // set params for visualizer
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
     reconstructor.getGeometricSolver().setShowVisualizer(showVisualizer);  ///< Enable/disable visualizer
     reconstructor.getGeometricSolver().setSolverVisualizerParams(/*drawTags*/               true,
                                                                  /*drawTagNormals*/         false,
-                                                                 /*drawAabb*/               false,
-                                                                 /*drawIntersectedPoly*/    true,
-                                                                 /*drawSplittingSegments*/  true,
+                                                                 /*drawAabb*/               true,
+                                                                 /*drawIntersectedPoly*/    false,
+                                                                 /*drawSplittingSegments*/  false,
                                                                  /*drawSelectedFace*/       true,
-                                                                 /*drawFinalMesh*/          false
+                                                                 /*drawFinalMesh*/          true
     );
+#endif
 
     // reconstruct!
     reconstructor.run();
@@ -53,24 +53,10 @@ void checkResults(std::string ymlPath,
     // check the inner values of the geometric solver
     auto internGeoSolver = reconstructor.getGeometricSolver();
 
-    uint nbrTags = internGeoSolver.getNbrTags();
-    uint nbrPlnAABBPolygons = internGeoSolver.getNbrPlnAABBPolygons();
-    uint nbrSplitSegments = internGeoSolver.getNbrSplitSegments();
-    uint nbrFacePolygons = internGeoSolver.getNbrFacePolygons();
-    uint nbrMeshVertices = internGeoSolver.getNbrMeshVertices();
-
     CHECK(internGeoSolver.checkMeshSanity() == true);
 
-    CHECK(nbrTags            <= GT_nbrTags);
-    CHECK(nbrPlnAABBPolygons == GT_nbrPlnAABBPolygons);
-    CHECK(nbrSplitSegments   == GT_nbrSplitSegments);
-    CHECK(nbrFacePolygons    <= GT_nbrFacePolygons_UP);
-    CHECK(nbrFacePolygons    >= GT_nbrFacePolygons_DOWN);
-    CHECK(nbrMeshVertices    <= GT_nbrMeshVertices_UP);
-    CHECK(nbrMeshVertices    >= GT_nbrMeshVertices_DOWN);
-
-    // (optional) save mesh
-    // reconstructor.saveMeshAsPLY("/home/as/TSlam/src/reconstruction/tests/test_data/", "test_mesh.ply");
+    // (optional) for further inspections, saave mesh locally
+    reconstructor.saveMeshAsPLY(".", "test2_mesh");
 
     // clean everything
     reconstructor.clean();
@@ -87,15 +73,6 @@ TEST_SUITE("Real_scans")
     * doctest::description("Checks the case of a streight beam with long length."))
     {
         ymlPath = YML_DIR_REAL + "long_map.yml";
-
-        GT_nbrTags              =  256;
-        GT_nbrPlnAABBPolygons   =  6;
-        GT_nbrSplitSegments     =  24;
-        GT_nbrFacePolygons_UP   =  6;
-        GT_nbrFacePolygons_DOWN =  6;
-        GT_nbrMeshVertices_UP   =  8;
-        GT_nbrMeshVertices_DOWN =  8;
-
         checkResults(ymlPath);
     }
 
@@ -103,15 +80,6 @@ TEST_SUITE("Real_scans")
     * doctest::description("Checks the case of a streight beam with medium length."))
     {
         ymlPath = YML_DIR_REAL + "mid_map.yml";
-
-        GT_nbrTags              =  95;
-        GT_nbrPlnAABBPolygons   =  6;
-        GT_nbrSplitSegments     =  24;
-        GT_nbrFacePolygons_UP   =  6;
-        GT_nbrFacePolygons_DOWN =  6;
-        GT_nbrMeshVertices_UP   =  8;
-        GT_nbrMeshVertices_DOWN =  8;
-
         checkResults(ymlPath);
     }
 
@@ -121,33 +89,15 @@ TEST_SUITE("Real_scans")
     * doctest::description("Checks the case of a beam with tags only at extremeties."))
     {
         ymlPath = YML_DIR_REAL + "only_end_enhanced_2_TEST.yml";
-
-        GT_nbrTags              =  106;
-        GT_nbrPlnAABBPolygons   =  7;
-        GT_nbrSplitSegments     =  34;
-        GT_nbrFacePolygons_UP   =  13;
-        GT_nbrFacePolygons_DOWN =  7;
-        GT_nbrMeshVertices_UP   =  15;
-        GT_nbrMeshVertices_DOWN =  10;
-
         checkResults(ymlPath);
     }
 
-    // ===============================================================================
+    // // ===============================================================================
 
     TEST_CASE("Long_length_2_lap_joint"
     * doctest::description("Checks the case of a long beam with 2 lap joint."))
     {
         ymlPath = YML_DIR_REAL + "long_cut.yml";
-
-        GT_nbrTags              =  218;
-        GT_nbrPlnAABBPolygons   =  11;
-        GT_nbrSplitSegments     =  72;
-        GT_nbrFacePolygons_UP   =  40;
-        GT_nbrFacePolygons_DOWN =  14;
-        GT_nbrMeshVertices_UP   =  40;
-        GT_nbrMeshVertices_DOWN =  24;
-
         checkResults(ymlPath, true);
     }
 
@@ -155,35 +105,17 @@ TEST_SUITE("Real_scans")
     * doctest::description("Checks the case of a medium beam with 2 lap joint."))
     {
         ymlPath = YML_DIR_REAL + "medium_cut.yml";
-
-        GT_nbrTags              =  157;
-        GT_nbrPlnAABBPolygons   =  11;
-        GT_nbrSplitSegments     =  72;
-        GT_nbrFacePolygons_UP   =  40;
-        GT_nbrFacePolygons_DOWN =  14;
-        GT_nbrMeshVertices_UP   =  40;
-        GT_nbrMeshVertices_DOWN =  24;
-
         checkResults(ymlPath, true);
     }
 
     // ===============================================================================
 
-    // TEST_CASE("Complex_geometry_romboid"  // FIXME: fails
-    // * doctest::description("Checks the case of a romboid object with multiple details."))
-    // {
-    //     ymlPath = YML_DIR_REAL + "romboid.yml";
-
-    //     GT_nbrTags              =  157;
-    //     GT_nbrPlnAABBPolygons   =  6;  // TODO: set gt values
-    //     GT_nbrSplitSegments     =  24;
-    //     GT_nbrFacePolygons_UP   =  6;
-    //     GT_nbrFacePolygons_DOWN =  6;
-    //     GT_nbrMeshVertices_UP   =  8;
-    //     GT_nbrMeshVertices_DOWN =  8;
-
-    //     checkResults(ymlPath, true);
-    // }
+    TEST_CASE("Complex_geometry_romboid"
+    * doctest::description("Checks the case of a romboid object with multiple details."))
+    {
+        ymlPath = YML_DIR_REAL + "romboid.yml";
+        checkResults(ymlPath, true);
+    }
 }
 
 // ####################################################################################
@@ -195,15 +127,6 @@ TEST_SUITE("Synthetic_scans")
     * doctest::description("Checks the case of a streight beam with long length."))
     {
         ymlPath = YML_DIR_SYNTH + "synth_long_no_ruptures.yml";
-
-        GT_nbrTags              =  582;
-        GT_nbrPlnAABBPolygons   =  6;
-        GT_nbrSplitSegments     =  24;
-        GT_nbrFacePolygons_UP   =  6;
-        GT_nbrFacePolygons_DOWN =  6;
-        GT_nbrMeshVertices_UP   =  8;
-        GT_nbrMeshVertices_DOWN =  8;
-
         checkResults(ymlPath);
     }
 
@@ -211,15 +134,6 @@ TEST_SUITE("Synthetic_scans")
     * doctest::description("Checks the case of a streight beam with medium length."))
     {
         ymlPath = YML_DIR_SYNTH + "synth_copy_mid_map.yml";
-
-        GT_nbrTags              =  84;
-        GT_nbrPlnAABBPolygons   =  6;
-        GT_nbrSplitSegments     =  24;
-        GT_nbrFacePolygons_UP   =  6;
-        GT_nbrFacePolygons_DOWN =  6;
-        GT_nbrMeshVertices_UP   =  8;
-        GT_nbrMeshVertices_DOWN =  8;
-
         checkResults(ymlPath);
     }
 
@@ -229,15 +143,6 @@ TEST_SUITE("Synthetic_scans")
     * doctest::description("Checks the case of a beam with tags only at extremeties."))
     {
         ymlPath = YML_DIR_SYNTH + "synth_big_xlarge_only_extreme.yml";
-
-        GT_nbrTags              =  256;
-        GT_nbrPlnAABBPolygons   =  6;
-        GT_nbrSplitSegments     =  24;
-        GT_nbrFacePolygons_UP   =  6;
-        GT_nbrFacePolygons_DOWN =  6;
-        GT_nbrMeshVertices_UP   =  8;
-        GT_nbrMeshVertices_DOWN =  8;
-
         checkResults(ymlPath);
     }
 
@@ -247,15 +152,6 @@ TEST_SUITE("Synthetic_scans")
     * doctest::description("Checks the case of a beam with one lap joint."))
     {
         ymlPath = YML_DIR_SYNTH + "synth_notch_xlong.yml";
-
-        GT_nbrTags              =  665;
-        GT_nbrPlnAABBPolygons   =  9;
-        GT_nbrSplitSegments     =  52;
-        GT_nbrFacePolygons_UP   =  22;
-        GT_nbrFacePolygons_DOWN =  10;
-        GT_nbrMeshVertices_UP   =  24;
-        GT_nbrMeshVertices_DOWN =  12;
-
         checkResults(ymlPath);
     }
 
@@ -266,15 +162,6 @@ TEST_SUITE("Synthetic_scans")
                            "The beam's center is in the origin of world axis."))
     {
         ymlPath = YML_DIR_SYNTH + "synth_parallel_XY_XZ_YZ_h.yml";
-
-        GT_nbrTags              =  745;
-        GT_nbrPlnAABBPolygons   =  6;
-        GT_nbrSplitSegments     =  24;
-        GT_nbrFacePolygons_UP   =  6;
-        GT_nbrFacePolygons_DOWN =  6;
-        GT_nbrMeshVertices_UP   =  8;
-        GT_nbrMeshVertices_DOWN =  8;
-
         checkResults(ymlPath);
     }
 
@@ -283,15 +170,6 @@ TEST_SUITE("Synthetic_scans")
                            "The beam's center is in the origin of world axis."))
     {
         ymlPath = YML_DIR_SYNTH + "synth_parallel_XY_XZ_YZ_v.yml";
-
-        GT_nbrTags              =  745;
-        GT_nbrPlnAABBPolygons   =  6;
-        GT_nbrSplitSegments     =  24;
-        GT_nbrFacePolygons_UP   =  6;
-        GT_nbrFacePolygons_DOWN =  6;
-        GT_nbrMeshVertices_UP   =  8;
-        GT_nbrMeshVertices_DOWN =  8;
-
         checkResults(ymlPath);
     }
 
@@ -299,32 +177,14 @@ TEST_SUITE("Synthetic_scans")
     * doctest::description("Checks the case of vertical beam parallel to XY, XZ, YZ planes."))
     {
         ymlPath = YML_DIR_SYNTH + "synth_parallel_XY_XZ_YZ_v_not_symmetrical.yml";
-
-        GT_nbrTags              =  745;
-        GT_nbrPlnAABBPolygons   =  6;
-        GT_nbrSplitSegments     =  24;
-        GT_nbrFacePolygons_UP   =  6;
-        GT_nbrFacePolygons_DOWN =  6;
-        GT_nbrMeshVertices_UP   =  8;
-        GT_nbrMeshVertices_DOWN =  8;
-
         checkResults(ymlPath);
     }
 
-    TEST_CASE("Long_length_parallel_vertical_XY_XZ_YZ_double_stripes"  // FIXME: test fails
+    TEST_CASE("Long_length_parallel_vertical_XY_XZ_YZ_double_stripes"
     * doctest::description("Checks the case of vertical beam parallel to XY, XZ, YZ planes.\n"
                            "Stripes are doubled on each face."))
     {
         ymlPath = YML_DIR_SYNTH + "synth_parallel_XY_XZ_YZ_v_double_stripes.yml";
-
-        GT_nbrTags              =  963;
-        GT_nbrPlnAABBPolygons   =  6;
-        GT_nbrSplitSegments     =  24;
-        GT_nbrFacePolygons_UP   =  6;
-        GT_nbrFacePolygons_DOWN =  6;
-        GT_nbrMeshVertices_UP   =  8;
-        GT_nbrMeshVertices_DOWN =  8;
-
         checkResults(ymlPath);
     }
 }

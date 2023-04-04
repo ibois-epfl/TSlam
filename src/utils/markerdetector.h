@@ -69,20 +69,19 @@ public:
 };
 
 //STag detector
-class STagDetector:public MarkerDetector{
+class STagMarkerDetector:public MarkerDetector{
     Stag _stag;
     Params _p;
     std::shared_ptr<aruco::MarkerDetector> _mdetector;
 public:
-    STagDetector(int libraryHD=11, int errorCorrection=7, bool inKeepLogs=false);
-    STagDetector(const Params &p, int libraryHD=11, int errorCorrection=7, bool inKeepLogs=false);
+    STagMarkerDetector(int libraryHD=11, int errorCorrection=7, bool inKeepLogs=false);
+    STagMarkerDetector(const Params &p, int libraryHD=11, int errorCorrection=7, bool inKeepLogs=false);
     void setParams(const Params &p)override;
     std::string getName()const override{return "stag";}
     std::vector<MarkerDetection> detect(const cv::Mat &Image)override;
     void toStream(std::ostream &str)const override;
     void fromStream(std::istream &str)override;
 };
-
 
 }
 #endif

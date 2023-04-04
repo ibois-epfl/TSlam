@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------------
 #   Find Dependencies
 # ----------------------------------------------------------------------------
-find_package(OpenCV 4.5.5 REQUIRED)
+find_package(OpenCV 4.5.4 REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 set(TSLAM_REQUIRED_LIBRARIES ${OpenCV_LIBS})
 
@@ -80,18 +80,88 @@ else()
     set(TSLAM_ARUCO_LIBS ${EXTRALIBNAME}aruco)
 endif()
 
+# FIXME: for tslam reconstruction integration
+if(NOT USE_OWN_CGAL)
+    find_package( CGAL 5.5.1 REQUIRED )
+else()
+    set(CGAL_INCLUDE_DIR "3rdparty/CGAL/include")
+endif()
+include_directories( ${CGAL_INCLUDE_DIR} )
 
+if(NOT USE_OWN_CGAL)
+    find_package( cilantro REQUIRED )
+else()
+    set(CILANTRO_INCLUDE_DIR "3rdparty/cilantro/include")
+endif()
+include_directories( ${CILANTRO_INCLUDE_DIR} )
+
+
+# find_path(GMP_INCLUDE_DIR gmp.h gmpxx.h PATHS /usr/include /usr/local/include )
+# find_library(GMP_LIB NAMES gmp libgmp PATHS /usr/lib /usr/local/lib)
+# if(NOT GMP_LIB)
+#     message(STATUS "GMP not found, trying to install...")
+# else()
+#     message(STATUS "Found GMP: ${GMP_LIB}")
+# endif()
+
+
+# find_library(MPFR_LIB NAMES mpfr libmpfr PATHS /usr/lib /usr/local/lib)
+# if(NOT MPFR_LIB)
+#     message(STATUS "MPFR not found, trying to install...")
+# else()
+#     message(STATUS "Found MPFR: ${MPFR_LIB}")
+# endif()
+
+# Link GMP & MPFR for CGAL
+find_library(GMP_LIB NAMES gmp libgmp PATHS /usr/lib /usr/local/lib)
+if(NOT GMP_LIB)
+    message(STATUS "GMP not found, trying to install...")
+    if(APPLE)
+        execute_process(COMMAND brew install gmp)
+    endif()
+    if(UNIX AND NOT APPLE)
+        execute_process(COMMAND sudo apt-get install libgmp-dev)
+    endif()
+
+    find_library(GMP_LIB NAMES gmp libgmp PATHS ${CMAKE_LIBRARY_PATH} /usr/lib /usr/local/lib)
+    if(NOT GMP_LIB)
+        message(FATAL_ERROR "GMP not found and failed to install by apt-get/brew, please install it manually.")
+    endif()
+endif()
+
+find_library(MPFR_LIB NAMES mpfr libmpfr PATHS ${CMAKE_LIBRARY_PATH} /usr/lib /usr/local/lib)
+if(NOT MPFR_LIB)
+    message(STATUS "MPFR not found, trying to install...")
+    if(APPLE)
+        execute_process(COMMAND brew install mpfr)
+    endif()
+    if(UNIX AND NOT APPLE)
+        execute_process(COMMAND sudo apt-get install libmpfr-dev)
+    endif()
+
+    find_library(MPFR_LIB NAMES mpfr libmpfr PATHS ${CMAKE_LIBRARY_PATH} /usr/lib /usr/local/lib)
+    if(NOT MPFR_LIB)
+        message(FATAL_ERROR "MPFR not found and failed to install by apt-get/brew, please install it manually.")
+    endif()
+endif()
+
+find_package( Boost REQUIRED )
+include_directories( ${Boost_INCLUDE_DIR} ${Boost_LIBRARIES} )
+
+link_libraries(${GMP_LIBRARY} ${MPFR_LIB})
 
 if(XFEATURES2D)
 add_definitions(-DXFEATURES2D)
 endif()
 
-
-
-set(TSLAM_REQUIRED_LIBRARIES ${TSLAM_REQUIRED_LIBRARIES}  ${TSLAM_FBOW_LIBS}  ${TSLAM_ARUCO_LIBS} ${TSLAM_STAG_LIBS} ${TSLAM_XFLANN_LIBS} ${G2O_LIBS})
-
-
-
+set(TSLAM_REQUIRED_LIBRARIES
+    ${TSLAM_REQUIRED_LIBRARIES}
+    ${TSLAM_FBOW_LIBS}
+    ${TSLAM_ARUCO_LIBS}
+    ${TSLAM_STAG_LIBS}
+    ${TSLAM_XFLANN_LIBS}
+    # ${TSLAM_O3D_LIBS} # FIXME: for tslam reconstruction integration
+    ${G2O_LIBS})
 
 #Find OpenNI2
 ### OPENNI 2
@@ -116,9 +186,4 @@ if ( (OpenNI2_INCLUDE STREQUAL "OpenNI2_INCLUDE-NOTFOUND") OR (LIBOPENNI2_LIBRAR
     endif()
     message(STATUS  "OpenNI.h=${OpenNI2_INCLUDE} LIBOPENNI2_LIBRARY=${LIBOPENNI2_LIBRARY}")
     set(OPENNI2LIB_FOUND "YES" )
- endif()
-
-
- if(BUILD_GUI)
- add_subdirectory(gui)
  endif()

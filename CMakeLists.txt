@@ -10,7 +10,7 @@ set(PROJECT_SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON) #...is required...
 set(CMAKE_CXX_EXTENSIONS ON) #...with compiler extensions like gnu++11
-set(CMAKE_CXX_STANDARD 11) # C++11...
+set(CMAKE_CXX_STANDARD 17) # C++11...
 
 # Set the build type for API integration into third software or not
 if(BUILD_4_API)
@@ -18,7 +18,6 @@ if(BUILD_4_API)
         set(CMAKE_INSTALL_PREFIX /usr)
     endif()
     set(BUILD_UTILS OFF)
-    set(BUILD_GUI OFF)
 endif()
 if(NOT CMAKE_BUILD_TYPE )
    set( CMAKE_BUILD_TYPE "Release" )
@@ -66,6 +65,15 @@ configure_file("${PROJECT_SOURCE_DIR}/cmake/config.cmake.in" "${PROJECT_BINARY_D
 install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION share/${PROJECT_NAME} )
 
 include(cmake/display.cmake)
+
+#------------------------------------------------------------------------------------------------------------
+# Download tslam vocabulary file
+#------------------------------------------------------------------------------------------------------------
+
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/assets/voc/orb.fbow")
+    message(STATUS "Downloading vocabulary file from https://zenodo.org/record/7738721/files/orb.fbow")
+    file(DOWNLOAD "https://zenodo.org/record/7738721/files/orb.fbow" "${PROJECT_SOURCE_DIR}/assets/voc/orb.fbow")
+endif()
 
 
 #------------------------------------------------------------------------------------------------------------

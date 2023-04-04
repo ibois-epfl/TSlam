@@ -34,7 +34,7 @@ Params::Params(){
       KFCulling=0.8;// Value indicating how many redundant keypoints must be in a keyframe to remove it. Range [0,1]. If low, few keyframes will survive. If 1, no keyframe will be removed once added.
       aruco_markerSize=1;//Size of markers in meters
       maxNewPoints=350;//maximum number of new points created when a new keyframe is added
-      enableLoopClosure=true;
+      enableLoopClosure=false;
 
       forceInitializationFromMarkers=false;//If true, the system will not initialize until a good initialization from markers is obtained
       nthreads_feature_detector=2;//number of threads employed in keypoint detection
@@ -111,7 +111,7 @@ void Params::toStream(ostream &str)const{
     str.write((char*)&autoAdjustKpSensitivity,sizeof(autoAdjustKpSensitivity));
     str.write((char*)&reLocalizationWithKeyPoints,sizeof(reLocalizationWithKeyPoints));
     str.write((char*)&reLocalizationWithMarkers,sizeof(reLocalizationWithMarkers));
-    str.write((char*)&isInstancing,sizeof(isInstancing));
+    str.write((char*)&localizeOnly,sizeof(localizeOnly));
     str.write((char*)&inPlaneMarkers,sizeof(inPlaneMarkers));
 
 
@@ -174,7 +174,7 @@ void Params::fromStream(istream &str){
     str.read((char*)&autoAdjustKpSensitivity,sizeof(autoAdjustKpSensitivity));
     str.read((char*)&reLocalizationWithKeyPoints,sizeof(reLocalizationWithKeyPoints));
     str.read((char*)&reLocalizationWithMarkers,sizeof(reLocalizationWithMarkers));
-    str.read((char*)&isInstancing,sizeof(isInstancing));
+    str.read((char*)&localizeOnly,sizeof(localizeOnly));
     str.read((char*)&inPlaneMarkers,sizeof(inPlaneMarkers));
     fromStream__(extraParams,str);
 
@@ -225,7 +225,7 @@ uint64_t  Params::getSignature()const{
     sig+=autoAdjustKpSensitivity;
     sig+=reLocalizationWithKeyPoints;
     sig+=reLocalizationWithMarkers;
-    sig+=isInstancing;
+    sig+=localizeOnly;
     sig+=inPlaneMarkers;
 
   return sig;
@@ -253,7 +253,7 @@ void Params::saveToYMLFile(const string &path){
     fs<<"aruco_allowOneFrameInitialization" <<aruco_allowOneFrameInitialization;
     fs<<"reLocalizationWithKeyPoints" <<reLocalizationWithKeyPoints;
     fs<<"reLocalizationWithMarkers" <<reLocalizationWithMarkers;
-    fs<<"isInstancing" <<isInstancing;
+    fs<<"localizeOnly" <<localizeOnly;
     fs<<"inPlaneMarkers" <<inPlaneMarkers;
     fs<<"saveImageInMap"<<saveImageInMap;
 
@@ -334,7 +334,7 @@ std::cout <<"Params:"<< filePath<< std::endl;
     attemtpRead("autoAdjustKpSensitivity",autoAdjustKpSensitivity,fs);
     attemtpRead("reLocalizationWithKeyPoints",reLocalizationWithKeyPoints,fs);
     attemtpRead("reLocalizationWithMarkers",reLocalizationWithMarkers,fs);
-    attemtpRead("isInstancing",isInstancing,fs);
+    attemtpRead("localizeOnly",localizeOnly,fs);
     attemtpRead("inPlaneMarkers",inPlaneMarkers,fs);
     attemtpRead("saveImageInMap",    saveImageInMap,fs);
 

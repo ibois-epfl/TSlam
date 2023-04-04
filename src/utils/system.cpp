@@ -1,8 +1,26 @@
+/**
+* This file is part of  TSLAM
+*
+* Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
+*
+* TSLAM is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* TSLAM is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
+*/
 #include <list>
 #include <fstream>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <aruco/markermap.h>
-#include "utils/system.h"
+#include "system.h"
 #include "basictypes/misc.h"
 #include "basictypes/debug.h"
 #include "basictypes/timers.h"
@@ -20,2810 +38,1014 @@
 #include "utils/frameextractor.h"
 #include "basictypes/hash.h"
 
-namespace
+namespace tslam{
+   //System global params
+   Params System::_params;
+   Params  & System::getParams()  {return _params;}
 
-tslam {
 
-    Params System::sysParams;
 
-    Params &System::getParams() { return sysParams; }
+   //returns the index of the current keyframe
+   uint32_t System::getCurrentKeyFrameIndex(){return _curKFRef;}
 
-    uint32_t System::getCurrentKeyFrameIndex() { return currentKeyFrameId_105767; }
 
-    std::shared_ptr<Map> System::getMap() { return TheMap; }
+   //returns a pointer to the map being used
+   std::shared_ptr<Map> System::getMap(){return TheMap;}
 
-    System::System() {
-        sysFrameExtractor = std::make_shared<FrameExtractor>();
-        sysMapIntializer = std::make_shared<MapInitializer>();
-        sysMapManager = std::make_shared<MapManager>();
-        _1320287184975591154 = std::make_shared<tslam::STagDetector>();
-    }
 
-    System::~System() { waitForFinished(); }
+System::System(){
+     fextractor=std::make_shared<FrameExtractor>();
+     map_initializer=std::make_shared<MapInitializer>();
+     TheMapManager=std::make_shared<MapManager>();
+     marker_detector=std::make_shared<tslam::STagMarkerDetector>();
+}
 
-    void System::_14789688456123595594() {
-        sysParams.nthreads_feature_detector = max(1, sysParams.nthreads_feature_detector);
-        std::shared_ptr<Feature2DSerializable> feature2DSerializable = Feature2DSerializable:: create(sysParams.kpDescriptorType);
-        feature2DSerializable->setParams(sysParams.extraParams);
-        sysParams.maxDescDistance = feature2DSerializable->getMinDescDistance();
+System::~System(){
 
-        sysFrameExtractor->setParams(feature2DSerializable, sysParams, _1320287184975591154);
-        sysFrameExtractor->removeFromMarkers() = sysParams.removeKeyPointsIntoMarkers;
-        sysFrameExtractor->detectMarkers() = sysParams.detectMarkers;
-        sysFrameExtractor->detectKeyPoints() = sysParams.detectKeyPoints;
-    }
+    waitForFinished();
+}
 
-    void System::setParams(std::shared_ptr<Map> _11093822290287, const Params &_2654435881,
-                           const string &_4953871428288621283, std::
 
-                           shared_ptr<
+void System::createFrameExtractor(){
+    _params.nthreads_feature_detector=max(1,_params.nthreads_feature_detector);
+    std::shared_ptr<Feature2DSerializable> fdetector=Feature2DSerializable::create(_params.kpDescriptorType );
 
-            tslam::
+    fdetector->setParams(_params.extraParams);
+    _params.maxDescDistance=fdetector->getMinDescDistance();
 
-            MarkerDetector>
 
-                           _1516358670470627782) {
+    fextractor->setParams(fdetector, _params,marker_detector);
+    fextractor->removeFromMarkers()=_params.removeKeyPointsIntoMarkers;
+    fextractor->detectMarkers()=_params.detectMarkers;
+    fextractor->detectKeyPoints()=_params.detectKeyPoints;
 
-        TheMap =
+}
+void System::setParams( std::shared_ptr<Map> map, const  Params &p,const string &vocabulary,std::shared_ptr<tslam::MarkerDetector> mdetector){
 
-                _11093822290287;
+    TheMap=map;
 
-        sysParams =
 
-                _2654435881;
+    _params=p;
+    marker_detector=mdetector;
+    if(!marker_detector)
+        marker_detector=std::make_shared<STagMarkerDetector>(_params);
+    createFrameExtractor();
 
-        _1320287184975591154 =
+    //now, the vocabulary
 
-                _1516358670470627782;
-
-        if (
-
-                !
-
-                        _1320287184975591154)
-
-            _1320287184975591154 =
-                    std::
-
-                    make_shared<
-                            STagDetector>
-                            (
-                                    sysParams);
-
-        _14789688456123595594();
-
-        if
-
-                (
-
-                TheMap->
-
-                        isEmpty()
-
-                ) {
-
-            trackingState =
-
-                    STATE_LOST;
-
-            if
-
-                    (!
-                    _4953871428288621283.empty()
-                    ) {
-
-                TheMap->
-                        TheKFDataBase.loadFromFile(
-
-                        _4953871428288621283);
-
-            }
-
-            MapInitializer::
-            Params _3005399798454910266;
-
-            if
-
-                    (
-                    sysParams.forceInitializationFromMarkers)
-
-                _3005399798454910266.mode =
-
-                        MapInitializer::
-                        ARUCO;
-
-            else
-                _3005399798454910266.mode =
-
-                        MapInitializer::
-
-                        BOTH;
-
-            _3005399798454910266.minDistance =
-
-                    sysParams.minBaseLine;
-
-            _3005399798454910266.markerSize =
-
-                    sysParams.aruco_markerSize;
-
-            _3005399798454910266.aruco_minerrratio_valid =
-
-                    sysParams.aruco_minerrratio_valid;
-
-            _3005399798454910266.allowArucoOneFrame =
-
-                    sysParams.aruco_allowOneFrameInitialization;
-
-            _3005399798454910266.max_makr_rep_err =
-
-                    2.5;
-
-            _3005399798454910266.minDescDistance =
-
-                    sysParams.maxDescDistance;
-
-            sysMapIntializer->
-
-                    setParams(
-
-                    _3005399798454910266);
-
-        } else
-            trackingState =
-                    STATE_LOST;
-
-    }
-
-    void
-
-    System::
-
-    waitForFinished() {
-
-        sysMapManager->
-
-                stop();
-
-        sysMapManager->
-                mapUpdate();
-
-        if (
-
-                sysMapManager->bigChange()
-
-                ) {
-
-            curFrame.pose_f2g =
-
-                    sysMapManager->
-
-                            getLastAddedKFPose();
-
-            curPose_ns =
-
-                    curFrame.pose_f2g;
-
+    if (TheMap->isEmpty()){//Need to start from zero
+        currentState=STATE_LOST;
+        if (!vocabulary.empty()  ){
+            TheMap->TheKFDataBase.loadFromFile(vocabulary);
         }
+        MapInitializer::Params params;
+        if ( _params.forceInitializationFromMarkers)
+            params.mode=MapInitializer::ARUCO;
+        else
+            params.mode=MapInitializer::BOTH;
 
+        params.minDistance= _params.minBaseLine;
+        params.markerSize=_params.aruco_markerSize;
+        params.aruco_minerrratio_valid= _params.aruco_minerrratio_valid;
+        params.allowArucoOneFrame=_params.aruco_allowOneFrameInitialization;
+        params.max_makr_rep_err=2.5;
+        params.minDescDistance=_params.maxDescDistance;
+        map_initializer->setParams(params);
     }
-
-    void System::resetTracker() {
-        waitForFinished();
-        currentKeyFrameId_105767 = -1;
-        curPose_ns = se3();
-        trackingState = STATE_LOST;
-        curFrame.clear();
-        lastFrame.clear();
-        _14463320619150402643 = cv::Mat();
-        _10558050725520398793 = -1;
-    }
-
-    cv::Mat System::process(const Frame &inputFrame) {
-
-        se3 _16937225862434286412 = curPose_ns;
-
-        if ((void *) &inputFrame != (void *) &curFrame) {
-            swap(lastFrame, curFrame);
-            curFrame = inputFrame;
-        }
-
-        if (sysMode == MODE_SLAM && !sysMapManager->hasMap())
-            sysMapManager->setParams(TheMap, sysParams.enableLoopClosure);
-
-        if (!sysParams.runSequential && sysMode == MODE_SLAM)
-            sysMapManager->start();
-
-        for (auto &_175247760135: lastFrame.ids)
-            if (_175247760135 != std::numeric_limits<uint32_t>::max()) {
-                if (!TheMap->map_points.is(_175247760135))
-                    _175247760135 = std::numeric_limits<uint32_t>::max();
-                else if (TheMap->map_points[_175247760135].isBad())
-                    _175247760135 = std::numeric_limits<uint32_t>::max();
-            }
-
-        if (TheMap->isEmpty() && sysMode == MODE_SLAM) {
-            if (_2016327979059285019(curFrame))
-                trackingState = STATE_TRACKING;
-        } else {
-            if (trackingState == STATE_TRACKING) {
-                currentKeyFrameId_105767 = getRefKeyFrameId(lastFrame, curPose_ns);
-                curPose_ns = _11166622111371682966(curFrame, curPose_ns); // bug here
-
-                if (!curPose_ns.isValid())
-                    trackingState = STATE_LOST;
-            }
-
-            if (trackingState == STATE_LOST) {
-                se3 _5564636146947005941;
-                if (_16487919888509808279(curFrame, _5564636146947005941)) {
-                    trackingState = STATE_TRACKING;
-                    curPose_ns = _5564636146947005941;
-                    currentKeyFrameId_105767 = getRefKeyFrameId(curFrame, curPose_ns);
-                    _10558050725520398793 = curFrame.fseq_idx;
-                }
-            }
-
-            if (trackingState == STATE_TRACKING) {
-                curFrame.pose_f2g = curPose_ns;
-                if (sysMode == MODE_SLAM &&
-                    ((curFrame.fseq_idx >= _10558050725520398793 + 5) || (_10558050725520398793 == -1)))
-                    sysMapManager->newFrame(curFrame, currentKeyFrameId_105767);
-            }
-        }
-
-        if (trackingState == STATE_LOST && sysMode == MODE_SLAM && TheMap->keyframes.size() <= 5 &&
-            TheMap->keyframes.size() != 0) {
-            sysMapManager->reset();
-            TheMap->clear();
-            sysMapIntializer->reset();
-            sysMapManager->setParams(TheMap, sysParams.enableLoopClosure);
-        }
-
-        if (trackingState == STATE_TRACKING) {
-            _14463320619150402643 = cv::Mat::eye(4, 4, CV_32F);
-            if (_16937225862434286412.isValid()) {
-                _14463320619150402643 = curPose_ns.convert() * _16937225862434286412.convert().inv();
-            }
-        } else {
-            _14463320619150402643 = cv::Mat();
-        }
-        curFrame.pose_f2g = curPose_ns;
-
-        // if (++_13033649816026327368 > (10 * 4 * 12 * 34 * 6) / 2) curPose_ns = cv::Mat();
-
-        if (trackingState == STATE_LOST) return cv::Mat();
-        else return curPose_ns;
-    }
-
-cv::Mat System::process(cv::Mat &in_image, const ImageParams &imgParams,
-                        uint32_t _9933887380370137445, const cv::Mat &_46082575014988268,
-                        const cv::Mat &_1705635550657133790) {
-    swap(lastFrame, curFrame);
-     std::thread mapUpdateThread;
-    if (sysMode == MODE_SLAM) {
-         mapUpdateThread = std::thread([&]() {
-            if (sysMapManager->mapUpdate()) {
-                if (sysMapManager->bigChange()) {
-                    curFrame.pose_f2g = sysMapManager->getLastAddedKFPose();
-                    curPose_ns = sysMapManager->getLastAddedKFPose();
-                }
-            };
-         });
-    }
-
-    if (_46082575014988268.empty() && _1705635550657133790.empty())
-        sysFrameExtractor->process(in_image, imgParams, curFrame, _9933887380370137445);
-    else if (_1705635550657133790.empty())
-        sysFrameExtractor->process_rgbd(in_image, _46082575014988268, imgParams,curFrame, _9933887380370137445);
     else
-        sysFrameExtractor->processStereo(in_image, _1705635550657133790, imgParams,curFrame, _9933887380370137445);
+        currentState=STATE_LOST;
+}
 
-    if (sysParams.autoAdjustKpSensitivity) {
-        int _1699599737904718822 = sysParams.maxFeatures - curFrame.und_kpts.size();
-        if (_1699599737904718822 > 0) {
-            float _46082575832048655 = 1.0f - (float(_1699599737904718822) / float(curFrame.und_kpts.size()));
-            float _6148074839757474704 = sysFrameExtractor->getSensitivity() + _46082575832048655;
-            _6148074839757474704 = std::max(_6148074839757474704, 1.0f);
-            sysFrameExtractor->setSensitivity(_6148074839757474704);
-        } else {
-            sysFrameExtractor->setSensitivity(sysFrameExtractor->getSensitivity()* 0.95);
+void System::waitForFinished(){
+ TheMapManager->stop();
+ TheMapManager->mapUpdate();
+ if(TheMapManager->bigChange()){
+     _cFrame.pose_f2g=TheMapManager->getLastAddedKFPose();
+     _curPose_f2g=_cFrame.pose_f2g;
+ }
+}
+//void System::resetCurrentPose(){
+//    waitForFinished();
+
+//    if (currentState==STATE_TRACKING)
+//        currentState=STATE_LOST;
+//    _curPose_f2g=cv::Mat();
+//    velocity=cv::Mat();
+//}
+void System::resetTracker(){
+    waitForFinished();
+    _curKFRef=-1;
+    _curPose_f2g=se3();
+    currentState=STATE_LOST;
+    _cFrame.clear();
+    _prevFrame.clear();
+    velocity=cv::Mat();
+    lastKFReloc=-1;
+}
+
+
+cv::Mat System::process(const Frame &frame) {
+     assert(TheMap->checkConsistency());
+     se3 prevPose=_curPose_f2g;//pose computed
+
+    //copy the current frame if not calling from the other member funtion
+    if ((void*)&frame!=(void*)&_cFrame){//only if not calling from the other process member function
+        swap(_prevFrame,_cFrame);
+        _cFrame=frame;
+    }
+
+
+    _debug_exec(20, saveToFile("world-prev.ucs"););
+
+
+
+    __TSLAM_ADDTIMER__;
+
+    //Initialize other processes if not yet
+    if (currentMode==MODE_SLAM  && !TheMapManager->hasMap())
+        TheMapManager->setParams(TheMap,_params.enableLoopClosure);
+    if (!_params.runSequential && currentMode==MODE_SLAM )
+        TheMapManager->start();
+
+    __TSLAM_TIMER_EVENT__  ("initialization");
+    //update map if required
+
+
+    //remove possible references to removed mappoints in _prevFrame
+    for(auto &id:_prevFrame.ids)
+        if (id!=std::numeric_limits<uint32_t>::max()){
+            if (!TheMap->map_points.is(id)) id=std::numeric_limits<uint32_t>::max();
+            else if( TheMap->map_points[id].isBad())id=std::numeric_limits<uint32_t>::max();
         }
+    __TSLAM_TIMER_EVENT__("removed invalid map references");
+
+
+    _debug_msg_("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" );
+    _debug_msg_("|||||||||||||||||||||| frame="<<frame.fseq_idx<<" sig="<<sigtostring(frame.getSignature())<<"  Wsig="<<sigtostring(getSignature()));
+    _debug_msg_("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" );
+
+
+
+    //not initialized yet
+    if(TheMap->isEmpty() && currentMode==MODE_SLAM) {
+        if ( initialize(_cFrame))
+            currentState=STATE_TRACKING;
+        __TSLAM_TIMER_EVENT__("initialization attempted");
     }
-
-    if(sysMode == MODE_SLAM) mapUpdateThread.join();
-    cv::Mat _3005399805025936106 = process(curFrame);
-
-    float _6154865401824487276 = sqrt(float(curFrame.imageParams.CamSize.area())/ float(in_image.size().area()));
-
-    _14031550457846423181(in_image, 1. / _6154865401824487276);
-
-    auto _5829441678613027716 = [](const uint32_t &_11093821926013) {
-        std::stringstream _706246330191125;
-        _706246330191125 <<_11093821926013;
-        return _706246330191125.str();
-    };
-
-    _14938529070154896274(
-            in_image,
-            "\x4d\x61\x70\x20\x50\x6f\x69\x6e\x74\x73\x3a" + _5829441678613027716(TheMap->map_points.size()),
-            cv::Point(20, in_image.rows - 20));
-
-    _14938529070154896274(
-            in_image,
-            "\x4d\x61\x70\x20\x4d\x61\x72\x6b\x65\x72\x73\x3a" + _5829441678613027716(TheMap->map_markers.size()),
-            cv::Point(20, in_image.rows - 40));
-
-    _14938529070154896274(
-            in_image,
-            "\x4b\x65\x79\x46\x72\x61\x6d\x65\x73\x3a" + _5829441678613027716(TheMap->keyframes.size()),
-            cv::Point(20, in_image.rows - 60));
-
-    int _16937201858692939798 = 0;
-
-    for (auto _175247760135: curFrame.ids)
-        if (_175247760135 != std::numeric_limits<uint32_t>::max())
-            _16937201858692939798++;
-
-    _14938529070154896274(
-            in_image,
-            "\x4d\x61\x74\x63\x68\x65\x73\x3a" + _5829441678613027716(_16937201858692939798),
-            cv::Point(20, in_image.rows - 80));
-
-    if (fabs(_6154865401824487276 - 1) > 1e-3)
-        _14938529070154896274(
-                in_image,
-                "\x49\x6d\x67\x2e\x53\x69\x7a\x65\x3a" +
-                    _5829441678613027716(curFrame.imageParams.CamSize.width) +
-                    "\x78" + _5829441678613027716(curFrame.imageParams.CamSize.height),
-                cv::Point(20, in_image.rows - 100));
-
-    return _3005399805025936106;
-
-    }
-
-cv::Mat System::process(vector<cv::
-
-                    Mat>
-
-            &_3005401535270843804, ImageParams &_4702029808027735906, uint32_t
-
-            _9933887380370137445) {
-
-        swap(
-                lastFrame, curFrame);
-
-        std::thread mapUpdateThread;
-
-        if
-
-                (sysMode ==
-
-                 MODE_SLAM)
-
-            mapUpdateThread = std::thread([&]() {
-                if (sysMapManager->mapUpdate()) {
-                    if (
-
-                                            sysMapManager->
-
-                                                    bigChange()
-
-                                            ) {
-
-                                        curFrame.pose_f2g = sysMapManager->
-
-                                                getLastAddedKFPose();
-                                        curPose_ns =
-
-                                                sysMapManager->
-                                                        getLastAddedKFPose();
-
-                                    }
-
-                                }
-
-                                ;
-
-                            });
-
-        sysFrameExtractor->
-
-                processArray(
-                _3005401535270843804, _4702029808027735906, curFrame, _9933887380370137445, sysMapIntializer);
-
-        if (
-
-                sysParams.autoAdjustKpSensitivity) {
-
-            int
-                    _1699599737904718822 =
-
-                    sysParams.maxFeatures - curFrame.und_kpts.size();
-
-            if (
-                    _1699599737904718822 >
-
-                    0) {
-
-                float
-
-                        _46082575832048655 =
-
-                        1.0f - (
-
-                                float(
-
-                                        _1699599737904718822)
-                                / float(
-                                        curFrame.und_kpts.size()
-
-                                )
-
-                        );
-
-                float
-                        _6148074839757474704 =
-                        sysFrameExtractor->
-
-                                getSensitivity()
-
-                        + _46082575832048655;
-
-                _6148074839757474704 =
-
-                        std::
-
-                        max(_6148074839757474704, 1.0f);
-
-                sysFrameExtractor->
-
-                        setSensitivity(
-
-                        _6148074839757474704);
-
-            } else {
-
-                sysFrameExtractor->
-
-                        setSensitivity(
-
-                        sysFrameExtractor->
-
-                                getSensitivity()
-
-                        * 0.95);
-
+    else{
+        //tracking mode
+        if( currentState==STATE_TRACKING){
+            _curKFRef=getBestReferenceFrame(_prevFrame,_curPose_f2g);
+            _curPose_f2g=track(_cFrame,_curPose_f2g);
+            _debug_msg_("current pose="<<_curPose_f2g);
+            __TSLAM_TIMER_EVENT__("track");
+            if( !_curPose_f2g.isValid())
+                currentState=STATE_LOST;
+        }
+        //lost??
+        if (currentState==STATE_LOST){
+            se3 reloc_pose;
+            if ( relocalize(_cFrame,reloc_pose)){//recovered
+                currentState=STATE_TRACKING;
+                _curPose_f2g=reloc_pose;
+                _curKFRef=getBestReferenceFrame(_cFrame,_curPose_f2g);
+                lastKFReloc=_cFrame.fseq_idx;
             }
-
+            __TSLAM_TIMER_EVENT__("relocalize");
         }
 
-        if (sysMode == MODE_SLAM) mapUpdateThread.join();
 
-        cv::
-
-        Mat _3005399805025936106 = process(
-
-                curFrame);
-
-        float
-
-                _6154865401824487276 =
-
-                sqrt(
-
-                        float(
-
-                                curFrame.imageParams.CamSize.area()
-
-                        ) / float(
-                                _3005401535270843804[0]
-
-                                        .size()
-
-                                        .area()
-
-                        )
-
-                );
-
-        _14031550457846423181(
-
-                _3005401535270843804[
-
-                        0], 1. / _6154865401824487276);
-
-        auto
-
-                _5829441678613027716 =
-
-                [
-
-                ]
-
-                        (
-                                const uint32_t &_11093821926013) {
-                    std::
-
-                    stringstream _706246330191125;
-                    _706246330191125 <<
-
-                                     _11093821926013;
-                    return _706246330191125.str();
-
-                };
-
-        _14938529070154896274(
-
-                _3005401535270843804[
-
-                        0], "\x4d\x61\x70\x20\x50\x6f\x69\x6e\x74\x73\x3a" + _5829441678613027716(
-                        TheMap->
-
-                                map_points.size()
-
-                ), cv::
-
-                Point(
-
-                        20, _3005401535270843804[
-
-                                    0]
-
-                                    .rows - 20)
-
-        );
-
-        _14938529070154896274(
-                _3005401535270843804[
-
-                        0], "\x4d\x61\x70\x20\x4d\x61\x72\x6b\x65\x72\x73\x3a" + _5829441678613027716(
-
-                        TheMap->
-
-                                map_markers.size()
-
-                ), cv::
-
-                Point(
-                        20, _3005401535270843804[
-
-                                    0]
-
-                                    .rows - 40)
-
-        );
-
-        _14938529070154896274(
-
-                _3005401535270843804[
-                        0], "\x4b\x65\x79\x46\x72\x61\x6d\x65\x73\x3a" + _5829441678613027716(
-
-                        TheMap->
-
-                                keyframes.size()
-
-                ), cv::Point(
-
-                        20, _3005401535270843804[
-
-                                    0]
-
-                                    .rows - 60)
-
-        );
-
-        int
-                _16937201858692939798 =
-
-                0;
-        for (
-
-            auto _175247760135: curFrame.ids)
-
-            if (
-                    _175247760135 !=
-
-                    std::
-
-                    numeric_limits<
-
-                            uint32_t>
-                    ::
-
-                    max()
-
-                    )
-                _16937201858692939798++;
-
-        _14938529070154896274(
-
-                _3005401535270843804[
-
-                        0], "\x4d\x61\x74\x63\x68\x65\x73\x3a" + _5829441678613027716(
-
-                        _16937201858692939798), cv::
-
-                Point(
-                        20, _3005401535270843804[
-
-                                    0]
-                                    .rows - 80)
-
-        );
-        if (
-
-                fabs(
-
-                        _6154865401824487276 - 1)
-
-                >
-                1e-3)
-
-            _14938529070154896274(
-
-                    _3005401535270843804[0], "\x49\x6d\x67\x2e\x53\x69\x7a\x65\x3a" + _5829441678613027716(
-                            curFrame.imageParams.CamSize.width)
-
-                                             + "\x78" + _5829441678613027716(
-
-                            curFrame.imageParams.CamSize.height), cv::
-
-                    Point(
-
-                            20, _3005401535270843804[
-
-                                        0]
-
-                                        .rows - 100)
-
-            );
-
-        return
-
-                _3005399805025936106;
+        //did properly recover??
+        if( currentState==STATE_TRACKING){
+            _cFrame.pose_f2g=_curPose_f2g;
+            if (currentMode==MODE_SLAM  && (  ( _cFrame.fseq_idx>=lastKFReloc+5) || (lastKFReloc==-1)  ))//must add a new frame?
+               TheMapManager->newFrame(_cFrame,_curKFRef);
+            __TSLAM_TIMER_EVENT__("newFrame");
+            _debug_msg_("_curKFRef="<<_curKFRef);
+        }
+    }
+
+    __TSLAM_TIMER_EVENT__("track/initialization done");
+
+    assert(TheMap->checkConsistency(debug::Debug::getLevel()>=10));
+
+
+    //if lost after very few keyframes, reset map
+    if( currentState==STATE_LOST && currentMode==MODE_SLAM && TheMap->keyframes.size()<=5 && TheMap->keyframes.size()!=0){
+        TheMapManager->reset();
+        TheMap->clear();
+        map_initializer->reset();
+        TheMapManager->setParams(TheMap,_params.enableLoopClosure);
+    }
+
+
+    //compute the velocity
+     if (currentState==STATE_TRACKING ){
+        velocity=cv::Mat::eye(4,4,CV_32F);
+        if ( prevPose.isValid()){
+            velocity = _curPose_f2g.convert()*prevPose.convert().inv();
+         }
+    }
+    else{
+        velocity=cv::Mat();
 
     }
 
-    void
 
-    System::
+    _cFrame.pose_f2g=_curPose_f2g;
+    _debug_msg_("camera pose="<<_curPose_f2g);
 
-    _14938529070154896274(
-            cv::
+//#ifndef _TSLAM_123asd
+//    if( ++totalNFramesProcessed> (10*4*12*34*6)/2)
+//        _curPose_f2g=cv::Mat();
+//#endif
 
-            Mat &_175247760140, string _706246331661728, cv::
+    if (currentState==STATE_LOST) return cv::Mat();
+    else return _curPose_f2g;
 
-            Point _2654435881) {
+}
 
-        float
-                _706246308256699 =
 
-                float(
-                        _175247760140.cols)
 
-                / float(
-                        1280);
-        cv::
+cv::Mat System::process(  cv::Mat &InputImage, const ImageParams &img_params,uint32_t frameseq_idx, const cv::Mat & depth, const cv::Mat &RIn_image) {
 
-        putText(
 
-                _175247760140, _706246331661728, _2654435881, cv::
 
-                FONT_HERSHEY_SIMPLEX, 0.5 * _706246308256699, cv::
-                Scalar(
+    __TSLAM_ADDTIMER__;
 
-                        0, 0, 0), 3 * _706246308256699);
+    assert( (img_params.bl>0 && !depth.empty()) || depth.empty());//if rgbd, then ip must  have the params set
 
-        cv::
+    swap(_prevFrame,_cFrame);
 
-        putText(
-
-                _175247760140, _706246331661728, _2654435881, cv::
-
-                FONT_HERSHEY_SIMPLEX, 0.5 * _706246308256699, cv::
-
-                Scalar(
-
-                        125, 255, 255), 1 * _706246308256699);
-
-    }
-
-    string System::
-
-    getSignatureStr()
-    const {
-
-        return
-
-                _2102381941757963317(
-                        _13507858972549420551()
-
-                );
-
-    }
-
-    uint64_t System::
-
-    _13507858972549420551(bool _46082575779493229)
-
-    const {
-
-        Hash _11093822380353;
-
-        _11093822380353 += TheMap->
-
-                getSignature(
-                _46082575779493229);
-
-        if (
-
-                _46082575779493229)
-            cerr <<
-                 R"(\tSystem 1. sig=)" <<
-
-                 _11093822380353 <<
-
-                 endl;
-
-        _11093822380353 +=
-
-                sysParams.getSignature();
-
-        if (
-                _46082575779493229)
-
-            cerr << R"(\tSystem 2. sig=)" <<
-                 _11093822380353 <<
-                 endl;
-
-        for (
-
-                int _2654435874 =
-
-                        0;
-                _2654435874 <
-
-                6;
-                _2654435874++
-
-                )
-            _11093822380353 +=
-
-                    curPose_ns[
-
-                            _2654435874];
-
-        if (
-                _46082575779493229)
-
-            cerr <<
-
-                 R"(\tSystem 3. sig=)" << _11093822380353 <<
-
-                 endl;
-
-        _11093822380353.add(
-
-                currentKeyFrameId_105767);
-
-        if (
-
-                _46082575779493229)
-
-            cerr <<
-
-                 R"(\tSystem 4. sig=)" <<
-                 _11093822380353 <<
-
-                 endl;
-
-        _11093822380353 += curFrame.getSignature();
-
-        if (
-
-                _46082575779493229)
-
-            cerr <<
-
-                 R"(\tSystem 5. sig=)" <<
-
-                 _11093822380353 <<
-
-                 endl;
-
-        _11093822380353 +=
-
-                _13028158409047949416;
-
-        if (
-
-                _46082575779493229)
-
-            cerr <<
-
-                 "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x37\x2e\x20\x73\x69\x67\x3d" <<
-                 _11093822380353 <<
-
-                 endl;
-
-        _11093822380353 += trackingState;
-
-        if (
-
-                _46082575779493229)
-            cerr <<
-
-                 "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x38\x2e\x20\x73\x69\x67\x3d" <<
-                 _11093822380353 <<
-                 endl;
-
-        _11093822380353 +=
-
-                sysMode;
-
-        if (
-
-                _46082575779493229)
-
-            cerr <<
-
-                 "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x39\x2e\x20\x73\x69\x67\x3d" <<
-                 _11093822380353 <<
-
-                 endl;
-
-        _11093822380353 +=
-                lastFrame.getSignature();
-
-        if (
-
-                _46082575779493229)
-
-            cerr <<
-
-                 "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x31\x30\x2e\x73\x69\x67\x3d" <<
-
-                 _11093822380353 << endl;
-
-        _11093822380353 +=
-
-                sysMapManager->
-
-                        getSignature();
-
-        if (_46082575779493229)
-
-            cerr <<
-
-                 "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x31\x31\x2e\x73\x69\x67\x3d" <<
-                 _11093822380353 <<
-
-                 endl;
-
-        _11093822380353 +=
-
-                _14463320619150402643;
-
-        _11093822380353 +=
-
-                _10558050725520398793;
-
-        if (
-
-                _46082575779493229)
-            cerr <<
-
-                 "\x5c\x74\x53\x79\x73\x74\x65\x6d\x20\x31\x32\x2e\x73\x69\x67\x3d" <<
-
-                 _11093822380353 <<
-                 endl;
-
-        return
-
-                _11093822380353;
-
-    }
-
-    cv::
-
-    Mat System::_4145838251597814913(
-
-            const Frame &inputFrame) {
-
-        std::
-        vector<
-
-                uint32_t> _4240939334638385660;
-
-        vector<pair<
-
-                cv::
-
-                Mat, double>
-
-        >
-                _5923954032168212568;
-
-        vector<
-
-                cv::
-
-                Point3f>
-
-                _7045032207766252521;
-
-        vector<
-
-                cv::
-
-                Point2f>
-
-                _7045032207766252456;
-
-        for (
-
-            auto _markerObservation: inputFrame.markers) {
-
-            if
-
-                    (TheMap->
-
-                    map_markers.find(_markerObservation.id)
-
-                     !=
-
-                     TheMap->
-
-                             map_markers.end()
-                    ) {
-
-                tslam::
-                Marker &_6807036686937475945 =
-
-                        TheMap->
-
-                                map_markers[
-
-                                _markerObservation.id];
-
-                cv::
-                Mat _9983235290341257781 =
-                        _6807036686937475945.pose_g2m;
-
-                auto
-                        _11093822296219 =
-
-                        _6807036686937475945.get3DPoints();
-
-                _7045032207766252521.insert(
-
-                        _7045032207766252521.end(), _11093822296219.begin(), _11093822296219.end()
-
-                );
-
-                _7045032207766252456.insert(
-
-                        _7045032207766252456.end(), _markerObservation.und_corners.begin(), _markerObservation.und_corners.end()
-
-                );
-
-                auto
-                        _1515389571633683069 =
-
-                        IPPE::
-                        solvePnP(
-
-                                sysParams.aruco_markerSize, _markerObservation.und_corners,
-                                inputFrame.imageParams.CameraMatrix, inputFrame.imageParams.Distorsion);
-
-                for (
-                    auto _16937226146608628973: _1515389571633683069)
-
-                    _5923954032168212568.push_back(
-
-                            make_pair(
-
-                                    _16937226146608628973 * _9983235290341257781.inv(), -1)
-                    );
-
+    __TSLAM_TIMER_EVENT__("Input preparation");
+    //update the map while processing this new frame to extract keypoints an markers
+    std::thread UpdateThread;
+    if (currentMode==MODE_SLAM) UpdateThread=std::thread([&](){
+        if( TheMapManager->mapUpdate()){
+            if(TheMapManager->bigChange()){
+                _cFrame.pose_f2g= TheMapManager->getLastAddedKFPose();
+                _curPose_f2g=TheMapManager->getLastAddedKFPose();
             }
         }
+        ;});
+    //determine the internal id that will be given to this frame
+    if (depth.empty() && RIn_image.empty()) fextractor->process(InputImage,img_params,_cFrame,frameseq_idx   );//c
+    else if(RIn_image.empty()) fextractor->process_rgbd(InputImage,depth,img_params,_cFrame,frameseq_idx );
+    else fextractor->processStereo(InputImage,RIn_image,img_params,_cFrame,frameseq_idx );
 
-        if
-                (_7045032207766252521.size()
 
-                 ==
 
-                 0)
-            return cv::
-
-            Mat();
-
-        for (
-
-            auto &_46082575779853237: _5923954032168212568) {
-
-            vector<
-                    cv::
-
-                    Point2f>
-
-                    _1535067723848375914;
-
-            se3 _16937226146609453200 =
-
-                    _46082575779853237.first;
-
-            project(
-
-                    _7045032207766252521, inputFrame.imageParams.CameraMatrix, _16937226146609453200.convert(),
-                    _1535067723848375914);
-
-            _46082575779853237.second =
-
-                    0;
-
-            for (
-
-                    size_t _2654435874 =
-
-                            0;
-                    _2654435874 <
-                    _1535067723848375914.size();
-
-                    _2654435874++
-
-                    )
-
-                _46082575779853237.second +=
-
-                        (
-
-                                _1535067723848375914[
-
-                                        _2654435874]
-
-                                        .x - _7045032207766252456[
-
-                                        _2654435874]
-
-                                        .x)
-
-                        * (
-
-                                _1535067723848375914[
-
-                                        _2654435874]
-                                        .x - _7045032207766252456[
-
-                                        _2654435874]
-
-                                        .x)
-
-                        + (
-
-                                  _1535067723848375914[
-
-                                          _2654435874]
-
-                                          .y - _7045032207766252456[
-
-                                          _2654435874]
-
-                                          .y) * (
-
-                                  _1535067723848375914[
-                                          _2654435874]
-
-                                          .y - _7045032207766252456[
-
-                                          _2654435874]
-
-                                          .y);
-
+    if( _params.autoAdjustKpSensitivity){
+        //automatically adjust sensitivity
+        //if few keypoints, may be the scene is dark and needs increasing value
+        //auto adjust sensitivity by checking if it fits the desired number of keypoints
+        int missingKpts= _params.maxFeatures-_cFrame.und_kpts.size();
+        if(  missingKpts >0){
+            float perct=1.0f- (float(missingKpts)/float(_cFrame.und_kpts.size()));
+            float newSensitivity=fextractor->getSensitivity()+perct;
+            newSensitivity=std::max(newSensitivity,1.0f);
+            fextractor->setSensitivity( newSensitivity);
         }
+        else{//the number of points is correct
+            //if sensitivity is not at minimum, decrease it a little bit
+            fextractor->setSensitivity(fextractor->getSensitivity()*0.95);
+        }
+        _debug_msg_("KptDetector Sensitivity="<<fextractor->getSensitivity());
+    }
+    //
+    __TSLAM_TIMER_EVENT__("frame extracted ");
+    if (currentMode==MODE_SLAM)UpdateThread.join(); //wait for update
 
-        std::
-        sort(
 
-                _5923954032168212568.begin(), _5923954032168212568.end(), [
+    cv::Mat result=process(_cFrame);
+    //draw matches in image
+    __TSLAM_TIMER_EVENT__("process");
 
-                ]
-                        (
+    float ImageScaleFactor= sqrt(float(_cFrame.imageParams.CamSize.area())/float(InputImage.size().area()));
 
-                                const pair<
+    drawMatchesAndMarkersInInputImage(InputImage,1./ImageScaleFactor);
 
-                                        cv::
 
-                                        Mat, double>
+    auto _to_string=[](const uint32_t&val){ std::stringstream sstr;sstr<<val;return sstr.str();};
 
-                                &_2654435866, const pair<
-                                cv::
-                                Mat, double>
+    putText(InputImage,"Map Points:"+_to_string(TheMap->map_points.size()),cv::Point(20,InputImage.rows-20));
+    putText(InputImage,"Map Markers:"+_to_string(TheMap->map_markers.size()),cv::Point(20,InputImage.rows-40));
+    putText(InputImage,"KeyFrames:"+_to_string(TheMap->keyframes.size()),cv::Point(20,InputImage.rows-60));
+    int nmatches=0;
+    for(auto id:_cFrame.ids) if(id!=std::numeric_limits<uint32_t>::max()) nmatches++;
+    putText(InputImage,"Matches:"+  _to_string(nmatches),cv::Point(20,InputImage.rows-80));
+    if( fabs(ImageScaleFactor-1)>1e-3)
+        putText(InputImage,"Img.Size:"+_to_string(_cFrame.imageParams.CamSize.width)+"x"+_to_string(_cFrame.imageParams.CamSize.height),cv::Point(20,InputImage.rows-100));
 
-                                &_2654435867) {
 
-                    return _2654435866.second <
+    __TSLAM_TIMER_EVENT__("draw");
 
-                           _2654435867.second;
+    return result;
 
-                }
-        );
+}
 
-        return
 
-                _5923954032168212568[0]
-                        .first;
+void  System::putText(cv::Mat &im,string text,cv::Point p ){
+    float fact=float(im.cols)/float(1280);
 
+    cv::putText(im,text,p,cv::FONT_HERSHEY_SIMPLEX, 0.5*fact,cv::Scalar(0,0,0),3*fact);
+    cv::putText(im,text,p,cv::FONT_HERSHEY_SIMPLEX, 0.5*fact,cv::Scalar(125,255,255),1*fact);
+
+}
+string System::getSignatureStr()const{
+    return sigtostring(getSignature());
+}
+
+uint64_t System::getSignature(bool print)const{
+
+    Hash sig;
+    sig+=TheMap->getSignature(print);
+    if(print)cout<<"\tSystem 1. sig="<<sig<<endl;
+    sig+=_params.getSignature();
+    if(print)cout<<"\tSystem 2. sig="<<sig<<endl;
+    for(int i=0;i<6;i++)sig+=_curPose_f2g[i];
+    if(print)cout<<"\tSystem 3. sig="<<sig<<endl;
+    sig.add(_curKFRef);
+    if(print)cout<<"\tSystem 4. sig="<<sig<<endl;
+    sig+=_cFrame.getSignature();
+    if(print)cout<<"\tSystem 5. sig="<<sig<<endl;
+
+    sig+=isInitialized;
+    if(print)cout<<"\tSystem 7. sig="<<sig<<endl;
+    sig+=currentState;
+    if(print)cout<<"\tSystem 8. sig="<<sig<<endl;
+    sig+=currentMode;
+    if(print)cout<<"\tSystem 9. sig="<<sig<<endl;
+    sig+=_prevFrame.getSignature();
+    if(print)cout<<"\tSystem 10.sig="<<sig<<endl;
+    sig+=TheMapManager->getSignature();
+    if(print)cout<<"\tSystem 11.sig="<<sig<<endl;
+    sig+=velocity;
+    sig+=lastKFReloc;
+    if(print)cout<<"\tSystem 12.sig="<<sig<<endl;
+    return sig;
+
+
+}
+
+
+
+
+
+//given a frame and a map, returns the set pose using the markers
+//If not possible, return empty matrix
+//the pose matrix returned is from Global 2 Frame
+cv::Mat System::getPoseFromMarkersInMap(const Frame &frame ){
+    std::vector<uint32_t> validmarkers;//detected markers that are in the map
+
+    //for each marker compute the set of poses
+    vector<pair<cv::Mat,double> > pose_error;
+    vector<cv::Point3f> markers_p3d;
+    vector<cv::Point2f> markers_p2d;
+
+    for(auto m:frame.markers){
+        if (TheMap->map_markers.find(m.id)!=TheMap->map_markers.end()){
+            tslam::Marker &mmarker=TheMap->map_markers[m.id];
+            cv::Mat Mm_pose_g2m=mmarker.pose_g2m;
+            //add the 3d points of the marker
+            auto p3d=mmarker.get3DPoints();
+            markers_p3d.insert(markers_p3d.end(),p3d.begin(),p3d.end());
+            //and now its 2d projection
+            markers_p2d.insert(markers_p2d.end(),m.und_corners.begin(),m.und_corners.end());
+
+            auto poses_f2m=IPPE::solvePnP(_params.aruco_markerSize,m.und_corners,frame.imageParams.CameraMatrix,frame.imageParams.Distorsion);
+            for(auto pose_f2m:poses_f2m)
+                pose_error.push_back(   make_pair(pose_f2m * Mm_pose_g2m.inv(),-1));
+        }
+    }
+    if (markers_p3d.size()==0)return cv::Mat();
+    //now, check the reprojection error of each solution in all valid markers and take the best one
+    for(auto &p_f2g:pose_error){
+        vector<cv::Point2f> p2d_reprj;
+        se3 pose_se3=p_f2g.first;
+        project(markers_p3d,frame.imageParams.CameraMatrix,pose_se3.convert(),p2d_reprj);
+//        cv::projectPoints(markers_p3d,pose_se3.getRvec(),pose_se3.getTvec(),TheImageParams.CameraMatrix,TheImageParams.Distorsion,p2d_reprj);
+        p_f2g.second=0;
+        for(size_t i=0;i<p2d_reprj.size();i++)
+            p_f2g.second+= (p2d_reprj[i].x- markers_p2d[i].x)* (p2d_reprj[i].x- markers_p2d[i].x)+ (p2d_reprj[i].y- markers_p2d[i].y)* (p2d_reprj[i].y- markers_p2d[i].y);
     }
 
-    bool System::_2016327979059285019( Frame &_175247759917) {
-        bool _11093822302335;
-        if (_175247759917.imageParams.isStereoCamera() || _175247759917.imageParams.isArray()) {
-            _11093822302335 = _15186594243873234013(_175247759917);
-        } else {
-            _11093822302335 = _14954361871198802778(_175247759917);
-        }
+    //sort by error
 
-        if (!_11093822302335) return _11093822302335;
+    std::sort(pose_error.begin(),pose_error.end(),[](const pair<cv::Mat,double> &a,const pair<cv::Mat,double> &b){return a.second<b.second; });
+    //    for(auto p:pose_error)
+    //    cout<<"p:"<<p.first<<" "<<p.second<<endl;
+    return pose_error[0].first;//return the one that minimizes the error
+}
 
-        curPose_ns = TheMap->keyframes.back().pose_f2g;
-        cout << "cKfId:1434 " << currentKeyFrameId_105767 ;
-        currentKeyFrameId_105767 = TheMap->keyframes.back().idx;
-        cout << "cKfId:1436 " << currentKeyFrameId_105767 << "##" << "##" ;;
 
-        _13028158409047949416 = true;
 
-        return
-                true;
-
+bool System::initialize( Frame &f2 ) {
+bool res;
+    if (f2.imageParams.isStereoCamera()){
+          res=initialize_stereo(f2);
+    }
+    else{
+        res=initialize_monocular(f2);
     }
 
-    bool
+    if(!res)return res;
+    _curPose_f2g= TheMap->keyframes.back().pose_f2g;
+    _curKFRef=TheMap->keyframes.back().idx;
+    _debug_msg_("Initialized");
+    isInitialized=true;
+    assert(TheMap->checkConsistency(true));
 
-    System::
+  return true;
+}
 
-    _14954361871198802778(
-            Frame &_175247759917) {
+bool System::initialize_monocular(Frame &f2 ){
 
-        if (
-                !
+    _debug_msg_("initialize   "<<f2.markers.size());
 
-                        sysMapIntializer->
+    if (!map_initializer->process(f2,TheMap)) return false;
 
-                                process(
-
-                                _175247759917, TheMap)
-
-                )
-
-            return
-
-                    false;
-
-        if
-
-                (
-
-                TheMap->
-
-                        keyframes.size()
-                >
-
-                1 &&
-
-                TheMap->map_points.size()
-
-                >
-                0) {
-
-            _175247759917.ids =
-
-                    TheMap->
-
-                                    keyframes.back()
-
-                            .ids;
-
-        }
-
-        globalOptimization();
-
-        if
-
-                (
-
-                TheMap->
-
-                        map_markers.size()
-
-                ==
-
-                0) {
-
-            if
-
-                    (TheMap->
-                    map_points.size()
-                     <
-
-                     50) {
-
-                TheMap->
-
-                        clear();
-
-                return
-
-                        false;
-
-            }
-
-            float
-
-                    _7847018097084079275 =
-
-                    1. / TheMap->
-
-                            getFrameMedianDepth(
-
-                            TheMap->
-
-                                            keyframes.front()
-
-                                    .idx);
-
-            cv::
-
-            Mat _706246338944062 =
-
-                    TheMap->
-
-                                    keyframes.back()
-
-                            .pose_f2g.inv();
-
-            _706246338944062.col(
-
-                            3)
-                    .rowRange(
-                            0, 3)
-
-                    = _706246338944062.col(
-
-                            3)
-                              .rowRange(
-
-                                      0, 3)
-
-                      * _7847018097084079275;
-
-            TheMap->
-                            keyframes.back()
-
-                    .pose_f2g =
-
-                    _706246338944062.inv();
-
-            for (
-
-                auto &_175247759380: TheMap->
-
-                    map_points) {
-
-                _175247759380.scalePoint(
-                        _7847018097084079275);
-
-            }
-
-        }
-
-        curPose_ns =
-
-                TheMap->
-
-                                keyframes.back()
-
-                        .pose_f2g;
-
-        return
-
-                true;
-
+      //If there keypoints  and at least 2 frames
+    // set the ids of the visible elements in f2, which will used in tracking
+        if ( TheMap->keyframes.size()>1 && TheMap->map_points.size()>0){
+        f2.ids = TheMap->keyframes.back().ids;
     }
+    assert(TheMap->checkConsistency());
 
-    bool System::_15186594243873234013(Frame &inputFrame) {
-        if (sysParams.KPNonMaximaSuppresion)
-            inputFrame.nonMaximaSuppresion();
-        int _8065948040949117953 = 0;
-        for (size_t _2654435874 = 0; _2654435874 < inputFrame.und_kpts.size(); _2654435874++) {
-            if (inputFrame.getDepth(_2654435874) > 0 &&
-                inputFrame.imageParams.isClosePoint(inputFrame.getDepth(_2654435874)) &&
-                !inputFrame.flags[_2654435874].is(Frame::FLAG_NONMAXIMA))
-                _8065948040949117953++;
+
+    globalOptimization();
+     assert(TheMap->checkConsistency(true));
+    //if only with matches, scale to have an appropriate mean
+    if (TheMap->map_markers.size()==0){
+        if ( TheMap->map_points.size()<50) {//enough points after the global optimization??
+            TheMap->clear();
+            return false;
         }
 
-        if (_8065948040949117953 < 100) return false;
 
-        inputFrame.pose_f2g.setUnity();
-        Frame &_16997199184281837438 = TheMap->addKeyFrame(inputFrame);
+        float invMedianDepth=1./TheMap->getFrameMedianDepth(TheMap->keyframes.front().idx);
+        cv::Mat Tc2w=TheMap->keyframes.back().pose_f2g.inv();
 
-        for (size_t _2654435874 = 0; _2654435874 < inputFrame.und_kpts.size(); _2654435874++) {
-            cv::Point3f _2654435881;
 
-            if (inputFrame.getDepth(_2654435874) > 0 &&
-                inputFrame.imageParams.isClosePoint(inputFrame.getDepth(_2654435874)) && !inputFrame.flags[_2654435874].is(
-                        Frame::
+        //change the translation
+        // Scale initial baseline
+        Tc2w.col(3).rowRange(0,3) = Tc2w.col(3).rowRange(0,3)*invMedianDepth;
+        TheMap->keyframes.back().pose_f2g=Tc2w.inv();
 
-                                            FLAG_NONMAXIMA)) {
-
-                _2654435881 =
-                        inputFrame.get3dStereoPoint(
-                                _2654435874);
-
-                auto
-                        &_175247759380 =
-
-                        TheMap->
-                                addNewPoint(_16997199184281837438.fseq_idx);
-
-                _175247759380.kfSinceAddition =
-
-                        1;
-
-                _175247759380.setCoordinates(
-
-                        _2654435881);
-
-                _175247759380.setStereo(
-                        true);
-
-                TheMap->
-
-                        addMapPointObservation(
-                        _175247759380.id, _16997199184281837438.idx, _2654435874);
-
-                inputFrame.ids[
-
-                        _2654435874]
-
-                        =
-                        _175247759380.id;
-            }
-
-        }
-
-        for (const auto
-
-                    &_markerObservation: inputFrame.markers) {
-
-            TheMap->
-                    addMarker(
-
-                    _markerObservation);
-        }
-
-        return
-
-                true;
-
-    }
-
-    string System::
-    _2102381941757963317(
-
-            uint64_t _11093822380353)
-    const {
-
-        string _706246330193866;
-
-        string _46082576163156525 =
-                "\x71\x77\x65\x72\x74\x79\x75\x69\x6f\x70\x61\x73\x64\x66\x67\x68\x6a\x6b\x6c\x7a\x78\x63\x76\x62\x6e\x6d\x31\x32\x33\x34\x35\x36\x37\x38\x39\x30\x51\x57\x45\x52\x54\x59\x55\x49\x4f\x50\x41\x53\x44\x46\x47\x48\x4a\x4b\x4c\x5a\x58\x43\x56\x42\x4e\x4d";
-
-        uchar *_2654435884 =
-                (
-
-                        uchar *) &_11093822380353;
-
-        int
-
-                _2654435879 =
-                sizeof(
-
-                        _11093822380353)
-                / sizeof(
-
-                        uchar);
-
-        for (
-
-                int _2654435874 =
-
-                        0;
-
-                _2654435874 <
-
-                _2654435879;
-
-                _2654435874++) {
-
-            _706246330193866.push_back(
-                    _46082576163156525[
-
-                            _2654435884[
-
-                                    _2654435874]
-
-                            % _46082576163156525.size()
-
-                    ]
-
-            );
-
-        }
-
-        return
-                _706246330193866;
-
-    }
-
-    uint32_t System::getRefKeyFrameId(const Frame &frame_106140, const se3 &se3_107067) {
-        int64_t refKeyFrameId = -1;
-
-        if (sysParams.detectKeyPoints)
-            refKeyFrameId = TheMap->getReferenceKeyFrame(frame_106140, 1);
-
-        if (refKeyFrameId != -1){
-            return refKeyFrameId;
-        }
-
-        if (TheMap->map_markers.size() == 0) {
-            return currentKeyFrameId_105767;
-        }
-
-        vector<uint32_t> overlappedMarkers;
-
-        for (auto _markerObservation: frame_106140.markers) {
-            auto marker = TheMap->map_markers.find(_markerObservation.id);
-
-            if (marker != TheMap->map_markers.end()) {
-                if (marker->second.pose_g2m.isValid())
-                    overlappedMarkers.push_back(_markerObservation.id);
-            }
-        }
-
-        pair<uint32_t, float> result(std::numeric_limits<uint32_t>::max(), std::numeric_limits<float>::max());
-
-        for (auto marker: overlappedMarkers)
-            for (const auto &inputFrame: TheMap->map_markers[marker].frames) {
-                auto _2654435869 = se3_107067.t_dist(TheMap->keyframes[inputFrame].pose_f2g);
-                if (result.second > _2654435869) result = {inputFrame, _2654435869};
-            }
-
-        if(result.first != std::numeric_limits<uint32_t>::max()){
-            return result.first;
-        } else {
-            return currentKeyFrameId_105767;
+         // Scale points
+         for(auto &mp:TheMap->map_points){
+            mp.scalePoint(invMedianDepth);
         }
 
     }
 
-    std::vector<System::_4118122444908280734> System::_3473802998844434099(Frame &_16940374161494853219, se3 &_13011065492167565582, const std::
-    set<uint32_t> &_16997249117545452056) {
-        if(
+    _curPose_f2g=TheMap->keyframes.back().pose_f2g;
 
-                _16940374161494853219.ids.size()
+      return true;
+}
 
-                ==
 
-                0)
-            return {
 
-            };
+bool System::initialize_stereo( Frame &frame){
+    __TSLAM_ADDTIMER__;
 
-        if (
-                TheMap->
-                        TheKFDataBase.isEmpty()
+    if(_params.KPNonMaximaSuppresion)
+        frame.nonMaximaSuppresion();
+    int nValidPoints=0;
+    for(size_t i=0;i<frame.und_kpts.size();i++){
+        //check the stereo depth
+        if (frame.getDepth(i)>0 && frame.imageParams.isClosePoint(frame.getDepth(i)) &&  !frame.flags[i].is(Frame::FLAG_NONMAXIMA))
+            nValidPoints++;
+    }
 
-                )
+    if ( nValidPoints<100) return false;
 
-            return {
-            };
 
-        vector<
+    frame.pose_f2g.setUnity();
+    Frame & kfframe1=TheMap->addKeyFrame(frame); //[frame2.idx]=frame2;
 
-                uint32_t>
-                _5288382201172378343 =
+    //now, get the 3d point information from the depthmap
+    for(size_t i=0;i<frame.und_kpts.size();i++){
+        //check the stereo depth
+        cv::Point3f p ;
+        if ( frame.getDepth(i)>0 && frame.imageParams.isClosePoint(frame.getDepth(i)) && !frame.flags[i].is(Frame::FLAG_NONMAXIMA)){
+            //compute xyz
+            p=frame.get3dStereoPoint(i);
+            auto &mp= TheMap->addNewPoint(kfframe1.fseq_idx);
+            assert(!mp.isStable());
+            mp.kfSinceAddition=1;
+            mp.setCoordinates(p);
+            mp.setStereo(true);
+            TheMap->addMapPointObservation(mp.id,kfframe1.idx,i);
+            frame.ids[i]=mp.id;
+        }
+    }
+    //now, add the markers
+    for(const auto &m:frame.markers ){
+        TheMap-> addMarker( m );
+    }
+    return true;
+}
 
-                TheMap->
+string System::sigtostring(uint64_t sig)const{
+    string sret;
+    string alpha="qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM";
+    uchar * s=(uchar *)&sig;
+    int n=sizeof(sig)/sizeof(uchar );
+    for(int i=0;i<n;i++){
+        sret.push_back(alpha[s[i]%alpha.size()]);
+    }
+    return sret;
+}
 
-                        relocalizationCandidates(
-                        _16940374161494853219, _16997249117545452056);
-        if
 
-                (
 
-                _5288382201172378343.size()
 
-                ==
 
-                0)
+uint32_t System::getBestReferenceFrame(const Frame &curKeyFrame,  const se3 &curPose_f2g){
 
-            return {
+    __TSLAM_ADDTIMER__
+    //    if( map_matches.size()==0 && TheMap->map_markers.size()==0)return _curKFRef;
 
-            };
+    int64_t bestCandidateKeyPoints=-1 ;
 
-        vector<
+    if (_params.detectKeyPoints)
+       bestCandidateKeyPoints=TheMap->getReferenceKeyFrame(curKeyFrame,1);
+    if (bestCandidateKeyPoints!=-1) return bestCandidateKeyPoints;
 
-                System::
 
-                _4118122444908280734> _1524129789187101628(
+    //try with the markers now
+    if ( TheMap->map_markers.size()==0){//NO MARKERS!!
+        assert(_curKFRef!=-1);
+        return _curKFRef;
+    }
+    //determine all valid markers seen here
+    vector<uint32_t> validMarkers;
+    for(auto m:curKeyFrame.markers){
+        auto marker=  TheMap->map_markers.find(m.id);
+        if ( marker!=TheMap->map_markers.end()){
+            if (marker->second.pose_g2m.isValid()) validMarkers.push_back(m.id);
+        }
+    }
 
-                _5288382201172378343.size()
-        );
+    pair<uint32_t,float> nearest_frame_dist(std::numeric_limits<uint32_t>::max(),std::numeric_limits<float>::max());
+    for(auto marker:validMarkers)
+        for(const auto &frame:TheMap->map_markers[marker].frames){
+            assert(TheMap->keyframes.is(frame));
+            auto d=   curPose_f2g .t_dist( TheMap->keyframes[frame].pose_f2g )     ;
+            if ( nearest_frame_dist.second>d) nearest_frame_dist={frame,d};
+        }
+    return nearest_frame_dist.first;
 
-        FrameMatcher _16937386958649118140;
 
-        _16937386958649118140.setParams(_16940374161494853219, FrameMatcher::
+}
+std::vector<System::kp_reloc_solution> System::relocalization_withkeypoints_( Frame &curFrame,se3 &pose_f2g_out ,const std::set<uint32_t> &excluded ){
+    _debug_msg_("");
+    if (curFrame.ids.size()==0)return { };
+    if (TheMap->TheKFDataBase.isEmpty())return  {};
+    vector<uint32_t> kfcandidates=TheMap->relocalizationCandidates(curFrame,excluded);
 
-        MODE_ALL, sysParams.maxDescDistance * 2);
+    if (kfcandidates.size()==0)return  {};
+
+    vector<System::kp_reloc_solution> Solutions(kfcandidates.size());
+
+    FrameMatcher FMatcher;
+    FMatcher.setParams(curFrame,FrameMatcher::MODE_ALL,_params.maxDescDistance*2);
 
 #pragma omp parallel for
-        for (
-
-                int _175247762874 =
-
-                        0;
-
-                _175247762874 <
-
-                _5288382201172378343.size();
-
-                _175247762874++
-
-                ) {
-
-            auto
-                    _175247760268 = _5288382201172378343[
-                    _175247762874];
-
-            auto
-                    &_3005399814901981436 =
-
-                    TheMap->
-
-                            keyframes[
-
-                            _175247760268];
-
-            _1524129789187101628[
-
-                    _175247762874]
-
-                    ._6116114700730085677 =
-
-                    _16937386958649118140.match(
-                            _3005399814901981436, FrameMatcher::
-
-                            MODE_ASSIGNED);
-
-            for (
-
-                auto &_markerObservation: _1524129789187101628[_175247762874]
-
-                    ._6116114700730085677) {
-
-                std::
-                swap(
-                        _markerObservation.queryIdx, _markerObservation.trainIdx);
-
-                _markerObservation.trainIdx =
-                        _3005399814901981436.ids[
-
-                                _markerObservation.trainIdx];
-
-            }
-
-            for (
-
-                    int _2654435874 =
-
-                            0;
-
-                    _2654435874 < _1524129789187101628[_175247762874]
-                            ._6116114700730085677.size();
-
-                    _2654435874++
-
-                    ) {
-
-                auto
-
-                        &_175247759380 =
-                        _1524129789187101628[
-
-                                _175247762874]
-
-                                ._6116114700730085677[
-
-                                _2654435874].trainIdx;
-
-                if (
-
-                        !
-
-                                TheMap->
-
-                                        map_points.is(
-
-                                        _175247759380))
-
-                    _1524129789187101628[
-
-                            _175247762874]
-
-                            ._6116114700730085677[
-
-                            _2654435874]
-
-                            .trainIdx =
-                            -1;
-
-                if (_175247759380 < TheMap->map_points.data_size() || TheMap->map_points[_175247759380].isBad())
-
-                    _1524129789187101628[
-
-                            _175247762874]
-
-                            ._6116114700730085677[
-
-                            _2654435874]
-                            .trainIdx =
-                            -1;
-
-            }
-
-            remove_unused_matches(
-
-                    _1524129789187101628[
-                            _175247762874]
-
-                            ._6116114700730085677);
-
-            if
-
-                    (
-
-                    _1524129789187101628[
-                            _175247762874]
-
-                            ._6116114700730085677.size()
-
-                    <
-
-                    25)
-                continue;
-
-            _1524129789187101628[
-
-                    _175247762874]
-
-                    ._3885067248075476027 =
-
-                    _3005399814901981436.pose_f2g;
-
-            PnPSolver::
-
-            solvePnPRansac(
-                    _16940374161494853219, TheMap, _1524129789187101628[
-
-                            _175247762874]
-
-                            ._6116114700730085677, _1524129789187101628[
-
-                            _175247762874]
-
-                            ._3885067248075476027);
-
-            if
-                    (
-
-                    _1524129789187101628[
-                            _175247762874]
-
-                            ._6116114700730085677.size()
-                    <
-
-                    15)
-
-                continue;
-
-            _1524129789187101628[
-                    _175247762874]
-
-                    ._6116114700730085677 =
-
-                    TheMap->
-                            matchFrameToMapPoints(
-
-                            TheMap->
-
-                                    TheKpGraph.getNeighborsVLevel2(
-
-                                    _175247760268, true), _16940374161494853219, _1524129789187101628[
-
-                                    _175247762874]
-
-                                    ._3885067248075476027, sysParams.maxDescDistance * 2, 2.5, true);
-
-            if
-
-                    (
-
-                    _1524129789187101628[_175247762874]
-
-                            ._6116114700730085677.size()
-
-                    <
-
-                    30)
-
-                continue;
-
-            PnPSolver::
-
-            solvePnp(
-
-                    _16940374161494853219, TheMap, _1524129789187101628[_175247762874]
-
-                            ._6116114700730085677, _1524129789187101628[
-                            _175247762874]
-                            ._3885067248075476027);
-
-            if
-
-                    (
-
-                    _1524129789187101628[
-
-                            _175247762874]
-                            ._6116114700730085677.size()
-                    <
-
-                    30)
-                continue;
-
-            _1524129789187101628[
-
-                    _175247762874]
-
-                    ._16902946305713852348 =
-
-                    _16940374161494853219.ids;
-
-            for (
-                auto _46082575882272165: _1524129789187101628[
-
-                    _175247762874]._6116114700730085677)
-
-                _1524129789187101628[
-
-                        _175247762874]
-                        ._16902946305713852348[
-
-                        _46082575882272165.queryIdx]
-
-                        =
-
-                        _46082575882272165.trainIdx;
-
+    for(int cf=0;cf<kfcandidates.size();cf++){
+
+        auto kf=kfcandidates[cf];
+        auto &KFrame=TheMap->keyframes[kf];
+        Solutions[cf].matches=FMatcher.match(KFrame,FrameMatcher::MODE_ASSIGNED);
+
+
+        //change trainIdx and queryIdx to match the  solvePnpRansac requeriments
+        for(auto &m:Solutions[cf].matches){
+            std::swap(m.queryIdx,m.trainIdx);
+            m.trainIdx= KFrame.ids[m.trainIdx];
+        }
+        //remove bad point matches
+        for(int i=0;i<Solutions[cf].matches.size();i++){
+            auto &mp=Solutions[cf].matches[i].trainIdx;
+            if( !TheMap->map_points.is(mp))
+                Solutions[cf].matches[i].trainIdx=-1;
+            if( TheMap->map_points[mp].isBad()  )
+                Solutions[cf].matches[i].trainIdx=-1;
         }
 
-        std::
+        remove_unused_matches(Solutions[cf].matches);
+        if (Solutions[cf].matches.size()<25)continue;
+        Solutions[cf].pose=KFrame.pose_f2g;
+         //estimate initial position
+        PnPSolver::solvePnPRansac(curFrame,TheMap,Solutions[cf].matches,Solutions[cf].pose);
+         if (Solutions[cf].matches.size()<15) continue;
+        //go to the map looking for more matches
+        Solutions[cf].matches= TheMap->matchFrameToMapPoints ( TheMap->TheKpGraph.getNeighborsVLevel2( kf,true) , curFrame,  Solutions[cf].pose ,_params.maxDescDistance*2, 2.5,true);
+        if (Solutions[cf].matches.size()<30) continue;
 
-        remove_if(
-
-                _1524129789187101628.begin(), _1524129789187101628.end(), [
-                ]
-
-                        (
-
-                                const _4118122444908280734 &_2654435866) {
-
-                    return _2654435866._6116114700730085677.size()
-
-                           <=
-                           30;
-
-                }
-
-        );
-
-        std::
-
-        sort(
-                _1524129789187101628.begin(), _1524129789187101628.end(), [
-
-                ]
-                        (
-
-                                const _4118122444908280734 &_2654435866, const _4118122444908280734 &_2654435867) {
-
-                    return _2654435866._6116114700730085677.size()
-
-                           >
-                           _2654435867._6116114700730085677.size();
-
-                }
-        );
-
-        return
-                _1524129789187101628;
-
+        //now refine
+        PnPSolver::solvePnp(curFrame,TheMap,Solutions[cf].matches,Solutions[cf].pose);
+         if (Solutions[cf].matches.size()<30) continue;
+        Solutions[cf]. ids=curFrame.ids;
+        for(auto match: Solutions[cf].matches)
+            Solutions[cf].ids[ match.queryIdx]=match.trainIdx;
     }
 
-    bool
+    //take the solution with more matches
+    std::remove_if(Solutions.begin(),Solutions.end(),[](const kp_reloc_solution &a){return a.matches.size()<=30;});
+    std::sort( Solutions.begin(),Solutions.end(),[](const kp_reloc_solution &a,const kp_reloc_solution &b){return a.matches.size()>b.matches.size();});
 
-    System::
+   return Solutions;
 
-    _3570943890084999391(
 
-            Frame &_16940374161494853219, se3 &_13011065492167565582, const std::
+}
 
-    set<
+bool System::relocalize_withkeypoints( Frame &curFrame,se3 &pose_f2g_out , const std::set<uint32_t> &excluded ){
 
-            uint32_t>
-
-    &_16997249117545452056) {
-
-        auto
-                _1524129789187101628 =
-
-                _3473802998844434099(
-                        _16940374161494853219, _13011065492167565582, _16997249117545452056);
-
-        if (
-
-                _1524129789187101628.size() ==
-
-                0)
-
-            return false;
-
-        if (
-                _1524129789187101628[
-
-                        0]
-                        ._6116114700730085677.size()
-
-                >
-
-                30) {
-
-            _13011065492167565582 =
-
-                    _1524129789187101628[
-
-                            0]
-
-                            ._3885067248075476027;
-
-            _16940374161494853219.ids =
-                    _1524129789187101628[
-
-                            0]
-
-                            ._16902946305713852348;
-
-            return
-
-                    true;
-
-        } else
-
-            return false;
-
+    auto Solutions=relocalization_withkeypoints_(curFrame,pose_f2g_out,excluded);
+    if (Solutions.size()==0) return false;
+    if (Solutions[0].matches.size()>30){
+        pose_f2g_out=Solutions[0].pose;
+        curFrame.ids=Solutions[0].ids;
+        return true;
     }
+    else return false;
 
-    bool
+}
 
-    System::
-
-    _14569675007600066936(
-
-            Frame &inputFrame, se3 &_13011065492167565582) {
-
-        if
-
-                (
-
-                inputFrame.markers.size()
-
-                ==
-
-                0)
-
-            return false;
-
-        vector<
-                uint32_t>
-
-                _7895328205142007059;
-
-        for (auto
-
-                    &_markerObservation: inputFrame.markers) {
-
-            auto
-
-                    _8332348524113911167 =
-
-                    TheMap->
-                            map_markers.find(
-
-                            _markerObservation.id);
-
-            if (
-                    _8332348524113911167 !=
-
-                    TheMap->map_markers.end()
-                    )
-
-                if
-
-                        (
-
-                        _8332348524113911167->
-
-                                second.pose_g2m.isValid()
-
-                        )
-
-                    _7895328205142007059.push_back(
-                            _markerObservation.id);
-
-        }
-
-        if
-                (
-                _7895328205142007059.size()
-
-                ==
-                0)
-
-            return false;
-
-        _13011065492167565582 =
-                TheMap->
-
-                        getBestPoseFromValidMarkers(
-
-                        inputFrame, _7895328205142007059, sysParams.aruco_minerrratio_valid);
-
-        return
-
-                _13011065492167565582.isValid();
-
+bool System::relocalize_withmarkers( Frame &f,se3 &pose_f2g_out ){
+     if (f.markers.size()==0)return false;
+    //find the visible makers that have valid 3d location
+    vector< uint32_t> valid_markers_found;
+    for(  auto &m:f.markers){//for ech visible marker
+        auto map_marker_it=TheMap->map_markers.find(m.id);
+        if(map_marker_it!=TheMap->map_markers.end())//if it is in the map
+            if ( map_marker_it->second.pose_g2m.isValid() )//and its position is valid
+                valid_markers_found.push_back( m.id);
     }
+    if (valid_markers_found.size()==0)return false;
 
-    bool
-    System::
+  pose_f2g_out= TheMap->getBestPoseFromValidMarkers(f,valid_markers_found,_params.aruco_minerrratio_valid);
+  return pose_f2g_out.isValid();
 
-    _16487919888509808279(
+}
 
-            Frame &inputFrame, se3 &_13011065492167565582) {
 
-        _13011065492167565582 =
 
-                se3();
-
-        if (
-
-                sysParams.reLocalizationWithMarkers) {
-
-            if
-
-                    (
-
-                    _14569675007600066936(
-
-                            inputFrame, _13011065492167565582)
-
-                    )
-                return
-
-                        true;
-
-        }
-
-        if (
-
-                sysParams.reLocalizationWithKeyPoints) {
-
-            if
-                    (
-
-                    _3570943890084999391(
-
-                            inputFrame, _13011065492167565582))
-                return
-
-                        true;
-
-        }
-
-        return
-
-                false;
-
+ bool System::relocalize(Frame &f, se3 &pose_f2g_out){
+    pose_f2g_out=se3();
+    if( _params.reLocalizationWithMarkers){
+        if ( relocalize_withmarkers(f,pose_f2g_out)) return true;
     }
-std::vector<cv::DMatch>System::_11946837405316294395(Frame &curFrame, Frame &_5918541169384278026, float _1686565542397313973, float _4500031049790251086) {
-    std::vector<cv::DMatch> _6807036698572949990;
-    for (size_t _2654435874 =0; _2654435874 < _5918541169384278026.ids.size(); _2654435874++) {
-        uint32_t _11093822294347 = _5918541169384278026.ids[_2654435874];
-        if (
-            
-                    _11093822294347 != std::
-
-                    numeric_limits<
-
-                            uint32_t>::max()) {
-
-                if (
-
-                        TheMap->
-
-                                map_points.is(
-                                _11093822294347)
-
-                        ) {
-
-                    MapPoint &_3005399799907669332 = TheMap->
-
-                            map_points[
-
-                            _11093822294347];
-
-                    if
-
-                            (
-
-                            _3005399799907669332.isBad()
-                            )
-
-                        continue;
-
-                    auto
-
-                            _11093822300120 =
-                            curFrame.project(
-
-                                    _3005399799907669332.getCoordinates(), true, true);
-
-                    if
-
-                            (
-
-                            isnan(
-
-                                    _11093822300120.x))
-
-                        continue;
-
-                    float
-                            _175247759755 =
-
-                            curFrame.scaleFactors[_5918541169384278026.und_kpts[
-
-                                    _2654435874]
-
-                                    .octave];
-
-                    int
-
-                            _3005399801676750422 =
-
-                            _5918541169384278026.und_kpts[
-
-                                    _2654435874]
-                                    .octave;
-
-                    std::                                          // above
-
-                    vector<
-
-                            uint32_t>
-
-                            _10924592426265627429 =
-                            curFrame.getKeyPointsInRegion(
-                                    _11093822300120, _4500031049790251086 * _175247759755, _3005399801676750422,
-                                    _3005399801676750422);
-
-                    float
-                            _16940367568811467085 =
-
-                            _1686565542397313973 + 0.01, _16992066385107317811 =
-
-                            std::
-
-                            numeric_limits<
-
-                                    float>
-
-                            ::
-
-                            max();
-
-                    uint32_t
-                            _6806984971934960832 =
-
-                            std::
-                            numeric_limits<
-
-                                    uint32_t>::
-
-                            max();
-
-                    for (
-                        auto _175247760278: _10924592426265627429) {
-
-                        if
-
-                                (
-                                curFrame.und_kpts[
-
-                                        _175247760278]
-
-                                        .octave ==
-
-                                _5918541169384278026.und_kpts[_2654435874]
-
-                                        .octave) {
-
-                            float
-
-                                    _16940392174182767813 = MapPoint::
-                            getDescDistance(
-                                    _5918541169384278026.desc, _2654435874, curFrame.desc, _175247760278);
-
-                            if
-
-                                    (
-
-                                    _16940392174182767813 <
-
-                                    _16940367568811467085) {
-
-                                _16940367568811467085 =
-
-                                        _16940392174182767813;
-
-                                _6806984971934960832 =
-
-                                        _175247760278;
-                            } else if
-
-                                    (
-
-                                    _16940392174182767813 <
-                                    _16992066385107317811) {
-
-                                _16992066385107317811 =
-
-                                        _16940392174182767813;
-
-                            }
-
+    if( _params.reLocalizationWithKeyPoints){
+        if (relocalize_withkeypoints(f,pose_f2g_out)) return true;
+    }
+    return false ;
+}
+
+
+//given lastframe, current and the map of points, search for the map points  seen in lastframe in current frame
+//Returns query-(id position in the currentFrame). Train (id point in the TheMap->map_points)
+std::vector<cv::DMatch> System::matchMapPtsOnPrevFrame(Frame & curframe, Frame &prev_frame, float minDescDist, float maxReprjDist)
+{
+
+    //compute the projection matrix
+    std::vector<cv::DMatch> matches;
+
+    for(size_t i=0;i<prev_frame.ids.size();i++){
+        uint32_t pid=prev_frame.ids[i];
+        if (pid!=std::numeric_limits<uint32_t>::max()){//the point was found in prev frame
+            if( TheMap->map_points.is(pid)){
+                MapPoint &mPoint=TheMap->map_points[pid];
+                if (mPoint.isBad()) continue;
+                auto p2d=curframe.project(mPoint.getCoordinates(),true,true);
+                if ( isnan(p2d.x))continue;
+
+                //scale factor by octave
+                float sc=curframe.scaleFactors[ prev_frame.und_kpts[i].octave];
+                int octave=prev_frame.und_kpts[i].octave;
+                std::vector<uint32_t> kpts_neigh=curframe.getKeyPointsInRegion(p2d,maxReprjDist*sc,octave,octave);
+
+                float bestDist=minDescDist+0.01,bestDist2=std::numeric_limits<float>::max();
+                uint32_t bestIdx=std::numeric_limits<uint32_t>::max();
+                //only consider these within neighbor octaves and with a minimun theshold distance
+                for(auto kp:kpts_neigh){
+                    if (  curframe.und_kpts[ kp].octave == prev_frame.und_kpts[i].octave ){
+                        float descDist= MapPoint::getDescDistance(prev_frame.desc,i, curframe.desc,kp);
+                        if ( descDist<bestDist){
+                            bestDist=descDist;
+                            bestIdx=kp;
                         }
-
+                        else if (descDist<bestDist2){
+                            bestDist2=descDist;
+                        }
                     }
-
-                    if
-                            (
-
-                            _6806984971934960832 !=
-
-                            std::
-
-                            numeric_limits<
-                                    uint32_t>
-
-                            ::
-
-                            max()
-
-                            &&
-                            _16940367568811467085 <
-
-                            0.7 * _16992066385107317811) {
-
-                        cv::
-
-                        DMatch _175247759376;
-
-                        _175247759376.queryIdx =
-
-                                _6806984971934960832;
-
-                        _175247759376.trainIdx =
-
-                                _3005399799907669332.id;
-
-                        _175247759376.distance =
-
-                                _16940367568811467085;
-
-                        _6807036698572949990.push_back(
-
-                                _175247759376);
-
-                    }
-
                 }
-
-            }
-
-        }
-
-        filter_ambiguous_query(
-
-                _6807036698572949990);
-
-        return
-
-                _6807036698572949990;
-
-    }
-
-    se3 System::_11166622111371682966(Frame &curFrame, se3 se3_143874) {
-        std::vector<cv::DMatch> DMatchVector_637068;
-        se3 curPoseF2g = se3_143874;
-
-//       long value_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch()).count();
-//       if(value_ms % 20 == 0){
-//           cerr << "Evoke a test error" << endl;
-//           curPoseF2g = se3();
-//           throw std::invalid_argument("This is a test error");
-//       }
-//        cerr << "1: " << curPoseF2g << ", KFid = " << currentKeyFrameId_105767 << " / ";
-
-        if(!curPoseF2g.isValid()){
-            breakFlag = true;
-            throw std::invalid_argument("se3 is empty, reinitialize");
-        }
-        if (TheMap->map_points.size() > 0) {
-            cv::Mat convertedcurPoseF2g = curPoseF2g.convert();
-
-            // EDIT: Perform a check here to ensure it won't crash
-            if (!_14463320619150402643.empty() && !convertedcurPoseF2g.empty()) {
-                curPoseF2g = _14463320619150402643 * convertedcurPoseF2g;
-            } else {
-                throw std::invalid_argument("se3 is empty!");
-            }
-
-            curFrame.pose_f2g = curPoseF2g;
-            DMatchVector_637068 = _11946837405316294395(curFrame, lastFrame,
-                                                        sysParams.maxDescDistance * 1.5,
-                                                        sysParams.projDistThr);
-            int PnPResult = 0;
-
-            if (DMatchVector_637068.size() > 30) {
-                auto estimatedPose = curPoseF2g;
-                PnPResult = PnPSolver::solvePnp(curFrame, TheMap, DMatchVector_637068,
-                                                           estimatedPose, currentKeyFrameId_105767);
-
-                if (PnPResult > 30){
-                    curPoseF2g = estimatedPose;
+                //now, only do the match if the ratio between first and second is good
+                if (bestIdx!=std::numeric_limits<uint32_t>::max() && bestDist< 0.7*bestDist2){
+                    cv::DMatch mt;
+                    mt.queryIdx = bestIdx; // kp
+                    mt.trainIdx =  mPoint.id;        // map
+                    mt.distance = bestDist;
+                    matches.push_back( mt );
                 }
-
-            } else {
-                FrameMatcher _16997326787393468537(FrameMatcher::TYPE_FLANN);
-                _16997326787393468537.setParams(TheMap->keyframes[currentKeyFrameId_105767],
-                                                FrameMatcher::MODE_ASSIGNED, sysParams.maxDescDistance * 2,
-                                                0.6, true, 3);
-                DMatchVector_637068 = _16997326787393468537.match(curFrame, FrameMatcher::MODE_ALL);
-
-                if (DMatchVector_637068.size() > 30) {
-                    for (auto &_markerObservation: DMatchVector_637068)
-                        _markerObservation.trainIdx = TheMap->keyframes[currentKeyFrameId_105767].ids[_markerObservation.trainIdx];
-
-                    auto estimatedPose = curPoseF2g;
-                    PnPResult = PnPSolver::solvePnp(curFrame, TheMap, DMatchVector_637068,
-                                                               estimatedPose, currentKeyFrameId_105767);
-                    if (PnPResult > 30){
-                        curPoseF2g = estimatedPose;;
-                    }
-                } else PnPResult = 0;
             }
-
-            float _3763415994652820314;
-            if (PnPResult > 30) {
-                _3763415994652820314 = 4;
-                for (auto _markerObservation: DMatchVector_637068) {
-                    TheMap->map_points[_markerObservation.trainIdx].lastFIdxSeen = curFrame.fseq_idx;
-                    TheMap->map_points[_markerObservation.trainIdx].setVisible();
-                }
-            } else {
-                DMatchVector_637068.clear();
-                _3763415994652820314 = sysParams.projDistThr;
-            }
-
-            auto _3521005873836563963 = TheMap->matchFrameToMapPoints(
-                    TheMap->TheKpGraph.getNeighborsVLevel2(currentKeyFrameId_105767, true),
-                    curFrame,
-                    curPoseF2g,
-                    sysParams.maxDescDistance * 2,
-                    _3763415994652820314, true);
-
-            DMatchVector_637068.insert(DMatchVector_637068.end(), _3521005873836563963.begin(),
-                                       _3521005873836563963.end());
-
-            filter_ambiguous_query(DMatchVector_637068);
         }
-
-        int matchNumber = PnPSolver::solvePnp(curFrame, TheMap, DMatchVector_637068, curPoseF2g,
-                                              currentKeyFrameId_105767);
-        bool foundPosition = false;
-        if (curFrame.markers.size() > 0) {
-            int validMarkerCount = 0;
-
-            for (size_t _2654435874 = 0; _2654435874 < curFrame.markers.size(); _2654435874++) {
-                auto marker_1109 = TheMap->map_markers.find(curFrame.markers[_2654435874].id);
-
-                if (marker_1109 == TheMap->map_markers.end())
-                    continue;
-
-                if (!marker_1109->second.pose_g2m.isValid())
-                    continue;
-
-                validMarkerCount++;
-
-                if (curFrame.markers[_2654435874].poses.err_ratio < sysParams.aruco_minerrratio_valid)
-                    continue;
-
-                foundPosition = true;
-
-                break;
-            }
-
-            if (validMarkerCount > 1)
-                foundPosition = true;
-
-        }
-
-        if (matchNumber < 30 && !foundPosition) {
-            return se3();
-        }
-
-        for (size_t _2654435874 = 0; _2654435874 < DMatchVector_637068.size(); _2654435874++) {
-            TheMap->map_points[DMatchVector_637068[_2654435874].trainIdx].setSeen();
-
-            curFrame.ids[DMatchVector_637068[_2654435874].queryIdx] = DMatchVector_637068[_2654435874].trainIdx;
-
-            if (DMatchVector_637068[_2654435874].imgIdx == -1)
-                curFrame.flags[DMatchVector_637068[_2654435874].queryIdx].set(Frame::FLAG_OUTLIER, true); // set
-        }
-        return curPoseF2g;
     }
 
-    void System::_14031550457846423181(cv::Mat &_46082544231248938, float _9971115036363993554) const {
-        int _706246330297760 = float(_46082544231248938.cols) / 640.f;
-        cv::Point2f _46082575822903876(_706246330297760, _706246330297760);
-        bool _16987668682974831349 = false;
 
-        if(trackingState == STATE_TRACKING) {
-            for (size_t _2654435874 = 0; _2654435874 < curFrame.ids.size(); _2654435874++)
-                if(curFrame.ids[_2654435874]!=std::numeric_limits<uint32_t>::max()) {
-                    if(!TheMap->map_points.is(curFrame.ids[_2654435874]))
-                        continue;
 
-                    cv::
-                    Scalar _46082574599890393(
+    _debug_msg("final number of matches= "<<matches.size(),10);
+    filter_ambiguous_query(matches);
+    _debug_msg("final number of matches2= "<<matches.size(),10);
 
-                            0, 255, 0);
+    return matches;
 
-                    if
+}
 
-                            (
+//preconditions
+// lastKnownPose and _curKFRef are valid and
+se3 System::track(Frame &curframe,se3 lastKnownPose) {
 
-                            !
-                                    TheMap->
 
-                                            map_points[curFrame.ids[
 
-                                            _2654435874]
 
-                                    ]
+    __TSLAM_ADDTIMER__
+        //first estimate current pose
+    std::vector<cv::DMatch> map_matches;
 
-                                            .isStable()
+    se3 estimatedPose=lastKnownPose;    //estimate the current pose using motion model
 
-                            ) {
 
-                        _46082574599890393 =
-                                cv::
+    //search for the points matched and obtain an initial  estimation if there are map points
+     if (TheMap->map_points.size()>0){
+         if (!velocity.empty())
+             estimatedPose=velocity*estimatedPose.convert();
+        curframe.pose_f2g=estimatedPose;
 
-                                Scalar(
-                                        0, 0, 255);
-
-                    }
-
-                    cv::
-
-                    rectangle(
-
-                            _46082544231248938, _9971115036363993554 * (
-                                    curFrame.kpts[_2654435874]
-
-                                    - _46082575822903876), _9971115036363993554 * (
-
-                                    curFrame.kpts[
-                                            _2654435874]
-
-                                    + _46082575822903876), _46082574599890393, _706246330297760);
-
-                } else if (
-
-                        _16987668682974831349) {
-
-                    cv::
-                    Scalar _46082574599890393(
-
-                            255, 0, 0);
-
-                    cv::
-
-                    rectangle(
-
-                            _46082544231248938, _9971115036363993554 * (
-
-                                    curFrame.kpts[
-
-                                            _2654435874]
-
-                                    - _46082575822903876), _9971115036363993554 * (curFrame.kpts[
-                                                                                           _2654435874]
-
-                                                                                   + _46082575822903876),
-                            _46082574599890393, _706246330297760);
-                }
-
-        } else if (
-
-                TheMap->
-
-                        isEmpty()
-
-                ) {
-
-            for (
-
-                auto
-
-                        _2654435881: curFrame.kpts)
-
-                cv::
-
-                rectangle(_46082544231248938, _9971115036363993554 * (
-
-                        _2654435881 - _46082575822903876), _9971115036363993554 * (
-
-                        _2654435881 + _46082575822903876), cv::
-                          Scalar(
-
-                        255, 0, 0), _706246330297760);
-
+        //find mappoints found in previous frame
+        map_matches=matchMapPtsOnPrevFrame(curframe,_prevFrame,_params.maxDescDistance*1.5,_params.projDistThr);
+        __TSLAM_TIMER_EVENT__("matchMapPtsOnPrevFrame");
+        int nvalidMatches=0;
+        if (map_matches.size()>30  ){//do pose estimation and see if good enough
+            auto estimatedPose_aux=estimatedPose;
+            nvalidMatches=PnPSolver::solvePnp( curframe,TheMap,map_matches,estimatedPose_aux,_curKFRef);
+            if (nvalidMatches>30) estimatedPose=estimatedPose_aux;
+        }
+        else{//if not enough matches found from previous, do a search to reference keyframe
+            //match this and reference keyframe
+            FrameMatcher fmatcher(FrameMatcher::TYPE_FLANN);//use flann since BoW is not yet computed and can not be used
+            fmatcher.setParams( TheMap->keyframes[_curKFRef],FrameMatcher::MODE_ASSIGNED,_params.maxDescDistance*2,0.6,true,3);//search only amongts mappoints of ref keyframe
+            map_matches=fmatcher.match(curframe,FrameMatcher::MODE_ALL);
+            if(map_matches.size()>30){
+                //change trainIdx from Frame indices to map Ids
+                for(auto &m:map_matches)
+                    m.trainIdx= TheMap->keyframes[_curKFRef].ids[m.trainIdx];
+                auto estimatedPose_aux=estimatedPose;
+                nvalidMatches=PnPSolver::solvePnp( curframe,TheMap,map_matches,estimatedPose_aux,_curKFRef);
+                if (nvalidMatches>30) estimatedPose=estimatedPose_aux;
+            }
+            else nvalidMatches=0;
         }
 
-        for (
 
-            auto _5221496220235804833: curFrame.markers) {
 
-            cv::
+        __TSLAM_TIMER_EVENT__("poseEstimation");
+        _debug_msg("matchMapPtsOnFrames = "<<map_matches.size(),10);
+        float projDistance;
 
-            Scalar _46082574599890393 =
+        if ( nvalidMatches>30) {//a good enough initial estimation is obtained
+            projDistance=4;//for next refinement
+            for(auto m:  map_matches ){//mark these as already being used and do not consider in next step
+                TheMap->map_points[m.trainIdx].lastFIdxSeen= curframe.fseq_idx;
+                TheMap->map_points[m.trainIdx].setVisible();
+            }
+        }
+        else{
+            map_matches.clear();
+            projDistance=_params.projDistThr;//not good previous step, do a broad search in the map
+        }
 
-                    cv::
+        //get the neighbors and current, and match more points in the local map
+        auto map_matches2 = TheMap->matchFrameToMapPoints ( TheMap->TheKpGraph.getNeighborsVLevel2( _curKFRef,true) , curframe,  estimatedPose ,_params.maxDescDistance*2, projDistance,true);
+        //add this info to the map and current frame
+        _debug_msg("matchMapPtsOnFrames 2= "<<map_matches2.size(),10);
+        map_matches.insert(map_matches.end(),map_matches2.begin(),map_matches2.end());
+        _debug_msg("matchMapPtsOnFrames final= "<<map_matches.size(),10);
+        __TSLAM_TIMER_EVENT__("matchMapPtsOnFrames");
+        filter_ambiguous_query(map_matches);
+    }
 
-                    Scalar(
+     int nValidMatches=PnPSolver::solvePnp( curframe,TheMap,map_matches,estimatedPose,_curKFRef);
+    __TSLAM_TIMER_EVENT__("poseEstimation");
 
-                            0, 244, 0);
+    //determine if the pose estimated is reliable
+    //is aruco accurate
+    bool isArucoTrackOk=false;
+    if ( curframe.markers.size()>0){
+        int nvalidMarkers=0;
+        //count how many reliable marker are there
+        for(size_t  i=0;i<  curframe.markers.size();i++){
+            //is the marker in the map with valid pose
+            auto mit=TheMap->map_markers.find( curframe.markers[i].id);
+            if(mit==TheMap->map_markers.end())continue;//is in map?
+            if (!mit->second.pose_g2m.isValid())continue;//has a valid pose?
+            nvalidMarkers++;
+            //is it observed with enough reliability?
+            if (curframe.markers[i].poses.err_ratio < _params.aruco_minerrratio_valid) continue;
+            isArucoTrackOk=true;
+            break;
+        }
+        if (nvalidMarkers>1) isArucoTrackOk=true;//lets consider that we only need 2 valid markers for good result
 
-            if (
-                    TheMap->
+    }
 
-                            map_markers.count(_5221496220235804833.id)
-                    !=
 
-                    0) {
+    _debug_msg_("A total of "<<nValidMatches <<" good matches found and isArucoTrackOk="<<isArucoTrackOk);
+    if (nValidMatches<30 && !isArucoTrackOk){
+        _debug_msg_("need relocatization");
+     return se3();
+    }
 
-                if (
 
-                        TheMap->
+    /// update mappoints knowing now the outliers. It olny affects to map points
+    for(size_t i=0;i<map_matches.size();i++){
+            TheMap->map_points[map_matches[i].trainIdx].setSeen();
+            curframe.ids[ map_matches[i].queryIdx]=map_matches[i].trainIdx;
+            if (map_matches[i].imgIdx==-1)//is a bad match(outlier)
+                curframe.flags[ map_matches[i].queryIdx].set(Frame::FLAG_OUTLIER,true);
+    }
 
-                                        map_markers.at(
 
-                                        _5221496220235804833.id)
-                                .pose_g2m.isValid()
 
-                        )
 
-                    _46082574599890393 =
+    return estimatedPose;
+}
 
-                            cv::
 
-                            Scalar(
 
-                                    255, 0, 0);
 
-                else
-                    _46082574599890393 =
-                            cv::
+void System::drawMatchesAndMarkersInInputImage( cv::Mat &image,float inv_ScaleFactor)const{
 
-                            Scalar(
 
-                                    0, 0, 255);
+    int size=float(image.cols)/640.f;
+    cv::Point2f psize(size,size);
+    bool drawAllKp=false;
+
+     if (currentState==STATE_TRACKING){
+        for(size_t i=0;i<_cFrame.ids.size();i++)
+            if (_cFrame.ids[i]!=std::numeric_limits<uint32_t>::max()){
+                if (!TheMap->map_points.is( _cFrame.ids[i])) continue;
+                cv::Scalar color(0,255,0);
+                if (!TheMap->map_points[_cFrame.ids[i]].isStable()) {color=cv::Scalar(0,0,255);}
+                cv::rectangle(image,inv_ScaleFactor*(_cFrame.kpts[i]-psize),inv_ScaleFactor*(_cFrame.kpts[i]+psize),color,size);
+            }
+            else if( drawAllKp){
+                cv::Scalar color(255,0,0);
+                cv::rectangle(image,inv_ScaleFactor*(_cFrame.kpts[i]-psize),inv_ScaleFactor*(_cFrame.kpts[i]+psize),color,size);
 
             }
+    }
+    else if(TheMap->isEmpty()){
+        for( auto p: _cFrame.kpts)
+            cv::rectangle(image,inv_ScaleFactor*(p-psize),inv_ScaleFactor*(p+psize),cv::Scalar(255,0,0),size);
+    }
 
-            for (
-
-                auto &_2654435881: _5221496220235804833.corners)
-                _2654435881 *=
-
-                        _9971115036363993554;
-
-            for (auto &_2654435881: _5221496220235804833.und_corners)
-
-                _2654435881 *=
-
-                        _9971115036363993554;
-
-            _5221496220235804833.draw(
-                    _46082544231248938, _46082574599890393);
-
+    //now, draw markers found
+    for(auto aruco_marker:_cFrame.markers){
+         //apply distortion back to the points
+        cv::Scalar color=cv::Scalar(0,244,0);
+        if( TheMap->map_markers.count(aruco_marker.id)!=0){
+            if( TheMap->map_markers.at(aruco_marker.id).pose_g2m.isValid())
+                color=cv::Scalar(255,0,0);
+            else
+                color=cv::Scalar(0,0,255);
         }
-
-    }
-
-    void
-
-    System::
-
-    globalOptimization() {
-
-        auto
-
-                _11093822300040 =
-
-                GlobalOptimizer::
-                create(
-
-                        sysParams.global_optimizer);
-
-        GlobalOptimizer::
-
-        ParamSet _3005399798454910266(
-
-                debug::
-
-                Debug::
-
-                getLevel()
-                >=
-
-                11);
-
-        _3005399798454910266.fixFirstFrame =
-
-                true;
-
-        _3005399798454910266.nIters =
-
-                20;
-
-        _3005399798454910266.markersOptWeight =
-
-                getParams()
-                        .markersOptWeight;
-
-        _3005399798454910266.minMarkersForMaxWeight =
-
-                getParams()
-
-                        .minMarkersForMaxWeight;
-
-        _3005399798454910266.InPlaneMarkers =
-
-                getParams()
-
-                        .inPlaneMarkers;
-        _11093822300040->
-
-                optimize(
-                TheMap, _3005399798454910266);
-
-        TheMap->
-
-                removeBadAssociations(
-
-                _11093822300040->
-
-                        getBadAssociations(), 2);
-
-    }
-
-    uint32_t
-
-    System::
-
-    getLastProcessedFrame()
-
-    const {
-
-        return curFrame.fseq_idx;
-
-    }
-
-    void System::
-
-    setMode(
-
-            MODES _706246332824366) {
-
-        sysMode =
-
-                _706246332824366;
-
-    }
-
-    void System::clear() {
-        sysMapManager = std::make_shared<MapManager>();
-        _13028158409047949416 = false;
-
-        trackingState = STATE_LOST;
-        TheMap.reset();
-
-        sysMapIntializer = std::make_shared<MapInitializer>();
-        _14463320619150402643 = cv::Mat();
-        _10558050725520398793 = -1;
-    }
-
-    void System::saveToFile(string _16997227483604144380) {
-        waitForFinished();
-        fstream _706246330143775(_16997227483604144380, ios_base::binary | ios_base::out);
-
-        if (!_706246330143775)
-            throw std::runtime_error(string(__PRETTY_FUNCTION__)
-
-                                     +
-                                     "\x63\x6f\x75\x6c\x64\x20\x6e\x6f\x74\x20\x6f\x70\x65\x6e\x20\x66\x69\x6c\x65\x20\x66\x6f\x72\x20\x77\x72\x69\x74\x69\x6e\x67\x3a" +
-                                     _16997227483604144380);
-
-        io_write<uint64_t>(182313, _706246330143775);
-
-        TheMap->toStream(_706246330143775);
-
-        sysParams.toStream(_706246330143775);
-        _706246330143775.write((char *) &curPose_ns, sizeof(curPose_ns));
-
-        _706246330143775.write((char *) &currentKeyFrameId_105767, sizeof(currentKeyFrameId_105767));
-
-        _706246330143775.write(
-                (
-
-                        char *)
-
-                        &_13028158409047949416, sizeof(
-
-                        _13028158409047949416)
-
-        );
-
-        _706246330143775.write(
-                (
-
-                        char *)
-
-                        &trackingState, sizeof(
-
-                        trackingState)
-        );
-
-        _706246330143775.write(
-
-                (
-
-                        char *)
-
-                        &sysMode, sizeof(
-
-                        sysMode)
-
-        );
-
-        curFrame.toStream(
-
-                _706246330143775);
-
-        lastFrame.toStream(
-
-                _706246330143775);
-        sysFrameExtractor->
-
-                toStream(
-
-                _706246330143775);
-
-        sysMapManager->
-
-                toStream(
-                _706246330143775);
-
-        _1320287184975591154->
-
-                toStream(
-                _706246330143775);
-
-        toStream__(
-
-                _14463320619150402643, _706246330143775);
-
-        _706246330143775.write(
-
-                (
-                        char *)
-
-                        &_10558050725520398793, sizeof(
-                        _10558050725520398793)
-
-        );
-
-        _706246330143775.write(
-
-                (
-
-                        char *)
-
-                        &_13033649816026327368, sizeof(
-
-                        _13033649816026327368)
-
-        );
-
-        _706246330143775.flush();
-
-    }
-
-    void System::readFromFile(string _16997227483604144380) {
-
-        ifstream _706246330143775(_16997227483604144380, ios::binary);
-        if (!_706246330143775)
-            throw std::runtime_error(
-                    string(__PRETTY_FUNCTION__) + R"(could not open file for reading:)" + _16997227483604144380);
-        if (io_read<uint64_t>(_706246330143775) != 182313)
-            throw std::runtime_error(string(__PRETTY_FUNCTION__) + R"(invalid file type:)" + _16997227483604144380);
-
-        TheMap = std::make_shared<Map>();
-        TheMap->fromStream(_706246330143775);
-
-        sysParams.fromStream(_706246330143775);
-        _706246330143775.read((char *) &curPose_ns, sizeof(curPose_ns));
-        _706246330143775.read((char *) &currentKeyFrameId_105767, sizeof(currentKeyFrameId_105767));
-        _706246330143775.read((char *) &_13028158409047949416, sizeof(_13028158409047949416));
-        _706246330143775.read((char *) &trackingState, sizeof(trackingState));
-        _706246330143775.read((char *) &sysMode, sizeof(sysMode));
-        curFrame.fromStream(_706246330143775);
-        lastFrame.fromStream(_706246330143775);
-        sysFrameExtractor->fromStream(_706246330143775);
-
-        sysMapManager->fromStream(_706246330143775);
-        _1320287184975591154->fromStream(_706246330143775);
-        fromStream__(_14463320619150402643, _706246330143775);
-
-        _706246330143775.read((char *) &_10558050725520398793, sizeof(_10558050725520398793));
-
-        _706246330143775.read((char *) &_13033649816026327368, sizeof(_13033649816026327368));
+        //scale
+        for(auto &p:aruco_marker.corners) p*=inv_ScaleFactor;
+        for(auto &p:aruco_marker.und_corners) p*=inv_ScaleFactor;
+        //draw
+        aruco_marker.draw(image,color);
     }
 
 }
+
+
+
+void System::globalOptimization(){
+    _debug_exec( 10, saveToFile("preopt.ucs"););
+
+    auto opt=GlobalOptimizer::create(_params.global_optimizer);
+    GlobalOptimizer::ParamSet params( debug::Debug::getLevel()>=11 );
+    params.fixFirstFrame=true;
+    params.nIters=10;
+    params.markersOptWeight= getParams().markersOptWeight;
+    params.minMarkersForMaxWeight=getParams().minMarkersForMaxWeight;
+    params.InPlaneMarkers=getParams().inPlaneMarkers;
+
+    _debug_msg_("start initial optimization="<<TheMap->globalReprojChi2());
+
+    opt->optimize(TheMap,params );
+      _debug_msg_("final optimization="<<TheMap->globalReprojChi2() <<" npoints="<< TheMap->map_points.size());
+
+
+    TheMap->removeBadAssociations(opt->getBadAssociations(),2);
+    _debug_msg_("final points ="<< TheMap->map_points.size());
+
+
+
+    _debug_exec( 10, saveToFile("postopt.ucs"););
+
+}
+
+
+uint32_t System::getLastProcessedFrame()const{return _cFrame.fseq_idx;}
+
+
+void System::setMode(MODES mode){
+    currentMode=mode;
+}
+
+
+
+
+
+ void System::clear(){
+     TheMapManager=std::make_shared<MapManager>();
+     isInitialized=false;
+     currentState=STATE_LOST;
+     TheMap.reset();
+     map_initializer=std::make_shared<MapInitializer>();
+     velocity=cv::Mat();
+     lastKFReloc=-1;
+ }
+
+
+ void System::saveToFile(string filepath){
+
+
+     waitForFinished();
+
+     //open as input/output
+     fstream file(filepath,ios_base::binary|ios_base::out );
+     if(!file)throw std::runtime_error(string(__PRETTY_FUNCTION__)+"could not open file for writing:"+filepath);
+
+     //write signature
+     io_write<uint64_t>(182313,file);
+
+     TheMap->toStream(file);
+
+      //set another breaking point here
+     _params.toStream(file);
+     file.write((char*)&_curPose_f2g,sizeof(_curPose_f2g));
+     file.write((char*)&_curKFRef,sizeof(_curKFRef));
+     file.write((char*)&isInitialized,sizeof(isInitialized));
+     file.write((char*)&currentState,sizeof(currentState));
+     file.write((char*)&currentMode,sizeof(currentMode));
+     _cFrame.toStream(file);
+     _prevFrame.toStream(file);
+     fextractor->toStream(file);
+     TheMapManager->toStream(file);
+     marker_detector->toStream(file);
+     toStream__(velocity,file);
+     file.write((char*)&lastKFReloc,sizeof(lastKFReloc));
+
+     file.write((char*)&totalNFramesProcessed,sizeof(totalNFramesProcessed));
+
+     file.flush();
+ }
+
+ void System::readFromFile(string filepath){
+     ifstream file(filepath,ios::binary);
+     if(!file)throw std::runtime_error(string(__PRETTY_FUNCTION__)+"could not open file for reading:"+filepath);
+
+     if ( io_read<uint64_t>(file)!=182313)  throw std::runtime_error(string(__PRETTY_FUNCTION__)+"invalid file type:"+filepath);
+
+     TheMap=std::make_shared<Map>();
+     TheMap->fromStream(file);
+
+     _params.fromStream(file);
+      file.read((char*)&_curPose_f2g,sizeof(_curPose_f2g));
+     file.read((char*)&_curKFRef,sizeof(_curKFRef));
+     file.read((char*)&isInitialized,sizeof(isInitialized));
+     file.read((char*)&currentState,sizeof(currentState));
+     file.read((char*)&currentMode,sizeof(currentMode));
+
+     _cFrame.fromStream(file);
+     _prevFrame.fromStream(file);
+
+     fextractor->fromStream(file);
+     TheMapManager->fromStream(file);
+     marker_detector->fromStream(file);
+     fromStream__(velocity,file);
+     file.read((char*)&lastKFReloc,sizeof(lastKFReloc));
+     file.read((char*)&totalNFramesProcessed,sizeof(totalNFramesProcessed));
+
+ //    setParams(TheImageParams,_params);
+
+
+ }
+
+
+ } //namespace

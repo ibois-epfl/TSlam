@@ -6,6 +6,8 @@
 #include "tslamtypes.h"
 #include "imageparams.h"
 #include "map.h"
+#include "reconstruction/tslam_reconstructor.hh"
+
 namespace tslam{
     class TSLAM_API TSlam
     {
@@ -21,63 +23,60 @@ namespace tslam{
          */
         void setParams(std::shared_ptr<Map> map, const  tslam::Params &params, const std::string &vocabulary="");
 
-        //Clear this object setting it to intial state. It will remove all map data
+        /// Clear this object setting it to intial state. It will remove all map data
         void clear();
 
-        //returns system params
+        /// returns system params
         static Params &getParams() ;
 
 
-        //Feeds the system with a new image and the parameters of the camera it has been processed with. The final
-        //parameter is the index of the sequence
-        //Returns the camera pose estimated. The pose is the transform moving points from the global reference sytem to the camera reference ssytem
+        /// Feeds the system with a new image and the parameters of the camera it has been processed with. The final
+        /// parameter is the index of the sequence
+        /// Returns the camera pose estimated. The pose is the transform moving points from the global reference sytem to the camera reference ssytem
         cv::Mat process( cv::Mat &in_image,const ImageParams &ip,uint32_t frameseq_idx);
-        cv::Mat processStereo( cv::Mat &left_image,const cv::Mat &right_image,const ImageParams &ip,uint32_t frameseq_idx);
-        cv::Mat processRGBD( cv::Mat &in_image,const cv::Mat & depth,const ImageParams &ip,uint32_t frameseq_idx);
-        cv::Mat processArray(vector<cv::Mat> &images,  ImageParams &ArrayCamParams ,uint32_t frameseq_idx);
 
-        //Reset the current frame pose. Use it to start tracking in a known map
+        /// Reset the current frame pose. Use it to start tracking in a known map
         void resetTracker();
 
-        //sets the system mode
+        /// sets the system mode
         void setMode(MODES mode);
 
-        //sets the system in lost mode
+        /// sets the system in lost mode
         //void resetCurrentPose();
 
-        //returns the number of the last processed framed
+        /// returns the number of the last processed framed
         uint32_t getLastProcessedFrame()const;
 
 
-        // Saves the current state of the system to a file so that it can be recovered later. It is only safe if the system is in sequential mode
+        /// Saves the current state of the system to a file so that it can be recovered later. It is only safe if the system is in sequential mode
         void saveToFile(std::string filepath);
-        //Loads the state of the system from a file
+        /// Loads the state of the system from a file
         void readFromFile(std::string filepath);
 
 
-        //only for debugging pourposes perform the global optimization
+        /// only for debugging pourposes perform the global optimization
         void globalOptimization();
 
-        //waits for all threads to finish
+        /// waits for all threads to finish
         void waitForFinished();
 
 
-        //returns the index of the current keyframe
+        /// returns the index of the current keyframe
         uint32_t getCurrentKeyFrameIndex();
 
 
-        //returns a pointer to the map being used
+        /// returns a pointer to the map being used
         inline std::shared_ptr<Map> getMap() { return map; } ;
 
 
-        //returns an string that identifies the system state. It is like a md5 sum the system state
+        /// returns an string that identifies the system state. It is like a md5 sum the system state
         std::string getSignatureStr()const;
 
 
         void setDebugLevel(int level);
         void showTimers(bool v);
 
-        //will update the internal parameters.Not all parameters can be changed
+        /// will update the internal parameters.Not all parameters can be changed
         void updateParams(const Params &p);
 
         /**
@@ -109,11 +108,11 @@ namespace tslam{
         /**
          * Set the status of the map
          *
-         * Set the status of the map. If "isInstancing" is set to true global optimization will be off and the
+         * Set the status of the map. If "localizeOnly" is set to true global optimization will be off and the
          * new added keyframes will be kept in a fixed number
-         * @param isInstancing true/false
+         * @param localizeOnly true/false
          */
-        void setInstancing(bool isInstancing);
+        void setInstancing(bool localizeOnly);
 
         /**
          * @brief Get the last tracked camera pose (not guarentee to be the last frame)
@@ -124,7 +123,7 @@ namespace tslam{
          * @brief get the camera pose of the last processed frame,
          * @return A 4x4 cv::Mat; cv::eye if last frame was not tracked.
          */
-        // inline cv::Mat getLastCamPose(){ return lastCamPose; };
+//        inline cv::Mat getLastCamPose(){ return lastCamPose; };
         /**
          * @brief Process a frame
          * @param frame Frame to process
@@ -152,7 +151,23 @@ namespace tslam{
 
     // static functions
     public:
+        /**
+         * Combine two map (by aligning the tags)
+         * @param mapPathA path to the first map
+         * @param mapPathB path to the second map
+         * @param outputPath path to the combined map
+         * @param exportYml if export yml alongside
+         * @param exportPly if export ply alongside
+         * @param estimatedImageParam pointer to the estimated image parameter
+         * @param niters how many iterations to run during optimization
+         */
         static void CombineMap(string mapPathA, string mapPathB, string outputPath, bool exportYml=true, bool exportPly=true, ImageParams *estimatedImageParam=nullptr, int niters=50);
+        /**
+         * @brief Reconstruct the 3D model from the current mapping and export the .ply mesh
+         * @param filepath output path of the exported .ply
+         * @return true if succeed, false otherwise
+         */
+        static bool Reconstruct3DModelAndExportPly(const std::string filepath);
     };
 
 }

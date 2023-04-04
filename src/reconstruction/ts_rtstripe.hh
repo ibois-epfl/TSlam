@@ -22,7 +22,7 @@ namespace tslam::Reconstruction
         /// Reorder the tags based on the axis of the stripe (longest edge)
         void reorderTags();
 
-    public: __always_inline  ///< Accessors
+    public: __attribute__((always_inline))  ///< Accessors
         double getLength() {return m_Length; };
         Eigen::Vector3d& getAxisX() {return m_AxisX; };
         Eigen::Vector3d& getAxisY() {return m_AxisY; };

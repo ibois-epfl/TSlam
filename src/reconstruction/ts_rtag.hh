@@ -3,7 +3,6 @@
 #include "ts_compute.hh"
 #include "ts_geo_util.hh"
 
-#include <open3d/Open3D.h>
 #include <Eigen/Core>
 
 namespace tslam::Reconstruction
@@ -51,14 +50,13 @@ namespace tslam::Reconstruction
         inline void setID(uint id) {m_Id = id; };
         inline void setFaceIdx(int idx) {m_FaceIdx = idx; };
 
-    public: __always_inline
+    public: __attribute__((always_inline))
         std::vector<Eigen::Vector3d>& getCorners() {return m_Corners; }; 
         Eigen::Vector3d& getCornerA() {return m_Corners[0]; };
         Eigen::Vector3d& getCornerB() {return m_Corners[1]; };
         Eigen::Vector3d& getCornerC() {return m_Corners[2]; };
         Eigen::Vector3d& getCornerD() {return m_Corners[3]; };
         uint& getID() {return m_Id; };
-        open3d::geometry::TriangleMesh& getOpen3dMesh() {return m_PlaneMesh; };
         Eigen::Vector3d& getCenter() {return m_Center; };
         TSPlane& getPlane() {return m_Plane; };
         Eigen::Vector3d& getNormal() {m_Normal = m_Plane.Normal; return m_Normal; };
@@ -73,11 +71,11 @@ namespace tslam::Reconstruction
         void computePlaneEquation();
         void computeOpen3dMesh();
     
-    public: __always_inline
+    public: __attribute__((always_inline))
         void setColor(Eigen::Vector3d clr) {m_Color = clr; };
         Eigen::Vector3d& getColor() {return m_Color; };
 
-    public: __always_inline
+    public: __attribute__((always_inline))
         /**
          * @brief Compute the distance between two tags
          * 
@@ -115,7 +113,6 @@ namespace tslam::Reconstruction
         uint m_Id;
         std::vector<Eigen::Vector3d> m_Corners;
         TSPlane m_Plane;
-        open3d::geometry::TriangleMesh m_PlaneMesh;
         /// Normal vector of the plane linked to the tag
         Eigen::Vector3d m_Normal;
         /// Axis X,Y of the plane linked to the tag

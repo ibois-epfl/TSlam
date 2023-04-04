@@ -79,7 +79,7 @@ MapPoint & Map::addNewPoint(uint32_t frameSeqId){
  }
 
 
- void Map::addMarkerObservation(uint32_t markerId,uint32_t KeyFrame){
+ void Map::addMarkerObservation(uint32_t markerId, uint32_t KeyFrame){
      assert(keyframes.is(KeyFrame));
      assert(map_markers.count(markerId));
 

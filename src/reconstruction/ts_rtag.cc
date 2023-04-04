@@ -136,11 +136,6 @@ namespace tslam::Reconstruction
                 Eigen::Vector3d C(xCF, yCF, zCF);
                 Eigen::Vector3d D(xDF, yDF, zDF);
 
-                // std::cout << "A: " << A << std::endl;  // <<<<<<< DEBUG
-                // std::cout << "B: " << B << std::endl;  // <<<<<<< DEBUG
-                // std::cout << "C: " << C << std::endl;  // <<<<<<< DEBUG
-                // std::cout << "D: " << D << std::endl;  // <<<<<<< DEBUG
-
                 // fill TSRTag's info
                 tag.setCorners(A, B, C, D);
                 tag.compute();
@@ -157,7 +152,6 @@ namespace tslam::Reconstruction
         if (this->m_Corners.size() != 4) throw std::runtime_error("[ERROR]: corners are not set.");
         this->computeCenter();
         this->computePlaneEquation();
-        this->computeOpen3dMesh();
     }
     void TSRTag::computeCenter()
     {
@@ -185,25 +179,5 @@ namespace tslam::Reconstruction
         TSPlane tsplane = TSPlane(n[0], n[1], n[2], d);
 
         this->m_Plane = tsplane;
-    }
-    void TSRTag::computeOpen3dMesh()
-    {
-        std::shared_ptr<open3d::geometry::TriangleMesh> mesh = std::make_shared<open3d::geometry::TriangleMesh>();
-
-        std::vector<Eigen::Vector3d> vertices;
-        std::vector<Eigen::Vector3i> triangles;
-
-        vertices.push_back(Eigen::Vector3d(this->m_Corners[0](0), this->m_Corners[0](1), this->m_Corners[0](2)));
-        vertices.push_back(Eigen::Vector3d(this->m_Corners[1](0), this->m_Corners[1](1), this->m_Corners[1](2)));
-        vertices.push_back(Eigen::Vector3d(this->m_Corners[2](0), this->m_Corners[2](1), this->m_Corners[2](2)));
-        vertices.push_back(Eigen::Vector3d(this->m_Corners[3](0), this->m_Corners[3](1), this->m_Corners[3](2)));
-
-        triangles.push_back(Eigen::Vector3i(0, 1, 2));
-        triangles.push_back(Eigen::Vector3i(0, 2, 3));
-
-        mesh->vertices_ = vertices;
-        mesh->triangles_ = triangles;
-
-        this->m_PlaneMesh = *mesh;
     }
 }

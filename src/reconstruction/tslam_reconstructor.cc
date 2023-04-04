@@ -1,7 +1,26 @@
 #include "tslam_reconstructor.hh"
-#include <filesystem>
-#include <open3d/Open3D.h>
 
+#include <CGAL/Surface_mesh.h>
+#include <CGAL/Polygon_mesh_processing/IO/polygon_mesh_io.h>
+#include <CGAL/Surface_mesh/IO/PLY.h>
+
+#include <iostream>
+#include <fstream>
+
+#ifndef __has_include
+  static_assert(false, "__has_include not supported");
+#else
+#  if __cplusplus >= 201703L && __has_include(<filesystem>)
+#    include <filesystem>
+     namespace fs = std::filesystem;
+#  elif __has_include(<experimental/filesystem>)
+#    include <experimental/filesystem>
+     namespace fs = std::experimental::filesystem;
+#  elif __has_include(<boost/filesystem.hpp>)
+#    include <boost/filesystem.hpp>
+     namespace fs = boost::filesystem;
+#  endif
+#endif
 
 namespace tslam::Reconstruction
 {
@@ -66,7 +85,7 @@ namespace tslam::Reconstruction
 
     void TSLAMReconstructor::loadMap(const std::string& filepath)
     {
-        if (!std::filesystem::exists(filepath))
+        if (!fs::exists(filepath))
             throw std::runtime_error("[ERROR] The file does not exist.");
 
         this->m_MapPath = filepath;
@@ -79,17 +98,18 @@ namespace tslam::Reconstruction
         if (!this->m_GeometricSolver.hasMesh())
             throw std::runtime_error("[ERROR] No mesh is reconstructed.");
         
-        std::string filepath = dir + "/" + filename;
-        open3d::io::WriteTriangleMesh(filepath, this->m_GeometricSolver.getMeshOut(), true);
+        std::string filepath = dir + "/" + filename + ".ply";
+        TSLAMReconstructor::saveMeshAsPLY(filepath);
     }
 
-    void TSLAMReconstructor::saveMeshAsXAC(const std::string& dir, const std::string& filename)
+    void TSLAMReconstructor::saveMeshAsPLY(const std::string& filepath)
     {
         if (!this->m_GeometricSolver.hasMesh())
             throw std::runtime_error("[ERROR] No mesh is reconstructed.");
-        
-        std::string filepath = dir + "/" + filename + ".xac";
 
-        // TODO: implement the XAC file writer
+        std::ofstream out(filepath);
+        out.precision(17);
+        CGAL::IO::write_PLY(out, this->m_GeometricSolver.getMeshOut());
+        out.close();
     }
 }

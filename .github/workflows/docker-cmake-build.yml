@@ -1,0 +1,19 @@
+name: docker-cmake-build
+
+on:
+  # push:
+  #   branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build-container:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build the Docker image
+      run: sudo docker build -t tslam .

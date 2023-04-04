@@ -1,3 +1,19 @@
+#######################################################
+## TSlam specific
+#######################################################
+
+# files produced at runtime
+tslam_params_world.yml
+world.map
+world.yml
+
+# avoid to push map (too heavy ~100MB)
+assets/maps/*
+
+# vocabulary
+assets/voc/*
+*.fbow
+
 # editor config
 .archive
 .vscode
@@ -12,9 +28,89 @@ test.*
 core-dump*
 temp/
 
+# stag dict and files
+STagHD11/
+HD11/
+STagHD11.zip
+pdf_out/
+
 # misc
 test_result
 *.map
 *.pdf
 webcam-calib-data
 log.*
+test/
+
+#######################################################
+## VSCode
+#######################################################
+# basic files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+#######################################################
+## CMake
+#######################################################
+# basic files
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+
+
+#######################################################
+## C++
+#######################################################
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# macos
+.DS_Store

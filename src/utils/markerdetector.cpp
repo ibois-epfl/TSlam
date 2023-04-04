@@ -44,20 +44,21 @@ void ArucoMarkerDetector:: fromStream(std::istream &str){
     _mdetector->fromStream(str);
 }
 
-////////////////////////////
-// STagDetector interface //
-////////////////////////////
-STagDetector::STagDetector(int libraryHD, int errorCorrection, bool inKeepLogs){
+
+//////////////////////////////////
+// STagMarkerDetector interface //
+//////////////////////////////////
+STagMarkerDetector::STagMarkerDetector(int libraryHD, int errorCorrection, bool inKeepLogs){
     _mdetector=std::make_shared<aruco::MarkerDetector>();
     _stag = Stag(libraryHD, errorCorrection, inKeepLogs);
 }
-STagDetector::STagDetector(const Params &p, int libraryHD, int errorCorrection, bool inKeepLogs){
+STagMarkerDetector::STagMarkerDetector(const Params &p, int libraryHD, int errorCorrection, bool inKeepLogs){
     _mdetector=std::make_shared<aruco::MarkerDetector>();
     _stag = Stag(libraryHD, errorCorrection, inKeepLogs);
     setParams(p);
 }
 
-void STagDetector::setParams(const Params &p){
+void STagMarkerDetector::setParams(const Params &p){
     aruco::MarkerDetector::Params aruco_DetectorParams;
     _p=p;
     aruco_DetectorParams.setDetectionMode( aruco::MarkerDetector::Params::getDetectionModeFromString(_p.aruco_DetectionMode ),_p.aruco_minMarkerSize);
@@ -67,7 +68,7 @@ void STagDetector::setParams(const Params &p){
 
 }
 
-std::vector<MarkerDetection> STagDetector::detect(const cv::Mat &Image){
+std::vector<MarkerDetection> STagMarkerDetector::detect(const cv::Mat &Image){
     std::vector<MarkerDetection> markers;
     _stag.detectMarkers(Image);
 
@@ -75,7 +76,7 @@ std::vector<MarkerDetection> STagDetector::detect(const cv::Mat &Image){
         MarkerDetection uslm_marker;
         // ID should be no problem
         uslm_marker.id=m.id;
-        
+
         // Just leave it
         float halfSize = _p.aruco_markerSize / 2.f;
         uslm_marker.points3d={cv::Point3f(-halfSize, halfSize, 0),cv::Point3f(halfSize, halfSize, 0),cv::Point3f(halfSize,-halfSize, 0),cv::Point3f(-halfSize, -halfSize, 0)};
@@ -95,11 +96,12 @@ std::vector<MarkerDetection> STagDetector::detect(const cv::Mat &Image){
     }
     return markers;
 }
-void STagDetector:: toStream(std::ostream &str)const{
+void STagMarkerDetector:: toStream(std::ostream &str)const{
     _mdetector->toStream(str);
 }
-void STagDetector:: fromStream(std::istream &str){
+void STagMarkerDetector:: fromStream(std::istream &str){
     _mdetector->fromStream(str);
 }
+
 
 }

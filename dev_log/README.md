@@ -94,7 +94,7 @@ std::string info;
         - Not updating Map -> lower accuracy
         - Move the code cause the lag into another thread, and let the main thread keep going
         - ✔️ Just cancel it
-            > This has been tackled down by adding a system-scale parameter "-isInstancing", which disables the optimization process.
+            > This has been tackled down by adding a system-scale parameter "-localizeOnly", which disables the optimization process.
 
 ## Merge 2 maps
 - Takes two tag maps (the exported .yml file) as input
@@ -294,18 +294,62 @@ The current challenge is the **face selection** after the tassellation. It might
 
 *A different approach needs to be found for selecting eligible faces*
 
+### Feb 15: stand up on the development
+Today we got a general stand up meeting with Yves and Julien. The development is successfull but we need to focus now on the evaluation of the TSLAM. This means that we need to cut out some features from the road map, fix parameters, do a due diligence on the evaluation of SLAMS and esstablish a scientific protocol for the evaluation.
+
+|                     |                      |
+|:-------------------:|:--------------------:|
+| ![](./standup1.jpg) | ![](./standup2.jpg)  |
+
+
+### Reconstruction - new polygon faces selector
+We implemented a new method to check wether a polygon is a face or not by checking if a tag is contained in it. It is robust and the algorithm has been parametrized to detect multiple faces. Here we can see that we are able to now to describe complex shapes.
+
+|        notched piece       |     complex piece      |
+|:------------------------:|:------------------------:|
+| ![](./patchalg1.png) | ![](./patchalg2.png) |
+
+What we are missing now is a resilient refiner to fill the holes with e.g. [one method in CGAL](https://doc.cgal.org/latest/Polygon_mesh_processing/Polygon_mesh_processing_2hole_filling_example_SM_8cpp-example.html). In general this will be a limitation of the system to have markers to cover the entire piece. The rule to avoid holes is not clear at the moment.
+
+update `22-02-2023`: we tried the `triangulate_refine_and_fair_hole()` func in CGAL 5.5.1 but it is not giving the expected results. An issue is open on [CGAL github](https://github.com/CGAL/cgal/issues/7283).
+
+
+## March 1: hole filling
+The hole filling from CGAL is implemented and it patch some of the missing holes. Nonetheless, some non-manifold faces are still produced. A refinement of the hole patcher needs to be implemented.
+
+|        notched piece       |     complex piece      |
+|:------------------------:|:------------------------:|
+| ![](./hole_patch.png) | ![](./hole_patch2.png) |
+
+## March 13: Mesh View
+The bug about clipping and perspective projection has been fixed. Mesh view is now working properly.
+![](./mesh_view.png)
+
+## March 23: Set up prep
+We started to preparing the evaluation pipeline and the set up for the evaluation campaign.
+![](./evalcampaign1.jpg)
+![](./evalcampaign2.jpg)
+
+
+---
+
 Current TODOs:
 - [x] (urgent) a piece with double stripes on edges each is not reconstructing correctly, check the bug out;
-- [ ] (urgent) find a better algorithm for selecting candidate polygon faces
-- [ ] (urgent) solve reconstruction for more complex objects
-- [ ] (urgent) 
-- [ ] implement the a `.xac` (xml based) format in `ts_geometric_solver.hh` and `tslam_reconstructor.hh`;
-- [ ] find a way to containerize in CMakeLists as a library to be used in the main software and integrate in main TSlam CMakeLists file
-- [ ] write test units
-- [ ] (optional) write metrics to evaluate the reconstruction
-- [ ] implement an CI on github actions
-- [ ] adapt optitrack
-- [ ] write small program for recordings live
-- [ ] package and integrate the new version of tslam in AC
+- [x] (urgent) establish an evaluation protocol for the tslam
+- [x] (urgent) find a better algorithm for selecting candidate polygon faces
+- [x] (urgent) solve reconstruction for more complex objects
+- [ ] (urgent) delete all dependecies of old UCOSlam and code labels replaced with TSLam
+- [x] (urgent) integrate the reconstruction as a library in the main TSlam base code
 
-- [ ] implement an evaluation method (mesh-mesh comparison) for the synthetic data, i.e. [Hausdorf distance for two mesh models](https://www.researchgate.net/publication/224258658_Assessing_Visual_Quality_of_3-D_Polygonal_Models)
+- [x] (medium) TSLAM: adjust visualizer for overlapping mesh
+- [x] (mdeium) TSLAM: establish scientific protocol for evaluation with optitrack
+- [x] (medium) in reconstruction: the check mesh sanity is not wrokgin properly
+- [x] (medium) in reconstruction: we need to implement a hole filler
+
+- [x] (medium) set up CI/CD
+- [x] (medium) for reconstruction sub-program: get rid of open3d and integrate a mesh I/O pipeline 
+- [ ] (medium) package and integrate the new version of tslam in AC
+
+- [ ] (optional) implement the a `.xac` (xml based) format in `ts_geometric_solver.hh` and `tslam_reconstructor.hh`;
+
+- [x] for reconstruction: write test units

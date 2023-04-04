@@ -1,12 +1,47 @@
-# TSlam
-
-
-<p>
-    <img src="./logo/logo_linux_violet.png" width="200">
+<p align="center">
+    <img src="./assets/logo/logo_linux_violet.png" width="200">
+</p>
+<p align="center">
+    <img src="https://github.com/ibois-epfl/TSlam/actions/workflows/docker-cmake-build.yml/badge.svg">
+    <img src="https://img.shields.io/badge/os-Ubuntu22.04-blueviolet">
+    <img src="https://img.shields.io/badge/license-GPL--v3-brightgreen">
+    <img href="https://renkulab.io/projects/andrea.settimi/tslam-evaluation/datasets" src="https://renkulab.io/renku-badge.svg">
 </p>
 
-<!-- ![](./example/tracking_demo.gif) -->
+```mermaid
+gantt
+    dateFormat  YYYY-MM-DD
+    title       TSlam dev planning
+    axisFormat %Y-%m
 
+    section Core development
+    Base code modification          :done, ucm, 2022-06-01, 2022-08-10
+    RTag integration                :done, rti, 2022-07-30, 2022-10-01
+    Mapping                         :done, map, 2022-08-20, 2022-12-20
+    Tracking                        :done, trck, 2022-10-20, 2023-01-30
+    Reconstruction                  :active, rec, 2022-10-30, 2023-03-05
+    AC integration                  :done, aci, 2022-09-10, 2022-12-10
+    Stand-up demo                   :milestone, 2023-02-24, 0d
+
+    section Evaluation
+    protocols design                :active, ptrd, 2023-02-24, 2023-03-20
+    Protocol submission             :milestone, 2023-03-14, 0d
+    preparation of eval             :active, 15d
+    Fabrication eval                :crit, 21d
+    Data/visual processing          :15d
+    Stand-up eval results           :milestone, 2d
+
+    section Documentation
+    code cleaning                   :3d
+    CI/CD integration               :8d
+
+    section Paper redaction
+    Redaction text/illustration     :20d
+    Submission                      :milestone, 1d
+    Publishing                      :milestone, 120d
+```
+
+# TSlam
 This is a modified version of [UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62) for augmented carpentry research. The main features are:
 - Better API for use.
 - Using [STag](https://github.com/bbenligiray/stag)
@@ -14,17 +49,28 @@ This is a modified version of [UcoSLAM](http://www.uco.es/investiga/grupos/ava/n
 - By indicating it's in instance mode, the system stop running global optimization and only keeps a fixed number of new added keyframes, which smooth the overall experience.
 - Add [CLAHE](https://en.wikipedia.org/wiki/Adaptive_histogram_equalization) for preprocessing.
 - Several [bugs are resolved](./dev_log/Bug_tracing.md).
+- we add a reconstruction pipeline to obtain digital models of the physically tagged objects
 
 Here are some reference related to this project:
 - The publication for UcoSLAM:  [link]([https://docs.google.com/document/d/12EGJ3cI-m8XMXgI5bYW1dLi5lBO-vxxr6Cf769wQzJc](https://arxiv.org/abs/1902.03729))
 - [STag ROS](https://github.com/usrl-uofsc/stag_ros): Code of STag is from this repo. This one upgrade the original STag from OpenCV 3 to OpenCV 4.
 - [Dev Log of this modification](./dev_log)
 
-## STag to print
-An A0 format with all STag stripes can be downloaded [here](https://drive.google.com/file/d/1a_uYvb9TZmeg664L9f9kR5GuTU0A3bfs/view?usp=share_link).
+## Tag stickers
+<p align = "center">
+  <img src=assets/img/stripetag.png> </img>
+</p>
+<p align = "center">
+  <i>Fig.: Example of a stripe as sticker employed in TSlam. Each stripe contains 50 fiducial markers of 20mm width. </i>
+</p>
 
-## Scanned Map
-Some scanned map can be download from [[Google Drive](https://drive.google.com/drive/folders/1wYFZq54syWwTFVQ5soJTMVUmcufcvQoT?usp=share_link)](You have to login with EPFL account to view).
+There are two ways you can consume the tags:
+- `ready to print`: 450 stripes for a total of 21149 tags are available in batches of 50 stripes with an A0 format. They are ready to print (better as stickers) and can be downloaded [here](https://zenodo.org/record/7738721/files/stag_stickers_ready.zip?download=1).
+- `generate your custom stripes`: if you need a specific tags layout you can run the python script from the terminal (from UNIX):
+  calibration_webcam.yml -voc ../../orb.fbow -out test
+
+## TSlam vocabulary
+To be fully functional, TSlam needs a vocabulary that can be downloaded [here](https://zenodo.org/record/7738721/files/orb.fbow?download=1) and stored preferably into the folder `TSlam/assets/voc/orb.fbow`.
 
 ## Build
 ```bash
@@ -89,18 +135,32 @@ When the window pop-out, you can press `f` to enable the 3D tracking and `s` to 
 
 > [!] Vocabulary is not required, but it will not be able to relocalization with keypoints if not specified.
 
+### Reconstruction
+```bash
+./tslam_reconstruct "src/reconstruction/tests/test_data/real_scans/long_cut.yml" "./" "test_mesh_name"
+```
+This runs `tslam_reconstruct.cc`.
+- `<path_to_map_yml>`: the path pointing to the `.yml` file of the map
+- `<output_dir>`: the output dir for the reconstructed mesh
+- `<mesh_name>`: the name of the `.ply` file
+It's possible to input the parameters for the geometric solver. To see them, run `./tslam_reconstruct -h`
+
 ### Tracking
+`>>>>>>>>>>>>>>>>>> TODO <<<<<<<<<<<<<<<<<<<<`
+Here we should add the path to the mesh model to visualize
+
 ```bash
 # first unzip the map
 unzip ../../example/example.map.zip -d ../../example/
-./tslam_monocular ../../example/video.mp4 ../../example/calibration_webcam.yml -map ../../example/example.map -isInstancing
+./tslam_monocular ../../example/video.mp4 ../../example/calibration_webcam.yml -map ../../example/example.map -localizeOnly
 ```
 - `map`: Path to the map.
-- `isInstancing`: Indicating it's not mapping, so we can skip some operations.
+- `localizeOnly`: Indicating it's not mapping, so we can skip some operations.
 
 ### Util Programs
+`>>>>>>>>>>>>>>>>>> this is for me not clear why we need to show this, maybe the previous section needs to be explained better. We should replace it with the typical routine with all the steps to map, reconstruct and run tslam. <<<<<<<<<<<<<<<<<<<<`
 Some utility programs would be built defautly in `build/utils`
-#### View Map 
+#### View Map
 ```bash
 ./tslam_mapviewer example.map
 ```
@@ -112,18 +172,15 @@ Some utility programs would be built defautly in `build/utils`
 ```bash
 ./tslam_map_export example.map example.[pcd|ply|yml]
 ```
-
-
-### Run GUI:
-```
-./build/gui/UcoSLAM_GUI
-```
+#### Reconstruct model
+`>>>>>>>>>>>>>>>>>> here we need to add <<<<<<<<<<<<<<<<<<<<`
 
 ## APIs
 ### Header
 All interface is included in `tslam.h`.
 ```cpp
 #include "tslam.h"
+#include "reconstruction/tslam_reconstructor.hh"
 ```
 
 ---
@@ -203,6 +260,7 @@ void clearMap();
 
 ---
 ### Class `Map`
+This is is responsible for the first step of TSLAM, mapping the rtags attached to the piece. The class needs a vocabulary of the rtags and output a yml file that can be used during at runtime to run the TSlam.
 #### Member Functions
 ```cpp
 void saveToFile(std::string fpath);
@@ -231,6 +289,103 @@ void optimization(int niters=50);
 - Run fullba optimization.
 - **Params:**
     - `niters`: Number of iterations(default = 50).
+
+
+---
+### Class `TSLAMReconstructor`
+This is the class responsible for reconstructing the mesh model of the timber piece from the `.yml` file produced by the class `Map`.
+If you want to test new features or make modifications to the reconstruction API you can compile the sub-program as a console app with a visual debugger powered by Open3d.
+```bash
+cd TSlam/src/reconstruction
+
+cmake -S . -B build -DENABLE_O3D_VISUAL_DEBUG=ON -DENABLE_TESTING=ON
+cmake --build build
+```
+You can go in the unit test series in `TSlam/src/reconstruction/tests/test_gsolver.cc` to see all the tests for different reconstruction of shapes.
+
+#### Initilization
+
+```cpp
+// load map for construction
+reconstructor.loadMap(ymlPath);
+
+// reconstruct!
+reconstructor.run();
+
+// save mesh to path
+reconstructor.saveMeshAsPLY("<dir>", "<name>");
+
+// clean everything
+reconstructor.clean();
+```
+
+#### Member Functions
+```cpp
+void setParams(float radiusSearch,
+                double creaseAngleThreshold,
+                int minClusterSize,
+                double maxPlnDist,
+                double maxPlnAngle,
+                double aabbScaleFactor,
+                double maxPolyDist,
+                double eps);
+```
+- Geometric reconstructor's parameters. They are set by default by you can change them with this function.
+- **Params**:
+    - `float radiusSearch`: the radius of the search for the nearest tag neighbors
+    - `double creaseAngleThreshold`: the threshold for detection of crease's angle (the smaller the more creases will be detected)
+    - `int minClusterSize`: the maximal number of nearest neighbors cluster to be created
+    - `double maxPlnDist`: the max threshold distance for two planes to be considered aligible for merging
+    - `double maxPlnAngle`: the maximal distance between a polygon and a tag to be considered as a candidate face
+    - `double aabbScaleFactor`: the scale factor for scaling up the AABB of the timber element
+    - `double maxPolyDist`: the maximal angle difference in degs between two planes'normals' angle to be eligible for merging
+    - `double eps`: the tolerance for all the computation (e.g. for the intersections)
+
+```cpp
+void loadMap(const std::string& filepath);
+```
+- load the `.yml` map containing the tags
+- **Params**:
+  - `const std::string& filepath`: the path pointing to the `.yml` map file of the tags
+
+```cpp
+bool run();
+```
+- it run the geometric solver to generate the shape
+
+```cpp
+void saveMeshAsPLY(const std::string& dir, const std::string& filename);
+```
+- It saves the reconstructed mesh locally.
+- **Params**:
+  - `const std::string& dir`: directory to save the mesh
+  - `const std::string& filename`: name of the mesh file
+
+```cpp
+void clean()
+```
+- Clean the data attached to the reconstructor in case it has to be run again.
+
+```cpp
+TSGeometricSolver& getGeometricSolver()
+```
+- An utility getter func to retrive the geometric solver and access its internal parameters. Normally not needed. More for debug or dev.
+
+## Trouble Shooting
+### Build on MacOS
+#### GMP may have some problem linking:
+```
+Undefined symbols for architecture x86_64:
+  "___gmpn...", referenced from: ...
+  ...
+  ...
+ld: symbol(s) not found for architecture x86_64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+```
+Please manually unlink GMP:
+```bash
+brew unlink gmp
+```
 
 ## Other
 - `/example`: An example video for mapping and tracking.

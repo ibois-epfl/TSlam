@@ -4,6 +4,7 @@
 #include "ts_geo_util.hh"
 #include "ts_rtstripe.hh"
 #include "ts_tassellation.hh"
+#include "ts_mesh_holes_filler.hh"
 
 #include <Eigen/Core>
 
@@ -22,14 +23,17 @@ namespace tslam::Reconstruction
             m_Timber = TSTimber();
             m_TasselatorPtr = nullptr;
 
+            /// default parameters
             m_RadiusSearch         = 2.0;
             m_CreaseAngleThreshold = 5.0;
             m_MinClusterSize       = 1;
 
+            m_AABBScaleFactor      = 1.1;
+
             m_MaxPlnDist2Merge     = 1.0;
-            m_MaxPlnAngle2Merge    = 10.0;  ///< 0.9 deg ori
-            m_AABBScaleFactor      = 3.0;
-            m_MaxPolyTagDist       = 0.1;  ///< 0.5 ori
+            m_MaxPlnAngle2Merge    = 5.0;
+
+            m_MaxPolyTagDist       = 1.0;
 
             m_EPS                  = 1e-05;
             m_ShowVisualizer       = false;
@@ -123,9 +127,10 @@ namespace tslam::Reconstruction
                                      double tolerance,
                                      double angleToleranceDeg);
 
+        // TODO: the mesh needs a hole fixer
         /// (d)
         /**
-         * @brief Create the mesh out of the candidate polygon faces. The mesh is created by joining the polygons.
+         * @brief Create the CGAL mesh out of the candidate polygon faces. The mesh is created by joining the polygons.
          * *** The mesh has no normals/orientation ***
          * 
          */
@@ -137,9 +142,9 @@ namespace tslam::Reconstruction
              * @param mesh[out] the mesh to create
              */
             void rJoinPolygons(std::vector<TSPolygon>& facePolygons,
-                               open3d::geometry::TriangleMesh& mesh);
+                               Mesh_srf& mesh);
 
-    public: __always_inline  ///< Setters for solver parameters
+    public: __attribute__((always_inline))  ///< Setters for solver parameters
         void setRadiusSearch(float radiusSearch){m_RadiusSearch = radiusSearch;}; 
         void setCreaseAngleThreshold(double creaseAngleThreshold){m_CreaseAngleThreshold = creaseAngleThreshold;};
         void setMinClusterSize(int minClusterSize){m_MinClusterSize = minClusterSize;};
@@ -168,43 +173,41 @@ namespace tslam::Reconstruction
             m_DrawFinalMesh = drawFinalMesh;
         };
     
-    public: __always_inline  ///< Getters for solver parameters
-        open3d::geometry::TriangleMesh& getMeshOut() {return this->m_MeshOut;};
+    public: __attribute__((always_inline))  ///< Getters for solver parameters
+        Mesh_srf& getMeshOut() {return this->m_MeshOutCGAL;};
     
-    public: __always_inline  ///< mesh utility funcs
+    public: __attribute__((always_inline))  ///< mesh utility funcs
         /**
          * @brief Check if the geometric solver was able to produce a mesh.
          * 
          * @return true if the solver was able to produce a mesh
          * @return false if the solver was not able to produce a mesh
          */
-        bool hasMesh(){return (this->m_MeshOut.HasVertices()) ? true : false; };
+        bool hasMesh(){return (this->m_MeshOutCGAL.number_of_vertices() != 0) ? true : false; };
+        // FIXME: to be fixed, not working properly
         /**
          * @brief Check for manifoldness and watertightness of the mesh.
          * 
-         * @param mesh[in] the mesh to check
          * @return true if the mesh is manifold and watertight
          * @return false if the mesh has vertices, faces and watertight
          */
-        bool checkMeshSanity(open3d::geometry::TriangleMesh& mesh)
-        {
-            if (mesh.HasVertices() && mesh.HasTriangles() && mesh.IsWatertight())
-                return true;
-            else
-                return false;
-        };
-        /**
-         * @see checkMeshSanity(open3d::geometry::TriangleMesh& mesh)
-         */
         bool checkMeshSanity()
         {
-            if (this->m_MeshOut.HasVertices() && this->m_MeshOut.HasTriangles() && this->m_MeshOut.IsWatertight())
-                return true;
-            else
-                return false;
+            Mesh_srf& mesh = this->m_MeshOutCGAL;
+            bool isManifold = true;
+            for (auto v : mesh.vertices())
+            {
+                if (mesh.is_border(v))
+                {
+                    std::cout << "Mesh is not manifold" << std::endl;
+                    isManifold = false;
+                    break;
+                }
+            }
+            return isManifold;
         };
 
-    public:  __always_inline  ///< clean out memory func
+    public:  __attribute__((always_inline))  ///< clean out memory func
         /// Function to clean all the members and memory linked to the solver
         void clean()
         {
@@ -217,11 +220,14 @@ namespace tslam::Reconstruction
             this->m_SplitPolygons.clear();
             this->m_FacePolygons.clear();
 
-            this->m_MeshOut.Clear();
-            this->m_MeshOutXAC.Clear();
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
+            this->m_MeshOutO3d.Clear();
+#endif
+            this->m_MeshOutCGAL.clear();
         };
 
     private:  ///< Visualizer
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
         /// visualize the results of the timber reconstruction
         void visualize(bool showVisualizer,
                        bool drawTags,
@@ -231,6 +237,7 @@ namespace tslam::Reconstruction
                        bool drawSplittingSegments,
                        bool drawSelectedFace,
                        bool drawFinalMesh);
+#endif
         /// Show the visulier
         bool m_ShowVisualizer;
         /// Show the tags as wireframe
@@ -248,7 +255,7 @@ namespace tslam::Reconstruction
         /// Show the timber volume after merging into a mesh
         bool m_DrawFinalMesh;
 
-    public: __always_inline  ///< getters
+    public: __attribute__((always_inline))  ///< getters
         /// Get the timber element
         TSTimber& getTimber(){return this->m_Timber;};
         /// Get the tassellator
@@ -266,10 +273,6 @@ namespace tslam::Reconstruction
                 nbrSplitSegments += splitSegments.size();
             return nbrSplitSegments;
         };
-        /// Get number of face polygons
-        int getNbrFacePolygons(){return this->m_FacePolygons.size();};
-        /// Get number of vertices of the final mesh
-        int getNbrMeshVertices(){return this->m_MeshOut.vertices_.size();};
 
     private:  ///< Solver components
         /// The timber component of the geometric solver contains all the tags and tag stripes
@@ -307,16 +310,14 @@ namespace tslam::Reconstruction
         std::vector<TSPolygon> m_SplitPolygons;
         /// Face polygons to create the mesh
         std::vector<TSPolygon> m_FacePolygons;
+#ifdef TSLAM_REC_O3D_VISUAL_DEBUG
         /// The timber mesh in format PLY
-        open3d::geometry::TriangleMesh m_MeshOut;
-        // TODO: to implement the XAC format and storage for importing on 3d modeler
-        /// The timber mesh in format XAC
-        open3d::geometry::TriangleMesh m_MeshOutXAC;
+        open3d::geometry::TriangleMesh m_MeshOutO3d;
+#endif
+        /// Mesh in CGAL format
+        Mesh_srf m_MeshOutCGAL;
 
-        // // TODO: for debugging
-        // std::shared_ptr<open3d::geometry::PointCloud> m_DEBUG_cloud;
-
-    private:  ///< Profiler  // TODO: this needs to be implemented (mayybe for the all tslam)
+    private:  ///< Profiler  // TODO: the profiler needs to be implemented (mayybe for the all tslam)
 #ifdef TSLAM_REC_PROFILER
         inline void timeStart(const char* msg)
         {
