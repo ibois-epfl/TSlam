@@ -1,5 +1,5 @@
-#include "inputreader.h"
-#include "dirreader.h"
+#include "input_reader.h"
+#include "dir_reader.h"
 #include <opencv2/highgui/highgui.hpp>
 #include <thread>
 #include <chrono>
