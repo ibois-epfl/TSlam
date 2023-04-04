@@ -72,8 +72,6 @@ void overwriteParamsByCommandLine(CmdLineParser &cml,tslam::Params &params){
 
     params.aruco_CornerRefimentMethod=cml("-aruco-cornerRefinementM","CORNER_SUBPIX");
 
-
-
     if (cml["-dbg_str"]) tslam::debug::Debug::addString(cml("-dbg_str"),"");
 }
 
@@ -416,7 +414,7 @@ int main(int argc,char **argv){
 //    cv::Size vsize(0,0);
     //need undistortion
 
-    bool undistort=cml["-undistort"];
+    bool undistort = !cml["-noUndistort"];
     vector<cv::Mat > undistMap;
     if(undistort ){
         cout << "undistort: on" << endl;
@@ -618,7 +616,7 @@ int main(int argc,char **argv){
     if (toSaveCamPose) outCamPose.close();
 
     //optimize the map
-    if(cml["-optimizeMap"]) TheMap->optimize();
+    if(!cml["-noMapOptimize"]) TheMap->optimize();
 
     //save the output
     TheMap->saveToFile(cml("-out","world") +".map");
