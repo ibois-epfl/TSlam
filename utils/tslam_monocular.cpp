@@ -323,16 +323,23 @@ int main(int argc,char **argv){
     int debugLevel = stoi(cml("-debug", "0"));
     Slam->setDebugLevel(debugLevel);
     Slam->showTimers(true);
-    tslam::ImageParams image_params;
+    tslam::ImageParams imageParams;
     tslam::Params params;
     cv::Mat in_image;
 
     // load camera matrix and distortion coefficients
-    image_params.readFromXMLFile(argv[2]);
+    imageParams.readFromXMLFile(argv[2]);
     // update projection matrix for rendering mesh
+<<<<<<< HEAD
     cv::Mat cameraMatrix = image_params.CameraMatrix;
     float camW = image_params.CamSize.width;
     float camH = image_params.CamSize.height;
+=======
+    cv::Mat cameraMatrix = imageParams.CameraMatrix;
+    float camW = imageParams.CamSize.width;
+    float camH = imageParams.CamSize.height;
+    cout << "camW: " << camW << " camH: " << camH << endl;
+>>>>>>> 76ed0491bfa3da912a56e2b68010ba5464c52588
     float x0 = 0, y0 = 0,zF = 10000.0f, zN =0.0001f;
     float fovX = cameraMatrix.at<float>(0,0);
     float fovY = cameraMatrix.at<float>(1,1);
@@ -351,10 +358,13 @@ int main(int argc,char **argv){
     overwriteParamsByCommandLine(cml,params);
 
     auto TheMap = std::make_shared<tslam::Map>();
+
     //read the map from file?
     if (cml["-map"]){
         TheMap->readFromFile(cml("-map"));
-        cout << endl;
+        imageParams.CamSize.height = TheMap->keyframes.begin()->imageParams.CamSize.height;
+        imageParams.CamSize.width = TheMap->keyframes.begin()->imageParams.CamSize.width;
+        imageParams.CameraMatrix = TheMap->keyframes.begin()->imageParams.CameraMatrix;
     }
 
     Slam->setParams(TheMap, params, cml("-voc"));
@@ -412,13 +422,13 @@ int main(int argc,char **argv){
 
     bool undistort = !cml["-noUndistort"];
     vector<cv::Mat > undistMap;
-    if(undistort ){
+    if(undistort){
         cout << "undistort: on" << endl;
         if( undistMap.size()==0){
             undistMap.resize(2);
-            cv::initUndistortRectifyMap(image_params.CameraMatrix,image_params.Distorsion,cv::Mat(),cv::Mat(),image_params.CamSize,CV_32FC1,undistMap[0],undistMap[1]);
+            cv::initUndistortRectifyMap(imageParams.CameraMatrix,imageParams.Distorsion,cv::Mat(),cv::Mat(),imageParams.CamSize,CV_32FC1,undistMap[0],undistMap[1]);
         }
-        image_params.Distorsion.setTo(cv::Scalar::all(0));
+        imageParams.Distorsion.setTo(cv::Scalar::all(0));
     }
     //Create the viewer to see the images and the 3D
     tslam::MapViewer TheViewer;
@@ -467,8 +477,13 @@ int main(int argc,char **argv){
             if(undistort){
                cv::remap(in_image,auxImage,undistMap[0],undistMap[1],cv::INTER_CUBIC);
                in_image = auxImage;
+<<<<<<< HEAD
                image_params.Distorsion.setTo(cv::Scalar::all(0));
             }
+=======
+               imageParams.Distorsion.setTo(cv::Scalar::all(0));
+           }
+>>>>>>> 76ed0491bfa3da912a56e2b68010ba5464c52588
 
             // enhanceImage (more contrast)
             // enhanceImageBGR(in_image, in_image);
@@ -476,7 +491,7 @@ int main(int argc,char **argv){
             currentFrameIndex = vcap.getNextFrameIndex() - 1;
 
             Fps.start();
-            camPose_c2g=Slam->process(in_image, image_params, currentFrameIndex);
+            camPose_c2g=Slam->process(in_image, imageParams, currentFrameIndex);
             Fps.stop();
 
             TimerDraw.start();
@@ -488,7 +503,6 @@ int main(int argc,char **argv){
                 if(cml["-drawMesh"] && !camPose_c2g.empty()){
                     drawMesh(in_image, lines, projectionMatrix, camPose_c2g);
                 }
-
                 // draw tags & points
                 k = TheViewer.show(TheMap, in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam->getCurrentKeyFrameIndex());
             }
@@ -538,27 +552,18 @@ int main(int argc,char **argv){
             if(k=='s'){
                 TheMap->saveToFile(cml("-out","world") +".map");
             }
-            if(k=='c'){
-
-            }
-            // if(k=='o'){
-            //     TheMap->saveToFile(cml("-out","world") +".map");
-            //     fullbaOptimization(*TheMap);
-            //     TheMap->saveToFile(cml("-out","world") +".map");
-            // }
                 
             FpsComplete.stop();
             if(currentFrameIndex % 10 == 0){
                 // TheMap->removeUnUsedKeyPoints();
                 // TheMap->removeOldFrames();
 
-                cout << "Image " << currentFrameIndex << " fps=" << 1./Fps.getAvrg()<<" "<<1./FpsComplete.getAvrg();
+                cout << "Image " << currentFrameIndex << " fps=" << 1./FpsComplete.getAvrg()<<" slam="<<1./Fps.getAvrg();
                 cout << " draw=" << 1./TimerDraw.getAvrg();
                 cout << (camPose_c2g.empty()?" not tracked":" tracked") << endl;
             }
-        } catch (...) {
-        // } catch (const std::exception &ex) {
-            // cerr << ex.what() << endl;
+         } catch (const std::exception &ex) {
+             cerr << ex.what() << endl;
 
             errorFlag = true;
             cerr << "an error occurs" << endl;
@@ -623,11 +628,16 @@ int main(int argc,char **argv){
     if (toSaveCamPose) outCamPose.close();
 
     //optimize the map
-    if(!cml["-noMapOptimize"]) TheMap->optimize();
+    if(!cml["-localizeOnly"] && !cml["-noMapOptimize"]){
+        TheMap->optimize();
+        TheMap->removeAllPoints();
+    }
 
     //save the output
-    TheMap->saveToFile(cml("-out","world") +".map");
-    TheMap->saveToMarkerMap(cml("-out","world") +".yml");
+    if(!cml["-localizeOnly"]){
+        TheMap->saveToFile(cml("-out","world") +".map");
+        TheMap->saveToMarkerMap(cml("-out","world") +".yml");
+    }
 
     //save also the parameters finally employed
     params.saveToYMLFile("tslam_params_"+cml("-out","world") +".yml");

@@ -157,8 +157,6 @@ cv::Mat System::process(const Frame &frame) {
 
     _debug_exec(20, saveToFile("world-prev.ucs"););
 
-
-
     __TSLAM_ADDTIMER__;
 
     //Initialize other processes if not yet
