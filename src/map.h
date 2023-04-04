@@ -86,6 +86,13 @@ public:
      */
     void optimize(int niters=50);
 
+    /**
+     * remove all feature points
+     *
+     * @param niters Number of iterations(default = 50).
+     */
+    void removeAllPoints();
+
     //returns a unique hash value that identify the current status
     uint64_t getSignature(bool print=false)const;
     //exports the  a file for visualization. Possible formats are  .ply and .pcd (pcl library)

@@ -204,6 +204,9 @@ void Map::removePoint(uint32_t pid_remove, bool fullRemoval){
 
 }
 
+void Map::removeAllPoints(){
+    for(auto &mp:map_points) removePoint(mp.id, true);
+}
 
 
 void Map::removeKeyFrames(const std::set<uint32_t> &keyFrames,int minNumProjPoints){
@@ -525,7 +528,7 @@ bool Map::checkConsistency(bool checkCovisGraph,bool useMutex){
 
     //check points are valid
     for(const auto & p:map_points){
-        if (! p.isValid()){
+        if (!p.isValid()){
             cerr<<"Point << "<<p.id<<" invalid"<<endl;
             consistent=false;
         }
