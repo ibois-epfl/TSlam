@@ -333,7 +333,6 @@ int main(int argc,char **argv){
     cv::Mat cameraMatrix = image_params.CameraMatrix;
     float camW = image_params.CamSize.width;
     float camH = image_params.CamSize.height;
-    cout << "camW: " << camW << " camH: " << camH << endl;
     float x0 = 0, y0 = 0,zF = 10000.0f, zN =0.0001f;
     float fovX = cameraMatrix.at<float>(0,0);
     float fovY = cameraMatrix.at<float>(1,1);
@@ -409,9 +408,6 @@ int main(int argc,char **argv){
 //        );
     }
 
-
-    //need to resize input image?
-//    cv::Size vsize(0,0);
     //need undistortion
 
     bool undistort = !cml["-noUndistort"];
@@ -444,6 +440,15 @@ int main(int argc,char **argv){
     auto frameCaptureTime = startCaptureTime;
     while (in_image.empty())
         vcap >> in_image;
+    
+    //need to resize input image?
+    bool needResize = false;
+    int inputW = in_image.cols;
+    int inputH = in_image.rows;
+    if (inputW != int(camW) || inputH != int(camH)){
+        cerr << "Input size " << inputW << "x" << inputH << " is different from the calibration param " << int(camW) << "x" << int(camH) << endl;
+        needResize = true;
+    }
 
     while (!finish && !in_image.empty())  {
         try{
@@ -454,14 +459,16 @@ int main(int argc,char **argv){
             }
 
             //image resize (if required)
-//            in_image = resize(in_image, vsize);
-
+            if (needResize){
+                in_image = resize(in_image, cv::Size(camW, camH));
+            }
+            
             //image undistortion (if required)
-           if(undistort){
+            if(undistort){
                cv::remap(in_image,auxImage,undistMap[0],undistMap[1],cv::INTER_CUBIC);
                in_image = auxImage;
                image_params.Distorsion.setTo(cv::Scalar::all(0));
-           }
+            }
 
             // enhanceImage (more contrast)
             // enhanceImageBGR(in_image, in_image);
