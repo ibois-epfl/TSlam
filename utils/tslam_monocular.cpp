@@ -21,7 +21,7 @@
 #include "basictypes/debug.h"
 #include "mapviewer.h"
 #include "basictypes/timers.h"
-#include "inputreader.h"
+#include "input_reader.h"
 #include "basictypes/cvversioning.h"
 
 cv::Mat resize(cv::Mat &in, cv::Size size){
