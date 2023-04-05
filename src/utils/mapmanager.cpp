@@ -496,7 +496,7 @@ void MapManager::mainFunction(){
         if (mp.isBad())nBad++;
      }
     //Local optimization
-    if (!_hurryUp && TheMap->keyframes.size()>1 ){
+    if (!System::getParams().localizeOnly && !_hurryUp && TheMap->keyframes.size()>1 ){
         localOptimization(newFrame.idx);
         __TSLAM_TIMER_EVENT__("Local optimization");
     }
@@ -507,14 +507,14 @@ void MapManager::mainFunction(){
             TheMap->keyframes[kf].setBad(true);
     }
 
-//    if (System::getParams().localizeOnly) {
-//        // if there is > the specified number of new added frame, remove them
-//        cout << "newInsertedKeyFrames.size() = " << newInsertedKeyFrames.size() << endl;
-//        while (newInsertedKeyFrames.size() > 30) {
-//            TheMap->keyframes[newInsertedKeyFrames.front()].setBad (true);
-//            newInsertedKeyFrames.pop();
-//        }
-//    }
+    if (System::getParams().localizeOnly) {
+        // if there is > the specified number of new added frame, remove them
+        //   cout << "newInsertedKeyFrames.size() = " << newInsertedKeyFrames.size() << endl;
+        while (newInsertedKeyFrames.size() > 30) {
+            TheMap->keyframes[newInsertedKeyFrames.front()].setBad (true);
+            newInsertedKeyFrames.pop();
+        }
+    }
 
 
     _curState=WAITINGFORUPDATE;

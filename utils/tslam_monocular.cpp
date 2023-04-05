@@ -330,16 +330,9 @@ int main(int argc,char **argv){
     // load camera matrix and distortion coefficients
     imageParams.readFromXMLFile(argv[2]);
     // update projection matrix for rendering mesh
-<<<<<<< HEAD
-    cv::Mat cameraMatrix = image_params.CameraMatrix;
-    float camW = image_params.CamSize.width;
-    float camH = image_params.CamSize.height;
-=======
     cv::Mat cameraMatrix = imageParams.CameraMatrix;
     float camW = imageParams.CamSize.width;
     float camH = imageParams.CamSize.height;
-    cout << "camW: " << camW << " camH: " << camH << endl;
->>>>>>> 76ed0491bfa3da912a56e2b68010ba5464c52588
     float x0 = 0, y0 = 0,zF = 10000.0f, zN =0.0001f;
     float fovX = cameraMatrix.at<float>(0,0);
     float fovY = cameraMatrix.at<float>(1,1);
@@ -438,6 +431,7 @@ int main(int argc,char **argv){
     tslam::TimerAvrg Fps;
     tslam::TimerAvrg FpsComplete;
     tslam::TimerAvrg TimerDraw;
+    tslam::TimerAvrg TimerPreprocessing;
     bool finish = false;
     cv::Mat camPose_c2g;
     int vspeed = stoi(cml("-vspeed","1"));
@@ -468,6 +462,7 @@ int main(int argc,char **argv){
                 rawFramesToWrite.emplace_back(in_image.clone());
             }
 
+            TimerPreprocessing.start();
             //image resize (if required)
             if (needResize){
                 in_image = resize(in_image, cv::Size(camW, camH));
@@ -477,13 +472,9 @@ int main(int argc,char **argv){
             if(undistort){
                cv::remap(in_image,auxImage,undistMap[0],undistMap[1],cv::INTER_CUBIC);
                in_image = auxImage;
-<<<<<<< HEAD
-               image_params.Distorsion.setTo(cv::Scalar::all(0));
-            }
-=======
                imageParams.Distorsion.setTo(cv::Scalar::all(0));
-           }
->>>>>>> 76ed0491bfa3da912a56e2b68010ba5464c52588
+            }
+            TimerPreprocessing.stop();
 
             // enhanceImage (more contrast)
             // enhanceImageBGR(in_image, in_image);
@@ -506,9 +497,9 @@ int main(int argc,char **argv){
                 // draw tags & points
                 k = TheViewer.show(TheMap, in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam->getCurrentKeyFrameIndex());
             }
+            TimerDraw.stop();
 
             if (int(k) == 27 || k=='q') finish = true; //pressed ESC
-            TimerDraw.stop();
 
             //save to output pose?
             if (toSaveCamPose) {
@@ -558,12 +549,16 @@ int main(int argc,char **argv){
                 // TheMap->removeUnUsedKeyPoints();
                 // TheMap->removeOldFrames();
 
-                cout << "Image " << currentFrameIndex << " fps=" << 1./FpsComplete.getAvrg()<<" slam="<<1./Fps.getAvrg();
-                cout << " draw=" << 1./TimerDraw.getAvrg();
+                cout << "Image " << currentFrameIndex <<
+                        " fps=" << 1./FpsComplete.getAvrg() <<
+                        " preprocess=" << 1./TimerPreprocessing.getAvrg() <<
+                        " slam="<<1./Fps.getAvrg() <<
+                        " draw=" << 1./TimerDraw.getAvrg();
+
                 cout << (camPose_c2g.empty()?" not tracked":" tracked") << endl;
             }
          } catch (const std::exception &ex) {
-             cerr << ex.what() << endl;
+            cerr << ex.what() << endl;
 
             errorFlag = true;
             cerr << "an error occurs" << endl;
