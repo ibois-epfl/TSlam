@@ -44,6 +44,7 @@ MapManager::~MapManager(){
 }
 void MapManager::setParams(std::shared_ptr<Map> map, bool EnableLoopClosure){
     TheMap=map;
+    numInitKFs=TheMap->keyframes.size();
     _loopClosureEnabled=EnableLoopClosure;
     _TheLoopDetector=createLoopDetector(_loopClosureEnabled);
     _TheLoopDetector->setParams(map);
@@ -157,7 +158,10 @@ bool MapManager::mapUpdate(){
     if(_hasMapBeenScaled){
         bigChangeHasHappen=true;
     }
+
     _lastAddedKFPose=TheMap->keyframes[_lastAddedKeyFrame].pose_f2g;
+
+
 
      TheMap->removeWeakConnections(_CurkeyFrame,8);
 
@@ -433,12 +437,12 @@ void MapManager::mainFunction(){
 
 
 
-  //  assert(TheMap->checkConsistency(true ));
+//     assert(TheMap->checkConsistency(true ));
     _debug_msg_("");
 
 
     //FIND Points to remove
-    PointsToRemove=mapPointsCulling( );
+    PointsToRemove=mapPointsCulling();
     TheMap->removePoints(PointsToRemove.begin(),PointsToRemove.end(),false);//preremoval
      __TSLAM_TIMER_EVENT__("map point culling and removal");
 
@@ -507,12 +511,21 @@ void MapManager::mainFunction(){
             TheMap->keyframes[kf].setBad(true);
     }
 
+    // if there is > the specified number of new added frame, remove them to maintain the fps
     if (System::getParams().localizeOnly) {
-        // if there is > the specified number of new added frame, remove them
-        //   cout << "newInsertedKeyFrames.size() = " << newInsertedKeyFrames.size() << endl;
-        while (newInsertedKeyFrames.size() > 30) {
-            TheMap->keyframes[newInsertedKeyFrames.front()].setBad (true);
-            newInsertedKeyFrames.pop();
+        const int maxNewKF = 20;
+        while (TheMap->keyframes.size() - numInitKFs > maxNewKF) {
+            auto numKFtoRemove = TheMap->keyframes.size() - numInitKFs - maxNewKF;
+            auto kfIDtoRemove = newInsertedKeyFrames.front();
+            int counter = 0;
+            while(!newInsertedKeyFrames.empty() && counter < numKFtoRemove) {
+                if (TheMap->keyframes.is(kfIDtoRemove) && kfIDtoRemove != _lastAddedKeyFrame) {
+                    TheMap->keyframes[kfIDtoRemove].setBad(true);
+                    KeyFramesToRemove.insert(kfIDtoRemove);
+                    counter++;
+                }
+                newInsertedKeyFrames.pop();
+            }
         }
     }
 
@@ -818,10 +831,9 @@ bool MapManager::mustAddKeyFrame(const Frame & frame_in ,uint32_t curKFRef)
         reskp=mustAddKeyFrame_KeyPoints(frame_in,curKFRef );
     if (!reskp && System::getParams().detectMarkers)
         resm= mustAddKeyFrame_Markers(frame_in ,curKFRef);
-     //must add the frame info
+
+    //must add the frame info
     return ( reskp || resm||resrgbd );
-
-
 }
 
 bool MapManager::mustAddKeyFrame_stereo(const Frame &frame_in,uint32_t curKFRef){
