@@ -1,0 +1,28 @@
+
+
+
+TODO:
+
+GENERAL
+- clean out everything that belongs to UCOslam and delete everything we do not use from UCOslam
+- we should move all the exes out of the build/util
+- add descriptions of what each of the console app does when you print -h
+- in the readme file there is the "Run GUI", wrong because pointing to UcoSLAM_GUI, get rid of this since we don't use it
+- get rid of all the utility exe that we do not use in buil/util
+
+
+IN ./tslam_monocular
+- there is this error:
+'''bash
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  Could not open tslam_params_/home/tpp/TSlam/temp/test03.yml
+[1]    71948 abort (core dumped)  ./tslam_monocular live /home/tpp/TSlam/example/calibration_orange.yml -voc  
+'''
+Even though the map is output, why?
+
+
+IN ./tslam_map_export
+- in the console log we can see that we can output the .ply, this is not true. We shouldn't. get rid from the console app.
+
+
+

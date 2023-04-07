@@ -111,6 +111,7 @@ otherwise, you won't be able to run mapping. In the `assets/voc` folder we provi
 - `-enableLoopClosure`: Enable optimization when loop closure is detected. You may notice dramatic lag during mapping with this flag on.
 - `-noUndistort`: Disable the image undistortion (the program undistort the image based on the distortion matrix in the camera calibration file by default). You should only set this flag when you are using a pre-processed video sequence.
 - `-noMapOptimize`: Disable the global optimization when saving the map.
+- `-nokeypoints`: Disable key-point detection (advised at runtime without a mask for the tool).
 
 When the window pop-out, you can press `s` to start/stop SLAM and `f` to enable the camera tracking in the virtual map.
 
@@ -135,10 +136,10 @@ Some utility programs will be built by default in `build/utils`
 ```bash
 ./tslam_map_viewer input.map
 ```
-#### Combine Maps
+<!-- #### Combine Maps
 ```bash
 ./tslam_combine_map A.map B.map AB_comb.map
-```
+``` -->
 #### Export Maps
 ```bash
 ./tslam_map_export input.map output.[pcd|ply|yml]
