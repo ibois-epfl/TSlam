@@ -28,8 +28,7 @@ def main():
     
     ## type of tag density
     tags_den : list = ["low density",
-                       "medium density",
-                       "high density"]
+                       "medium density"]
 
     ## type of holes
     holes : list = ["8xspiral20",
@@ -58,11 +57,6 @@ def main():
                     combi.append([i, combi_temp_cuts, combi_temp_drills, l, m])
             combi_temp_cuts = []
             combi_temp_drills = []
-
-    # print("List of all possible combinations:")
-    # print(f"length: {combi.__len__()}")
-    # for i in combi:
-    #     print(i)
 
     df = pd.DataFrame(combi)
 

@@ -28,7 +28,7 @@ gantt
     protocols design                :active, ptrd, 2023-02-24, 2023-03-20
     Protocol submission             :milestone, 2023-03-14, 0d
     preparation of eval             :active, 15d
-    Fabrication eval                :crit, 21d
+    Fabrication eval                :crit, 30d
     Data/visual processing          :15d
     Stand-up eval results           :milestone, 2d
 
@@ -116,16 +116,6 @@ otherwise, you won't be able to run mapping. In the `assets/voc` folder we provi
 
 When the window pop-out, you can press `s` to start/stop SLAM and `f` to enable the camera tracking in the virtual map.
 
-### Reconstruction
-```bash
-./tslam_reconstruct "src/reconstruction/tests/test_data/real_scans/long_cut.yml" "./" "test_mesh_name"
-```
-This runs `tslam_reconstruct.cc`.
-- `<path_to_map_yml>`: the path pointing to the `.yml` file of the map
-- `<output_dir>`: the output dir for the reconstructed mesh
-- `<mesh_name>`: the name of the `.ply` file
-It's possible to input the parameters for the geometric solver. To see them, run `./tslam_reconstruct -h`
-
 ### Util Programs
 `>>>>>>>>>>>>>>>>>> this is for me not clear why we need to show this, maybe the previous section needs to be explained better. We should replace it with the typical routine with all the steps to map, reconstruct and run tslam. <<<<<<<<<<<<<<<<<<<<`
 Some utility programs will be built by default in `build/utils`
@@ -146,7 +136,15 @@ Some utility programs will be built by default in `build/utils`
 ./tslam_map_export input.map output.[pcd|ply|yml]
 ```
 #### Reconstruct model
-`>>>>>>>>>>>>>>>>>> here we need to add <<<<<<<<<<<<<<<<<<<<`
+```bash
+./tslam_reconstruct "src/reconstruction/tests/test_data/real_scans/long_cut.yml" "./" "test_mesh_name"
+```
+This runs `tslam_reconstruct.cc`.
+- `<path_to_map_yml>`: the path pointing to the `.yml` file of the map
+- `<output_dir>`: the output dir for the reconstructed mesh
+- `<mesh_name>`: the name of the `.ply` file
+It's possible to input the parameters for the geometric solver. To see them, run `./tslam_reconstruct -h`
+
 
 ## APIs
 ### Header
