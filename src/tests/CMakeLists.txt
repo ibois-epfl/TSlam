@@ -12,10 +12,11 @@ enable_testing()
 #---------------------------------------------------------------------------------------------------------
 set(TEST_EXE_NAME smoke_t_runtime_trajectory)
 
-add_executable(${TEST_EXE_NAME} smoke_t_runtime_trajectory.cc)
 if (BUILD_TESTS)
-    target_link_libraries(${TEST_EXE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/tests)
+    add_executable(${TEST_EXE_NAME} ${CMAKE_SOURCE_DIR}/src/tests/smoke_t_runtime_trajectory.cc)
+    target_link_libraries(${TEST_EXE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src/tests)
 else()
+    add_executable(${TEST_EXE_NAME} smoke_t_runtime_trajectory.cc)
     target_include_directories(${TEST_EXE_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
 endif()
 
