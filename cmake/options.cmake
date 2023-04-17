@@ -14,6 +14,7 @@ option(USE_OWN_CILANTRO "Set to OFF to use a local Cilantro version"         ON)
 option(USE_AVX "SET ON/OFF " ON)
 
 option(BUILD_4_API "Set to ON to build TSlam just with API" OFF)
+option(BUILD_TESTS "Set to ON to build tests" ON)
 
 option(USE_TIMERS "SET ON/OFF for see time of execution" OFF)
 option(XFEATURES2D "SET ON/OFF" OFF)
