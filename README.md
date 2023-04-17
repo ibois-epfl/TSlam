@@ -358,10 +358,5 @@ Please manually unlink GMP:
 brew unlink gmp
 ```
 
-## Other
-- `/example`: An example video for mapping and tracking.
-- `/post_processing/cluster.py`: Taking the tag map (the one exported by `reslam_map_export`) as input and perform 3d plane fitting.
-- `/stag_util/sticker_generator.py`: Script for generating the STag sticker.
-
 ## License
 GPLv3
