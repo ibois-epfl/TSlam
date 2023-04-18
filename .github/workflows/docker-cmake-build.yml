@@ -2,8 +2,7 @@ name: docker-cmake-build
 
 on:
   push:
-    branches: [ "main" ]
-    branches: [ "optiv0" ]
+    branches: [ "main", "optiv0" ]
   pull_request:
     branches: [ "main" ]
 

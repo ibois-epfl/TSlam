@@ -5,8 +5,9 @@
     <img src="https://github.com/ibois-epfl/TSlam/actions/workflows/docker-cmake-build.yml/badge.svg">
     <img src="https://img.shields.io/badge/os-Ubuntu22.04-blueviolet">
     <img src="https://img.shields.io/badge/license-GPL--v3-brightgreen">
-    <img href="https://renkulab.io/projects/andrea.settimi/tslam-evaluation/datasets" src="https://renkulab.io/renku-badge.svg">
+    <img href="https://renkulab.io/projects/andrea.settimi/tslam-evaluation" src="https://renkulab.io/renku-badge.svg">
 </p>
+
 
 ```mermaid
 gantt
@@ -27,7 +28,7 @@ gantt
     protocols design                :active, ptrd, 2023-02-24, 2023-03-20
     Protocol submission             :milestone, 2023-03-14, 0d
     preparation of eval             :active, 15d
-    Fabrication eval                :crit, 21d
+    Fabrication eval                :crit, 30d
     Data/visual processing          :15d
     Stand-up eval results           :milestone, 2d
 
@@ -111,10 +112,30 @@ otherwise, you won't be able to run mapping. In the `assets/voc` folder we provi
 - `-enableLoopClosure`: Enable optimization when loop closure is detected. You may notice dramatic lag during mapping with this flag on.
 - `-noUndistort`: Disable the image undistortion (the program undistort the image based on the distortion matrix in the camera calibration file by default). You should only set this flag when you are using a pre-processed video sequence.
 - `-noMapOptimize`: Disable the global optimization when saving the map.
+- `-nokeypoints`: Disable key-point detection (advised at runtime without a mask for the tool).
 
 When the window pop-out, you can press `s` to start/stop SLAM and `f` to enable the camera tracking in the virtual map.
 
-### Reconstruction
+### Util Programs
+Some utility programs will be built by default in `build/utils`
+
+#### Map Optimizer
+```bash
+./tslam_map_optimizer input.map output.map
+```
+#### Map viewer
+```bash
+./tslam_map_viewer input.map
+```
+<!-- #### Combine Maps
+```bash
+./tslam_combine_map A.map B.map AB_comb.map
+``` -->
+#### Export Maps
+```bash
+./tslam_map_export input.map output.[pcd|ply|yml]
+```
+#### Reconstruct model
 ```bash
 ./tslam_reconstruct "src/reconstruction/tests/test_data/real_scans/long_cut.yml" "./" "test_mesh_name"
 ```
@@ -124,27 +145,6 @@ This runs `tslam_reconstruct.cc`.
 - `<mesh_name>`: the name of the `.ply` file
 It's possible to input the parameters for the geometric solver. To see them, run `./tslam_reconstruct -h`
 
-### Util Programs
-`>>>>>>>>>>>>>>>>>> this is for me not clear why we need to show this, maybe the previous section needs to be explained better. We should replace it with the typical routine with all the steps to map, reconstruct and run tslam. <<<<<<<<<<<<<<<<<<<<`
-Some utility programs will be built by default in `build/utils`
-#### Map Optimizer
-```bash
-./tslam_map_optimizer input.map output.map
-```
-#### Map viewer
-```bash
-./tslam_map_viewer input.map
-```
-#### Combine Maps
-```bash
-./tslam_combine_map A.map B.map AB_comb.map
-```
-#### Export Maps
-```bash
-./tslam_map_export input.map output.[pcd|ply|yml]
-```
-#### Reconstruct model
-`>>>>>>>>>>>>>>>>>> here we need to add <<<<<<<<<<<<<<<<<<<<`
 
 ## APIs
 ### Header
@@ -357,11 +357,6 @@ Please manually unlink GMP:
 ```bash
 brew unlink gmp
 ```
-
-## Other
-- `/example`: An example video for mapping and tracking.
-- `/post_processing/cluster.py`: Taking the tag map (the one exported by `reslam_map_export`) as input and perform 3d plane fitting.
-- `/stag_util/sticker_generator.py`: Script for generating the STag sticker.
 
 ## License
 GPLv3

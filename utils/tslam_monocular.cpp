@@ -425,6 +425,8 @@ int main(int argc,char **argv){
     }
     //Create the viewer to see the images and the 3D
     tslam::MapViewer TheViewer;
+    float focalLength = imageParams.CameraMatrix.at<float>(1, 1) / imageParams.CamSize.height;
+    TheViewer.setParams(focalLength, imageParams.CamSize.width, imageParams.CamSize.height, "TSlam");
 
     cv::Mat auxImage;
     //Ok, lets start

@@ -522,7 +522,7 @@ class MapViewer{
     bool isWindowCreated=false;
 public:
     MapViewer(){
-        setParams(1,1280,960, "xSLAM");
+        setParams(1,1280,720, "TSlam");
     }
     void setParams(float f,int width,int height,std::string wname){
         _imshow.create(height,width,CV_8UC4);

@@ -51,7 +51,7 @@ public:
     ~MapManager();
     void setParams(std::shared_ptr<Map> map,bool EnableLoopClosure);
     bool hasMap()const;
-     void start();
+    void start();
     void stop();
     void reset();
     //call whenever a new frame is avaiable.
@@ -116,6 +116,7 @@ private:
     vector<uint32_t> PointsToRemove;
     set<uint32_t> KeyFramesToRemove;
     queue<uint32_t> newInsertedKeyFrames;
+    uint32_t numInitKFs=0;
     //we need to save now
     std::shared_ptr<GlobalOptimizer> Gopt;
     std::map<uint32_t,uint32_t > youngKeyFrames;
@@ -127,7 +128,6 @@ private:
     bool _hasMapBeenScaled=false;
     bool _hurryUp=false;//activated when a new keyframe should be added
     bool _loopClosureEnabled=true;
-    //obfuscate end
 };
 
 }
