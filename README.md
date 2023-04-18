@@ -117,8 +117,8 @@ otherwise, you won't be able to run mapping. In the `assets/voc` folder we provi
 When the window pop-out, you can press `s` to start/stop SLAM and `f` to enable the camera tracking in the virtual map.
 
 ### Util Programs
-`>>>>>>>>>>>>>>>>>> this is for me not clear why we need to show this, maybe the previous section needs to be explained better. We should replace it with the typical routine with all the steps to map, reconstruct and run tslam. <<<<<<<<<<<<<<<<<<<<`
 Some utility programs will be built by default in `build/utils`
+
 #### Map Optimizer
 ```bash
 ./tslam_map_optimizer input.map output.map
