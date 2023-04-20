@@ -20,7 +20,7 @@ gantt
     RTag integration                :done, rti, 2022-07-30, 2022-10-01
     Mapping                         :done, map, 2022-08-20, 2022-12-20
     Tracking                        :done, trck, 2022-10-20, 2023-01-30
-    Reconstruction                  :active, rec, 2022-10-30, 2023-03-05
+    Reconstruction                  :done, rec, 2022-10-30, 2023-03-05
     AC integration                  :done, aci, 2022-09-10, 2022-12-10
     Stand-up demo                   :milestone, 2023-02-24, 0d
 
@@ -47,6 +47,7 @@ gantt
     Student project for optimization    :90d
     Integration into AC                 :30d
     Testing coverage for TSlam/ACTslam  :30d
+    Refinement for reconstruction       :20d
 ```
 
 # TSlam
