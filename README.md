@@ -97,8 +97,8 @@ In the `example` folder, we provide you an example video, a camera calibration f
 ``` bash
 cd build/util
 
-# ./monocular_slam [{path_to_video}|live:{camera_index}] {camera_calibration_file}]
-./monocular_slam live:0 camera_calibration.yml
+# ./tslam_monocular [{path_to_video}|live:{camera_index}] {camera_calibration_file}]
+./tslam_monocular live:0 camera_calibration.yml
 ```
 Here are some optional parameters: 
 - `-voc`: Path to the vocabulary file for the feature describer. If an input map is specified, this is not needed;
@@ -114,7 +114,7 @@ otherwise, you won't be able to run mapping. In the `assets/voc` folder we provi
 - `-noMapOptimize`: Disable the global optimization when saving the map.
 - `-nokeypoints`: Disable key-point detection (advised at runtime without a mask for the tool).
 
-When the window pop-out, you can press `s` to start/stop SLAM and `f` to enable the camera tracking in the virtual map.
+When the window pop-out, you can press `s` to start/stop SLAM and `f` to enable the camera tracking in the virtual map, `q` to close and save the output data.
 
 ### Util Programs
 Some utility programs will be built by default in `build/utils`
