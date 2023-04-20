@@ -23,11 +23,11 @@
 
 int main( int  argc , char**  argv )
 {
-    if (argc<2){cerr<<"Usage: world [-system]"<<endl;return -1;}
+    if (argc<2){cerr<<"Usage: [-path] path to the map (.map) to visualize"<<endl;return -1;}
     std::shared_ptr<tslam::Map> map=std::make_shared<tslam::Map>();
     bool isSlam=false;
     if(argc>=3){
-        if(string(argv[2])=="-system")
+        if(string(argv[2])=="-path")
             isSlam=true;
     }
     if(isSlam){
