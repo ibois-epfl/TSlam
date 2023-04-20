@@ -41,9 +41,12 @@ gantt
     Submission                      :milestone, 1d
     Publishing                      :milestone, 120d
     
-    section Optimization            
-    Profiling of tslam              :active, opti, 2023-04-19, 10
-    Optimization of tslam           :25d
+    section Maintenance            
+    Profiling of tslam                  :active, opti, 2023-04-19, 10d
+    Optimization of tslam               :25d
+    Student project for optimization    :90d
+    Integration into AC                 :30d
+    Testing coverage for TSlam/ACTslam  :30d
 ```
 
 # TSlam
