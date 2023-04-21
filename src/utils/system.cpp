@@ -791,21 +791,21 @@ se3 System::track(Frame &curframe,se3 lastKnownPose) {
             nvalidMatches=PnPSolver::solvePnp( curframe,TheMap,map_matches,estimatedPose_aux,_curKFRef);
             if (nvalidMatches>30) estimatedPose=estimatedPose_aux;
         }
-        else{//if not enough matches found from previous, do a search to reference keyframe
-            //match this and reference keyframe
-            FrameMatcher fmatcher(FrameMatcher::TYPE_FLANN);//use flann since BoW is not yet computed and can not be used
-            fmatcher.setParams( TheMap->keyframes[_curKFRef],FrameMatcher::MODE_ASSIGNED,_params.maxDescDistance*2,0.6,true,3);//search only amongts mappoints of ref keyframe
-            map_matches=fmatcher.match(curframe,FrameMatcher::MODE_ALL);
-            if(map_matches.size()>30){
-                //change trainIdx from Frame indices to map Ids
-                for(auto &m:map_matches)
-                    m.trainIdx= TheMap->keyframes[_curKFRef].ids[m.trainIdx];
-                auto estimatedPose_aux=estimatedPose;
-                nvalidMatches=PnPSolver::solvePnp( curframe,TheMap,map_matches,estimatedPose_aux,_curKFRef);
-                if (nvalidMatches>30) estimatedPose=estimatedPose_aux;
-            }
-            else nvalidMatches=0;
-        }
+//        else{//if not enough matches found from previous, do a search to reference keyframe
+//            //match this and reference keyframe
+//            FrameMatcher fmatcher(FrameMatcher::TYPE_FLANN);//use flann since BoW is not yet computed and can not be used
+//            fmatcher.setParams( TheMap->keyframes[_curKFRef],FrameMatcher::MODE_ASSIGNED,_params.maxDescDistance*2,0.6,true,3);//search only amongts mappoints of ref keyframe
+//            map_matches=fmatcher.match(curframe,FrameMatcher::MODE_ALL);
+//            if(map_matches.size()>30){
+//                //change trainIdx from Frame indices to map Ids
+//                for(auto &m:map_matches)
+//                    m.trainIdx= TheMap->keyframes[_curKFRef].ids[m.trainIdx];
+//                auto estimatedPose_aux=estimatedPose;
+//                nvalidMatches=PnPSolver::solvePnp( curframe,TheMap,map_matches,estimatedPose_aux,_curKFRef);
+//                if (nvalidMatches>30) estimatedPose=estimatedPose_aux;
+//            }
+//            else nvalidMatches=0;
+//        }
 
 
 

@@ -154,7 +154,10 @@ int main(int argc,char **argv){
         //////////////////////////////
 
 
-        Optimizer->initializeOptimization();
+        if(!Optimizer->initializeOptimization()){
+            cerr << "cannot initialize optimizer, abort" << endl;
+            throw std::runtime_error("cannot initialize optimizer, abort");
+        }
         //    Optimizer->setForceStopFlag( );
         Optimizer->setVerbose(true);
         Optimizer->optimize(niters,1e-5);

@@ -147,7 +147,9 @@ void    loopClosurePathOptimizationg2o(const std::vector<std::pair<uint32_t,uint
 
     // Optimize!
     //cout<<"INITIALIZING"<<endl;
-    Optimizer.initializeOptimization();
+    if(!Optimizer.initializeOptimization()){
+        return; // this one I'm not sure if the rest stuff need to be run (the for loop of vertices)
+    }
     Optimizer.setVerbose(debug::Debug::getLevel()>=10);
    // cout<<"OPTIMIZING"<<endl;
     Optimizer.optimize(20);
@@ -163,8 +165,6 @@ void    loopClosurePathOptimizationg2o(const std::vector<std::pair<uint32_t,uint
          //[sR t;0 1]
          optimPoses.at(v.first)=toCvSE3(eigR,eigt);
     }
-
-
 }
 
 }

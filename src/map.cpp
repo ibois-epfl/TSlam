@@ -1613,7 +1613,9 @@ void Map::optimize(int niters){
     //////////////////////////////
 
 
-    Optimizer->initializeOptimization();
+    if(!Optimizer->initializeOptimization()){
+        return;
+    }
     //    Optimizer->setForceStopFlag( );
     Optimizer->setVerbose(true);
     Optimizer->optimize(niters,1e-3);

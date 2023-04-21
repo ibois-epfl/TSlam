@@ -354,9 +354,11 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
     {
 
         G2oVertexCamera->setEstimate(toSE3Quat(pose_io));
-        optimizer.initializeOptimization(0);
-        optimizer.setVerbose(debug::Debug::getLevel()>=11);
-        optimizer.optimize(its[it]);
+        if(optimizer.initializeOptimization(0)){
+            optimizer.setVerbose(debug::Debug::getLevel()>=11);
+            optimizer.optimize(its[it]);
+        }
+
         int nGoodMatches=0;
 
         for(size_t i=0, iend=edgesInfo.size(); i<iend; i++)
