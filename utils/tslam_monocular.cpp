@@ -627,7 +627,7 @@ int main(int argc,char **argv){
     //optimize the map
     if(!cml["-localizeOnly"] && !cml["-noMapOptimize"]){
         TheMap->optimize();
-        TheMap->removeAllPoints();
+        // TheMap->removeAllPoints();
     }
 
     //save the output
