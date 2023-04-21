@@ -350,6 +350,11 @@ int main(int argc,char **argv){
     if( cml["-params"]) params.readFromYMLFile(cml("-params"));
     overwriteParamsByCommandLine(cml,params);
 
+    // hyper params
+    params.KPNonMaximaSuppresion=true;
+    params.markersOptWeight=1.0; // maximum importance of markers in the final error. Value in range [0,1]. The rest if assigned to points
+    params.minMarkersForMaxWeight=10;
+
     auto TheMap = std::make_shared<tslam::Map>();
 
     //read the map from file?
