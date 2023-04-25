@@ -17,8 +17,8 @@
 * along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
 
-#ifndef SLAMUCO_POSEOPT_H
-#define SLAMUCO_POSEOPT_H
+#ifndef TSLAM_POSEOPT_H
+#define TSLAM_POSEOPT_H
 #include <opencv2/core/core.hpp>
 #include "basictypes/se3.h"
 #include "map_types/frame.h"

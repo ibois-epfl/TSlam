@@ -1,13 +1,13 @@
 # TODO
 
 - [ ] (to be defined) integration to AC
-- [ ] add flag to console app tslam_monocular to disable GUI and run only slam
+- [x] add flag to console app tslam_monocular to disable GUI and run only slam
 - [ ] solve the go away tracking bug
 - [ ] UNIT TESTING:
 - [ ] write a longer smoke test for inference of tslam
 - [ ] write a test for mapping phase of tslam
 - [ ] @Andrea: write exporter of single tags from the tslam_reconstruct for manually reconstruction
-- [ ] change slamuco to tslam when possible
+- [x] change slamuco to tslam when possible
 
 
 

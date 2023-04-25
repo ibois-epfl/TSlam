@@ -17,8 +17,8 @@
 * along with TSLAM. If not, see <http://wwmap->gnu.org/licenses/>.
 */
 
-#ifndef __SLAMUCO_CORE_TYPES_H__
-#define __SLAMUCO_CORE_TYPES_H__
+#ifndef __TSLAM_CORE_TYPES_H__
+#define __TSLAM_CORE_TYPES_H__
  
 #if !defined _CRT_SECURE_NO_DEPRECATE && _MSC_VER > 1300
 #define _CRT_SECURE_NO_DEPRECATE /* to avoid multiple Visual Studio 2005 warnings */
@@ -36,5 +36,5 @@
 #endif
 
 
-#define  SLAMUCO_VERSION "1.0.0"
+#define  TSLAM_VERSION "1.0.0"
 #endif
