@@ -298,6 +298,7 @@ int main(int argc,char **argv){
     string outputVideoPath = cml("-outvideo") + ".mp4";
     string outputRawVideoPath = cml("-outvideo") + "_raw.mp4";
 
+    // if using live camera
     if (inputVideo.find("live") != std::string::npos)
     {
         int vIdx = 0;
@@ -313,8 +314,9 @@ int main(int argc,char **argv){
         //vcap.set(CV_CAP_PROP_AUTOFOCUS, 0);
         liveVideo = true;
 
+    }  else { // using video input
+        vcap.open(argv[1],!cml["-sequential"]);
     }
-    else vcap.open(argv[1],!cml["-sequential"]);
 
     if (!vcap.isOpened())
         throw std::runtime_error("Video not opened");
@@ -375,6 +377,12 @@ int main(int argc,char **argv){
     bool toSaveCamPose = cml["-outCamPose"];
     if(toSaveCamPose) {
         outCamPose.open(cml("-outCamPose"));
+        if(outCamPose){
+            cout << "Camera trajectory will be saved in: " << cml("-outCamPose") << endl;
+        } else {
+            cerr << "Can't open " << cml("-outCamPose") << " for saving the camera pose." << endl;
+            exit(1);
+        }
         // outPose<<"frame_number pos_x pos_y pos_z rot_w rot_x rot_y rot_z"<<endl;
     }
 
@@ -630,7 +638,7 @@ int main(int argc,char **argv){
     if (toSaveCamPose) outCamPose.close();
 
     //optimize the map
-    if(!cml["-localizeOnly"] && !cml["-noMapOptimize"]){
+    if(!cml["-localizeOnly"] || !cml["-noMapOptimize"]){
         TheMap->optimize();
         // TheMap->removeAllPoints();
     }
