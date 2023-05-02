@@ -127,7 +127,18 @@ cv::Vec4f convertRotationMatrixToQuaternion(cv::Mat R) {
     return q;
 }
 
-void loadPly(string path, vector<cv::Vec3f> &vertices, vector<cv::Vec3i> &faces, vector<pair<cv::Vec3f, cv::Vec3f>> &lines){
+/**
+ * @brief Parse a mesh in ply format with only vertices and faces
+ * 
+ * @param path the path to the mesh file
+ * @param vertices the vertices of the mesh
+ * @param faces the faces of the mesh
+ * @param lines the lines of the mesh
+ */
+void loadPlyCGAL(string path, vector<cv::Vec3f> &vertices,
+                 vector<cv::Vec3i> &faces,
+                 vector<pair<cv::Vec3f, cv::Vec3f>> &lines)
+{
     int elementVertex = 0;
     int elementFace = 0;
 
@@ -139,18 +150,22 @@ void loadPly(string path, vector<cv::Vec3f> &vertices, vector<cv::Vec3i> &faces,
     }
     string line;
     size_t found;
-    while(getline(plyFile, line)){
+
+    while(getline(plyFile, line))
+    {
         found = line.find("element vertex");
-        if(found != string::npos){
+        if(found != string::npos)
+        {
             auto num = line.substr(found + string("element vertex").length());
             elementVertex = stoi(num);
         }
         found = line.find("element face");
-        if(found != string::npos){
+        if(found != string::npos)
+        {
             auto num = line.substr(found + string("element face").length());
             elementFace = stoi(num);
         }
-        if(line == "end_header") break;
+        if(line.find("end_header") != string::npos) break;
     }
 
     float x, y, z;
@@ -177,8 +192,8 @@ void loadPly(string path, vector<cv::Vec3f> &vertices, vector<cv::Vec3i> &faces,
         lines.emplace_back(make_pair(pt1, pt2));
         lines.emplace_back(make_pair(pt2, pt3));
         lines.emplace_back(make_pair(pt3, pt1));
-
     }
+    plyFile.close();
 }
 
 auto getZ(cv::Mat p){
@@ -252,7 +267,6 @@ void drawMesh(cv::Mat img, vector<pair<cv::Vec3f, cv::Vec3f>> linesToDraw, cv::M
         cv::line(img, ptsScreen.first, ptsScreen.second, cv::Scalar(0, 0, 255), 2);
     }
 }
-
 
 ////////////
 /// Main ///
@@ -383,10 +397,7 @@ int main(int argc,char **argv){
             cerr << "Can't open " << cml("-outCamPose") << " for saving the camera pose." << endl;
             exit(1);
         }
-        // outPose<<"frame_number pos_x pos_y pos_z rot_w rot_x rot_y rot_z"<<endl;
     }
-
-    // if (cml["-loc_only"]) Slam->setMode(tslam::MODE_LOCALIZATION);
 
     // need to skip frames?
     if (cml["-skip"]) {
@@ -407,25 +418,12 @@ int main(int argc,char **argv){
     vector<cv::Vec3f> vertices;
     vector<cv::Vec3i> faces;
     vector<pair<cv::Vec3f, cv::Vec3f>> lines;
-    if(cml["-drawMesh"]){
-        loadPly(cml("-drawMesh"), vertices, faces, lines);
-
-//        auto l0 = lines[3];
-//        lines.clear();
-//        lines.emplace_back(l0);
-
-        // for test => only draw one line
-//        lines.clear();
-//        lines.emplace_back(
-//                make_pair(
-//                        cv::Vec3f(-4.3453914642333984e+01, -1.2498917579650879e+01, 3.6316684722900391e+01),
-//                        cv::Vec3f(-4.4349357604980469e+01, -1.2652835845947266e+01, 3.6734409332275391e+01)
-//                )
-//        );
+    if(cml["-drawMesh"])
+    {
+        loadPlyCGAL(cml("-drawMesh"), vertices, faces, lines);
     }
 
     //need undistortion
-
     bool undistort = !cml["-noUndistort"];
     vector<cv::Mat > undistMap;
     if(undistort){
@@ -632,7 +630,6 @@ int main(int argc,char **argv){
             outRawVideoWriter.release();
         }
     }
-
 
     //close the output file
     if (toSaveCamPose) outCamPose.close();
