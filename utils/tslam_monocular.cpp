@@ -638,9 +638,10 @@ int main(int argc,char **argv){
     if (toSaveCamPose) outCamPose.close();
 
     //optimize the map
-    if(!cml["-localizeOnly"] || !cml["-noMapOptimize"]){
+    // if localizing only or noMapOptimize, do not optimize the map
+    if (cml["-localizeOnly"] == 0 && cml["-noMapOptimize"] == 0) {
+        cout << "Optimizing the map..." << endl;
         TheMap->optimize();
-        // TheMap->removeAllPoints();
     }
 
     //save the output
