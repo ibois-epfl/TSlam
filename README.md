@@ -28,7 +28,7 @@ gantt
     protocols design                :active, ptrd, 2023-02-24, 2023-03-20
     Protocol submission             :milestone, 2023-03-14, 0d
     preparation of eval             :active, 15d
-    Fabrication eval                :crit, 35d
+    Fabrication eval                :crit, 55d
     Data/visual processing          :15d
     Stand-up eval results           :milestone, 2d
 
