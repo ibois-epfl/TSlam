@@ -112,4 +112,52 @@ namespace tslam::Reconstruction
         CGAL::IO::write_PLY(out, this->m_GeometricSolver.getMeshOut());
         out.close();
     }
+
+    void TSLAMReconstructor::saveTagsAsPly(const std::string& dir, const std::string& filename)
+    {
+        if (!this->m_GeometricSolver.getTimber().hasTags())
+            throw std::runtime_error("[ERROR] No tags are loaded in the timber object.");
+        
+        std::string filepath = dir + "/" + filename + ".ply";
+
+        std::vector<TSRTag> tags = this->m_GeometricSolver.getTimber().getPlaneTags();
+
+        std::vector<Eigen::Vector3d> corners;
+        for (auto it = tags.begin(); it != tags.end(); it++)
+        {
+            Eigen::Vector3d cornerA = it->getCornerA();
+            Eigen::Vector3d cornerB = it->getCornerB();
+            Eigen::Vector3d cornerC = it->getCornerC();
+            Eigen::Vector3d cornerD = it->getCornerD();
+
+            corners.push_back(cornerA);
+            corners.push_back(cornerB);
+            corners.push_back(cornerC);
+            corners.push_back(cornerD);
+        }
+
+        std::ofstream out(filepath);
+        out.precision(17);
+        out << "ply" << std::endl;
+        out << "format ascii 1.0" << std::endl;
+        out << "element vertex " << corners.size() << std::endl;
+        out << "property float x" << std::endl;
+        out << "property float y" << std::endl;
+        out << "property float z" << std::endl;
+        out << "property uchar red" << std::endl;
+        out << "property uchar green" << std::endl;
+        out << "property uchar blue" << std::endl;
+        out << "property uchar alpha" << std::endl;
+        out << "element face 0" << std::endl;
+        out << "property list uchar int vertex_indices" << std::endl;
+        out << "end_header" << std::endl;
+        for (auto it = corners.begin(); it != corners.end(); it++)
+        {
+            out << (*it)[0] << " " << (*it)[1] << " " << (*it)[2] << " 0 0 0 255" << std::endl;
+        }
+
+        out.close();
+
+        std::cout << "[INFO] Tags are saved as " << filepath << std::endl;
+    }
 }

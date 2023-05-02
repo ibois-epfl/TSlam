@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-// build a console app that takes as first argument the path to the yml file of the map and as a second the output directory of the mesh and as a third its name
+// TODO: refactor param parsing and flags
 int main(int argc, char** argv)
 {
     if (argc != 4)
@@ -46,6 +46,11 @@ int main(int argc, char** argv)
     {
         // save the mesh
         reconstructor.saveMeshAsPLY(argv[2], argv[3]);
+
+        // save the tags
+        std::string tags_filename = argv[3];
+        tags_filename += "_tags";
+        reconstructor.saveTagsAsPly(argv[2], tags_filename);
     }
     std::cout << "[INFO]: mesh saved in " << argv[2] << "/" << argv[3] << ".ply" << std::endl;
     return 0;

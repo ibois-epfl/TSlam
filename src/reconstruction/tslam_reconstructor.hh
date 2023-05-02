@@ -82,6 +82,14 @@ namespace tslam::Reconstruction
          * @param filepath filepath to save the mesh, the filename should be specificied and ended with .ply
          */
         void saveMeshAsPLY(const std::string& filepath);
+
+        /**
+         * @brief Save the list of tags' corners as a pcd in a PLY file.
+         * 
+         * @param dir the directory to save the mesh
+         * @param filename the name of the pcd ply file
+         */
+        void saveTagsAsPly(const std::string& dir, const std::string& filename);
     
     public:  ///< engine getter
         /**
