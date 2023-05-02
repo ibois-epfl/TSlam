@@ -152,6 +152,7 @@ This runs `tslam_reconstruct.cc`.
 - `--pathToMapYml`: the path pointing to the `.yml` file of the map
 - `--output`: the output dir for the reconstructed mesh
 - `--meshName`: the name of the `.ply` file
+- `--saveTagsAsPcd`: in case the shape is not correctly reconstructed it is possible to download the tags' corners as point cloud in `.ply` format and reconstruct the shape in every CAD software.
 - `--radiusSearch`: radius search for the normal clustering of the tags
 - `--creaseAngleThreshold`: the threshold for detection of crease's angle (the smaller the more creases will be detected)
 - `--minClusterSize`: the minimal cluster possible of tags
