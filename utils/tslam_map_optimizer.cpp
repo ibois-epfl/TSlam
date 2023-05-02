@@ -36,7 +36,7 @@ namespace tslam {
 int main(int argc,char **argv){
 
     try {
-        if(argc<3)throw std::runtime_error("Usage: inmap outmap [iterations]");
+        if(argc<3)throw std::runtime_error("Usage: inmap outmap [1/0: to remove keypoint or not] [iterations]");
 
         tslam::Map TheMap;
         cout<<"reading map"<<endl;
@@ -44,6 +44,9 @@ int main(int argc,char **argv){
         cout<<"Done"<<endl;
         int niters=100;
         if(argc>=4)niters=stoi(argv[3]);
+        bool toRemoveKeypoints = false;
+        cout << stoi(argv[4]) << endl;
+        if(argc>=5)toRemoveKeypoints=stoi(argv[4])!=0;
 
         std::shared_ptr<g2o::SparseOptimizer> Optimizer;
 
@@ -195,6 +198,9 @@ int main(int argc,char **argv){
         cout<<"Final Camera Params "<<endl;
         cout<<TheMap.keyframes.begin()->imageParams.CameraMatrix<<endl;
         cout<<TheMap.keyframes.begin()->imageParams.Distorsion<<endl;
+
+        if(toRemoveKeypoints)
+            TheMap.removeAllPoints();
 
         TheMap.saveToFile(argv[2]);
 
