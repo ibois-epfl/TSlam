@@ -146,14 +146,20 @@ Some utility programs will be built by default in `build/utils`
 ```
 #### Reconstruct model
 ```bash
-./tslam_reconstruct "src/reconstruction/tests/test_data/real_scans/long_cut.yml" "./" "test_mesh_name"
+./tslam_reconstruct --pathToMapYml "src/reconstruction/tests/test_data/real_scans/long_cut.yml"
 ```
 This runs `tslam_reconstruct.cc`.
-- `<path_to_map_yml>`: the path pointing to the `.yml` file of the map
-- `<output_dir>`: the output dir for the reconstructed mesh
-- `<mesh_name>`: the name of the `.ply` file
-It's possible to input the parameters for the geometric solver. To see them, run `./tslam_reconstruct -h`
-
+- `--pathToMapYml`: the path pointing to the `.yml` file of the map
+- `--output`: the output dir for the reconstructed mesh
+- `--meshName`: the name of the `.ply` file
+- `--radiusSearch`: radius search for the normal clustering of the tags
+- `--creaseAngleThreshold`: the threshold for detection of crease's angle (the smaller the more creases will be detected)
+- `--minClusterSize`: the minimal cluster possible of tags
+- `--aabbScaleFactor`: the scale factor for scaleing up the AABB of the timber element map
+- `--maxPlnDist2Merge`: the maximal distance between planes of stripes to be eligible for merging
+- `--maxPlnAngle2Merge`: the maximal angle difference in degs between two planes'normals' angle to be eligible for merging
+- `--maxPolyDist`: the maximal distance between a polygon and a tag to be considered as a candidate face
+- `--eps`: the tolerance for all the computation (e.g. for the intersections)
 
 ## APIs
 ### Header
