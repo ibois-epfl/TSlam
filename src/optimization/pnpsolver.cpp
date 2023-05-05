@@ -352,36 +352,35 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
 
     for(size_t it=0; it<its.size(); it++)
     {
-
         G2oVertexCamera->setEstimate(toSE3Quat(pose_io));
         if(optimizer.initializeOptimization(0)){
             optimizer.setVerbose(debug::Debug::getLevel()>=11);
             optimizer.optimize(its[it]);
-        }
 
-        int nGoodMatches=0;
+            int nGoodMatches=0;
 
-        for(size_t i=0, iend=edgesInfo.size(); i<iend; i++)
-        {
-            EdgeSE3ProjectXYZOnlyPose* e = (EdgeSE3ProjectXYZOnlyPose*) edgesInfo[i].ptr;
-            if(vBadMatches[i])
-                e->computeError(); // problem
-            vBadMatches[i]=e->chi2()>edgesInfo[i].MaxChi;
+            for(size_t i=0, iend=edgesInfo.size(); i<iend; i++)
+            {
+                EdgeSE3ProjectXYZOnlyPose* e = (EdgeSE3ProjectXYZOnlyPose*) edgesInfo[i].ptr;
+                if(vBadMatches[i])
+                    e->computeError(); // problem
+                vBadMatches[i]=e->chi2()>edgesInfo[i].MaxChi;
 
-            e->setLevel(vBadMatches[i]?1:0);
-            if(it>=2) e->setRobustKernel(nullptr);
-            if(!vBadMatches[i])nGoodMatches++;
-        }
+                e->setLevel(vBadMatches[i]?1:0);
+                if(it>=2) e->setRobustKernel(nullptr);
+                if(!vBadMatches[i])nGoodMatches++;
+            }
 
-        for(auto me:marker_edges){
+            for(auto me:marker_edges){
                 me->computeError();
                 if (me->chi2()>Chi8D || it>=2)
                     me->setRobustKernel(nullptr);
-        }
+            }
 
-        //if few keypoints, stop
-        if( nGoodMatches<  10 &&marker_poses.size()==0){
-            break;
+            //if few keypoints, stop
+            if( nGoodMatches<  10 &&marker_poses.size()==0){
+                break;
+            }
         }
     }
 

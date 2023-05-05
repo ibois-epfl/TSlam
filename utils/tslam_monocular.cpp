@@ -351,13 +351,15 @@ int main(int argc,char **argv){
     overwriteParamsByCommandLine(cml,params);
 
     // hyper params
+    params.reLocalizationWithKeyPoints=false;
+    params.aruco_minerrratio_valid = 15;
     params.KPNonMaximaSuppresion=true;
     params.markersOptWeight=1.0; // maximum importance of markers in the final error. Value in range [0,1]. The rest if assigned to points
-    params.minMarkersForMaxWeight=10;
+    params.minMarkersForMaxWeight=5;
 
     auto TheMap = std::make_shared<tslam::Map>();
 
-    //read the map from file?
+    // read the map from file?
     if (cml["-map"]){
         TheMap->readFromFile(cml("-map"));
         imageParams.CamSize.height = TheMap->keyframes.begin()->imageParams.CamSize.height;
@@ -552,7 +554,7 @@ int main(int argc,char **argv){
             }
                 
             FpsComplete.stop();
-            if(currentFrameIndex % 10 == 0){
+//            if(currentFrameIndex % 10 == 0){
                 // TheMap->removeUnUsedKeyPoints();
                 // TheMap->removeOldFrames();
 
@@ -563,7 +565,8 @@ int main(int argc,char **argv){
                         " draw=" << 1./TimerDraw.getAvrg();
 
                 cout << (camPose_c2g.empty()?" not tracked":" tracked") << endl;
-            }
+                if(!camPose_c2g.empty()) cout << camPose_c2g << endl;
+//            }
          } catch (const std::exception &ex) {
             cerr << ex.what() << endl;
 

@@ -37,7 +37,7 @@ class GlobalOptimizer{
         float minErrPerPixel=0.25;//below this value, the optimization stops
         int nIters=100;//number of iterations
         bool verbose=false;
-        float markersOptWeight=0.5;//importance of markers in the final error. Value in range [0,1]. The rest if assigned to points
+        float markersOptWeight=1.0;//importance of markers in the final error. Value in range [0,1]. The rest if assigned to points
         int minMarkersForMaxWeight=5;
         bool InPlaneMarkers=false;
           //---do not use from here
