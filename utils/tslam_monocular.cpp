@@ -261,6 +261,9 @@ void drawMesh(cv::Mat img, vector<pair<cv::Vec3f, cv::Vec3f>> linesToDraw, cv::M
 int currentFrameIndex;
 
 int main(int argc,char **argv){
+    cout << "--------------------------------------" << endl;
+    cout << "TSlam_monocular.cpp v2.0 (May 8, 2023)" << endl;
+
     std::ios_base::sync_with_stdio(false);
 
     bool errorFlag = false;
@@ -313,8 +316,10 @@ int main(int argc,char **argv){
         //vcap.set(CV_CAP_PROP_AUTOFOCUS, 0);
         liveVideo = true;
 
+    } else {
+        cout << "Opening video " << argv[1] << endl;
+        vcap.open(argv[1],!cml["-sequential"]);
     }
-    else vcap.open(argv[1],!cml["-sequential"]);
 
     if (!vcap.isOpened())
         throw std::runtime_error("Video not opened");
@@ -350,6 +355,14 @@ int main(int argc,char **argv){
     if( cml["-params"]) params.readFromYMLFile(cml("-params"));
     overwriteParamsByCommandLine(cml,params);
 
+    if(cml["-localizeOnly"]){
+        cout << "Running in localization only mode." << endl;
+    }
+
+    if(cml["-nokeypoints"]){
+        cout << "No keypoints detection. (Running in tag-only mode.)" << endl;
+    }
+
     // hyper params
     params.reLocalizationWithKeyPoints=false;
     params.aruco_minerrratio_valid = 15;
@@ -361,6 +374,7 @@ int main(int argc,char **argv){
 
     // read the map from file?
     if (cml["-map"]){
+        cout << "loading map from file: " << cml("-map") << endl;
         TheMap->readFromFile(cml("-map"));
         imageParams.CamSize.height = TheMap->keyframes.begin()->imageParams.CamSize.height;
         imageParams.CamSize.width = TheMap->keyframes.begin()->imageParams.CamSize.width;
@@ -370,12 +384,13 @@ int main(int argc,char **argv){
     Slam->setParams(TheMap, params, cml("-voc"));
 
     if(!cml["-voc"]  && !cml["-map"]) {
-        cerr<<"Warning!! No VOCABULARY INDICATED. KEYPOINT RELOCALIZATION IMPOSSIBLE WITHOUT A VOCABULARY FILE!!!!!"<<endl;
+        cerr <<"Warning!! No VOCABULARY INDICATED. KEYPOINT RELOCALIZATION IMPOSSIBLE WITHOUT A VOCABULARY FILE!!!!!" << endl;
     }
 
     ofstream outCamPose;
     bool toSaveCamPose = cml["-outCamPose"];
     if(toSaveCamPose) {
+        cout << "Saving camera pose to file: " << cml("-outCamPose") << endl;
         outCamPose.open(cml("-outCamPose"));
         // outPose<<"frame_number pos_x pos_y pos_z rot_w rot_x rot_y rot_z"<<endl;
     }
@@ -462,6 +477,8 @@ int main(int argc,char **argv){
         cerr << "Input size " << inputW << "x" << inputH << " is different from the calibration param " << int(camW) << "x" << int(camH) << endl;
         needResize = true;
     }
+
+    int trackedCounter = 0;
 
     while (!finish && !in_image.empty())  {
         try{
@@ -554,7 +571,10 @@ int main(int argc,char **argv){
             }
                 
             FpsComplete.stop();
-//            if(currentFrameIndex % 10 == 0){
+
+            if(!camPose_c2g.empty()) trackedCounter++;
+
+            if(currentFrameIndex % 100 == 0){
                 // TheMap->removeUnUsedKeyPoints();
                 // TheMap->removeOldFrames();
 
@@ -564,9 +584,9 @@ int main(int argc,char **argv){
                         " slam="<<1./Fps.getAvrg() <<
                         " draw=" << 1./TimerDraw.getAvrg();
 
-                cout << (camPose_c2g.empty()?" not tracked":" tracked") << endl;
-                if(!camPose_c2g.empty()) cout << camPose_c2g << endl;
-//            }
+                cout << " tracked: " << trackedCounter << "/100" << endl;
+                trackedCounter = 0;
+            }
          } catch (const std::exception &ex) {
             cerr << ex.what() << endl;
 
@@ -649,9 +669,10 @@ int main(int argc,char **argv){
         Slam->saveToFile("Slam->slm");
     }
 
-
     if (errorFlag) {
         cout << "Program ends with an error." << endl;
+    } else {
+        cout << "Program ends correctly." << endl;
     }
 }
 
