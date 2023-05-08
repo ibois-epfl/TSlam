@@ -25,9 +25,9 @@ gantt
     Stand-up demo                   :milestone, 2023-02-24, 0d
 
     section Evaluation
-    protocols design                :active, ptrd, 2023-02-24, 2023-03-20
+    protocols design                :done, ptrd, 2023-02-24, 2023-03-20
     Protocol submission             :milestone, 2023-03-14, 0d
-    preparation of eval             :active, 15d
+    preparation of eval             :done, 15d
     Fabrication eval                :crit, 55d
     Data/visual processing          :15d
     Stand-up eval results           :milestone, 2d
@@ -42,8 +42,8 @@ gantt
     Publishing                      :milestone, 120d
     
     section Maintenance            
-    Profiling of tslam                  :active, opti, 2023-04-19, 10d
-    Optimization of tslam               :25d
+    Profiling of tslam                  :done, opti, 2023-04-19, 10d
+    Optimization of tslam               :active, 25d
     Student project for optimization    :90d
     Integration into AC                 :30d
     Testing coverage for TSlam/ACTslam  :30d
