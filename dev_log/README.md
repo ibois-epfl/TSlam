@@ -330,6 +330,12 @@ We started to preparing the evaluation pipeline and the set up for the evaluatio
 ![](./evalcampaign1.jpg)
 ![](./evalcampaign2.jpg)
 
+## May 1
+Test on "no key point detection" mode. From the screenshot we can see that in tag-only mode, the drift decreased.
+
+|          with keypoints          |          without keypoints          |
+|:--------------------------------:|:-----------------------------------:|
+| ![](./keypoint_test_with_kp.png) | ![](./keypoint_test_without_kp.png) |
 
 ---
 
