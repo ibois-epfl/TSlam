@@ -1615,7 +1615,6 @@ void Map::optimize(int niters){
 
 
     if(!Optimizer->initializeOptimization()){
-        cout << 1617 << endl;
         return;
     }
     //    Optimizer->setForceStopFlag( );

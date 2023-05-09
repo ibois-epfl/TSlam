@@ -463,11 +463,24 @@ int main(int argc,char **argv){
     vector<cv::Mat> rawFramesToWrite;
     vector<cv::Mat> slamFramesToWrite;
 
-    //read the first frame if not yet
-    auto startCaptureTime = std::chrono::system_clock::now();
-    auto frameCaptureTime = startCaptureTime;
+    // skip to the desired frame
+    int subSeqFrameIDStartAndEnd[] = {-1, -1};
+    if(cml["-startFrameID"]){
+        subSeqFrameIDStartAndEnd[0] = stoi(cml("-startFrameID"));
+        cout << "Set start frame to " << subSeqFrameIDStartAndEnd[0];
+    }
+    if(cml["-endFrameID"]){
+        subSeqFrameIDStartAndEnd[1] = stoi(cml("-endFrameID"));
+        cout << "Set end frame to " << subSeqFrameIDStartAndEnd[1];
+    }
+    if(subSeqFrameIDStartAndEnd[0] != -1){
+        vcap.set(cv::CAP_PROP_POS_FRAMES, subSeqFrameIDStartAndEnd[0]);
+    }
     while (in_image.empty())
         vcap >> in_image;
+
+    auto startCaptureTime = std::chrono::system_clock::now();
+    auto frameCaptureTime = startCaptureTime;
     
     //need to resize input image?
     bool needResize = false;
@@ -484,8 +497,13 @@ int main(int argc,char **argv){
         try{
             FpsComplete.start();
 
+            currentFrameIndex = vcap.getNextFrameIndex() - 1;
+
+            if(subSeqFrameIDStartAndEnd[1] != -1 && currentFrameIndex > subSeqFrameIDStartAndEnd[1]) break;
+
             if (isExportingVideo) {
-                rawFramesToWrite.emplace_back(in_image.clone());
+                auto rawInFrame = in_image.clone();
+                rawFramesToWrite.emplace_back(rawInFrame);
             }
 
             TimerPreprocessing.start();
@@ -504,8 +522,6 @@ int main(int argc,char **argv){
 
             // enhanceImage (more contrast)
             // enhanceImageBGR(in_image, in_image);
-
-            currentFrameIndex = vcap.getNextFrameIndex() - 1;
 
             Fps.start();
             camPose_c2g=Slam->process(in_image, imageParams, currentFrameIndex);
@@ -624,15 +640,17 @@ int main(int argc,char **argv){
             errFlag = true;
         }
         if(!errFlag){
+            cout << "Raw size: " << rawFramesToWrite.at(0).size() << endl;
+            cout << "Slam video size: " << slamFramesToWrite.at(0).size() << endl;
             outVideoWriter.open(
                     outputVideoPath,
                     CV_FOURCC('m', 'p', '4', 'v'),
-                    stof(cml("-fps","10")),
+                    stof(cml("-fps","30")),
                     slamFramesToWrite.at(0).size(), slamFramesToWrite.at(0).channels()!=1);
             outRawVideoWriter.open(
                     outputRawVideoPath,
                     CV_FOURCC('m', 'p', '4', 'v'),
-                    stof(cml("-fps","10")),
+                    stof(cml("-fps","30")),
                     rawFramesToWrite.at(0).size(), rawFramesToWrite.at(0).channels()!=1);
 
             for(auto image : slamFramesToWrite){
