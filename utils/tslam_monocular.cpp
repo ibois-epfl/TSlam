@@ -545,8 +545,16 @@ int main(int argc,char **argv){
 
             //save to output pose?
             if (toSaveCamPose) {
-                std::chrono::duration<double> elapsed_seconds = frameCaptureTime - startCaptureTime;
-                outCamPose << currentFrameIndex << " " << elapsed_seconds.count() << " ";
+                outCamPose << currentFrameIndex << " ";
+
+                // if it's processing a video seq, output nan for the timestamp
+                if(liveVideo){
+                    std::chrono::duration<double> elapsed_seconds = frameCaptureTime - startCaptureTime;
+                    outCamPose << elapsed_seconds.count() << " ";
+                } else {
+                    outCamPose << "NaN" << " ";
+                }
+
 
                 // pose[x, y, z] = (0, 0, 0) and quaternion[x, y, z, w]
                 if(camPose_c2g.empty()) {
