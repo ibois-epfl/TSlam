@@ -76,7 +76,7 @@ Here are some reference related to this project:
 There are two ways you can consume the tags:
 - `ready to print`: 450 stripes for a total of 21149 tags are available in batches of 50 stripes with an A0 format. They are ready to print (better as stickers) and can be downloaded [here](https://zenodo.org/record/7738721/files/stag_stickers_ready.zip?download=1).
 - `generate your custom stripes`: if you need a specific tags layout you can run the python script from the terminal (from UNIX):
-  calibration_webcam.yml -voc ../../orb.fbow -out test
+  `calibration_webcam.yml -voc ../../orb.fbow -out test`
 
 ## TSlam vocabulary
 To be fully functional, TSlam needs a vocabulary that can be downloaded [here](https://zenodo.org/record/7738721/files/orb.fbow?download=1) and stored preferably into the folder `TSlam/assets/voc/orb.fbow`.
