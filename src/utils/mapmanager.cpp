@@ -478,7 +478,7 @@ void MapManager::mainFunction(){
     __TSLAM_TIMER_EVENT__("Add   points " );
 
     //if have time, refine look for more matches in the neigbors
-     if (keyframesToAdd.empty()  ){
+     if (keyframesToAdd.empty() && System::getParams().detectKeyPoints ){
         TheMap->lock(__FUNCTION__,__FILE__,__LINE__);
         auto ptremove=searchInNeighbors(newFrame);
         PointsToRemove.insert(PointsToRemove.end(),ptremove.begin(),ptremove.end());

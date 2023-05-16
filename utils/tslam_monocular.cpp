@@ -261,6 +261,9 @@ void drawMesh(cv::Mat img, vector<pair<cv::Vec3f, cv::Vec3f>> linesToDraw, cv::M
 int currentFrameIndex;
 
 int main(int argc,char **argv){
+    cout << "--------------------------------------" << endl;
+    cout << "TSlam_monocular.cpp v2.0 (May 8, 2023)" << endl;
+
     std::ios_base::sync_with_stdio(false);
 
     bool errorFlag = false;
@@ -313,8 +316,10 @@ int main(int argc,char **argv){
         //vcap.set(CV_CAP_PROP_AUTOFOCUS, 0);
         liveVideo = true;
 
+    } else {
+        cout << "Opening video " << argv[1] << endl;
+        vcap.open(argv[1],!cml["-sequential"]);
     }
-    else vcap.open(argv[1],!cml["-sequential"]);
 
     if (!vcap.isOpened())
         throw std::runtime_error("Video not opened");
@@ -350,15 +355,26 @@ int main(int argc,char **argv){
     if( cml["-params"]) params.readFromYMLFile(cml("-params"));
     overwriteParamsByCommandLine(cml,params);
 
+    if(cml["-localizeOnly"]){
+        cout << "Running in localization only mode." << endl;
+    }
+
+    if(cml["-nokeypoints"]){
+        cout << "No keypoints detection. (Running in tag-only mode.)" << endl;
+    }
+
     // hyper params
+    params.reLocalizationWithKeyPoints=false;
+    params.aruco_minerrratio_valid = 15;
     params.KPNonMaximaSuppresion=true;
     params.markersOptWeight=1.0; // maximum importance of markers in the final error. Value in range [0,1]. The rest if assigned to points
-    params.minMarkersForMaxWeight=10;
+    params.minMarkersForMaxWeight=5;
 
     auto TheMap = std::make_shared<tslam::Map>();
 
-    //read the map from file?
+    // read the map from file?
     if (cml["-map"]){
+        cout << "loading map from file: " << cml("-map") << endl;
         TheMap->readFromFile(cml("-map"));
         imageParams.CamSize.height = TheMap->keyframes.begin()->imageParams.CamSize.height;
         imageParams.CamSize.width = TheMap->keyframes.begin()->imageParams.CamSize.width;
@@ -368,14 +384,15 @@ int main(int argc,char **argv){
     Slam->setParams(TheMap, params, cml("-voc"));
 
     if(!cml["-voc"]  && !cml["-map"]) {
-        cerr<<"Warning!! No VOCABULARY INDICATED. KEYPOINT RELOCALIZATION IMPOSSIBLE WITHOUT A VOCABULARY FILE!!!!!"<<endl;
+        cerr <<"Warning!! No VOCABULARY INDICATED. KEYPOINT RELOCALIZATION IMPOSSIBLE WITHOUT A VOCABULARY FILE!!!!!" << endl;
     }
 
     ofstream outCamPose;
     bool toSaveCamPose = cml["-outCamPose"];
     if(toSaveCamPose) {
+        cout << "Saving camera pose to file: " << cml("-outCamPose") << endl;
         outCamPose.open(cml("-outCamPose"));
-        // outPose<<"frame_number pos_x pos_y pos_z rot_w rot_x rot_y rot_z"<<endl;
+        outCamPose << "frame_id timestamp_in_sec pos_x pos_y pos_z rot_quaternion_x rot_quaternion_y rot_quaternion_z rot_quaternion_w valid_marker_num" << endl;
     }
 
     // if (cml["-loc_only"]) Slam->setMode(tslam::MODE_LOCALIZATION);
@@ -446,11 +463,24 @@ int main(int argc,char **argv){
     vector<cv::Mat> rawFramesToWrite;
     vector<cv::Mat> slamFramesToWrite;
 
-    //read the first frame if not yet
-    auto startCaptureTime = std::chrono::system_clock::now();
-    auto frameCaptureTime = startCaptureTime;
+    // skip to the desired frame
+    int subSeqFrameIDStartAndEnd[] = {-1, -1};
+    if(cml["-startFrameID"]){
+        subSeqFrameIDStartAndEnd[0] = stoi(cml("-startFrameID"));
+        cout << "Set start frame to " << subSeqFrameIDStartAndEnd[0];
+    }
+    if(cml["-endFrameID"]){
+        subSeqFrameIDStartAndEnd[1] = stoi(cml("-endFrameID"));
+        cout << "Set end frame to " << subSeqFrameIDStartAndEnd[1];
+    }
+    if(subSeqFrameIDStartAndEnd[0] != -1){
+        vcap.set(cv::CAP_PROP_POS_FRAMES, subSeqFrameIDStartAndEnd[0]);
+    }
     while (in_image.empty())
         vcap >> in_image;
+
+    auto startCaptureTime = std::chrono::system_clock::now();
+    auto frameCaptureTime = startCaptureTime;
     
     //need to resize input image?
     bool needResize = false;
@@ -461,12 +491,19 @@ int main(int argc,char **argv){
         needResize = true;
     }
 
+    int trackedCounter = 0;
+
     while (!finish && !in_image.empty())  {
         try{
             FpsComplete.start();
 
+            currentFrameIndex = vcap.getNextFrameIndex() - 1;
+
+            if(subSeqFrameIDStartAndEnd[1] != -1 && currentFrameIndex > subSeqFrameIDStartAndEnd[1]) break;
+
             if (isExportingVideo) {
-                rawFramesToWrite.emplace_back(in_image.clone());
+                auto rawInFrame = in_image.clone();
+                rawFramesToWrite.emplace_back(rawInFrame);
             }
 
             TimerPreprocessing.start();
@@ -486,11 +523,16 @@ int main(int argc,char **argv){
             // enhanceImage (more contrast)
             // enhanceImageBGR(in_image, in_image);
 
-            currentFrameIndex = vcap.getNextFrameIndex() - 1;
-
             Fps.start();
             camPose_c2g=Slam->process(in_image, imageParams, currentFrameIndex);
             Fps.stop();
+
+            int validMarkersNum = 0;
+            for(auto marker : Slam->getLastProcessedFrame().markers){
+                if(TheMap->map_markers.find(marker.id) != TheMap->map_markers.end()){
+                    if(TheMap->map_markers.at(marker.id).pose_g2m.isValid()) validMarkersNum++;
+                }
+            }
 
             TimerDraw.start();
             // Slam->drawMatches(in_image);
@@ -510,12 +552,20 @@ int main(int argc,char **argv){
 
             //save to output pose?
             if (toSaveCamPose) {
-                std::chrono::duration<double> elapsed_seconds = frameCaptureTime - startCaptureTime;
-                outCamPose << currentFrameIndex << " " << elapsed_seconds.count() << " ";
+                outCamPose << currentFrameIndex << " ";
+
+                // if it's processing a video seq, output nan for the timestamp
+                if(liveVideo){
+                    std::chrono::duration<double> elapsed_seconds = frameCaptureTime - startCaptureTime;
+                    outCamPose << elapsed_seconds.count() << " ";
+                } else {
+                    outCamPose << "NaN" << " ";
+                }
+
 
                 // pose[x, y, z] = (0, 0, 0) and quaternion[x, y, z, w]
                 if(camPose_c2g.empty()) {
-                    outCamPose << "0 0 0 0 0 0 0 1" << endl;
+                    outCamPose << "0 0 0 0 0 0 0 1 ";
                 } else {
                     auto camPoseQuaternion = convertRotationMatrixToQuaternion(
                             camPose_c2g.rowRange(0, 3).colRange(0, 3));
@@ -526,8 +576,11 @@ int main(int argc,char **argv){
                                camPoseQuaternion[0] << " " <<
                                camPoseQuaternion[1] << " " <<
                                camPoseQuaternion[2] << " " <<
-                               camPoseQuaternion[3] << endl;
+                               camPoseQuaternion[3] << " ";
                 }
+
+                // detected valid marker num
+                outCamPose << validMarkersNum << endl;
             }
 
             // save to output video?
@@ -552,7 +605,10 @@ int main(int argc,char **argv){
             }
                 
             FpsComplete.stop();
-            if(currentFrameIndex % 10 == 0){
+
+            if(!camPose_c2g.empty()) trackedCounter++;
+
+            if(currentFrameIndex % 100 == 0){
                 // TheMap->removeUnUsedKeyPoints();
                 // TheMap->removeOldFrames();
 
@@ -562,7 +618,8 @@ int main(int argc,char **argv){
                         " slam="<<1./Fps.getAvrg() <<
                         " draw=" << 1./TimerDraw.getAvrg();
 
-                cout << (camPose_c2g.empty()?" not tracked":" tracked") << endl;
+                cout << " tracked: " << trackedCounter << "/100" << endl;
+                trackedCounter = 0;
             }
          } catch (const std::exception &ex) {
             cerr << ex.what() << endl;
@@ -601,15 +658,17 @@ int main(int argc,char **argv){
             errFlag = true;
         }
         if(!errFlag){
+            cout << "Raw size: " << rawFramesToWrite.at(0).size() << endl;
+            cout << "Slam video size: " << slamFramesToWrite.at(0).size() << endl;
             outVideoWriter.open(
                     outputVideoPath,
                     CV_FOURCC('m', 'p', '4', 'v'),
-                    stof(cml("-fps","10")),
+                    stof(cml("-fps","30")),
                     slamFramesToWrite.at(0).size(), slamFramesToWrite.at(0).channels()!=1);
             outRawVideoWriter.open(
                     outputRawVideoPath,
                     CV_FOURCC('m', 'p', '4', 'v'),
-                    stof(cml("-fps","10")),
+                    stof(cml("-fps","30")),
                     rawFramesToWrite.at(0).size(), rawFramesToWrite.at(0).channels()!=1);
 
             for(auto image : slamFramesToWrite){
@@ -647,9 +706,10 @@ int main(int argc,char **argv){
         Slam->saveToFile("Slam->slm");
     }
 
-
     if (errorFlag) {
         cout << "Program ends with an error." << endl;
+    } else {
+        cout << "Program ends correctly." << endl;
     }
 }
 

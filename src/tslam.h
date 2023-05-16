@@ -44,8 +44,8 @@ namespace tslam{
         /// sets the system in lost mode
         //void resetCurrentPose();
 
-        /// returns the number of the last processed framed
-        uint32_t getLastProcessedFrame()const;
+        /// returns the last processed framed
+        Frame getLastProcessedFrame()const;
 
 
         /// Saves the current state of the system to a file so that it can be recovered later. It is only safe if the system is in sequential mode

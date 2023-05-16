@@ -20,7 +20,7 @@ namespace tslam{
     Params  & TSlam::getParams() {
         return System::getParams();
     }
-    cv::Mat TSlam::process(  cv::Mat &in_image,const ImageParams &ip,uint32_t frameseq_idx){
+    cv::Mat TSlam::process(cv::Mat &in_image, const ImageParams &ip, uint32_t frameseq_idx){
         updateSystem();
         if(in_image.size()!=ip.CamSize)
             throw  std::runtime_error("Input Image Size is Different from Image Params");
@@ -35,7 +35,7 @@ namespace tslam{
 //void TSlam::resetCurrentPose(){
 //    reinterpret_cast<System*>(impl)->resetCurrentPose();
 //}
-    uint32_t TSlam::getLastProcessedFrame()const{
+    Frame TSlam::getLastProcessedFrame()const{
         return reinterpret_cast<System*>(impl)->getLastProcessedFrame();
     }
     void TSlam::saveToFile(std::string filepath){

@@ -110,7 +110,7 @@ struct TSLAM_API Params{
 
     bool forceInitializationFromMarkers;//If true, the system will not initialize until a good initialization from markers is obtained
     int nthreads_feature_detector;//number of threads employed in keypoint detection
-    float markersOptWeight=0.5;// maximum importance of markers in the final error. Value in range [0,1]. The rest if assigned to points
+    float markersOptWeight=1.0;// maximum importance of markers in the final error. Value in range [0,1]. The rest if assigned to points
     int minMarkersForMaxWeight=5;//how many markers are required to achieve assign the maximum weight to markers in the optimization process
     float kptImageScaleFactor=1;//[0,1] indicates the desired scale factor employed for keypoint detection.  If 1 the original input image is used. Otherwise, the
     //input image is resized with the specified scale factor. PLease notice that markers will be detected in the  original input images anyway
