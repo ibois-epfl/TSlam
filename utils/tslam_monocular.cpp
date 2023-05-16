@@ -392,7 +392,7 @@ int main(int argc,char **argv){
     if(toSaveCamPose) {
         cout << "Saving camera pose to file: " << cml("-outCamPose") << endl;
         outCamPose.open(cml("-outCamPose"));
-        // outPose<<"frame_number pos_x pos_y pos_z rot_w rot_x rot_y rot_z"<<endl;
+        outCamPose << "frame_id timestamp_in_sec pos_x pos_y pos_z rot_quaternion_x rot_quaternion_y rot_quaternion_z rot_quaternion_w valid_marker_num" << endl;
     }
 
     // if (cml["-loc_only"]) Slam->setMode(tslam::MODE_LOCALIZATION);
@@ -527,6 +527,13 @@ int main(int argc,char **argv){
             camPose_c2g=Slam->process(in_image, imageParams, currentFrameIndex);
             Fps.stop();
 
+            int validMarkersNum = 0;
+            for(auto marker : Slam->getLastProcessedFrame().markers){
+                if(TheMap->map_markers.find(marker.id) != TheMap->map_markers.end()){
+                    if(TheMap->map_markers.at(marker.id).pose_g2m.isValid()) validMarkersNum++;
+                }
+            }
+
             TimerDraw.start();
             // Slam->drawMatches(in_image);
             // char k = TheViewer.show(&Slam, in_image,"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
@@ -558,7 +565,7 @@ int main(int argc,char **argv){
 
                 // pose[x, y, z] = (0, 0, 0) and quaternion[x, y, z, w]
                 if(camPose_c2g.empty()) {
-                    outCamPose << "0 0 0 0 0 0 0 1" << endl;
+                    outCamPose << "0 0 0 0 0 0 0 1 ";
                 } else {
                     auto camPoseQuaternion = convertRotationMatrixToQuaternion(
                             camPose_c2g.rowRange(0, 3).colRange(0, 3));
@@ -569,8 +576,11 @@ int main(int argc,char **argv){
                                camPoseQuaternion[0] << " " <<
                                camPoseQuaternion[1] << " " <<
                                camPoseQuaternion[2] << " " <<
-                               camPoseQuaternion[3] << endl;
+                               camPoseQuaternion[3] << " ";
                 }
+
+                // detected valid marker num
+                outCamPose << validMarkersNum << endl;
             }
 
             // save to output video?

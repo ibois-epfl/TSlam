@@ -965,7 +965,7 @@ void System::globalOptimization(){
 }
 
 
-uint32_t System::getLastProcessedFrame()const{return _cFrame.fseq_idx;}
+Frame System::getLastProcessedFrame()const{return _cFrame;}
 
 
 void System::setMode(MODES mode){
