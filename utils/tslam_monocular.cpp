@@ -689,7 +689,7 @@ int main(int argc,char **argv){
     if (toSaveCamPose) outCamPose.close();
 
     //optimize the map
-    if(!cml["-localizeOnly"] || !cml["-noMapOptimize"]){
+    if(!cml["-localizeOnly"] && !cml["-noMapOptimize"]){
         TheMap->optimize();
         // TheMap->removeAllPoints();
     }
