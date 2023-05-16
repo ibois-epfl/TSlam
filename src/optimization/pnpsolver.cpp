@@ -348,6 +348,11 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
     // We perform 4 optimizations, after each optimization we classify observation as inlier/outlier
     // At the next optimization, outliers are not included, but at the end they can be classified as inliers again.
 
+    // for some reason the optimizer cannot be initialized.
+    if(optimizer.edges().size() == 0) {
+        return 0;
+    }
+
     std::vector<int> its={10,10,10,10};
 
     for(size_t it=0; it<its.size(); it++)

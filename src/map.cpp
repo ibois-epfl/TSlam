@@ -1382,7 +1382,6 @@ se3 Map::getBestPoseFromValidMarkers(const Frame &frame,const vector<uint32_t> &
         cv::Mat rv=pose_f2g_out.getRvec(),tv=pose_f2g_out.getTvec();
         cv::solvePnP(markerPoints3d,markerPoints2d,frame.imageParams.CameraMatrix,cv::Mat::zeros(1,5,CV_32F),rv,tv,true);
         pose_f2g_out=se3(rv,tv);
-        _debug_msg("err opt="<< reprj_error(markerPoints3d,markerPoints2d,frame.imageParams.undistorted(),  pose_f2g_out),10);
     }
 
 //    if ( pose_f2g_out.isValid()==false &&  good_marker_locations.size()>0){
