@@ -1,0 +1,1 @@
+This folder contains all the scripts used to patch/recover/recompose data from the capturing session, e.g., if the camera stops we need to merge multiple sessions.

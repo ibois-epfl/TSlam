@@ -461,7 +461,9 @@ void GlobalOptimizerG2O::optimize(std::shared_ptr<Map> map, const ParamSet &p ) 
 void GlobalOptimizerG2O::optimize(bool *stopASAP ){
     // cout << "GlobalOptimizerG2O::optimize(bool *stopASAP )" << endl;
     __TSLAM_ADDTIMER__
-        Optimizer->initializeOptimization();
+    if(!Optimizer->initializeOptimization()){
+        return;
+    }
     Optimizer->setForceStopFlag(stopASAP);
     Optimizer->setVerbose( _params.verbose);
     #pragma message "warning: change this to consider maximum interstep error"
@@ -501,8 +503,7 @@ void GlobalOptimizerG2O::optimize(bool *stopASAP ){
             medge->setRobustKernel(0);
         }
         // Optimize again without the outliers
-        Optimizer->initializeOptimization();
-        Optimizer->optimize(_params.nIters*2,1);
+        if(Optimizer->initializeOptimization()) Optimizer->optimize(_params.nIters*2,1);
 
     }
 

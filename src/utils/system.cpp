@@ -203,7 +203,9 @@ cv::Mat System::process(const Frame &frame) {
         //lost??
         if (currentState==STATE_LOST){
             se3 reloc_pose;
+//            cout << "Lost, try to recover" << endl;
             if ( relocalize(_cFrame,reloc_pose)){//recovered
+//                cout << "Relocalization succeed" << endl;
                 currentState=STATE_TRACKING;
                 _curPose_f2g=reloc_pose;
                 _curKFRef=getBestReferenceFrame(_cFrame,_curPose_f2g);
@@ -216,8 +218,11 @@ cv::Mat System::process(const Frame &frame) {
         //did properly recover??
         if( currentState==STATE_TRACKING){
             _cFrame.pose_f2g=_curPose_f2g;
-            if (currentMode==MODE_SLAM  && (  ( _cFrame.fseq_idx>=lastKFReloc+5) || (lastKFReloc==-1)  ))//must add a new frame?
-               TheMapManager->newFrame(_cFrame,_curKFRef);
+            //must add a new frame?
+            if (currentMode==MODE_SLAM  && ( (_cFrame.fseq_idx>=lastKFReloc+5) || (lastKFReloc==-1)  )){
+                TheMapManager->newFrame(_cFrame,_curKFRef);
+            }
+
             __TSLAM_TIMER_EVENT__("newFrame");
             _debug_msg_("_curKFRef="<<_curKFRef);
         }
@@ -791,21 +796,21 @@ se3 System::track(Frame &curframe,se3 lastKnownPose) {
             nvalidMatches=PnPSolver::solvePnp( curframe,TheMap,map_matches,estimatedPose_aux,_curKFRef);
             if (nvalidMatches>30) estimatedPose=estimatedPose_aux;
         }
-        else{//if not enough matches found from previous, do a search to reference keyframe
-            //match this and reference keyframe
-            FrameMatcher fmatcher(FrameMatcher::TYPE_FLANN);//use flann since BoW is not yet computed and can not be used
-            fmatcher.setParams( TheMap->keyframes[_curKFRef],FrameMatcher::MODE_ASSIGNED,_params.maxDescDistance*2,0.6,true,3);//search only amongts mappoints of ref keyframe
-            map_matches=fmatcher.match(curframe,FrameMatcher::MODE_ALL);
-            if(map_matches.size()>30){
-                //change trainIdx from Frame indices to map Ids
-                for(auto &m:map_matches)
-                    m.trainIdx= TheMap->keyframes[_curKFRef].ids[m.trainIdx];
-                auto estimatedPose_aux=estimatedPose;
-                nvalidMatches=PnPSolver::solvePnp( curframe,TheMap,map_matches,estimatedPose_aux,_curKFRef);
-                if (nvalidMatches>30) estimatedPose=estimatedPose_aux;
-            }
-            else nvalidMatches=0;
-        }
+//        else{//if not enough matches found from previous, do a search to reference keyframe
+//            //match this and reference keyframe
+//            FrameMatcher fmatcher(FrameMatcher::TYPE_FLANN);//use flann since BoW is not yet computed and can not be used
+//            fmatcher.setParams( TheMap->keyframes[_curKFRef],FrameMatcher::MODE_ASSIGNED,_params.maxDescDistance*2,0.6,true,3);//search only amongts mappoints of ref keyframe
+//            map_matches=fmatcher.match(curframe,FrameMatcher::MODE_ALL);
+//            if(map_matches.size()>30){
+//                //change trainIdx from Frame indices to map Ids
+//                for(auto &m:map_matches)
+//                    m.trainIdx= TheMap->keyframes[_curKFRef].ids[m.trainIdx];
+//                auto estimatedPose_aux=estimatedPose;
+//                nvalidMatches=PnPSolver::solvePnp( curframe,TheMap,map_matches,estimatedPose_aux,_curKFRef);
+//                if (nvalidMatches>30) estimatedPose=estimatedPose_aux;
+//            }
+//            else nvalidMatches=0;
+//        }
 
 
 
@@ -825,14 +830,16 @@ se3 System::track(Frame &curframe,se3 lastKnownPose) {
             projDistance=_params.projDistThr;//not good previous step, do a broad search in the map
         }
 
-        //get the neighbors and current, and match more points in the local map
-        auto map_matches2 = TheMap->matchFrameToMapPoints ( TheMap->TheKpGraph.getNeighborsVLevel2( _curKFRef,true) , curframe,  estimatedPose ,_params.maxDescDistance*2, projDistance,true);
-        //add this info to the map and current frame
-        _debug_msg("matchMapPtsOnFrames 2= "<<map_matches2.size(),10);
-        map_matches.insert(map_matches.end(),map_matches2.begin(),map_matches2.end());
-        _debug_msg("matchMapPtsOnFrames final= "<<map_matches.size(),10);
-        __TSLAM_TIMER_EVENT__("matchMapPtsOnFrames");
-        filter_ambiguous_query(map_matches);
+        if(_params.detectKeyPoints){
+            //get the neighbors and current, and match more points in the local map
+            auto map_matches2 = TheMap->matchFrameToMapPoints ( TheMap->TheKpGraph.getNeighborsVLevel2( _curKFRef,true) , curframe,  estimatedPose ,_params.maxDescDistance*2, projDistance,true);
+            //add this info to the map and current frame
+            _debug_msg("matchMapPtsOnFrames 2= "<<map_matches2.size(),10);
+            map_matches.insert(map_matches.end(),map_matches2.begin(),map_matches2.end());
+            _debug_msg("matchMapPtsOnFrames final= "<<map_matches.size(),10);
+            __TSLAM_TIMER_EVENT__("matchMapPtsOnFrames");
+            filter_ambiguous_query(map_matches);
+        }
     }
 
      int nValidMatches=PnPSolver::solvePnp( curframe,TheMap,map_matches,estimatedPose,_curKFRef);
@@ -958,7 +965,7 @@ void System::globalOptimization(){
 }
 
 
-uint32_t System::getLastProcessedFrame()const{return _cFrame.fseq_idx;}
+Frame System::getLastProcessedFrame()const{return _cFrame;}
 
 
 void System::setMode(MODES mode){

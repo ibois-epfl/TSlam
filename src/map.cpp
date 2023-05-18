@@ -1382,15 +1382,15 @@ se3 Map::getBestPoseFromValidMarkers(const Frame &frame,const vector<uint32_t> &
         cv::Mat rv=pose_f2g_out.getRvec(),tv=pose_f2g_out.getTvec();
         cv::solvePnP(markerPoints3d,markerPoints2d,frame.imageParams.CameraMatrix,cv::Mat::zeros(1,5,CV_32F),rv,tv,true);
         pose_f2g_out=se3(rv,tv);
-        _debug_msg("err opt="<< reprj_error(markerPoints3d,markerPoints2d,frame.imageParams.undistorted(),  pose_f2g_out),10);
     }
 
-    if ( pose_f2g_out.isValid()==false &&  good_marker_locations.size()>0){
-        std::sort(good_marker_locations.begin(),good_marker_locations.end(),[](const minfo &a,const minfo &b){return a.err<b.err;});
-        auto best=good_marker_locations[0];
-        //estimate current location
-        pose_f2g_out= best.rt_f2m *map_markers.at(best.id).pose_g2m.inv();
-    }
+//    if ( pose_f2g_out.isValid()==false &&  good_marker_locations.size()>0){
+//        std::sort(good_marker_locations.begin(),good_marker_locations.end(),[](const minfo &a,const minfo &b){return a.err<b.err;});
+//        auto best=good_marker_locations[0];
+//        //estimate current location
+//        pose_f2g_out= best.rt_f2m *map_markers.at(best.id).pose_g2m.inv();
+//    }
+
     return   pose_f2g_out;
 
 }
@@ -1613,7 +1613,9 @@ void Map::optimize(int niters){
     //////////////////////////////
 
 
-    Optimizer->initializeOptimization();
+    if(!Optimizer->initializeOptimization()){
+        return;
+    }
     //    Optimizer->setForceStopFlag( );
     Optimizer->setVerbose(true);
     Optimizer->optimize(niters,1e-3);
