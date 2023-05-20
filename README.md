@@ -5,7 +5,6 @@
     <img src="https://github.com/ibois-epfl/TSlam/actions/workflows/docker-cmake-build.yml/badge.svg">
     <img src="https://img.shields.io/badge/os-Ubuntu22.04-blueviolet">
     <img src="https://img.shields.io/badge/license-GPL--v3-brightgreen">
-    <img href="https://renkulab.io/projects/andrea.settimi/tslam-evaluation" src="https://renkulab.io/renku-badge.svg">
 </p>
 
 
