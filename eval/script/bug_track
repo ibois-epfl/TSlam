@@ -1,0 +1,11 @@
+- [ ] error in calculating frame to frame sequence with monocular tslam:
+```bash
+Traceback (most recent call last):
+  File "/home/as/TSlam/eval/script/compute_slam_metrics.py", line 257, in <module>
+    main(gt_path=args.gt,
+  File "/home/as/TSlam/eval/script/compute_slam_metrics.py", line 189, in main
+    assert len(opti_poss) == len(ts_poss), "[ERROR]: The number of frames in the ground truth and the tslam positions do not match: {} vs {}".format(len(opti_poss), len(ts_poss))
+AssertionError: [ERROR]: The number of frames in the ground truth and the tslam positions do not match: 391 vs 334
+```
+If keypoints enabled during tslammonocular it doesn't record the last frames. Hence the gt and the estimated poses do not have the same number of poses. Info for investigation: `90414_90804_drill_auger_bit_20_200_keypoints.txt
+`

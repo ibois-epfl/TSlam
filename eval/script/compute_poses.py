@@ -42,7 +42,8 @@ def _compute_poses(_frames : list[tuple],
                    _input_calib_path : str,
                    _input_map_path : str,
                    _input_vid_path : str,
-                   _out_dir : str) -> None:
+                   _out_dir : str,
+                   _is_only_tag : bool) -> None:
     """
         Compute the poses for the video sequences and frames start and end with tslam_monocular
 
@@ -60,19 +61,25 @@ def _compute_poses(_frames : list[tuple],
     os.system(f"git show -s | tee -a {tee_path}")
 
     for f in tqdm(_frames):
-        out_pose_name_base : str = f"{f[0]}_{f[1]}"
-        out_pose_name_keypoints : str = f"{out_pose_name_base}_keypoints.txt"
-        out_pose_name_onlytag : str = f"{out_pose_name_base}_onlytag.txt"
-        cmd_featurept : str = f"{_input_monoexe_path} " \
-                                f"{_input_vid_path} " \
-                                f"{_input_calib_path} " \
-                                f"-map {_input_map_path} " \
-                                f"-startFrameID {f[0]} " \
-                                f"-endFrameID {f[1]} " \
-                                f"-localizeOnly " \
-                                f"-noX " \
-                                f"-outCamPose {_out_dir}/{out_pose_name_keypoints} " \
-                                f"| tee -a {tee_path}"
+        out_pose_name_base : str = f"{f[0]}_{f[1]}_{f[2]}"
+
+        if not _is_only_tag:
+            out_pose_name_keypoints : str = f"{out_pose_name_base}-keypoints.txt"
+            cmd_featurept : str = f"{_input_monoexe_path} " \
+                                    f"{_input_vid_path} " \
+                                    f"{_input_calib_path} " \
+                                    f"-map {_input_map_path} " \
+                                    f"-startFrameID {f[0]} " \
+                                    f"-endFrameID {f[1]} " \
+                                    f"-localizeOnly " \
+                                    f"-noX " \
+                                    f"-outCamPose {_out_dir}/{out_pose_name_keypoints} " \
+                                    f"| tee -a {tee_path}"
+            os.system(f"echo -----command no_keypoints: {cmd_featurept}----- | tee -a {tee_path}")
+            os.system(f"echo -----start recording no_keypoints {out_pose_name_base}----- | tee -a {tee_path}")
+            os.system(cmd_featurept)
+
+        out_pose_name_onlytag : str = f"{out_pose_name_base}-onlytag.txt"
         cmd_only_tags : str = f"{_input_monoexe_path} " \
                                 f"{_input_vid_path} " \
                                 f"{_input_calib_path} " \
@@ -84,8 +91,7 @@ def _compute_poses(_frames : list[tuple],
                                 f"-nokeypoints " \
                                 f"-outCamPose {_out_dir}/{out_pose_name_onlytag} " \
                                 f"| tee -a {tee_path}"
-        os.system(f"echo -----start recording no_keypoints {out_pose_name_base}----- | tee -a {tee_path}")
-        os.system(cmd_featurept)
+        os.system(f"echo -----command only_tags: {cmd_only_tags}----- | tee -a {tee_path}")
         os.system(f"echo -----start recording only_tags {out_pose_name_base}----- | tee -a {tee_path}")
         os.system(cmd_only_tags)
 
@@ -94,13 +100,13 @@ def _compute_poses(_frames : list[tuple],
     os.system(f"echo -----end process time: {timestamp_end}----- | tee -a {tee_path}")
     os.system(f"echo -----TOTAL TIME: {time_process}----- | tee -a {tee_path}")
 
-
 def main(input_frames_path : str,
          input_monoexe_path : str,
          input_calib_path : str,
          input_map_path : str,
          input_vid_path : str,
-         out_dir : str) -> None:
+         out_dir : str,
+         is_only_tags : bool) -> None:
 
     print("[INFO]: Parsing the notated frames sequences ..")
     frames : list[tuple] = _parse_frames(input_frames_path)
@@ -112,7 +118,8 @@ def main(input_frames_path : str,
                    input_calib_path,
                    input_map_path,
                    input_vid_path,
-                   out_dir)
+                   out_dir,
+                   is_only_tags)
     print("\n\033[92m[INFO]: Tslam output poses out\033[0m")
 
 
@@ -127,6 +134,7 @@ if __name__ == "__main__":
     parser.add_argument('--map', type=str, help='tslam map file of the piece')
     parser.add_argument('--video', type=str, help='frames video file')
     parser.add_argument('--output', type=str, help='output folder where to save the poses')
+    parser.add_argument('--onlyTags', action='store_true', help='run the tslam_monocular only with tags and no keypoints')
     args = parser.parse_args()
 
     if not args.frames.endswith('.txt'):
@@ -149,15 +157,13 @@ if __name__ == "__main__":
         print("\033[93m[WARNING]: --output folder does not exist, creating one\n\033[0m")
         os.makedirs(args.output)
     output_dir : str = f"{args.output}/{args.name}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
-    if not os.path.exists(output_dir):
-        print("\033[93m[WARNING]: --output folder does not exist, creating one\n\033[0m")
     os.system(f"mkdir {output_dir}")
 
-    
     main(input_frames_path=args.frames,
          input_monoexe_path=args.monoexe,
          input_calib_path=args.calib,
          input_map_path=args.map,
          input_vid_path=args.video,
-         out_dir=output_dir)
+         out_dir=output_dir,
+         is_only_tags=args.onlyTags)
     sys.exit(0)
