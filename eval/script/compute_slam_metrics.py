@@ -15,7 +15,7 @@ from scipy.signal import savgol_filter
 from scipy.spatial import KDTree
 from scipy.spatial.transform import Rotation
 
-
+# TODO: put the processed data in a different module e.g. io.py
 def _process_opti_data(gt_path : str,
                        frame_start : int,
                        frame_end : int) -> np.array:
@@ -43,7 +43,6 @@ def _process_ts_data(ts_path : str) -> np.array:
     ts_poss = []
     ts_vec_rots = []
     ts_tags = []
-    ts_idx_candidates = []
     ts_coverages = []  # per pose, quality of the signal 0: good, 1:bad (detected drift)
 
     with open(ts_path, "r") as f:
@@ -106,17 +105,21 @@ def _process_ts_data(ts_path : str) -> np.array:
                 ts_poss[idx] = ts_poss[idx-1]
                 ts_vec_rots[idx] = ts_vec_rots[idx-1]
 
+    # for idx, pos in enumerate(ts_poss):
+    #     print(f"rot: {ts_vec_rots[idx]}")
+    #     print(f"pos: {pos}")
+
     # >>>>>>
 
     ts_poss = np.array(ts_poss)
     ts_vec_rots = np.array(ts_vec_rots)
     ts_tags = np.array(ts_tags)
-    ts_idx_candidates = np.array(ts_idx_candidates)
     ts_coverages = np.array(ts_coverages)
 
-    return ts_poss, ts_vec_rots, ts_tags, ts_idx_candidates, ts_coverages
+    return ts_poss, ts_vec_rots, ts_tags, ts_coverages
 
-# FIXME: refine mechanism for thrshold tag selection
+
+# FIXME: refine mechanism for thrshold tag selection (maybe mean all the tags with weights?)
 def _select_best_idx(_tag_threshold,
                      _ts_tags : np.array,
                      _ts_coverages : np.array) -> np.array:
@@ -136,7 +139,6 @@ def _select_best_idx(_tag_threshold,
     for idx, tag in enumerate(_ts_tags):
         if tag >= _tag_threshold and _ts_coverages[idx] == 0:
             ts_idx_candidates.append(idx)
-    
     if len(ts_idx_candidates) < 2:
         ts_idx_candidates = []
 
@@ -169,6 +171,9 @@ def _align_trajectories(source,
     # rotation A
     vec_A = target_candidate[-1] - target_candidate[0]
     vec_B = source_candidate[-1] - source_candidate[0]
+    print(est_idx_candidates)
+    print(f">>>>>>>>>>>> vec_A: {vec_A}")
+    print(f">>>>>>>>>>>> vec_B: {vec_B}")
     rot = tfm.rotation_matrix_from_vectors(vec_B, vec_A)
 
     aligned_source_r = np.dot(rot.as_matrix(), source.copy().T).T
@@ -186,40 +191,16 @@ def _align_trajectories(source,
     # >>>>>>>>>>>>>
 
     # rotation B
-    # we need to rotate the source_candidate_r_t to match the first its orientation with the target
-    # to do so we need to:
-    # 1. find the angle between the source vector and the target vector
-    # 2. the axis of rotation is the vector source_candidate_r_t[-1] - source_candidate_r_t[0]
-    # 3. rotate the source_candidate_r_t around the axis by the angle
 
     # rotation axis
     axis_rot = source_candidate_r_t[-1] - source_candidate_r_t[0]
-    
-    
-
-
 
 
     # rotation angle
-
     target_axis = tgt_rot_vec_candidate[0]
     source_axis = src_rot_vec_candidate_r[0]
     plane_pp_to_axis = tfm.get_perpendicular_plane_to_vector(axis_rot)
     angle_rot = tfm.angle_between_vectors(source_axis, target_axis, plane_pp_to_axis)
-    # convert to degrees
-    # angle_rot_deg = angle_rot * 180 / math.pi
-    # print(f"angle_rot_deg: {angle_rot_deg}")
-
-
-
-
-    # apply rotation
-    
-    # if np.dot(axis_rot, tgt_rot_vec_candidate[0]) < 0:
-    #     axis_rot = axis_rot
-    #     angle_rot = -(math.pi - angle_rot)
-        # angle_rot = -angle_rot
-    # print(f"angle_rot: {angle_rot}")
 
 
     rot = tfm.rotate_around_axis(axis_rot, angle_rot)
@@ -252,7 +233,7 @@ def _align_trajectories(source,
 
     ##############################################################
     # # # >> CHECKS for deformation
-    assert util.verify_trajectories_distortion(source, aligned_source_r, verbose=False), "[ERROR]: The trajectories are distorted r"
+    assert util.verify_trajectories_distortion(source, aligned_source_r, verbose=True), "[ERROR]: The trajectories are distorted r"
     assert util.verify_trajectories_distortion(source, aligned_source_r_t, verbose=False), "[ERROR]: The trajectories are distorted rxt"
     assert util.verify_trajectories_distortion(source, aligned_source_r_t_r, verbose=False), "[ERROR]: The trajectories are distorted rxtxr"
     assert util.verify_trajectories_distortion(source, aligned_source_r_t_r_t, verbose=False), "[ERROR]: The trajectories are distorted rxtxrt"
@@ -269,6 +250,14 @@ def _align_trajectories(source,
     ax.grid(False)
     ax.view_init(elev=30, azim=45)
 
+    # adjust he distorsion of the plot to the center of the trajectories
+    center = np.mean(target, axis=0)
+    XYZ_LIM = 0.15
+    ax.set_xlim3d(center[0] - XYZ_LIM, center[0] + XYZ_LIM)
+    ax.set_ylim3d(center[1] - XYZ_LIM, center[1] + XYZ_LIM)
+    ax.set_zlim3d(center[2] - XYZ_LIM, center[2] + XYZ_LIM)
+
+
     ax.set_xlabel('X [m]')
     ax.set_ylabel('Y [m]')
     ax.set_zlabel('Z [m]')
@@ -283,8 +272,8 @@ def _align_trajectories(source,
     # ax.plot(aligned_source_r[:, 0], aligned_source_r[:, 1], aligned_source_r[:, 2], color='red', alpha=0.5)
     # ax.text(aligned_source_r[0, 0], aligned_source_r[0, 1], aligned_source_r[0, 2], str("transform r"), color='red', fontsize=8)
 
-    ax.plot(aligned_source_r_t[:, 0], aligned_source_r_t[:, 1], aligned_source_r_t[:, 2], color='green', alpha=0.5)
-    ax.text(aligned_source_r_t[0, 0], aligned_source_r_t[0, 1], aligned_source_r_t[0, 2], str("transform r"), color='green', fontsize=8)
+    # ax.plot(aligned_source_r_t[:, 0], aligned_source_r_t[:, 1], aligned_source_r_t[:, 2], color='green', alpha=0.5)
+    # ax.text(aligned_source_r_t[0, 0], aligned_source_r_t[0, 1], aligned_source_r_t[0, 2], str("transform r"), color='green', fontsize=8)
 
     # ax.plot(aligned_source_r_t_r[:, 0], aligned_source_r_t_r[:, 1], aligned_source_r_t_r[:, 2], color='orange', alpha=0.5)
     # ax.text(aligned_source_r_t_r[0, 0], aligned_source_r_t_r[0, 1], aligned_source_r_t_r[0, 2], str("transform rxtxr"), color='orange', fontsize=8)
@@ -304,10 +293,10 @@ def _align_trajectories(source,
     #     axis_src = np.array([source_candidate[idx], source_candidate[idx] + rot*0.015])
     #     ax.plot(axis_src[:, 0], axis_src[:, 1], axis_src[:, 2], color='blue', alpha=0.5)
 
-    # show the rotation vectors for the source_candidate_r_t
-    for idx, rot in enumerate(src_rot_vec_candidate_r):
-        axis_src = np.array([source_candidate_r_t[idx], source_candidate_r_t[idx] + rot*0.005])
-        ax.plot(axis_src[:, 0], axis_src[:, 1], axis_src[:, 2], color='green', alpha=0.5)
+    # # show the rotation vectors for the source_candidate_r_t
+    # for idx, rot in enumerate(src_rot_vec_candidate_r):
+    #     axis_src = np.array([source_candidate_r_t[idx], source_candidate_r_t[idx] + rot*0.005])
+    #     ax.plot(axis_src[:, 0], axis_src[:, 1], axis_src[:, 2], color='green', alpha=0.5)
 
     # show the rotation vectors for the source_candidate_r_t_r_t
     for idx, rot in enumerate(src_rot_vec_candidate_r_r):
@@ -413,14 +402,14 @@ def main(gt_path : str,
     frame_end = int(ts_path.split('/')[-1].split('_')[1].split('.')[0])
 
     opti_poss, opti_vec_rots = _process_opti_data(gt_path, frame_start, frame_end)
-    ts_poss, ts_vec_rots, ts_tags, ts_idx_candidates, ts_coverages = _process_ts_data(ts_path)
+    ts_poss, ts_vec_rots, ts_tags, ts_coverages = _process_ts_data(ts_path)
 
     ##################
     # select candidate idx
     # find the indexes of the 3 biggest tags and retrieve the corresponding tslam positions
     ts_idx_candidates = _select_best_idx(_ts_tags=ts_tags,
                                          _ts_coverages=ts_coverages,
-                                         _tag_threshold=4)
+                                         _tag_threshold=3)
 
     ##################
 
