@@ -420,7 +420,7 @@ def main(gt_path : str,
     # find the indexes of the 3 biggest tags and retrieve the corresponding tslam positions
     ts_idx_candidates = _select_best_idx(_ts_tags=ts_tags,
                                          _ts_coverages=ts_coverages,
-                                         _tag_threshold=2)
+                                         _tag_threshold=4)
 
     ##################
 
@@ -445,7 +445,7 @@ def main(gt_path : str,
     # # apply a smoothing filter to the tslam trajectory
     filter_size = 21  # FIXME: is this scientifically sound?
     # opti_poss = savgol_filter(opti_poss, filter_size, 3, axis=0)  # FIXME: understand if it is correct to do it and what is the impact
-    ts_poss = savgol_filter(ts_poss, filter_size, 5, axis=0)  # FIXME: understand if it is correct to do it and what is the impact
+    ts_poss = savgol_filter(ts_poss, filter_size, 3, axis=0)  # FIXME: understand if it is correct to do it and what is the impact
 
     # #######################################################
     # # Trajectory registration
