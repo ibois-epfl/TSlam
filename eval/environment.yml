@@ -18,4 +18,5 @@ dependencies:
      - waiting==1.4.1
      - matplotlib==3.4.3
      - pandas==1.3.3
+     - numpy-quaternion=2022.4.3
    - git
