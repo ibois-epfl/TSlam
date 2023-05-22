@@ -96,7 +96,9 @@ def process_opti_data(gt_path : str,
                 timestamp = float(data[1])
                 camera_pos = np.array([float(data[2]), float(data[3]), float(data[4])])
                 camera_rot = np.array([float(data[5]), float(data[6]), float(data[7]), float(data[8])])
-                camera_rot_vec = -tfm.quaternion_to_rotation_vector(camera_rot) # neg to take in account the opti axis system
+                camera_rot_vec = tfm.quaternion_to_rotation_vector(camera_rot) # FIXME: check if neg to take in account the opti axis system
+
+                # rotate the 
 
                 opti_poss.append(camera_pos)
                 opti_vec_rots.append(camera_rot_vec)
@@ -140,6 +142,7 @@ def process_ts_data(ts_path : str,
             camera_pos = np.array([float(l[2]), float(l[3]), float(l[4])])
             camera_pos = camera_pos * scale_f
             camera_rot = np.array([float(l[5]), float(l[6]), float(l[7]), float(l[8])])
+            camera_rot = tfm.cvt_optitrack_quaternion_to_ROS(camera_rot)
             camera_rot_vec = tfm.quaternion_to_rotation_vector(camera_rot)
             ts_tag = int(l[9])
 

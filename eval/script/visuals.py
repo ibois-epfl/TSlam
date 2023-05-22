@@ -16,12 +16,16 @@ def __draw_local_axis_pose(ax : plt.Axes,
             origin (np.array): the origin of the pose
             rot (np.array): the rotation of the pose
             scale_f (float): the scale factor of the axis dimensions
+            alpha (float): the alpha of the axis
+            linewidth (int): the linewidth of the axis
     """
-    # draw the local axis
+    rot_c = rot.copy()
+    origin_c = origin.copy()
+    rot_c_ax = np.array([origin_c, origin_c + rot_c * 0.1])
+    ax.plot(rot_c_ax[:, 0], rot_c_ax[:, 1], rot_c_ax[:, 2], color='purple', alpha=alpha, linewidth=linewidth)
 
-    print(f"[INFO]: rot {rot}")
-    print(f"[INFO] shape rot: {rot.shape}")
-    
+
+
     # create a cordinate system
     x = np.array([1, 0, 0])
     y = np.array([0, 1, 0])
@@ -32,7 +36,7 @@ def __draw_local_axis_pose(ax : plt.Axes,
     y = tfm.rotation_vector_to_matrix(rot) @ y
     z = tfm.rotation_vector_to_matrix(rot) @ z
 
-    # normalize the axis
+    # # normalize the axis
     x = x / np.linalg.norm(x)
     y = y / np.linalg.norm(y)
     z = z / np.linalg.norm(z)
@@ -68,6 +72,10 @@ def visualize_trajectories(est_pos,
     ax.grid(False)
     ax.view_init(elev=30, azim=45)
 
+    # add legend on the bottom right
+    ax.text2D(0.05, 0.92, "Ground Truth (gt)", transform=ax.transAxes, color='black', fontsize=8)
+    ax.text2D(0.05, 0.90, "Tslam (ts)", transform=ax.transAxes, color='grey', fontsize=8)
+
     # adjust he distorsion of the plot to the center of the trajectories
     center = np.mean(gt_pos, axis=0)
     XYZ_LIM = 0.10
@@ -79,15 +87,18 @@ def visualize_trajectories(est_pos,
     ax.set_ylabel('Y [m]')
     ax.set_zlabel('Z [m]')
 
+    # positions
     ax.plot(gt_pos[:, 0], gt_pos[:, 1], gt_pos[:, 2], color='black', alpha=0.5)
-    ax.text(gt_pos[0, 0], gt_pos[0, 1], gt_pos[0, 2], str("   gt"), color='black', fontsize=8)
-
+    # ax.text(gt_pos[0, 0], gt_pos[0, 1], gt_pos[0, 2], str("   gt"), color='black', fontsize=8)
 
     ax.plot(est_pos[:, 0], est_pos[:, 1], est_pos[:, 2], color='grey', alpha=0.5)
-    ax.text(est_pos[0, 0], est_pos[0, 1], est_pos[0, 2], str("   ts"), color='grey', fontsize=8)
+    # ax.text(est_pos[0, 0], est_pos[0, 1], est_pos[0, 2], str("   ts"), color='grey', fontsize=8)
 
-
-    # # ------------ ORIENTATION VISUALS ------------
+    # rotations
+    # __draw_local_axis_pose(ax, est_pos[0], est_rot[0],
+    #                         scale_f=0.01, alpha=0.5, linewidth=1)
+    # __draw_local_axis_pose(ax, gt_pos[0], gt_rot[0],
+    #                         scale_f=0.01, alpha=1, linewidth=2)
     for idx in est_idx_candidates:
         if idx % 30 == 0:
             __draw_local_axis_pose(ax, est_pos[idx], est_rot[idx],

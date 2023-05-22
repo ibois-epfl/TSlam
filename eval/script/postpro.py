@@ -78,7 +78,6 @@ def align_trajectories(src_poss : np.array,
 
     # select the best idxs for the alignment (only valid poses)
     est_idx_candidates = __select_best_idx(tag_threshold, est_tags, est_coverage)
-    print(f"est_idx_candidates: {est_idx_candidates}")
     if len(est_idx_candidates) < 2:
         print("\033[93m[WARNING]: less than 2 candidates, not possible to define alignement vector \n\033[0m")
         return src_poss, src_rot_vec
@@ -146,8 +145,10 @@ def align_trajectories(src_poss : np.array,
     # check which rotation is the best
     if np.linalg.norm(temp_src_rot - tgt_rot_vec_candidate) < np.linalg.norm(temp_src_rot_neg - tgt_rot_vec_candidate):
         rot = rot
+        print(">>>>>>>>>>>>>>>>>>>>>>>>> ROT")
     else:
         rot = rot_neg
+        print(">>>>>>>>>>>>>>>>>>>>>>>>> NEG ROT")
 
     aligned_src_poss_r_t_r = np.dot(rot.as_matrix(), aligned_src_poss_r_t.copy().T).T
     src_rot_vec_r_r = np.dot(rot.as_matrix(), src_rot_vec_r.copy().T).T

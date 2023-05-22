@@ -5,6 +5,10 @@ import sys
 import numpy as np
 from scipy.spatial.transform import Rotation
 
+def cvt_optitrack_quaternion_to_ROS(quat):
+    """ Convert an OptiTrack quaternion to a ROS quaternion """
+    return np.array([quat[3], quat[0], quat[1], quat[2]])
+
 def quaternion_to_rotation_vector(q):
     # if 0 return an a 0,0,0 vector or nan
     if np.linalg.norm(q) == 0:
@@ -12,15 +16,13 @@ def quaternion_to_rotation_vector(q):
     if math.isnan(q[0]) or math.isnan(q[1]) or math.isnan(q[2]) or math.isnan(q[3]):
         return np.zeros(3)
     # convert quaternion in format x,y,z,w to rotation vector
-    rotation_vector = Rotation.from_quat(q).as_rotvec()
+    rotation_vector = Rotation.from_quat(np.array([q[0], q[1], q[2], q[3]])).as_rotvec()
 
     return rotation_vector
 
 def rotation_vector_to_matrix(rot_vec):
     """ Convert a rotation vector to a rotation matrix """
-
     rot = Rotation.from_rotvec(rot_vec)
-
     return rot.as_matrix()
 
 def rotation_matrix_from_vectors(vec1, vec2):
