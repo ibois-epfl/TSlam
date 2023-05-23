@@ -46,7 +46,7 @@ def main(gt_path : str,
     # # apply a smoothing filter to the tslam trajectory
     filter_size = 21  # FIXME: is this scientifically sound?
     # opti_poss = savgol_filter(opti_poss, filter_size, 3, axis=0)  # FIXME: understand if it is correct to do it and what is the impact
-    ts_poss = savgol_filter(ts_poss, filter_size, 2, axis=0)  # FIXME: understand if it is correct to do it and what is the impact
+    # ts_poss = savgol_filter(ts_poss, filter_size, 2, axis=0)  # FIXME: understand if it is correct to do it and what is the impact
 
     # #######################################################
     # # Trajectory registration
