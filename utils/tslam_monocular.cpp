@@ -568,16 +568,15 @@ int main(int argc,char **argv){
                 if(camPose_c2g.empty()) {
                     outCamPose << "0 0 0 0 0 0 0 1 ";
                 } else {
-                    auto camPoseQuaternion = convertRotationMatrixToQuaternion(
-                            camPose_c2g.rowRange(0, 3).colRange(0, 3));
+                    auto camPoseQuaternion = convertRotationMatrixToQuaternion(camPose_c2g);
                     outCamPose <<
-                               camPose_c2g.at<float>(0, 3) << " " <<
-                               camPose_c2g.at<float>(1, 3) << " " <<
-                               camPose_c2g.at<float>(2, 3) << " " <<
-                               camPoseQuaternion[0] << " " <<
-                               camPoseQuaternion[1] << " " <<
-                               camPoseQuaternion[2] << " " <<
-                               camPoseQuaternion[3] << " ";
+                               camPose_c2g.at<float>(0, 3) << " " << // pos_x
+                               camPose_c2g.at<float>(1, 3) << " " << // pos_y
+                               camPose_c2g.at<float>(2, 3) << " " << // pos_z
+                               camPoseQuaternion[0] << " " << // quat_x
+                               camPoseQuaternion[1] << " " << // quat_y
+                               camPoseQuaternion[2] << " " << // quat_z
+                               camPoseQuaternion[3] << " ";   // quat_w
                 }
 
                 // detected valid marker num
