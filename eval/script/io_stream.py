@@ -2,10 +2,14 @@ import numpy as np
 import csv
 from scipy.spatial.transform import Rotation
 import math
-
+import os
 import transformations as tfm
+import matplotlib.pyplot as plt
 
-# FIXME: check the ground truth, it seems to be a bit early
+#===============================================================================
+# optitrack and tslam streams
+#===============================================================================
+
 def __set_coverage_values(camera_pos : np.array,
                           camera_rot_vec : np.array,
                           ts_poss : np.array,
@@ -110,6 +114,7 @@ def process_opti_camera_data(gt_path : str,
         Returns:
             np.array: positions, the positions of the camera
             np.array: rotations, the rotations of the camera as rotation vectors (from quaternion)
+            np.array: dists, the travelled total distance at each pose
     """
     opti_poss = []
     opti_vec_rots = []
@@ -130,7 +135,17 @@ def process_opti_camera_data(gt_path : str,
             opti_vec_rots.append(camera_rot_vec)
     opti_poss = np.array(opti_poss)
     opti_vec_rots = np.array(opti_vec_rots)
-    return opti_poss, opti_vec_rots
+
+    distances = []
+    dist_temp = 0
+    for idx, pos in enumerate(opti_poss):
+        if idx == 0:
+            distances.append(0)
+        else:
+            dist_temp += np.linalg.norm(pos - opti_poss[idx-1])
+            distances.append(dist_temp)
+
+    return opti_poss, opti_vec_rots, distances
 
 def process_ts_data(ts_path : str,
                     scale_f : float = 0.02,
@@ -159,7 +174,6 @@ def process_ts_data(ts_path : str,
         lines = f.readlines()
         lines = lines[1:]  # skip header
         for idx, l in enumerate(lines):
-            # ts_cover : int = 1
             is_not_detected : bool = False
             is_drifted : bool = False
             is_corrupted : bool = False
@@ -175,7 +189,6 @@ def process_ts_data(ts_path : str,
             camera_pos = np.array([float(l[2]), float(l[3]), float(l[4])])
             camera_pos = camera_pos * scale_f
             camera_rot = np.array([float(l[5]), float(l[6]), float(l[7]), float(l[8])])
-            # camera_rot = tfm.cvt_quat_to_ROSformat(camera_rot)
             camera_rot_vec = tfm.quaternion_to_rotation_vector(camera_rot)
             ts_tag = int(l[9])
 
@@ -209,3 +222,63 @@ def run_checks(opti_poss : np.array,
     assert len(opti_vec_rots) == len(ts_vec_rots), "[ERROR]: The number of frames in the ground truth and the tslam orientations do not match: {} vs {}".format(len(opti_rots), len(ts_rots))
     assert len(ts_tags) == len(ts_poss), "[ERROR]: The number of frames in the tslam positions and the tslam marks do not match: {} vs {}".format(len(ts_poss), len(ts_tags))
     assert len(ts_tags) == len(ts_coverages), "[ERROR]: The number of frames in the tslam marks and the tslam coverages do not match: {} vs {}".format(len(ts_tags), len(ts_coverages))
+
+#===============================================================================
+# metrics results output
+#===============================================================================
+
+def dump_results(out_dir : str,
+                 coverage_perc : float,
+                 tags_mean : float,
+                 drift_poss_mean : float,
+                 drift_rots_mean : float,
+                 drift_poss_xyz : float,
+                 drift_rots_xyz : float,
+                 toolhead_name : str,
+                 frame_start : int,
+                 frame_end : int) -> None:
+    """ The function save the results of the evaluation to local. """
+    path_results : str = f"{out_dir}/results"
+    os.system(f"mkdir {path_results}")
+
+    # save the poss_xyz
+    np.savetxt(f"{path_results}/drift_poss_xyz.csv", drift_poss_xyz, delimiter=",")
+    np.savetxt(f"{path_results}/drift_rots_xyz.csv", drift_rots_xyz, delimiter=",")
+
+    # save the overview of the means and metadata of the eval
+    with open(f"{path_results}/overview.txt", "w") as f:
+        f.write("---- git commit id ----------------------------------\n")
+        git_commit_name = os.popen('git rev-parse --short HEAD').read()
+        f.write(f"git_commit_name: {git_commit_name}\n")
+
+        f.write("---- info sub-sequence ------------------------------\n")
+        f.write(f"frame_start: {frame_start}\n")
+        f.write(f"frame_end: {frame_end}\n")
+        f.write(f"toolhead_name: {toolhead_name}\n")
+
+        f.write("---- overview metrics -------------------------------\n")
+        f.write(f"coverage_perc: {coverage_perc}\n")
+        f.write(f"tags_mean: {tags_mean}\n")
+        f.write(f"drift_poss_mean [meters]: {drift_poss_mean}\n")
+        f.write(f"drift_rots_mean [degrees]: {drift_rots_mean}\n")
+        f.write("-----------------------------------------------------\n")
+        f.write("-----------------------------------------------------\n")
+
+#===============================================================================
+# img/graphs output
+#===============================================================================
+
+def dump_imgs(out_dir : str,
+              fig_3d : plt.figure,
+              fig_2d_poss_drift : plt.figure,
+              fig_2d_rots_drift : plt.figure,
+              is_img_save : bool) -> None:
+    """ The function saves the graphs of the evaluation to local """
+    if is_img_save:
+        path_graph_dir : str = f"{out_dir}/graphs"
+        os.system(f"mkdir {path_graph_dir}")
+
+        fig_3d.savefig(f"{path_graph_dir}/allign_3d.png")
+        fig_2d_poss_drift.savefig(f"{path_graph_dir}/error_poss_xyz.png")
+        fig_2d_rots_drift.savefig(f"{path_graph_dir}/error_rots_xyz.png")
+

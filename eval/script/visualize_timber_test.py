@@ -8,15 +8,15 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
-path_gt_csv : str = "/home/as/TSlam/eval/script/test/refined_stream_01.csv"
+path_gt_csv : str = "/home/as/TSlam/eval/script/test/refined_stream_01_mod.csv"
 path_ts_txt : str = "/home/as/TSlam/eval/script/test/01_4000_9000_tslam"
 
-frame_start = 4500
-frame_end = 8100
+# frame_start = 4500
+# frame_end = 8100
 
-t_pos, t_ros = io_stream.process_opti_timber_data(path_gt_csv, frame_start, frame_end)
-cam_pos, cam_ros = io_stream.process_opti_camera_data(path_gt_csv, frame_start, frame_end)
-ts_pos, ts_ros, ts_tags, ts_coverages = io_stream.process_ts_data(path_ts_txt)
+# t_pos, t_ros = io_stream.process_opti_timber_data(path_gt_csv, frame_start, frame_end)
+cam_pos, cam_ros = io_stream.process_opti_camera_data(path_gt_csv)
+# ts_pos, ts_ros, ts_tags, ts_coverages = io_stream.process_ts_data(path_ts_txt)
 
 
 # # rotate the camera positions and rotations of 90 degrees around the x axis
@@ -51,8 +51,8 @@ ax.set_zlabel('Z [m]')
 
 
 # ax.plot(straight_ln[:, 0], straight_ln[:, 1], straight_ln[:, 2], color='black', alpha=0.5)
-# ax.plot(cam_pos[:, 0], cam_pos[:, 1], cam_pos[:, 2], color='grey', alpha=0.5)
-ax.plot(ts_pos[:, 0], ts_pos[:, 1], ts_pos[:, 2], color='grey', alpha=0.5)
+ax.plot(cam_pos[:, 0], cam_pos[:, 1], cam_pos[:, 2], color='grey', alpha=0.5)
+# ax.plot(ts_pos[:, 0], ts_pos[:, 1], ts_pos[:, 2], color='grey', alpha=0.5)
 
 
 
@@ -65,9 +65,9 @@ ax.plot(ts_pos[:, 0], ts_pos[:, 1], ts_pos[:, 2], color='grey', alpha=0.5)
 # # rotations
 for idx, pos in enumerate(cam_pos):
     if idx % 30 == 0:
-        # visuals.__draw_local_axis_pose(ax, cam_pos[idx], cam_ros[idx],
-        #                         scale_f=0.02, alpha=0.5, linewidth=2)
-        visuals.__draw_local_axis_pose(ax, ts_pos[idx], ts_ros[idx],
+        visuals.__draw_local_axis_pose(ax, cam_pos[idx], cam_ros[idx],
                                 scale_f=0.02, alpha=0.5, linewidth=2)
+        # visuals.__draw_local_axis_pose(ax, ts_pos[idx], ts_ros[idx],
+                                # scale_f=0.02, alpha=0.5, linewidth=2)
 
 plt.show()

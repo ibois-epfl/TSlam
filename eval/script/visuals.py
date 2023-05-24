@@ -66,21 +66,19 @@ def __draw_local_axis_pose(ax : plt.Axes,
 
     ax.scatter(origin[0], origin[1], origin[2], color='black', alpha=alpha, s=1, linewidth=linewidth, marker='s')
 
-def visualize_trajectories(est_pos,
-                            est_rot,
-                            gt_pos,
-                            gt_rot,
-                            est_idx_candidates,
-                            out_dir : str = "./",
-                            is_show : bool = False,
-                            frame_start : int = 0,
-                            frame_end : int = 0,
-                            is_img_save : bool = False) -> None:
+def visualize_trajectories3d(est_pos,
+                             est_rot,
+                             gt_pos,
+                             gt_rot,
+                             est_idx_candidates,
+                             is_show : bool = False,
+                             is_draw_dist_error : bool = False,
+                             is_draw_rot_vec : bool = False,
+                             title=None,
+                             ) -> plt.figure:
     """ Visualize the trajectories in a 3D-axis plot """
-
-    # VISUALS
     fig = plt.figure()
-    fig.set_size_inches(18.5, 10.5)
+    fig.set_size_inches(8., 8.)
     ax = fig.add_subplot(projection='3d')
     ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
     ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
@@ -89,11 +87,18 @@ def visualize_trajectories(est_pos,
     ax.grid(False)
     ax.view_init(elev=30, azim=45)
 
-    # add legend on the bottom right
-    ax.text2D(0.05, 0.92, "Ground Truth (gt)", transform=ax.transAxes, color='black', fontsize=8)
-    ax.text2D(0.05, 0.90, "Tslam (ts)", transform=ax.transAxes, color='grey', fontsize=8)
+    CLR_GT = "magenta"
+    CLR_EST = "darkcyan"
+    CLR_DIST = "yellow"
 
-    # adjust the distorsion of the plot to the center of the trajectories
+    if title is not None:
+        ax.set_title(title, fontsize=10)
+
+    FONT_SIZE = 7
+    ax.text2D(0.02, 0.04, "Distance error (de)", transform=ax.transAxes, color=CLR_DIST, fontsize=FONT_SIZE)
+    ax.text2D(0.02, 0.02, "Ground Truth (gt)", transform=ax.transAxes, color=CLR_GT, fontsize=FONT_SIZE)
+    ax.text2D(0.02, 0.00, "Tslam (ts)", transform=ax.transAxes, color=CLR_EST, fontsize=FONT_SIZE)
+
     center = np.mean(gt_pos, axis=0)
     XYZ_LIM = 0.10
     ax.set_xlim3d(center[0] - XYZ_LIM, center[0] + XYZ_LIM)
@@ -104,28 +109,52 @@ def visualize_trajectories(est_pos,
     ax.set_ylabel('Y [m]')
     ax.set_zlabel('Z [m]')
 
-    # positions
-    ax.plot(gt_pos[:, 0], gt_pos[:, 1], gt_pos[:, 2], color='black', alpha=0.5)
-    ax.text(gt_pos[0, 0], gt_pos[0, 1], gt_pos[0, 2], str("   gt start"), color='black', fontsize=8)
+    ax.plot(gt_pos[:, 0], gt_pos[:, 1], gt_pos[:, 2], color=CLR_GT)
+    ax.plot(est_pos[:, 0], est_pos[:, 1], est_pos[:, 2], color=CLR_EST, alpha=0.5)
 
-    ax.plot(est_pos[:, 0], est_pos[:, 1], est_pos[:, 2], color='darkcyan', alpha=0.5)
-    ax.text(est_pos[0, 0], est_pos[0, 1], est_pos[0, 2], str("   ts start"), color='grey', fontsize=8)
-
-    # rotations
     for idx in est_idx_candidates:
-        if idx % 20 == 0:
+        ax.plot([gt_pos[idx, 0], est_pos[idx, 0]],
+                [gt_pos[idx, 1], est_pos[idx, 1]],
+                [gt_pos[idx, 2], est_pos[idx, 2]],
+                color=CLR_DIST, alpha=0.5, linewidth=1)
+        if is_draw_rot_vec:
             __draw_local_axis_pose(ax, est_pos[idx], est_rot[idx],
                                    scale_f=0.01, alpha=0.25, linewidth=2)
             __draw_local_axis_pose(ax, gt_pos[idx], gt_rot[idx],
                                    scale_f=0.01, alpha=1, linewidth=1)
 
-    # save image
-    if is_img_save:
-        filename = f"trajectory_{frame_start}_{frame_end}.png"
-        path_out = os.path.join(out_dir, filename)
-        plt.savefig(path_out, dpi=300)
-
-    # if args.showPlot:
     if is_show:
         plt.show()
     plt.close()
+
+    return fig
+
+def visualize_2d_drift(drift_xyz : np.array,
+                       distances : np.array,
+                       unit : str = "m",
+                       title : str = None,
+                       is_show : bool = False
+                       ) -> plt.figure:
+    """ Visualize the drift in a 2D-axis plot """
+    fig = plt.figure()
+    fig.set_size_inches(10., 4.)
+    ax = fig.add_subplot()
+    ax.set_facecolor((1.0, 1.0, 1.0, 0.0))
+    ax.grid(False)
+
+    if title is not None:
+        ax.set_title(title, fontsize=10)
+
+    ax.set_xlabel('Distance [m]')
+    ax.set_ylabel(f'Error [{unit}]')
+
+    ax.plot(distances, drift_xyz[:, 0], color='red', label='x')
+    ax.plot(distances, drift_xyz[:, 1], color='green', label='y')
+    ax.plot(distances, drift_xyz[:, 2], color='blue', label='z')
+    ax.legend()
+
+    if is_show:
+        plt.show()
+    plt.close()
+
+    return fig
