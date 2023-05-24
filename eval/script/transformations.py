@@ -5,7 +5,7 @@ import sys
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-def cvt_optitrack_quaternion_to_ROS(quat):
+def cvt_quat_to_ROSformat(quat):
     """ Convert an OptiTrack quaternion to a ROS quaternion """
     return np.array([quat[3], quat[0], quat[1], quat[2]])
 
@@ -83,3 +83,12 @@ def rotate_around_axis(axis, angle):
     rot = Rotation.from_rotvec(angle * axis)
 
     return rot
+
+def rotate_matrix_from_euler(mat : np.array,
+                             roll : float, 
+                             pitch : float,
+                             yaw : float):
+    """ Convert euler angles to a rotation matrix in xyz global frame"""
+    rot = Rotation.from_euler('xyz', [roll, pitch, yaw])
+    mat = np.dot(rot, mat.T).T
+    return mat

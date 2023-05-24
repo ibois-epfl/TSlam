@@ -31,7 +31,7 @@ def main(gt_path : str,
     frame_start = int(ts_path.split('/')[-1].split('_')[0])
     frame_end = int(ts_path.split('/')[-1].split('_')[1].split('.')[0])
 
-    opti_poss, opti_vec_rots = io_stream.process_opti_data(gt_path, frame_start, frame_end)
+    opti_poss, opti_vec_rots = io_stream.process_opti_camera_data(gt_path, frame_start, frame_end)
     ts_poss, ts_vec_rots, ts_tags, ts_coverages = io_stream.process_ts_data(ts_path)
     io_stream.run_checks(opti_poss, opti_vec_rots, ts_poss, ts_vec_rots, ts_tags, ts_coverages)
 
@@ -46,7 +46,7 @@ def main(gt_path : str,
     # # apply a smoothing filter to the tslam trajectory
     filter_size = 21  # FIXME: is this scientifically sound?
     # opti_poss = savgol_filter(opti_poss, filter_size, 3, axis=0)  # FIXME: understand if it is correct to do it and what is the impact
-    ts_poss = savgol_filter(ts_poss, filter_size, 2, axis=0)  # FIXME: understand if it is correct to do it and what is the impact
+    # ts_poss = savgol_filter(ts_poss, filter_size, 2, axis=0)  # FIXME: understand if it is correct to do it and what is the impact
 
     # #######################################################
     # # Trajectory registration
@@ -59,9 +59,9 @@ def main(gt_path : str,
                                             ts_vec_rots,
                                             opti_vec_rots,
                                             ts_coverages,
+                                            ts_tags,
                                             20,
-                                            2,
-                                            ts_tags
+                                            2
                                             )
     
     # #######################################################
@@ -79,7 +79,10 @@ def main(gt_path : str,
                                    opti_vec_rots,
                                    ts_idx_candidates,
                                    out_dir,
-                                   is_show=is_show_plot)
+                                   frame_start=frame_start,
+                                   frame_end=frame_end,
+                                   is_show=is_show_plot,
+                                   is_img_save=is_img_save)
 
 
 if __name__ == "__main__":

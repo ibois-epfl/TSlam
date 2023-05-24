@@ -5,6 +5,7 @@ import math
 
 import transformations as tfm
 
+# FIXME: check the ground truth, it seems to be a bit early
 def __set_coverage_values(camera_pos : np.array,
                           camera_rot_vec : np.array,
                           ts_poss : np.array,
@@ -70,9 +71,34 @@ def __replace_invalid_ts_pose_with_closest_valid_pose(ts_poss : np.array,
                 ts_vec_rots[idx] = ts_vec_rots[idx-1]
     return ts_poss, ts_vec_rots
 
-def process_opti_data(gt_path : str,
-                      frame_start : int,
-                      frame_end : int) -> np.array:
+def process_opti_timber_data(gt_path : str,
+                             frame_start : int = None,
+                             frame_end : int = None) -> np.array:
+    """ Process the data from the optitrack of the timber piece """
+    opti_poss = []
+    opti_vec_rots = []
+    with open(gt_path, 'r') as f:
+        reader = csv.reader(f, delimiter=';')
+        next(reader) # skip header
+        for data in reader:
+            frame_number = int(data[0])
+            if frame_start != None or frame_end != None:
+                if frame_number < frame_start and frame_number > frame_end:
+                    continue
+            timestamp = float(data[1])
+            timber_pos = np.array([float(data[9]), float(data[10]), float(data[11])])
+            timber_rot = np.array([float(data[12]), float(data[13]), float(data[14]), float(data[15])])
+            timber_rot_vec = tfm.quaternion_to_rotation_vector(timber_rot)
+
+            opti_poss.append(timber_pos)
+            opti_vec_rots.append(timber_rot_vec)
+    opti_poss = np.array(opti_poss)
+    opti_vec_rots = np.array(opti_vec_rots)
+    return opti_poss, opti_vec_rots
+
+def process_opti_camera_data(gt_path : str,
+                             frame_start : int = None,
+                             frame_end : int = None) -> np.array:
     """
         Process the data from the optitrack.
 
@@ -92,22 +118,24 @@ def process_opti_data(gt_path : str,
         next(reader) # skip header
         for data in reader:
             frame_number = int(data[0])
-            if frame_number >= frame_start and frame_number <= frame_end:
-                timestamp = float(data[1])
-                camera_pos = np.array([float(data[2]), float(data[3]), float(data[4])])
-                camera_rot = np.array([float(data[5]), float(data[6]), float(data[7]), float(data[8])])
-                camera_rot_vec = tfm.quaternion_to_rotation_vector(camera_rot) # FIXME: check if neg to take in account the opti axis system
+            if frame_start != None and frame_end != None:
+                if frame_number < frame_start or frame_number > frame_end:
+                    continue
+            timestamp = float(data[1])
+            camera_pos = np.array([float(data[2]), float(data[3]), float(data[4])])
+            camera_rot = np.array([float(data[5]), float(data[6]), float(data[7]), float(data[8])])
+            camera_rot_vec = tfm.quaternion_to_rotation_vector(camera_rot)
 
-                # rotate the 
-
-                opti_poss.append(camera_pos)
-                opti_vec_rots.append(camera_rot_vec)
+            opti_poss.append(camera_pos)
+            opti_vec_rots.append(camera_rot_vec)
     opti_poss = np.array(opti_poss)
     opti_vec_rots = np.array(opti_vec_rots)
     return opti_poss, opti_vec_rots
 
 def process_ts_data(ts_path : str,
-                    scale_f : float = 0.02) -> np.array:
+                    scale_f : float = 0.02,
+                    frame_start : int = None,
+                    frame_end : int = None) -> np.array:
     """
         Process the data from the tracking system.
 
@@ -137,12 +165,17 @@ def process_ts_data(ts_path : str,
             is_corrupted : bool = False
 
             l = l.split()
+            
             frame_number = int(l[0])
+            if frame_start != None and frame_end != None:
+                if frame_number < frame_start or frame_number > frame_end:
+                    continue
+
             time_stamp = float(l[1])
             camera_pos = np.array([float(l[2]), float(l[3]), float(l[4])])
             camera_pos = camera_pos * scale_f
             camera_rot = np.array([float(l[5]), float(l[6]), float(l[7]), float(l[8])])
-            camera_rot = tfm.cvt_optitrack_quaternion_to_ROS(camera_rot)
+            # camera_rot = tfm.cvt_quat_to_ROSformat(camera_rot)
             camera_rot_vec = tfm.quaternion_to_rotation_vector(camera_rot)
             ts_tag = int(l[9])
 

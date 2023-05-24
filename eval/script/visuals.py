@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import transformations as tfm
+import os
 
 
 def __draw_local_axis_pose(ax : plt.Axes,
@@ -8,7 +9,9 @@ def __draw_local_axis_pose(ax : plt.Axes,
                            rot : np.array,
                            scale_f : float,
                            alpha : float = 0.5,
-                           linewidth : int = 1) -> None:
+                           linewidth : int = 1,
+                           is_draw_rot_vec : bool = False,
+                           color : str = None) -> None:
     """ 
         Draw the local axis axis x,y,z in red, green, blue of a given pose
         Args:
@@ -18,14 +21,17 @@ def __draw_local_axis_pose(ax : plt.Axes,
             scale_f (float): the scale factor of the axis dimensions
             alpha (float): the alpha of the axis
             linewidth (int): the linewidth of the axis
+            is_draw_rot_vec (bool): if True, it draws the rotation vector
+            color (list[int]): the color of the axis in string name mplt
     """
-    rot_c = rot.copy()
-    origin_c = origin.copy()
-    rot_c_ax = np.array([origin_c, origin_c + rot_c * 0.1])
-    ax.plot(rot_c_ax[:, 0], rot_c_ax[:, 1], rot_c_ax[:, 2], color='purple', alpha=alpha, linewidth=linewidth)
+    # draw the rotation vector
+    if is_draw_rot_vec:
+        rot_c = rot.copy()
+        origin_c = origin.copy()
+        rot_c_ax = np.array([origin_c, origin_c + rot_c * 0.1])
+        ax.plot(rot_c_ax[:, 0], rot_c_ax[:, 1], rot_c_ax[:, 2], color='purple', alpha=alpha, linewidth=linewidth)
 
-
-
+    # draw the rotation axis system
     # create a cordinate system
     x = np.array([1, 0, 0])
     y = np.array([0, 1, 0])
@@ -46,9 +52,17 @@ def __draw_local_axis_pose(ax : plt.Axes,
     axis_y = np.array([origin, origin + y*scale_f])
     axis_z = np.array([origin, origin + z*scale_f])
 
-    ax.plot(axis_x[:, 0], axis_x[:, 1], axis_x[:, 2], color='red',   alpha=alpha, linewidth=linewidth)
-    ax.plot(axis_y[:, 0], axis_y[:, 1], axis_y[:, 2], color='green', alpha=alpha, linewidth=linewidth)
-    ax.plot(axis_z[:, 0], axis_z[:, 1], axis_z[:, 2], color='blue',  alpha=alpha, linewidth=linewidth)
+    clr_axis_x = "red"
+    clr_axis_y = "green"
+    clr_axis_z = "blue"
+    if color is not None:
+        clr_axis_x = color
+        clr_axis_y = color
+        clr_axis_z = color
+    
+    ax.plot(axis_x[:, 0], axis_x[:, 1], axis_x[:, 2], color=clr_axis_x,   alpha=alpha, linewidth=linewidth)
+    ax.plot(axis_y[:, 0], axis_y[:, 1], axis_y[:, 2], color=clr_axis_y, alpha=alpha, linewidth=linewidth)
+    ax.plot(axis_z[:, 0], axis_z[:, 1], axis_z[:, 2], color=clr_axis_z,  alpha=alpha, linewidth=linewidth)
 
     ax.scatter(origin[0], origin[1], origin[2], color='black', alpha=alpha, s=1, linewidth=linewidth, marker='s')
 
@@ -58,7 +72,10 @@ def visualize_trajectories(est_pos,
                             gt_rot,
                             est_idx_candidates,
                             out_dir : str = "./",
-                            is_show : bool = False) -> None:
+                            is_show : bool = False,
+                            frame_start : int = 0,
+                            frame_end : int = 0,
+                            is_img_save : bool = False) -> None:
     """ Visualize the trajectories in a 3D-axis plot """
 
     # VISUALS
@@ -89,23 +106,23 @@ def visualize_trajectories(est_pos,
 
     # positions
     ax.plot(gt_pos[:, 0], gt_pos[:, 1], gt_pos[:, 2], color='black', alpha=0.5)
-    # ax.text(gt_pos[0, 0], gt_pos[0, 1], gt_pos[0, 2], str("   gt"), color='black', fontsize=8)
-
     ax.plot(est_pos[:, 0], est_pos[:, 1], est_pos[:, 2], color='grey', alpha=0.5)
-    # ax.text(est_pos[0, 0], est_pos[0, 1], est_pos[0, 2], str("   ts"), color='grey', fontsize=8)
 
     # rotations
-    # __draw_local_axis_pose(ax, est_pos[0], est_rot[0],
-    #                         scale_f=0.01, alpha=0.5, linewidth=1)
-    # __draw_local_axis_pose(ax, gt_pos[0], gt_rot[0],
-    #                         scale_f=0.01, alpha=1, linewidth=2)
     for idx in est_idx_candidates:
-        if idx % 30 == 0:
+        if idx % 20 == 0:
             __draw_local_axis_pose(ax, est_pos[idx], est_rot[idx],
-                                   scale_f=0.01, alpha=0.5, linewidth=1)
+                                   scale_f=0.01, alpha=0.25, linewidth=2)
             __draw_local_axis_pose(ax, gt_pos[idx], gt_rot[idx],
                                    scale_f=0.01, alpha=1, linewidth=1)
+
+    # save image
+    if is_img_save:
+        filename = f"trajectory_{frame_start}_{frame_end}.png"
+        path_out = os.path.join(out_dir, filename)
+        plt.savefig(path_out, dpi=300)
 
     # if args.showPlot:
     if is_show:
         plt.show()
+    plt.close()

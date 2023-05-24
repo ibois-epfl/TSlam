@@ -6,8 +6,6 @@ import util
 
 import numpy as np
 from scipy.spatial.transform import Rotation
-import matplotlib.pyplot as plt  # FIXME: TEMP
-import argparse  # FIXME: TEMP
 
 
 def __select_best_idx(_tag_threshold,
@@ -40,9 +38,9 @@ def align_trajectories(src_poss : np.array,
                        tgt_rot_vec : np.array,
 
                        est_coverage : np.array,
-                       coverage_threshold : float,
-                       tag_threshold : int,
                        est_tags : np.array,
+                       coverage_threshold : float = 20,
+                       tag_threshold : int = 3,
                        ) -> np.array:
     """
         The main function responsible for register the tslam trajectory to the gt trajectory.
@@ -58,7 +56,7 @@ def align_trajectories(src_poss : np.array,
             np.array: src_rot_vec, the rotations of the camera as rotation vectors
             np.array: tgt_rot_vec, the rotations of the camera as rotation vectors
             np.array: est_coverage, the coverage of the tracking system (0: good, 1: corrupted(lost/drifted/undetected))
-            int: coverage_threshold, the minimum coverage percentage to consider the data valid.
+            int: coverage_threshold, the minimum coverage percentage to consider the data valid in pourcentage e.g. 20 (%).
             int: tag_threshold, the threshold of number of detected tags.
             np.array: est_tags, the array of detected tags.
 
@@ -69,18 +67,18 @@ def align_trajectories(src_poss : np.array,
     ##############################################################
     # check conditions for allignement
 
+    # select the best idxs for the alignment (only valid poses)
+    est_idx_candidates = __select_best_idx(tag_threshold, est_tags, est_coverage)
+    if len(est_idx_candidates) < 2:
+        print("\033[93m[WARNING]: less than 2 candidates, not possible to define alignement vector \n\033[0m")
+        return src_poss, src_rot_vec, est_idx_candidates
+
     # check coverage
     coverage_perc : float = (np.sum(est_coverage == 1) / len(est_coverage) * 100)
     print(f">>>>>>>>>>Coverage: {coverage_perc.round(1)} %")
     if coverage_perc < coverage_threshold:
         print("\033[93m[WARNING]: Low coverage detected, skipping alignment\n\033[0m")
-        return src_poss, src_rot_vec
-
-    # select the best idxs for the alignment (only valid poses)
-    est_idx_candidates = __select_best_idx(tag_threshold, est_tags, est_coverage)
-    if len(est_idx_candidates) < 2:
-        print("\033[93m[WARNING]: less than 2 candidates, not possible to define alignement vector \n\033[0m")
-        return src_poss, src_rot_vec
+        return src_poss, src_rot_vec, est_idx_candidates
 
     
     # # select the two highest, and farest away idx based on the tags values and the coverage
@@ -124,6 +122,7 @@ def align_trajectories(src_poss : np.array,
 
     # >>>>>>>>>>>>>
 
+    # FIXME: we shouldn't use the rotation because it's expressed in timber coordinates
     # rotation B
 
     # rotation axis
@@ -136,19 +135,13 @@ def align_trajectories(src_poss : np.array,
     angle_rot = tfm.angle_between_vectors(src_poss_axis, tgt_poss_axis, plane_pp_to_axis)
 
     rot = tfm.rotate_around_axis(axis_rot, angle_rot)
-    rot_neg = tfm.rotate_around_axis(axis_rot, -angle_rot)
-
+    rot_neg = tfm.rotate_around_axis(-axis_rot, angle_rot)
     temp_src_rot = np.dot(rot.as_matrix(), src_rot_vec_candidate_r.copy().T).T
     temp_src_rot_neg = np.dot(rot_neg.as_matrix(), src_rot_vec_candidate_r.copy().T).T
-
-    # FIXME: this is not clear
-    # check which rotation is the best
     if np.linalg.norm(temp_src_rot - tgt_rot_vec_candidate) < np.linalg.norm(temp_src_rot_neg - tgt_rot_vec_candidate):
         rot = rot
-        print(">>>>>>>>>>>>>>>>>>>>>>>>> ROT")
     else:
         rot = rot_neg
-        print(">>>>>>>>>>>>>>>>>>>>>>>>> NEG ROT")
 
     aligned_src_poss_r_t_r = np.dot(rot.as_matrix(), aligned_src_poss_r_t.copy().T).T
     src_rot_vec_r_r = np.dot(rot.as_matrix(), src_rot_vec_r.copy().T).T
