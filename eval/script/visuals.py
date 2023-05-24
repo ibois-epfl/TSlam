@@ -93,7 +93,7 @@ def visualize_trajectories(est_pos,
     ax.text2D(0.05, 0.92, "Ground Truth (gt)", transform=ax.transAxes, color='black', fontsize=8)
     ax.text2D(0.05, 0.90, "Tslam (ts)", transform=ax.transAxes, color='grey', fontsize=8)
 
-    # adjust he distorsion of the plot to the center of the trajectories
+    # adjust the distorsion of the plot to the center of the trajectories
     center = np.mean(gt_pos, axis=0)
     XYZ_LIM = 0.10
     ax.set_xlim3d(center[0] - XYZ_LIM, center[0] + XYZ_LIM)
@@ -106,7 +106,10 @@ def visualize_trajectories(est_pos,
 
     # positions
     ax.plot(gt_pos[:, 0], gt_pos[:, 1], gt_pos[:, 2], color='black', alpha=0.5)
-    ax.plot(est_pos[:, 0], est_pos[:, 1], est_pos[:, 2], color='grey', alpha=0.5)
+    ax.text(gt_pos[0, 0], gt_pos[0, 1], gt_pos[0, 2], str("   gt start"), color='black', fontsize=8)
+
+    ax.plot(est_pos[:, 0], est_pos[:, 1], est_pos[:, 2], color='darkcyan', alpha=0.5)
+    ax.text(est_pos[0, 0], est_pos[0, 1], est_pos[0, 2], str("   ts start"), color='grey', fontsize=8)
 
     # rotations
     for idx in est_idx_candidates:

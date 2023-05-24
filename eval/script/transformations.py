@@ -84,11 +84,73 @@ def rotate_around_axis(axis, angle):
 
     return rot
 
-def rotate_matrix_from_euler(mat : np.array,
-                             roll : float, 
-                             pitch : float,
-                             yaw : float):
-    """ Convert euler angles to a rotation matrix in xyz global frame"""
-    rot = Rotation.from_euler('xyz', [roll, pitch, yaw])
-    mat = np.dot(rot, mat.T).T
-    return mat
+def get_rigid_trans_mat_umeyama(src, target, use_scale=False):
+    """
+        Rigid alignment of two sets of points in 3-dimensional
+        Euclidean space. Given two sets of points in
+        correspondence, this function computes the scaling,
+        rotation, and translation that define the transform TR
+        that minimizes the sum of squared errors between TR(src)
+        and its corresponding points in target.  This routine takes
+        O(n 3^3)-time.
+        source: https://gist.github.com/CarloNicolini/7118015
+
+        Args:
+            np.array: src, (n, 3) matrix, n points in 3-dimensional space
+            np.array: target, (n, 3) matrix of n points in 3-dimensional space
+
+        Returns: 
+            trans_mat - transformation matrix (4, 4) that transforms src to target
+    """
+
+    src = src.T
+    target = target.T
+
+    m, n = src.shape
+
+    mx = src.mean(1)
+    my = target.mean(1)
+    Xc =  src - np.tile(mx, (n, 1)).T
+    Yc =  target - np.tile(my, (n, 1)).T
+
+    sx = np.mean(np.sum(Xc*Xc, 0))
+
+    Sxy = np.dot(Yc, Xc.T) / n
+
+    U,D,V = np.linalg.svd(Sxy,full_matrices=True,compute_uv=True)
+    V=V.T.copy()
+
+    S = np.eye(m)
+
+    R = np.dot( np.dot(U, S ), V.T)
+
+    c = 1
+    if use_scale:
+        c = np.trace(np.dot(np.diag(D), S)) / sx
+    
+    t = my - c * np.dot(R, mx)
+    R = c * R
+    
+    trans_mat = np.array([
+        [R[0,0], R[0,1], R[0,2], t[0]],
+        [R[1,0], R[1,1], R[1,2], t[1]],
+        [R[2,0], R[2,1], R[2,2], t[2]],
+        [0     , 0     , 0     , 1   ]
+    ])
+
+    return trans_mat
+
+def transform(trans_mat, points):
+    """
+    Transform points with transformation matrix
+
+    Args:
+        np.array: trans_mat, (4, 4) transformation matrix
+        np.array: points, (n, 3) matrix of n points in 3-dimensional space
+
+    Returns:
+        np.array: reproj_points, (n, 3) matrix of n points in 3-dimensional space
+    """
+    reproj_points = np.concatenate((points,np.ones((points.shape[0], 1))),axis=1)
+    reproj_points = (trans_mat.dot(reproj_points.T).T)[:,:3]
+    return reproj_points

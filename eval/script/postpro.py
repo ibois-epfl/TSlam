@@ -78,13 +78,13 @@ def align_trajectories(src_poss : np.array,
     print(f">>>>>>>>>>Coverage: {coverage_perc.round(1)} %")
     if coverage_perc < coverage_threshold:
         print("\033[93m[WARNING]: Low coverage detected, skipping alignment\n\033[0m")
-        return src_poss, src_rot_vec, est_idx_candidates
+        return src_poss, src_rot_vec
 
-    
-    # # select the two highest, and farest away idx based on the tags values and the coverage
-    # est_idx_candidates = est_idx_candidates[np.argsort(est_tags[est_idx_candidates])][::-1][:2]
-    # est_idx_candidates = est_idx_candidates[np.argsort(src_poss[est_idx_candidates, 0])][::-1][:2]
-
+    # select the best idxs for the alignment (only valid poses)
+    est_idx_candidates = __select_best_idx(tag_threshold, est_tags, est_coverage)
+    if len(est_idx_candidates) < 3:
+        print("\033[93m[WARNING]: less than 3 candidates, not possible to define alignement vector \n\033[0m")
+        return src_poss, src_rot_vec
 
     ##############################################################
     if len(est_idx_candidates) != 0:
@@ -100,71 +100,10 @@ def align_trajectories(src_poss : np.array,
         src_rot_vec_candidate = src_rot_vec.copy()
         tgt_rot_vec_candidate = tgt_rot_vec.copy()
     
-    ##############################################################
-    # WORKING-SEMI METHOD: trans + rot
-    # rotation A
-    vec_A = tgt_poss_candidate[-1] - tgt_poss_candidate[0]
-    vec_B = src_poss_candidate[-1] - src_poss_candidate[0]
-    rot = tfm.rotation_matrix_from_vectors(vec_B, vec_A)
+    trans_mat = tfm.get_rigid_trans_mat_umeyama(src_poss_candidate, tgt_poss_candidate)
+    aligned_src_poss = tfm.transform(trans_mat, src_poss)
 
-    aligned_src_poss_r = np.dot(rot.as_matrix(), src_poss.copy().T).T
-    src_rot_vec_r = np.dot(rot.as_matrix(), src_rot_vec.copy().T).T
-    src_poss_candidate_r = np.dot(rot.as_matrix(), src_poss_candidate.copy().T).T
-    # apply the rotation to the vector rotations
-    src_rot_vec_candidate_r = np.dot(rot.as_matrix(), src_rot_vec_candidate.copy().T).T
+    trans_mat = tfm.get_rigid_trans_mat_umeyama(src_rot_vec_candidate, tgt_rot_vec_candidate)
+    aligned_src_rot_vec_candidate = tfm.transform(trans_mat, src_rot_vec)
 
-    # translation
-    point_start = src_poss_candidate_r[0]
-    point_end = tgt_poss_candidate[0]
-    trans = point_end - point_start
-    aligned_src_poss_r_t = aligned_src_poss_r.copy() + trans
-    src_poss_candidate_r_t = src_poss_candidate_r.copy() + trans
-
-    # >>>>>>>>>>>>>
-
-    # FIXME: we shouldn't use the rotation because it's expressed in timber coordinates
-    # rotation B
-
-    # rotation axis
-    axis_rot = src_poss_candidate_r_t[-1] - src_poss_candidate_r_t[0]
-
-    # rotation angle
-    tgt_poss_axis = tgt_rot_vec_candidate[0]
-    src_poss_axis = src_rot_vec_candidate_r[0]
-    plane_pp_to_axis = tfm.get_perpendicular_plane_to_vector(axis_rot)
-    angle_rot = tfm.angle_between_vectors(src_poss_axis, tgt_poss_axis, plane_pp_to_axis)
-
-    rot = tfm.rotate_around_axis(axis_rot, angle_rot)
-    rot_neg = tfm.rotate_around_axis(-axis_rot, angle_rot)
-    temp_src_rot = np.dot(rot.as_matrix(), src_rot_vec_candidate_r.copy().T).T
-    temp_src_rot_neg = np.dot(rot_neg.as_matrix(), src_rot_vec_candidate_r.copy().T).T
-    if np.linalg.norm(temp_src_rot - tgt_rot_vec_candidate) < np.linalg.norm(temp_src_rot_neg - tgt_rot_vec_candidate):
-        rot = rot
-    else:
-        rot = rot_neg
-
-    aligned_src_poss_r_t_r = np.dot(rot.as_matrix(), aligned_src_poss_r_t.copy().T).T
-    src_rot_vec_r_r = np.dot(rot.as_matrix(), src_rot_vec_r.copy().T).T
-    src_poss_candidate_r_t_r = np.dot(rot.as_matrix(), src_poss_candidate_r_t.copy().T).T
-    src_rot_vec_candidate_r_r = np.dot(rot.as_matrix(), src_rot_vec_candidate_r.copy().T).T
-
-
-    # translation B
-    point_start = src_poss_candidate_r_t_r[0]
-    point_end = tgt_poss_candidate[0]
-    trans = point_end - point_start
-    aligned_src_poss_r_t_r_t = aligned_src_poss_r_t_r.copy() + trans
-    src_poss_candidate_r_t_r_t = src_poss_candidate_r_t_r.copy() + trans
-
-
-
-    ##############################################################
-    # # # >> CHECKS for deformation
-    assert util.verify_trajectories_distortion(src_poss, aligned_src_poss_r, verbose=False), "[ERROR]: The trajectories are distorted r"
-    assert util.verify_trajectories_distortion(src_poss, aligned_src_poss_r_t, verbose=False), "[ERROR]: The trajectories are distorted rxt"
-    assert util.verify_trajectories_distortion(src_poss, aligned_src_poss_r_t_r, verbose=False), "[ERROR]: The trajectories are distorted rxtxr"
-    assert util.verify_trajectories_distortion(src_poss, aligned_src_poss_r_t_r_t, verbose=False), "[ERROR]: The trajectories are distorted rxtxrt"
-
-    assert len(aligned_src_poss_r_t_r_t) == len(src_rot_vec_r_r), "[ERROR]: not same length"
-
-    return aligned_src_poss_r_t_r_t, src_rot_vec_r_r, est_idx_candidates
+    return aligned_src_poss, aligned_src_rot_vec_candidate, est_idx_candidates
