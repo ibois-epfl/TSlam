@@ -76,6 +76,7 @@ def _compute_poses(_frames : list[tuple],
                                     f"-localizeOnly " \
                                     f"-noX " \
                                     f"-outCamPose {_out_dir}/{out_pose_name_keypoints} " \
+                                    f"-outvideo
                                     f"| tee -a {tee_path}"
             os.system(f"echo -----command no_keypoints: {cmd_featurept}----- | tee -a {tee_path}")
             os.system(f"echo -----start recording no_keypoints {out_pose_name_base}----- | tee -a {tee_path}")

@@ -18,6 +18,7 @@ from scipy.signal import savgol_filter
 from scipy.spatial.transform import Rotation
 
 # TODO: redirect all the output of the console into a log file
+# TODO: batch the entire sub-sequences in one go and regroup the results output files
 
 def main(gt_path : str,
          ts_path : str,
@@ -124,17 +125,15 @@ def main(gt_path : str,
     # #######################################################
 
     if is_make_animation:
-        visuals.animate_trajectoriy_3d(ts_poss,
-                                        ts_vec_rots,
-                                        opti_poss,
-                                        opti_vec_rots,
-                                        ts_idx_candidates,
-                                        frame_start=frame_start,
-                                        frame_end=frame_end,
-                                        video_path=video_path,
-                                        out_dir=out_dir,
-                                        total_frames=total_frames,
-                                        is_draw_rot_vec=True)
+        io_stream.dump_animation(ts_poss,
+                                 ts_vec_rots,
+                                 opti_poss,
+                                 opti_vec_rots,
+                                 ts_idx_candidates,
+                                 video_path=video_path,
+                                 out_dir=out_dir,
+                                 total_frames=total_frames,
+                                 is_draw_rot_vec=True)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Compute the metrics for tslam.')
@@ -171,7 +170,7 @@ if __name__ == "__main__":
         _is_make_animation = True
         _video_path = args.makeAnimation
 
-
+    # TODO: find a better alternative to switch between single mode and batch mode
     if args.singleMode:
         main(gt_path=args.gt,
              ts_path=args.ts,

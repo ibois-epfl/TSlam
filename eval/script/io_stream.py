@@ -5,6 +5,8 @@ import math
 import os
 import transformations as tfm
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import visuals
 
 #===============================================================================
 # optitrack and tslam streams
@@ -116,6 +118,10 @@ def process_opti_camera_data(gt_path : str,
             np.array: rotations, the rotations of the camera as rotation vectors (from quaternion)
             np.array: dists, the travelled total distance at each pose
     """
+    # # FIXME: attention here we are adding 30 frames to the start and end frame to check the gt data
+    # frame_start += 30
+    # frame_end += 30
+
     opti_poss = []
     opti_vec_rots = []
     with open(gt_path, 'r') as f:
@@ -227,6 +233,7 @@ def run_checks(opti_poss : np.array,
 # metrics results output
 #===============================================================================
 
+# TODO: maybe we need to add the standard deviation?
 def dump_results(out_dir : str,
                  coverage_perc : float,
                  tags_mean : float,
@@ -265,7 +272,7 @@ def dump_results(out_dir : str,
         f.write("-----------------------------------------------------\n")
 
 #===============================================================================
-# img/graphs output
+# img/graphs/animation output
 #===============================================================================
 
 def dump_imgs(out_dir : str,
@@ -280,3 +287,99 @@ def dump_imgs(out_dir : str,
     fig_2d_poss_drift.savefig(f"{path_graph_dir}/error_poss_xyz.png")
     fig_2d_rots_drift.savefig(f"{path_graph_dir}/error_rots_xyz.png")
 
+
+def dump_animation(est_pos,
+                   est_rot,
+                   gt_pos,
+                   gt_rot,
+                   est_idx_candidates,
+                   total_frames : int,
+                   out_dir : str,
+                   video_path : str = None,
+                   is_draw_rot_vec : bool = False,
+                   ) -> None:
+    """ Create a side-by-side animation with the video of the sequence of the trajectory """
+    anim_out_dir = os.path.join(out_dir, "animation")
+    temp_dir = os.path.join(anim_out_dir, "temp")
+    temp_video_dir = os.path.join(temp_dir, "video")
+    temp_graph_dir = os.path.join(temp_dir, "graph")
+
+    os.makedirs(anim_out_dir, exist_ok=True)
+    os.makedirs(temp_dir, exist_ok=True)
+    os.makedirs(temp_video_dir, exist_ok=True)
+    os.makedirs(temp_graph_dir, exist_ok=True)
+
+    # extract each frame of the video in the temp_video_dir between frame_start and frame_end
+    os.system(f"ffmpeg -y -i {video_path} -r 30 {temp_video_dir}/%d.png")
+
+    fig = plt.figure()
+    height_mm = 160
+    width_mm = 380
+    height = int(height_mm / 25.4)
+    width = int(width_mm / 25.4)
+    fig.set_size_inches(width, height)
+    plt.subplots_adjust(left=0.0, right=1.00, top=1.00, bottom=0.01)
+    ax = fig.add_subplot(1, 2, 2, projection='3d')
+    ax.grid(False)
+
+    ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.set_facecolor((1.0, 1.0, 1.0, 0.0))
+    ax.grid(False)
+    ax.view_init(elev=30, azim=45)
+
+    CLR_GT = "magenta"
+    CLR_EST = "darkcyan"
+    FONT_SIZE = 10
+    XYZ_LIM = 0.10
+    SCALE_AXIS = 0.02
+    idx = 0
+
+    img = plt.imread(os.path.join(temp_video_dir, f"{idx+1}.png"))
+    ax2 = fig.add_subplot(1, 2, 1)
+    ax2.imshow(img)
+    ax2.axis('off')
+
+    def update(idx):
+        ax.clear()
+        ax2.clear()
+
+        ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+        ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+        ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+        ax.set_facecolor((1.0, 1.0, 1.0, 0.0))
+        ax.grid(False)
+        center = np.mean(gt_pos, axis=0)
+        ax.set_xlim3d(center[0] - XYZ_LIM, center[0] + XYZ_LIM)
+        ax.set_ylim3d(center[1] - XYZ_LIM, center[1] + XYZ_LIM)
+        ax.set_zlim3d(center[2] - XYZ_LIM, center[2] + XYZ_LIM)
+        ax.set_xlabel('X [m]')
+        ax.set_ylabel('Y [m]')
+        ax.set_zlabel('Z [m]')
+        ax.text2D(0.00, 0.03, "Ground Truth (gt)", transform=ax.transAxes, color=CLR_GT, fontsize=FONT_SIZE)
+        ax.text2D(0.00, 0.00, "Tslam (ts)", transform=ax.transAxes, color=CLR_EST, fontsize=FONT_SIZE)
+        ax.set_position([0.3, 0.1, 0.9, 0.9])  # reduce the top border of the graph
+
+        ax.plot(gt_pos[:idx, 0], gt_pos[:idx, 1], gt_pos[:idx, 2], color=CLR_GT)
+        ax.plot(est_pos[:idx, 0], est_pos[:idx, 1], est_pos[:idx, 2], color=CLR_EST, alpha=0.5)
+
+        visuals.__draw_local_axis_pose(ax, est_pos[idx], est_rot[idx],
+                                    scale_f=SCALE_AXIS, alpha=0.25, linewidth=2)
+        visuals.__draw_local_axis_pose(ax, gt_pos[idx], gt_rot[idx],
+                                scale_f=SCALE_AXIS, alpha=1, linewidth=1)
+
+        img = plt.imread(os.path.join(temp_video_dir, f"{idx+1}.png"))
+        ax2.imshow(img)
+        ax2.axis('off')
+
+        idx += 1
+
+    # create the animation
+    ani = animation.FuncAnimation(fig, update,
+                                  frames=total_frames,
+                                  interval=1000/30)  # 30fps equivalent in ms
+    ani.save(os.path.join(anim_out_dir, "animation.mp4"), writer='ffmpeg', fps=30, dpi=300)
+
+    # erasse the temp folder
+    os.system(f"rm -rf {temp_dir}")
