@@ -2,7 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import transformations as tfm
 import os
-
+from tqdm import tqdm
+import sys
 
 def __draw_local_axis_pose(ax : plt.Axes,
                            origin : np.array,
@@ -66,16 +67,16 @@ def __draw_local_axis_pose(ax : plt.Axes,
 
     ax.scatter(origin[0], origin[1], origin[2], color='black', alpha=alpha, s=1, linewidth=linewidth, marker='s')
 
-def visualize_trajectories3d(est_pos,
-                             est_rot,
-                             gt_pos,
-                             gt_rot,
-                             est_idx_candidates,
-                             is_show : bool = False,
-                             is_draw_dist_error : bool = False,
-                             is_draw_rot_vec : bool = False,
-                             title=None,
-                             ) -> plt.figure:
+def visualize_trajectories_3d(est_pos,
+                              est_rot,
+                              gt_pos,
+                              gt_rot,
+                              est_idx_candidates,
+                              is_show : bool = False,
+                              is_draw_dist_error : bool = False,
+                              is_draw_rot_vec : bool = False,
+                              title=None,
+                              ) -> plt.figure:
     """ Visualize the trajectories in a 3D-axis plot """
     fig = plt.figure()
     fig.set_size_inches(8., 8.)
@@ -158,3 +159,122 @@ def visualize_2d_drift(drift_xyz : np.array,
     plt.close()
 
     return fig
+
+def animate_trajectoriy_3d(est_pos,
+                           est_rot,
+                           gt_pos,
+                           gt_rot,
+                           est_idx_candidates,
+                           total_frames : int,
+                           out_dir : str,
+                           frame_start : int,
+                           frame_end : int,
+                           video_path : str = None,
+                           is_draw_rot_vec : bool = False,
+                           ) -> None:
+    """ Create a side-by-side animation with the video of the sequence of the trajectory """
+    # create a folder to save the animation gif
+    anim_out_dir = os.path.join(out_dir, "animation")
+    temp_dir = os.path.join(anim_out_dir, "temp")
+    temp_video_dir = os.path.join(temp_dir, "video")
+    temp_graph_dir = os.path.join(temp_dir, "graph")
+
+    os.makedirs(anim_out_dir, exist_ok=True)
+    os.makedirs(temp_dir, exist_ok=True)
+    os.makedirs(temp_video_dir, exist_ok=True)
+    os.makedirs(temp_graph_dir, exist_ok=True)
+
+    #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+    # extract each frame of the video in the temp_video_dir between frame_start and frame_end
+    os.system(f"ffmpeg -y -i {video_path} -r 30 {temp_video_dir}/%d.png")
+
+    #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+    fig = plt.figure()
+    height_mm = 200
+    width_mm = 400
+    # convert in inches
+    height = int(height_mm / 25.4)
+    width = int(width_mm / 25.4)
+    fig.set_size_inches(width, height)
+    # reduce borders
+    plt.subplots_adjust(left=0.0, right=1.0, top=1.0, bottom=0.0)
+
+    # place one graph on the right and by side an image on the left with same size
+    # ax = fig.add_subplot(projection='3d')
+    # add a sublot on the right
+    ax = fig.add_subplot(1, 2, 2, projection='3d')
+                        #  position=[1., 100., 1000.5, 2]) # [xmin,ymin,dx,dy]
+    # # ax.set_position([1, 2, 1, 0])
+    ax.grid(False)
+
+    CLR_GT = "magenta"
+    CLR_EST = "darkcyan"
+
+    # animate the trajectories
+    for idx in tqdm(range(total_frames)):
+        if idx % 30 != 0:
+            continue
+        ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+        ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+        ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+        ax.set_facecolor((1.0, 1.0, 1.0, 0.0))
+        ax.grid(False)
+        ax.view_init(elev=30, azim=45)
+
+        ax.set_title("trajectories", fontsize=10)
+        # move the title down
+        ax.title.set_position([.5, 1.05])
+
+        FONT_SIZE = 7
+        ax.text2D(0.02, 0.02, "Ground Truth (gt)", transform=ax.transAxes, color=CLR_GT, fontsize=FONT_SIZE)
+        ax.text2D(0.02, 0.00, "Tslam (ts)", transform=ax.transAxes, color=CLR_EST, fontsize=FONT_SIZE)
+
+        center = np.mean(gt_pos, axis=0)
+        XYZ_LIM = 0.10
+        ax.set_xlim3d(center[0] - XYZ_LIM, center[0] + XYZ_LIM)
+        ax.set_ylim3d(center[1] - XYZ_LIM, center[1] + XYZ_LIM)
+        ax.set_zlim3d(center[2] - XYZ_LIM, center[2] + XYZ_LIM)
+
+        ax.set_xlabel('X [m]')
+        ax.set_ylabel('Y [m]')
+        ax.set_zlabel('Z [m]')
+
+        ax.plot(gt_pos[:idx, 0], gt_pos[:idx, 1], gt_pos[:idx, 2], color=CLR_GT)
+        ax.plot(est_pos[:idx, 0], est_pos[:idx, 1], est_pos[:idx, 2], color=CLR_EST, alpha=0.5)
+
+        SCALE_AXIS = 0.02
+        __draw_local_axis_pose(ax, est_pos[idx], est_rot[idx],
+                                    scale_f=SCALE_AXIS, alpha=0.25, linewidth=2)
+        __draw_local_axis_pose(ax, gt_pos[idx], gt_rot[idx],
+                                scale_f=SCALE_AXIS, alpha=1, linewidth=1)
+
+
+        #>>>>>>>>>>>>>>>>>>>>>>>>
+
+        # add a png on the left side of the plot
+        img = plt.imread(os.path.join(temp_video_dir, f"{idx+1}.png"))
+        ax2 = fig.add_subplot(1, 2, 1)
+
+        ax2.imshow(img)
+        ax2.axis('off')
+
+        fig.savefig(os.path.join(temp_graph_dir, f"{idx}.png"))
+
+        # # TODO: debug
+        # plt.show()
+        # plt.close()
+        # sys.exit()
+        
+        
+        ax.clear()
+
+    # get all the images in the temp folder and make a gif lightweight and loopable with ffmpeg with width 400px and height 200px
+    os.system(f"ffmpeg -y -f image2 -r 30 -i {temp_graph_dir}/%d.png -vcodec libx264 -crf 25 -pix_fmt yuv420p {anim_out_dir}/animation.mp4")
+
+    # make a gif with ffmpeg with high quality
+    # os.system(f"ffmpeg -y -i {anim_out_dir}/animation.mp4 -vf fps=30 {anim_out_dir}/animation.gif")
+
+    # erasse the temp folder
+    # os.system(f"rm -rf {temp_dir}")

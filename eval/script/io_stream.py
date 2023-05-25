@@ -271,14 +271,12 @@ def dump_results(out_dir : str,
 def dump_imgs(out_dir : str,
               fig_3d : plt.figure,
               fig_2d_poss_drift : plt.figure,
-              fig_2d_rots_drift : plt.figure,
-              is_img_save : bool) -> None:
+              fig_2d_rots_drift : plt.figure) -> None:
     """ The function saves the graphs of the evaluation to local """
-    if is_img_save:
-        path_graph_dir : str = f"{out_dir}/graphs"
-        os.system(f"mkdir {path_graph_dir}")
+    path_graph_dir : str = f"{out_dir}/graphs"
+    os.system(f"mkdir {path_graph_dir}")
 
-        fig_3d.savefig(f"{path_graph_dir}/allign_3d.png")
-        fig_2d_poss_drift.savefig(f"{path_graph_dir}/error_poss_xyz.png")
-        fig_2d_rots_drift.savefig(f"{path_graph_dir}/error_rots_xyz.png")
+    fig_3d.savefig(f"{path_graph_dir}/allign_3d.png")
+    fig_2d_poss_drift.savefig(f"{path_graph_dir}/error_poss_xyz.png")
+    fig_2d_rots_drift.savefig(f"{path_graph_dir}/error_rots_xyz.png")
 

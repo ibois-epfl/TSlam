@@ -6,6 +6,8 @@ import sys
 from tqdm import tqdm
 from datetime import datetime
 
+# TODO: add option to export video raw and processed
+
 def _parse_frames(_input_frames_path : str) -> list[tuple]:
     """
         Parse the frames file and return a list of tuples conataining:

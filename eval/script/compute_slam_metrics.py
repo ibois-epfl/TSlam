@@ -17,14 +17,17 @@ import numpy as np
 from scipy.signal import savgol_filter
 from scipy.spatial.transform import Rotation
 
+# TODO: redirect all the output of the console into a log file
 
 def main(gt_path : str,
          ts_path : str,
          out_dir : str,
+         video_path : str,
          is_img_saved : bool,
          is_show_plot : bool,
          is_img_save : bool = False,
-         is_rescale : bool = False
+         is_rescale : bool = False,
+         is_make_animation : bool = False
          ) -> None:
 
     # #######################################################
@@ -34,6 +37,7 @@ def main(gt_path : str,
     toolhead_name = '_'.join(ts_path.split('/')[-1].split('_')[2:]).split('.')[0]
     frame_start = int(ts_path.split('/')[-1].split('_')[0])
     frame_end = int(ts_path.split('/')[-1].split('_')[1].split('.')[0])
+    total_frames = frame_end - frame_start
 
     opti_poss, opti_vec_rots, distances = io_stream.process_opti_camera_data(gt_path, frame_start, frame_end)
     ts_poss, ts_vec_rots, ts_tags, ts_coverages = io_stream.process_ts_data(ts_path)
@@ -83,37 +87,54 @@ def main(gt_path : str,
                            frame_end)
 
     # #######################################################
-    # # Visualization
+    # # Graphs
     # #######################################################
 
-    fig_3d = visuals.visualize_trajectories3d(ts_poss,
-                                              ts_vec_rots,
-                                              opti_poss,
-                                              opti_vec_rots,
-                                              ts_idx_candidates,
-                                              is_draw_dist_error=True,
-                                              is_show=is_show_plot)
-    fig_2d_poss_drift = visuals.visualize_2d_drift(poss_xyz,
-                                                   distances,
-                                                   unit='m',
-                                                   title='Position drift',
-                                                   is_show=is_show_plot)
-    fig_2d_rots_drift = visuals.visualize_2d_drift(rots_xyz,
-                                                  distances,
-                                                  unit='deg',
-                                                  title='Rotation drift',
-                                                  is_show=is_show_plot)
+    if is_show_plot or is_img_saved:
+        fig_3d = visuals.visualize_trajectories_3d(ts_poss,
+                                                ts_vec_rots,
+                                                opti_poss,
+                                                opti_vec_rots,
+                                                ts_idx_candidates,
+                                                is_draw_dist_error=True,
+                                                is_show=is_show_plot)
+        fig_2d_poss_drift = visuals.visualize_2d_drift(poss_xyz,
+                                                    distances,
+                                                    unit='m',
+                                                    title='Position drift',
+                                                    is_show=is_show_plot)
+        fig_2d_rots_drift = visuals.visualize_2d_drift(rots_xyz,
+                                                    distances,
+                                                    unit='deg',
+                                                    title='Rotation drift',
+                                                    is_show=is_show_plot)
     
     # #######################################################
     # save img
     # #######################################################
     
-    io_stream.dump_imgs(out_dir=out_dir,
-                        fig_3d=fig_3d,
-                        fig_2d_poss_drift=fig_2d_poss_drift,
-                        fig_2d_rots_drift=fig_2d_rots_drift,
-                        is_img_save=is_img_saved)
+    if is_img_saved:
+        io_stream.dump_imgs(out_dir=out_dir,
+                            fig_3d=fig_3d,
+                            fig_2d_poss_drift=fig_2d_poss_drift,
+                            fig_2d_rots_drift=fig_2d_rots_drift)
     
+    # #######################################################
+    # save animation
+    # #######################################################
+
+    if is_make_animation:
+        visuals.animate_trajectoriy_3d(ts_poss,
+                                        ts_vec_rots,
+                                        opti_poss,
+                                        opti_vec_rots,
+                                        ts_idx_candidates,
+                                        frame_start=frame_start,
+                                        frame_end=frame_end,
+                                        video_path=video_path,
+                                        out_dir=out_dir,
+                                        total_frames=total_frames,
+                                        is_draw_rot_vec=True)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Compute the metrics for tslam.')
@@ -124,6 +145,8 @@ if __name__ == "__main__":
     parser.add_argument('--singleMode', action='store_true', help='If true, it will process only one file provided in --ts.')
     parser.add_argument('--saveImg', action='store_true', help='If true, it will save the plots.')
     parser.add_argument('--rescale', action='store_true', help='If true, it will rescale the trajectory to the ground truth trajectory during umeyama.')
+    parser.add_argument('--makeAnimation', type=str, default="", help='Provides the path to the video sub-sequence with the TSlam interface \
+                                                                       (not the entire video) if you want to output animations (extra time).')
     parser.add_argument('--out', type=str, help='Path to the output result files.')
 
     args = parser.parse_args()
@@ -142,11 +165,19 @@ if __name__ == "__main__":
     os.system(f"mkdir {_out_subdir}")
     # print(f"\033[92m[INFO]: output folder: {_out_subdir}\n\033[0m")
 
+    _is_make_animation : bool = False
+    _video_path = ""
+    if args.makeAnimation != "":
+        _is_make_animation = True
+        _video_path = args.makeAnimation
+
 
     if args.singleMode:
         main(gt_path=args.gt,
              ts_path=args.ts,
              out_dir=_out_subdir,
+             video_path=_video_path,
+             is_make_animation=_is_make_animation,
              is_show_plot=args.showPlot,
              is_img_saved=args.saveImg,
              is_rescale=args.rescale)
@@ -162,10 +193,10 @@ if __name__ == "__main__":
                 main(gt_path=args.gt,
                     ts_path=file_path,
                     out_dir=_out_subdir,
+                    video_path=_video_path,
+                    is_make_animation=_is_make_animation,
                     is_show_plot=args.showPlot,
                     is_img_saved=args.saveImg,
                     is_rescale=args.rescale)
-                # if idx == 6:
-                #     break
 
 
