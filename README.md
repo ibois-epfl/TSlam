@@ -70,7 +70,7 @@ Here are some reference related to this project:
     
 https://github.com/ibois-epfl/TSlam/assets/50238678/c7926629-9e93-4d90-93c9-85048a4cf859
     
-<p align="center"><i>One of the sub-sequences of the dataset evaluated with an Optitrack system to obtain ground truth trajectories.</i></p>
+<p align="center"><i>One of the sub-sequences of the dataset evaluated with an Optitrack system to obtain ground truth trajectories. In magenta: the ground-truth, in dark cyan: tslam tracking. </i></p>
     
 ## Tag stickers
 <p align = "center">
