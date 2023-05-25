@@ -7,7 +7,6 @@
     <img src="https://img.shields.io/badge/license-GPL--v3-brightgreen">
 </p>
 
-
 ```mermaid
 gantt
     dateFormat  YYYY-MM-DD
@@ -59,11 +58,21 @@ This is a modified version of [UcoSLAM](http://www.uco.es/investiga/grupos/ava/n
 - Several [bugs are resolved](./dev_log/Bug_tracing.md).
 - we add a reconstruction pipeline to obtain digital models of the physically tagged objects
 
+
+
 Here are some reference related to this project:
 - The publication for UcoSLAM:  [link]([https://docs.google.com/document/d/12EGJ3cI-m8XMXgI5bYW1dLi5lBO-vxxr6Cf769wQzJc](https://arxiv.org/abs/1902.03729))
 - [STag ROS](https://github.com/usrl-uofsc/stag_ros): Code of STag is from this repo. This one upgrade the original STag from OpenCV 3 to OpenCV 4.
 - [Dev Log of this modification](./dev_log)
 
+## Evaluation
+<text-to-be-filled>
+
+https://github.com/ibois-epfl/TSlam/assets/50238678/557149ee-6f63-4261-916d-d3cf4825473e
+
+
+<p align="center"><i>One of the sub-sequences of the dataset evaluated with an Optitrack system to obtain ground truth trajectories. In magenta: the ground-truth, in dark cyan: tslam tracking. </i></p>
+    
 ## Tag stickers
 <p align = "center">
   <img src=assets/img/stripetag.png> </img>
