@@ -67,9 +67,10 @@ Here are some reference related to this project:
 
 ## Evaluation
 <text-to-be-filled>
-    
-https://github.com/ibois-epfl/TSlam/assets/50238678/c7926629-9e93-4d90-93c9-85048a4cf859
-    
+
+https://github.com/ibois-epfl/TSlam/assets/50238678/557149ee-6f63-4261-916d-d3cf4825473e
+
+
 <p align="center"><i>One of the sub-sequences of the dataset evaluated with an Optitrack system to obtain ground truth trajectories. In magenta: the ground-truth, in dark cyan: tslam tracking. </i></p>
     
 ## Tag stickers
