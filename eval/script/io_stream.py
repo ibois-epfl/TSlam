@@ -119,8 +119,8 @@ def process_opti_camera_data(gt_path : str,
             np.array: dists, the travelled total distance at each pose
     """
     # # FIXME: attention here we are adding 30 frames to the start and end frame to check the gt data
-    # frame_start += 30
-    # frame_end += 30
+    # frame_start += 20
+    # frame_end += 20
 
     opti_poss = []
     opti_vec_rots = []
@@ -233,7 +233,6 @@ def run_checks(opti_poss : np.array,
 # metrics results output
 #===============================================================================
 
-# TODO: maybe we need to add the standard deviation?
 def dump_results(out_dir : str,
                  coverage_perc : float,
                  tags_mean : float,
@@ -287,12 +286,10 @@ def dump_imgs(out_dir : str,
     fig_2d_poss_drift.savefig(f"{path_graph_dir}/error_poss_xyz.png")
     fig_2d_rots_drift.savefig(f"{path_graph_dir}/error_rots_xyz.png")
 
-
 def dump_animation(est_pos,
                    est_rot,
                    gt_pos,
                    gt_rot,
-                   est_idx_candidates,
                    total_frames : int,
                    out_dir : str,
                    video_path : str = None,
@@ -313,8 +310,8 @@ def dump_animation(est_pos,
     os.system(f"ffmpeg -y -i {video_path} -r 30 {temp_video_dir}/%d.png")
 
     fig = plt.figure()
-    height_mm = 160
-    width_mm = 380
+    height_mm = 160 # 160
+    width_mm = 380 # 380
     height = int(height_mm / 25.4)
     width = int(width_mm / 25.4)
     fig.set_size_inches(width, height)

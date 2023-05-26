@@ -66,6 +66,7 @@ def align_trajectories(src_poss : np.array,
         Returns:
             np.array: the positions of the camera
             np.array: the rotations of the camera as rotation vectors
+            np.array: the idxs of the poses which have been used for the registration (this value is used only in this function)
     """
     ##############################################################
     # check conditions for allignement

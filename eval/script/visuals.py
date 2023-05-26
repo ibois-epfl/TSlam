@@ -71,7 +71,7 @@ def visualize_trajectories_3d(est_pos,
                               est_rot,
                               gt_pos,
                               gt_rot,
-                              est_idx_candidates,
+                              coverages,
                               is_show : bool = False,
                               is_draw_dist_error : bool = False,
                               is_draw_rot_vec : bool = False,
@@ -96,7 +96,7 @@ def visualize_trajectories_3d(est_pos,
         ax.set_title(title, fontsize=10)
 
     FONT_SIZE = 7
-    ax.text2D(0.02, 0.04, "Distance error (de)", transform=ax.transAxes, color=CLR_DIST, fontsize=FONT_SIZE)
+    ax.text2D(0.02, 0.04, "Computed error (ce)", transform=ax.transAxes, color=CLR_DIST, fontsize=FONT_SIZE)
     ax.text2D(0.02, 0.02, "Ground Truth (gt)", transform=ax.transAxes, color=CLR_GT, fontsize=FONT_SIZE)
     ax.text2D(0.02, 0.00, "Tslam (ts)", transform=ax.transAxes, color=CLR_EST, fontsize=FONT_SIZE)
 
@@ -113,14 +113,16 @@ def visualize_trajectories_3d(est_pos,
     ax.plot(gt_pos[:, 0], gt_pos[:, 1], gt_pos[:, 2], color=CLR_GT)
     ax.plot(est_pos[:, 0], est_pos[:, 1], est_pos[:, 2], color=CLR_EST, alpha=0.5)
 
-    for idx in est_idx_candidates:
-        ax.plot([gt_pos[idx, 0], est_pos[idx, 0]],
-                [gt_pos[idx, 1], est_pos[idx, 1]],
-                [gt_pos[idx, 2], est_pos[idx, 2]],
-                color=CLR_DIST, alpha=0.5, linewidth=1)
+    for idx, _ in enumerate(gt_pos):
+        if coverages[idx] == True:
+            ax.plot([gt_pos[idx, 0], est_pos[idx, 0]],
+                    [gt_pos[idx, 1], est_pos[idx, 1]],
+                    [gt_pos[idx, 2], est_pos[idx, 2]],
+                    color=CLR_DIST, alpha=0.5, linewidth=1)
         if is_draw_rot_vec:
-            __draw_local_axis_pose(ax, est_pos[idx], est_rot[idx],
-                                   scale_f=0.01, alpha=0.25, linewidth=2)
+            if coverages[idx] == True:
+                __draw_local_axis_pose(ax, est_pos[idx], est_rot[idx],
+                                    scale_f=0.01, alpha=0.25, linewidth=2)
             __draw_local_axis_pose(ax, gt_pos[idx], gt_rot[idx],
                                    scale_f=0.01, alpha=1, linewidth=1)
 
