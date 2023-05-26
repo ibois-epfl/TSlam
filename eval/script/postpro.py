@@ -1,3 +1,4 @@
+import metrics
 
 from datetime import datetime
 import transformations as tfm
@@ -68,9 +69,6 @@ def align_trajectories(src_poss : np.array,
             np.array: the rotations of the camera as rotation vectors
             np.array: the idxs of the poses which have been used for the registration (this value is used only in this function)
     """
-    ##############################################################
-    # check conditions for allignement
-
     # select the best idxs for the alignment (only valid poses)
     est_idx_candidates = __select_best_idx(tag_threshold, est_tags, est_coverage)
     if len(est_idx_candidates) < 3:
@@ -78,7 +76,6 @@ def align_trajectories(src_poss : np.array,
         ts_idx_candidates = []
         return src_poss, src_rot_vec, ts_idx_candidates
 
-    ##############################################################
     if len(est_idx_candidates) != 0:
         src_poss_candidate = src_poss.copy()[est_idx_candidates]
         tgt_poss_candidate = tgt_poss.copy()[est_idx_candidates]
@@ -101,3 +98,82 @@ def align_trajectories(src_poss : np.array,
     aligned_src_rot_vec_candidate = tfm.transform(trans_mat, src_rot_vec)
 
     return aligned_src_poss, aligned_src_rot_vec_candidate, est_idx_candidates
+
+def align_and_benchmark(src_poss : np.array,
+                        tgt_poss : np.array,
+                        src_rot_vec : np.array,
+                        tgt_rot_vec : np.array,
+                        est_coverage : np.array,
+                        est_tags : np.array,
+                        coverage_threshold : float,
+                        tag_threshold : int,
+                        is_rescale : bool,
+                        distances : np.array) -> dict:
+    # #######################################################
+    # # Trajectory registration
+    # #######################################################
+    """ 
+        At this point we found and apply the rigid transformation that alligns positions and rotations.
+        Given the fact that the tslam and optitrack are registered in two different coordinate systems,
+        we need to apply a transformation to allign them (only possible because we are doing operation
+         per operation). To find the transformation for the alignement we use in both cases, but separately,
+         the umeyama algorithm. But first we select the candidate poses to find the transformations. The 
+         candidatess are defined by the following criteria:
+            - the coverage of the tslam is good, =1 (not corrupted, lost, drifted, undetected)
+            - the number of detected tags is above a threshold (e.g.,3). This allows us to have  a better 
+              chance of having the best closest to gt positions and rotations in the tslam feed.
+        Once the umeyama transformation is found, we apply it to the entire positions and rotations of the tslam
+        , not only the candidate positions and rotation.
+    """
+    src_poss, src_rot_vec, __ts_idx_candidates = align_trajectories(src_poss,
+                                                                           tgt_poss,
+                                                                           src_rot_vec,
+                                                                           tgt_rot_vec,
+                                                                           est_coverage,
+                                                                           est_tags,
+                                                                           coverage_threshold,
+                                                                           tag_threshold,
+                                                                           is_rescale
+                                                                           )
+    # #######################################################
+    # # Analytics
+    # #######################################################
+    """ 
+        We calculare here the metrics for the tslam. For the benchmark we use only the values with a true value
+        for coverage, the rest are not used in the evaluation. On the other hand a pourcentage of the coverage
+        is provided. The metrics are the following:
+        - coverage_perc: the percentage of coverage of the tslam (see coverage definition above)
+        - tags_mean: the mean of the number of detected tags for each pose
+        - drift_poss_mean: the mean of the drift of the position of the tslam with its ground truth
+        - drift_rots_mean: the mean of the drift of the rotation of the tslam with its ground truth
+        - poss_xyz: the drift of the position of the tslam with its ground truth for each pose in meters.
+        - rots_xyz: the drift of the rotation of the tslam with its ground truth for each pose in degrees.
+    """
+    src_poss_4_metrics = np.array([src_poss[i] for i in range(len(src_poss)) if est_coverage[i] == True])
+    src_rot_vec_4_metrics = np.array([src_rot_vec[i] for i in range(len(src_rot_vec)) if est_coverage[i] == True])
+    est_tags_4_metrics = np.array([est_tags[i] for i in range(len(est_tags)) if est_coverage[i] == True])
+    tgt_poss_4_metrics = np.array([tgt_poss[i] for i in range(len(tgt_poss)) if est_coverage[i] == True])
+    tgt_rot_vec_4_metrics = np.array([tgt_rot_vec[i] for i in range(len(tgt_rot_vec)) if est_coverage[i] == True])
+    distances_4_metrics = np.array([distances[i] for i in range(len(distances)) if est_coverage[i] == True])
+
+    coverage_perc : float = metrics.compute_coverage(est_coverage)
+    tags_mean : float = metrics.compute_tags_nbr_mean(est_tags_4_metrics)
+    drift_poss_mean, poss_xyz = metrics.compute_position_drift(tgt_poss_4_metrics,
+                                                               src_poss_4_metrics)
+    drift_rots_mean, rots_xyz = metrics.compute_rotation_drift(tgt_rot_vec_4_metrics,
+                                                               src_rot_vec_4_metrics)
+
+    results = {
+        "ts_position": src_poss,
+        "ts_rotation_vec": src_rot_vec,
+        "ts_idx_candidates": __ts_idx_candidates,
+        "coverage_percentage": coverage_perc,
+        "tags_mean": tags_mean,
+        "drift_position_mean": drift_poss_mean,
+        "drift_rotation_mean": drift_rots_mean,
+        "drift_poss_xyz": poss_xyz,
+        "drift_rots_xyz": rots_xyz,
+        "distances_4_metrics": distances_4_metrics
+    }
+
+    return results

@@ -118,10 +118,6 @@ def process_opti_camera_data(gt_path : str,
             np.array: rotations, the rotations of the camera as rotation vectors (from quaternion)
             np.array: dists, the travelled total distance at each pose
     """
-    # # FIXME: attention here we are adding 30 frames to the start and end frame to check the gt data
-    # frame_start += 20
-    # frame_end += 20
-
     opti_poss = []
     opti_vec_rots = []
     with open(gt_path, 'r') as f:
