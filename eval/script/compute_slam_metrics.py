@@ -17,6 +17,12 @@ import numpy as np
 from scipy.signal import savgol_filter
 from scipy.spatial.transform import Rotation
 
+
+# TODO: when alignement is not possible, write it to file
+# TODO: get rid of all the subfolders while outputing files
+# FIXME: the path to the video of the animation needs to be adjusted for patching
+# TODO: add an overview of the video (what metrics?based on tools?) at the end of the video when batched
+
 def main(gt_path : str,
          ts_path : str,
          out_dir : str,
@@ -70,15 +76,22 @@ def main(gt_path : str,
         To solve the problem of some corrupted misalignement for the ground truth with the video frames, we 
         compute this phase twice: once with the original ground truth and once with the ground truth shifted
         of 30 frames. Finally we record only the version with the best results for mean position drift.
+
+        The main function responsible for register the tslam trajectory to the gt trajectory based
+        on umeyama. We only take the poses with a good coverage and a minimum number of a given
+        threshold of detected tags. If the candidates are less than 3, we consider the transformation
+        not to be possible.
     """
+    TAG_THRESH = 2
+    print(f"Number of minimum tag detected per pose: {TAG_THRESH}")
+    # FIXME: if the realignement is failing we need to report it in files or do something
     results = postpro.align_and_benchmark(src_poss=ts_poss,
                                           tgt_poss=opti_poss,
                                           src_rot_vec=ts_vec_rots,
                                           tgt_rot_vec=opti_vec_rots,
                                           est_coverage=ts_coverages,
                                           est_tags=ts_tags,
-                                          coverage_threshold=20,
-                                          tag_threshold=3,
+                                          tag_threshold=TAG_THRESH,
                                           is_rescale=is_rescale,
                                           distances=distances,
                                           )
@@ -88,11 +101,16 @@ def main(gt_path : str,
                                           tgt_rot_vec=opti_vec_rots_p30,
                                           est_coverage=ts_coverages,
                                           est_tags=ts_tags,
-                                          coverage_threshold=20,
-                                          tag_threshold=3,
+                                          tag_threshold=TAG_THRESH,
                                           is_rescale=is_rescale,
                                           distances=distances_p30,
                                           )
+    # if results is empty, we return
+    if results is None:
+        print(f"--- No alignment possible, exiting..")
+        os.system(f"touch {out_dir}/NOALLIGNEMENT.txt"")
+        return
+
     if results["drift_position_mean"] > results_p30["drift_position_mean"]:
         results = results_p30
         opti_poss = opti_poss_p30
@@ -171,14 +189,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Compute the metrics for tslam.')
     parser.add_argument('--name', type=str, default="noname", help='Name of the sequence.')
     parser.add_argument('--gt', type=str, help='Path to the ground truth trajectory file (refined trajectory).')
-    parser.add_argument('--ts', type=str, help='Path to the tslam trajectory file.')
+    parser.add_argument('--ts', type=str, help='Path to the tslam trajectory directory containing all the ts subsequences poses.')
     parser.add_argument('--showPlot', action='store_true', help='If true, it will show the plot.')
-    parser.add_argument('--singleMode', action='store_true', help='If true, it will process only one file provided in --ts.')
+    parser.add_argument('--singleMode', type=str, default="", help='Provides the path to the sub-sequence ts file to benchmark.' \
+                                                                    'This provides the chance to cherry pick and analyse just one')
     parser.add_argument('--saveImg', action='store_true', help='If true, it will save the plots.')
     parser.add_argument('--rescale', action='store_true', help='If true, it will rescale the trajectory to the ground truth trajectory during umeyama.')
     parser.add_argument('--makeAnimation', type=str, default="", help='Provides the path to the video sub-sequence with the TSlam interface \
                                                                        (not the entire video) if you want to output animations (extra time).')
     parser.add_argument('--out', type=str, help='Path to the output result files.')
+    parser.add_argument('--debug', action='store_false', help='If called, it will print debug information on console rather than saving.')
 
     args = parser.parse_args()
 
@@ -189,11 +209,10 @@ if __name__ == "__main__":
     if not os.path.exists(args.out):
         print("\033[93m[WARNING]: --out folder does not exist, creating one\n\033[0m")
         os.makedirs(args.out)
-        
+
     name_file : str = args.ts.split('/')[-1].split('.')[0]
     time_stamp : str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    sequence_id : str = args.ts.split('/')[-1]
-    _out_subdir : str = f"{args.out}/{args.name}_{sequence_id}_{time_stamp}"
+    _out_subdir : str = f"{args.out}/{args.name}_{time_stamp}"
     os.system(f"mkdir {_out_subdir}")
 
     _is_make_animation : bool = False
@@ -202,19 +221,21 @@ if __name__ == "__main__":
         _is_make_animation = True
         _video_path = args.makeAnimation
 
-    # redirect all the output of the console into a log file
-    sys.stdout = open(f"{_out_subdir}/running_log.txt", "w")
+    _is_single_mode : bool = False
+    if args.singleMode != "":
+        _is_single_mode = True
 
-    # get the git commit 
+    if args.debug:
+        sys.stdout = open(f"{_out_subdir}/running_log.txt", "w")
+
     print("==============================================================================================")
-    print(f"Benchmarking of subsequence: {args.name} - {args.ts}")
+    print(f"Benchmarking of subsequence file: {args.ts}")
+    print(f"IS in single mode: {_is_single_mode}")
     print(f"Processing: {args.ts}")
-    print("==============================================================================================")
 
-    # TODO: find a better alternative to switch between single mode and batch mode
-    if args.singleMode:
+    if _is_single_mode:
         main(gt_path=args.gt,
-             ts_path=args.ts,
+             ts_path=args.singleMode,
              out_dir=_out_subdir,
              video_path=_video_path,
              is_make_animation=_is_make_animation,
@@ -222,18 +243,22 @@ if __name__ == "__main__":
              is_img_saved=args.saveImg,
              is_rescale=args.rescale)
     else:
-        ts_files : str = "/home/as/TSlam/eval/script/test/outposes/01_2023-05-19_19-29-01"
+        ts_files : str = args.ts
         files = [os.path.join(ts_files, f) for f in os.listdir(ts_files) if os.path.isfile(os.path.join(ts_files, f))]
         files.sort(key=lambda x: os.path.getmtime(x))
+        total_nbr_files : int = len(files)
 
-        for idx, file in tqdm(enumerate(files)):
+        for idx, file in tqdm(enumerate(files), total=total_nbr_files, desc="Benchmarking sequences"):
+            _out_sec_subdir : str = f"{_out_subdir}/bench_{file.split('/')[-1].split('.')[0]}"
+            os.system(f"mkdir {_out_sec_subdir}")
+            print(f"_out_sec_subdir: {_out_sec_subdir}")
+
             if file.endswith(".txt") and not "running_log" in file:
                 file_path = os.path.join(ts_files, file)
-                out_subdir = f"{_out_subdir}/{file.split('/')[-1].split('.')[0]}"
                 print(file)
                 main(gt_path=args.gt,
                     ts_path=file_path,
-                    out_dir=_out_subdir,
+                    out_dir=_out_sec_subdir,
                     video_path=_video_path,
                     is_make_animation=_is_make_animation,
                     is_show_plot=args.showPlot,

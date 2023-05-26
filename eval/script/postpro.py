@@ -40,18 +40,15 @@ def align_trajectories(src_poss : np.array,
 
                        est_coverage : np.array,
                        est_tags : np.array,
-                       coverage_threshold : float = 20,
                        tag_threshold : int = 3,
 
                        is_rescale : bool = False,
                        ) -> np.array:
     """
-        The main function responsible for register the tslam trajectory to the gt trajectory.
-        It is based on the following steps:
-            1. select the best, farest 2 idxs for the alignment (only valid poses)
-            2. apply a rotation to the src_poss to align it with the tgt_poss
-            3. apply a translation to the src_poss to align it with the tgt_poss
-            4. apply a rotation yaw-only to allign the rotation vectors of the highest best pose
+        The main function responsible for register the tslam trajectory to the gt trajectory based
+        on umeyama. We only take the poses with a good coverage and a minimum number of a given
+        threshold of detected tags. If the candidates are less than 3, we consider the transformation
+        not to be possible.
 
         Args:
             np.array: src_poss, the positions of the camera
@@ -59,7 +56,6 @@ def align_trajectories(src_poss : np.array,
             np.array: src_rot_vec, the rotations of the camera as rotation vectors
             np.array: tgt_rot_vec, the rotations of the camera as rotation vectors
             np.array: est_coverage, the coverage of the tracking system (0: good, 1: corrupted(lost/drifted/undetected))
-            int: coverage_threshold, the minimum coverage percentage to consider the data valid in pourcentage e.g. 20 (%).
             int: tag_threshold, the threshold of number of detected tags.
             np.array: est_tags, the array of detected tags.
             bool: is_rescale, if True, the registration will rescale the trajectory.
@@ -72,7 +68,7 @@ def align_trajectories(src_poss : np.array,
     # select the best idxs for the alignment (only valid poses)
     est_idx_candidates = __select_best_idx(tag_threshold, est_tags, est_coverage)
     if len(est_idx_candidates) < 3:
-        print("\033[93m[WARNING]: less than 3 candidates, not possible to define alignement vector \n\033[0m")
+        print(F"\033[93m[WARNING]: less than 3 candidates, not possible to define alignement vector \n\033[0m")
         ts_idx_candidates = []
         return src_poss, src_rot_vec, ts_idx_candidates
 
@@ -105,7 +101,7 @@ def align_and_benchmark(src_poss : np.array,
                         tgt_rot_vec : np.array,
                         est_coverage : np.array,
                         est_tags : np.array,
-                        coverage_threshold : float,
+                        # coverage_threshold : float,
                         tag_threshold : int,
                         is_rescale : bool,
                         distances : np.array) -> dict:
@@ -131,7 +127,6 @@ def align_and_benchmark(src_poss : np.array,
                                                                            tgt_rot_vec,
                                                                            est_coverage,
                                                                            est_tags,
-                                                                           coverage_threshold,
                                                                            tag_threshold,
                                                                            is_rescale
                                                                            )
@@ -149,6 +144,10 @@ def align_and_benchmark(src_poss : np.array,
         - poss_xyz: the drift of the position of the tslam with its ground truth for each pose in meters.
         - rots_xyz: the drift of the rotation of the tslam with its ground truth for each pose in degrees.
     """
+    # if the alignement fails return empty results
+    if len(__ts_idx_candidates) == 0:
+        return None
+
     src_poss_4_metrics = np.array([src_poss[i] for i in range(len(src_poss)) if est_coverage[i] == True])
     src_rot_vec_4_metrics = np.array([src_rot_vec[i] for i in range(len(src_rot_vec)) if est_coverage[i] == True])
     est_tags_4_metrics = np.array([est_tags[i] for i in range(len(est_tags)) if est_coverage[i] == True])
