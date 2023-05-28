@@ -108,7 +108,7 @@ def main(gt_path : str,
     # if results is empty, we return
     if results is None:
         print(f"--- No alignment possible, exiting..")
-        os.system(f"touch {out_dir}/NOALLIGNEMENT.txt")
+        os.system(f"touch {out_dir}/bench_{id}_NOALLIGNEMENT.txt")
         return
 
     if results["drift_position_mean"] > results_p30["drift_position_mean"]:
@@ -162,6 +162,7 @@ def main(gt_path : str,
     """ The images are saved in the output folder. """
     if is_img_saved:
         io_stream.dump_imgs(out_dir=out_dir,
+                            id=id,
                             fig_3d=fig_3d,
                             fig_2d_poss_drift=fig_2d_poss_drift,
                             fig_2d_rots_drift=fig_2d_rots_drift)
@@ -179,6 +180,7 @@ def main(gt_path : str,
                                  opti_vec_rots,
                                  video_path=video_path,
                                  out_dir=out_dir,
+                                 id=id,
                                  total_frames=total_frames,
                                  is_draw_rot_vec=True)
     print(f"Animation completed and save locally.")
@@ -198,6 +200,8 @@ if __name__ == "__main__":
     parser.add_argument('--rescale', action='store_true', help='If true, it will rescale the trajectory to the ground truth trajectory during umeyama.')
     parser.add_argument('--makeAnimation', type=str, default="", help='Provides the path to the video sub-sequence with the TSlam interface \
                                                                        (not the entire video) if you want to output animations (extra time).')
+    parser.add_argument('--cstId', type=int, default=-1, help='Custom Id name of the sequence. \
+                                                               NB: only valid for single mode.')
     parser.add_argument('--out', type=str, help='Path to the output result files.')
     parser.add_argument('--debug', action='store_false', help='If called, it will print debug information on console rather than saving.')
 
@@ -213,7 +217,7 @@ if __name__ == "__main__":
 
     name_file : str = args.ts.split('/')[-1].split('.')[0]
     time_stamp : str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    _out_subdir : str = f"{args.out}/{args.name}_{time_stamp}"
+    _out_subdir : str = f"{args.out}/{args.name}_{time_stamp}"  # FIXME: we don't benchmark here
     os.system(f"mkdir {_out_subdir}")
 
     _is_make_animation : bool = False
@@ -227,7 +231,7 @@ if __name__ == "__main__":
         _is_single_mode = True
 
     if args.debug:
-        sys.stdout = open(f"{_out_subdir}/running_log.txt", "w")
+        sys.stdout = open(f"{_out_subdir}/running_compute_metrics.log", "w")
 
     print("==============================================================================================")
     print(f"Benchmarking of subsequence file: {args.ts}")
@@ -235,7 +239,10 @@ if __name__ == "__main__":
     print(f"Processing: {args.ts}")
 
     if _is_single_mode:
-        _id = args.singleMode.split('/')[-1].split('.')[0]
+        if args.cstId == -1:
+            _id : str = "s_" + str(args.singleMode.split('/')[-1].split('.')[0])
+        else:
+            _id : str = f"{args.cstId}_" + str(args.singleMode.split('/')[-1].split('.')[0])
         main(gt_path=args.gt,
              ts_path=args.singleMode,
              out_dir=_out_subdir,
@@ -247,7 +254,7 @@ if __name__ == "__main__":
              is_rescale=args.rescale)
 
         sys.stdout.close()
-        return
+        sys.exit(0)
 
     ts_files : str = args.ts
     files = [os.path.join(ts_files, f) for f in os.listdir(ts_files) if os.path.isfile(os.path.join(ts_files, f))]
@@ -255,20 +262,18 @@ if __name__ == "__main__":
     total_nbr_files : int = len(files)
 
     for idx, file in tqdm(enumerate(files), total=total_nbr_files, desc="Benchmarking sequences"):
-        _id = file.split('/')[-1].split('.')[0]
-        _out_sec_subdir : str = f"{_out_subdir}/bench_{_id}"
-        os.system(f"mkdir {_out_sec_subdir}")
-        print(f"_out_sec_subdir: {_out_sec_subdir}")
 
-        if not file.endswith(".txt") and "running_log" in file:
+        if not file.endswith(".txt"):
             continue
+
+        _id : str = f"{idx}_" + str(file.split('/')[-1].split('.')[0])
 
         file_path = os.path.join(ts_files, file)
         print(f"processing file: {file} ..")
 
         main(gt_path=args.gt,
             ts_path=file_path,
-            out_dir=_out_sec_subdir,
+            out_dir=_out_subdir,
             video_path=_video_path,
             id=_id,
             is_make_animation=_is_make_animation,

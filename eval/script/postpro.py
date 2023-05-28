@@ -176,3 +176,10 @@ def align_and_benchmark(src_poss : np.array,
     }
 
     return results
+
+def compute_overview_sequence() -> None:
+    """
+        This function outputs the overview of the entire sequence based on the results computed
+        for each individual sub-sequence. The overview is composed by the following metrics:
+        - mean_coverage_perc:
+    """

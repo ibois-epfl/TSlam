@@ -241,15 +241,17 @@ def dump_results(out_dir : str,
                  frame_start : int,
                  frame_end : int) -> None:
     """ The function save the results of the evaluation to local. """
-    path_results : str = f"{out_dir}/results"
-    os.system(f"mkdir {path_results}")
+    # set the filenames
+    overview_path : str = f"{out_dir}/{id}_overview_bench.txt"
+    drift_poss_path : str = f"{out_dir}/{id}_drift_poss_xyz_bench.csv"
+    drift_rots_path : str = f"{out_dir}/{id}_drift_rots_xyz_bench.csv"
 
     # save the poss_xyz
-    np.savetxt(f"{path_results}/drift_poss_xyz.csv", drift_poss_xyz, delimiter=",")
-    np.savetxt(f"{path_results}/drift_rots_xyz.csv", drift_rots_xyz, delimiter=",")
+    np.savetxt(drift_poss_path, drift_poss_xyz, delimiter=",")
+    np.savetxt(drift_rots_path, drift_rots_xyz, delimiter=",")
 
     # save the overview of the means and metadata of the eval
-    with open(f"{path_results}/overview.txt", "w") as f:
+    with open(overview_path, "w") as f:
         f.write("---- git commit id ----------------------------------\n")
         git_commit_name = os.popen('git rev-parse --short HEAD').read()
         f.write(f"git_commit_name: {git_commit_name}\n")
@@ -272,16 +274,18 @@ def dump_results(out_dir : str,
 #===============================================================================
 
 def dump_imgs(out_dir : str,
+              id : str,
               fig_3d : plt.figure,
               fig_2d_poss_drift : plt.figure,
               fig_2d_rots_drift : plt.figure) -> None:
     """ The function saves the graphs of the evaluation to local """
-    path_graph_dir : str = f"{out_dir}/graphs"
-    os.system(f"mkdir {path_graph_dir}")
+    allign_3d_path : str = f"{out_dir}/{id}_allign_3d_graph.png"
+    error_poss_xyz_path : str = f"{out_dir}/{id}_error_poss_xyz_graph.png"
+    error_rots_xyz_path : str = f"{out_dir}/{id}_error_rots_xyz_graph.png"
 
-    fig_3d.savefig(f"{path_graph_dir}/allign_3d.png")
-    fig_2d_poss_drift.savefig(f"{path_graph_dir}/error_poss_xyz.png")
-    fig_2d_rots_drift.savefig(f"{path_graph_dir}/error_rots_xyz.png")
+    fig_3d.savefig(allign_3d_path)
+    fig_2d_poss_drift.savefig(error_poss_xyz_path)
+    fig_2d_rots_drift.savefig(error_rots_xyz_path)
 
 def dump_animation(est_pos,
                    est_rot,
@@ -289,19 +293,18 @@ def dump_animation(est_pos,
                    gt_rot,
                    total_frames : int,
                    out_dir : str,
+                   id : str,
                    video_path : str = None,
                    is_draw_rot_vec : bool = False,
                    ) -> None:
     """ Create a side-by-side animation with the video of the sequence of the trajectory """
-    anim_out_dir = os.path.join(out_dir, "animation")
-    temp_dir = os.path.join(anim_out_dir, "temp")
+    temp_dir = os.path.join(out_dir, "temp")
     temp_video_dir = os.path.join(temp_dir, "video")
-    temp_graph_dir = os.path.join(temp_dir, "graph")
 
-    os.makedirs(anim_out_dir, exist_ok=True)
     os.makedirs(temp_dir, exist_ok=True)
     os.makedirs(temp_video_dir, exist_ok=True)
-    os.makedirs(temp_graph_dir, exist_ok=True)
+
+    video_filename = f"{id}_animation3d_video.mp4"
 
     # extract each frame of the video in the temp_video_dir between frame_start and frame_end
     os.system(f"ffmpeg -y -i {video_path} -r 30 {temp_video_dir}/%d.png")
@@ -373,7 +376,7 @@ def dump_animation(est_pos,
     ani = animation.FuncAnimation(fig, update,
                                   frames=total_frames,
                                   interval=1000/30)  # 30fps equivalent in ms
-    ani.save(os.path.join(anim_out_dir, "animation.mp4"), writer='ffmpeg', fps=30, dpi=300)
+    ani.save(os.path.join(out_dir, video_filename), writer='ffmpeg', fps=30, dpi=300)
 
     # erasse the temp folder
     os.system(f"rm -rf {temp_dir}")
