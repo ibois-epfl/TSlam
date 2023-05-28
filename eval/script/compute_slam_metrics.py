@@ -18,7 +18,6 @@ from scipy.signal import savgol_filter
 from scipy.spatial.transform import Rotation
 
 
-# TODO: when alignement is not possible, write it to file
 # TODO: get rid of all the subfolders while outputing files
 # FIXME: the path to the video of the animation needs to be adjusted for patching
 # TODO: add an overview of the video (what metrics?based on tools?) at the end of the video when batched
@@ -27,6 +26,7 @@ def main(gt_path : str,
          ts_path : str,
          out_dir : str,
          video_path : str,
+         id : str,
          is_img_saved : bool,
          is_show_plot : bool,
          is_img_save : bool = False,
@@ -108,7 +108,7 @@ def main(gt_path : str,
     # if results is empty, we return
     if results is None:
         print(f"--- No alignment possible, exiting..")
-        os.system(f"touch {out_dir}/NOALLIGNEMENT.txt"")
+        os.system(f"touch {out_dir}/NOALLIGNEMENT.txt")
         return
 
     if results["drift_position_mean"] > results_p30["drift_position_mean"]:
@@ -120,6 +120,7 @@ def main(gt_path : str,
     print("==============================================================================================")
     print(f"--- Dumping results to local file..")
     io_stream.dump_results(out_dir,
+                           id,
                            results["coverage_percentage"],
                            results["tags_mean"],
                            results["drift_position_mean"],
@@ -234,36 +235,46 @@ if __name__ == "__main__":
     print(f"Processing: {args.ts}")
 
     if _is_single_mode:
+        _id = args.singleMode.split('/')[-1].split('.')[0]
         main(gt_path=args.gt,
              ts_path=args.singleMode,
              out_dir=_out_subdir,
              video_path=_video_path,
+             id=_id,
              is_make_animation=_is_make_animation,
              is_show_plot=args.showPlot,
              is_img_saved=args.saveImg,
              is_rescale=args.rescale)
-    else:
-        ts_files : str = args.ts
-        files = [os.path.join(ts_files, f) for f in os.listdir(ts_files) if os.path.isfile(os.path.join(ts_files, f))]
-        files.sort(key=lambda x: os.path.getmtime(x))
-        total_nbr_files : int = len(files)
 
-        for idx, file in tqdm(enumerate(files), total=total_nbr_files, desc="Benchmarking sequences"):
-            _out_sec_subdir : str = f"{_out_subdir}/bench_{file.split('/')[-1].split('.')[0]}"
-            os.system(f"mkdir {_out_sec_subdir}")
-            print(f"_out_sec_subdir: {_out_sec_subdir}")
+        sys.stdout.close()
+        return
 
-            if file.endswith(".txt") and not "running_log" in file:
-                file_path = os.path.join(ts_files, file)
-                print(file)
-                main(gt_path=args.gt,
-                    ts_path=file_path,
-                    out_dir=_out_sec_subdir,
-                    video_path=_video_path,
-                    is_make_animation=_is_make_animation,
-                    is_show_plot=args.showPlot,
-                    is_img_saved=args.saveImg,
-                    is_rescale=args.rescale)
+    ts_files : str = args.ts
+    files = [os.path.join(ts_files, f) for f in os.listdir(ts_files) if os.path.isfile(os.path.join(ts_files, f))]
+    files.sort(key=lambda x: os.path.getmtime(x))
+    total_nbr_files : int = len(files)
+
+    for idx, file in tqdm(enumerate(files), total=total_nbr_files, desc="Benchmarking sequences"):
+        _id = file.split('/')[-1].split('.')[0]
+        _out_sec_subdir : str = f"{_out_subdir}/bench_{_id}"
+        os.system(f"mkdir {_out_sec_subdir}")
+        print(f"_out_sec_subdir: {_out_sec_subdir}")
+
+        if not file.endswith(".txt") and "running_log" in file:
+            continue
+
+        file_path = os.path.join(ts_files, file)
+        print(f"processing file: {file} ..")
+
+        main(gt_path=args.gt,
+            ts_path=file_path,
+            out_dir=_out_sec_subdir,
+            video_path=_video_path,
+            id=_id,
+            is_make_animation=_is_make_animation,
+            is_show_plot=args.showPlot,
+            is_img_saved=args.saveImg,
+            is_rescale=args.rescale)
 
     sys.stdout.close()
 

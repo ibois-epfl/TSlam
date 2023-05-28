@@ -230,6 +230,7 @@ def run_checks(opti_poss : np.array,
 #===============================================================================
 
 def dump_results(out_dir : str,
+                 id : str,
                  coverage_perc : float,
                  tags_mean : float,
                  drift_poss_mean : float,
