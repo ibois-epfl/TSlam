@@ -26,26 +26,25 @@ gantt
     protocols design                :done, ptrd, 2023-02-24, 2023-03-20
     Protocol submission             :milestone, 2023-03-14, 0d
     preparation of eval             :done, 15d
-    Fabrication eval                :crit, 55d
-    Data/visual processing          :15d
-    Stand-up eval results           :milestone, 2d
-
-    section Documentation
-    code cleaning                   :3d
-    CI/CD integration               :8d
+    Fabrication eval                :active, 70d
+    Benchmark/visual processing     :crit, 30d
+    
+    section Release Preparation
+    debugging features              :active, 2023-06-01, 2023-06-15
+    AC integration for visuals      :active, 2023-06-15, 2023-07-30
+    TSlam Rhino design package      :crit, 2023-07-20, 2023-08-15
+    end HB internship               :milestone, 2023-08-15
 
     section Paper redaction
-    Redaction text/illustration     :20d
+    Redaction text/illustration     :active, pprd, 2023-09-25, 20d
     Submission                      :milestone, 1d
-    Publishing                      :milestone, 120d
     
     section Maintenance            
     Profiling of tslam                  :done, opti, 2023-04-19, 10d
-    Optimization of tslam               :active, 25d
-    Student project for optimization    :90d
-    Integration into AC                 :30d
-    Testing coverage for TSlam/ACTslam  :30d
-    Refinement for reconstruction       :20d
+    Optimization of tslam               :active, 2023-06-20, 2023-09-01
+    Student project for optimization    :crit, 90d, 2023-09-15, 2023-12-01
+    Testing coverage for TSlam/ACTslam  :crit, 30d
+    Refinement for reconstruction       :crit, 20d
 ```
 
 # TSlam
