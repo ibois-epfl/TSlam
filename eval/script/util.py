@@ -1,4 +1,5 @@
 import numpy as np
+import os
 
 def verify_trajectories_distortion(trajectory1 : np.ndarray,
                                    trajectory2 : np.ndarray,

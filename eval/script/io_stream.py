@@ -4,9 +4,17 @@ from scipy.spatial.transform import Rotation
 import math
 import os
 import transformations as tfm
+import sys
+
+import matplotlib
+matplotlib.use('TkAgg')  # <-- to avoid memory leak
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+
 import visuals
+
+# TODO: test debug
+import gc  # for collecting buffer memory
 
 #===============================================================================
 # optitrack and tslam streams
@@ -231,42 +239,95 @@ def run_checks(opti_poss : np.array,
 
 def dump_results(out_dir : str,
                  id : str,
+                 frames : np.array(int),
                  coverage_perc : float,
+                 coverages : np.array(int),
                  tags_mean : float,
+                 tags : np.array(int),
                  drift_poss_mean : float,
                  drift_rots_mean : float,
-                 drift_poss_xyz : float,
-                 drift_rots_xyz : float,
+                 drift_poss_xyz : np.array(float),
+                 drift_rots_xyz : np.array(float),
+                 drift_poss_mean_xyz : np.array(float),
+                 drift_rots_mean_xyz : np.array(float),
                  toolhead_name : str,
                  frame_start : int,
                  frame_end : int) -> None:
     """ The function save the results of the evaluation to local. """
-    # set the filenames
     overview_path : str = f"{out_dir}/{id}_overview_bench.txt"
-    drift_poss_path : str = f"{out_dir}/{id}_drift_poss_xyz_bench.csv"
-    drift_rots_path : str = f"{out_dir}/{id}_drift_rots_xyz_bench.csv"
+    coverages_path : str = f"{out_dir}/{id}_coverages_bench.csv"
+    metrics_csv_path : str = f"{out_dir}/{id}_bench.csv"
 
-    # save the poss_xyz
-    np.savetxt(drift_poss_path, drift_poss_xyz, delimiter=",")
-    np.savetxt(drift_rots_path, drift_rots_xyz, delimiter=",")
+    assert len(frames) == len(coverages)
+    with open(metrics_csv_path, "w") as f:
+        writer = csv.writer(f, delimiter=';')
+        writer.writerow([
+                         "tags"
+                         "drift_poss_x",
+                         "drift_poss_y",
+                         "drift_poss_z",
+                         "drift_poss_mean",
+                         "drift_rots_x",
+                         "drift_rots_y",
+                         "drift_rots_z",
+                         "drift_poss_mean",
+                         ])
+        for idx, tag in enumerate(tags):
+            writer.writerow([
+                             tag,
+                             drift_poss_xyz[idx][0],
+                             drift_poss_xyz[idx][1],
+                             drift_poss_xyz[idx][2],
+                             drift_poss_mean_xyz[idx],
+                             drift_rots_xyz[idx][0],
+                             drift_rots_xyz[idx][1],
+                             drift_rots_xyz[idx][2],
+                             drift_rots_mean_xyz[idx],
+                             ])
 
-    # save the overview of the means and metadata of the eval
+    with open(coverages_path, "w") as f:
+        # use csv module python
+        writer = csv.writer(f, delimiter=';')
+        writer.writerow([
+                         "frames",
+                         "coverages",
+                         ])
+        for idx, frame in enumerate(frames):
+            writer.writerow([
+                             frame,
+                             coverages[idx],
+                             ])
+
+    # np.savetxt(frames_path, frames, delimiter=",")
+    # np.savetxt(drift_poss_path, drift_poss_xyz, delimiter=",")
+    # np.savetxt(drift_poss_path, drift_poss_xyz, delimiter=",")
+    # np.savetxt(drift_rots_path, drift_rots_xyz, delimiter=",")
+    # np.savetxt(drift_poss_mean_xyz_path, drift_poss_mean_xyz, delimiter=",")
+    # np.savetxt(drift_rots_mean_xyz_path, drift_rots_mean_xyz, delimiter=",")
+    # np.savetxt(tags_path, tags, delimiter=",")
+    # # merge all the csv files into one
+    # os.system(f"paste -d ',' {drift_poss_path} {drift_rots_path} {drift_poss_mean_xyz_path} {drift_rots_mean_xyz_path} {tags_path} > {out_dir}/{id}_bench.csv")
+    # # add an header to the csv file
+    # os.system(f"sed -i '1s/^/drift_poss_x,drift_poss_y,drift_poss_z,drift_rots_x,drift_rots_y,drift_rots_z,drift_poss_mean_x,drift_poss_mean_y,drift_poss_mean_z,drift_rots_mean_x,drift_rots_mean_y,drift_rots_mean_z,tags\n/' {out_dir}/{id}_bench.csv")
+
+
+
+
     with open(overview_path, "w") as f:
-        f.write("---- git commit id ----------------------------------\n")
+        f.write("---- git commit id\n")
         git_commit_name = os.popen('git rev-parse --short HEAD').read()
         f.write(f"git_commit_name: {git_commit_name}\n")
 
-        f.write("---- info sub-sequence ------------------------------\n")
+        f.write("---- info sub-sequence\n")
         f.write(f"frame_start: {frame_start}\n")
         f.write(f"frame_end: {frame_end}\n")
         f.write(f"toolhead_name: {toolhead_name}\n")
 
-        f.write("---- overview metrics -------------------------------\n")
+        f.write("---- overview metrics\n")
         f.write(f"coverage_perc: {coverage_perc}\n")
         f.write(f"tags_mean: {tags_mean}\n")
         f.write(f"drift_poss_mean [meters]: {drift_poss_mean}\n")
         f.write(f"drift_rots_mean [degrees]: {drift_rots_mean}\n")
-        f.write("-----------------------------------------------------\n")
         f.write("-----------------------------------------------------\n")
 
 #===============================================================================
@@ -372,10 +433,14 @@ def dump_animation(est_pos,
 
         idx += 1
 
+        plt.close(fig)
+        gc.collect()  # for collecting buffer memory
+
     # create the animation
     ani = animation.FuncAnimation(fig, update,
                                   frames=total_frames,
-                                  interval=1000/30)  # 30fps equivalent in ms
+                                  interval=1000/30,
+                                  save_count=0)  # 30fps equivalent in ms
     ani.save(os.path.join(out_dir, video_filename), writer='ffmpeg', fps=30, dpi=300)
 
     # erasse the temp folder

@@ -18,9 +18,8 @@ from scipy.signal import savgol_filter
 from scipy.spatial.transform import Rotation
 
 
-# TODO: get rid of all the subfolders while outputing files
-# FIXME: the path to the video of the animation needs to be adjusted for patching
-# TODO: add an overview of the video (what metrics?based on tools?) at the end of the video when batched
+# FIXME: the path to the video of the animation needs to be adjusted for patchingt
+# TODO: output overview result of all the sequences in a single file
 
 def main(gt_path : str,
          ts_path : str,
@@ -40,6 +39,7 @@ def main(gt_path : str,
     frame_start = int(ts_path.split('/')[-1].split('_')[0])
     frame_end = int(ts_path.split('/')[-1].split('_')[1].split('.')[0])
     total_frames = frame_end - frame_start
+    frames : np.array(int) = np.arange(frame_start, frame_end+1)
     """
         We import the data from the ground truth and the tslam and we output the following data:
         - opti_poss: the positions of the camera from the ground truth optitrack
@@ -84,7 +84,6 @@ def main(gt_path : str,
     """
     TAG_THRESH = 2
     print(f"Number of minimum tag detected per pose: {TAG_THRESH}")
-    # FIXME: if the realignement is failing we need to report it in files or do something
     results = postpro.align_and_benchmark(src_poss=ts_poss,
                                           tgt_poss=opti_poss,
                                           src_rot_vec=ts_vec_rots,
@@ -108,7 +107,7 @@ def main(gt_path : str,
     # if results is empty, we return
     if results is None:
         print(f"--- No alignment possible, exiting..")
-        os.system(f"touch {out_dir}/bench_{id}_NOALLIGNEMENT.txt")
+        os.system(f"touch {out_dir}/{id}_bench_NOALLIGNEMENT.txt")
         return
 
     if results["drift_position_mean"] > results_p30["drift_position_mean"]:
@@ -121,12 +120,17 @@ def main(gt_path : str,
     print(f"--- Dumping results to local file..")
     io_stream.dump_results(out_dir,
                            id,
-                           results["coverage_percentage"],
+                           frames,
+                           results["mean_coverage_perc"],
+                           ts_coverages,
                            results["tags_mean"],
+                           results["tags"],
                            results["drift_position_mean"],
                            results["drift_rotation_mean"],
                            results["drift_poss_xyz"],
                            results["drift_rots_xyz"],
+                           results["drift_poss_mean_xyz"],
+                           results["drift_rots_mean_xyz"],
                            toolhead_name,
                            frame_start,
                            frame_end)
@@ -183,7 +187,7 @@ def main(gt_path : str,
                                  id=id,
                                  total_frames=total_frames,
                                  is_draw_rot_vec=True)
-    print(f"Animation completed and save locally.")
+        print(f"Animation completed and save locally.")
     print("==============================================================================================")
     print("The program exited correctly")
 
@@ -192,16 +196,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Compute the metrics for tslam.')
     parser.add_argument('--name', type=str, default="noname", help='Name of the sequence.')
     parser.add_argument('--gt', type=str, help='Path to the ground truth trajectory file (refined trajectory).')
-    parser.add_argument('--ts', type=str, help='Path to the tslam trajectory directory containing all the ts subsequences poses.')
+    parser.add_argument('--ts', type=str, help='Directory to the tslam trajectory directory containing all the ts subsequences poses.')
     parser.add_argument('--showPlot', action='store_true', help='If true, it will show the plot.')
     parser.add_argument('--singleMode', type=str, default="", help='Provides the path to the sub-sequence ts file to benchmark.' \
-                                                                    'This provides the chance to cherry pick and analyse just one')
+                                                                    'This provides the chance to cherry pick and analyse just one' \
+                                                                    'If --makeAnimation is enabled, place the video in ts folder with same naming frmae start and end.')
     parser.add_argument('--saveImg', action='store_true', help='If true, it will save the plots.')
     parser.add_argument('--rescale', action='store_true', help='If true, it will rescale the trajectory to the ground truth trajectory during umeyama.')
-    parser.add_argument('--makeAnimation', type=str, default="", help='Provides the path to the video sub-sequence with the TSlam interface \
-                                                                       (not the entire video) if you want to output animations (extra time).')
-    parser.add_argument('--cstId', type=int, default=-1, help='Custom Id name of the sequence. \
-                                                               NB: only valid for single mode.')
+    parser.add_argument('--cstId', type=int, default=-1, help='If in single mode, provide the id of the sequence.')
+    parser.add_argument('--makeAnimation', type=str, default=None, help='If called, it will output animation (extra time).' \
+                                                                        'In single mode provide also the video path.')
     parser.add_argument('--out', type=str, help='Path to the output result files.')
     parser.add_argument('--debug', action='store_false', help='If called, it will print debug information on console rather than saving.')
 
@@ -217,25 +221,26 @@ if __name__ == "__main__":
 
     name_file : str = args.ts.split('/')[-1].split('.')[0]
     time_stamp : str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    _out_subdir : str = f"{args.out}/{args.name}_{time_stamp}"  # FIXME: we don't benchmark here
+    _out_subdir : str = f"{args.out}/{args.name}_{time_stamp}"
     os.system(f"mkdir {_out_subdir}")
 
+    if args.debug:
+        sys.stdout = open(f"{_out_subdir}/running_compute_metrics.log", "w")
+
     _is_make_animation : bool = False
-    _video_path = ""
-    if args.makeAnimation != "":
-        _is_make_animation = True
-        _video_path = args.makeAnimation
+    if args.makeAnimation != None:
+        _is_make_animation : bool = True
 
     _is_single_mode : bool = False
     if args.singleMode != "":
         _is_single_mode = True
 
-    if args.debug:
-        sys.stdout = open(f"{_out_subdir}/running_compute_metrics.log", "w")
-
     print("==============================================================================================")
     print(f"Benchmarking of subsequence file: {args.ts}")
-    print(f"IS in single mode: {_is_single_mode}")
+    start_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    print(f"Starting time: {start_timestamp}")
+    print(f"Is in single mode: {_is_single_mode}")
+    print(f"Is make animation: {_is_make_animation}")
     print(f"Processing: {args.ts}")
 
     if _is_single_mode:
@@ -246,7 +251,7 @@ if __name__ == "__main__":
         main(gt_path=args.gt,
              ts_path=args.singleMode,
              out_dir=_out_subdir,
-             video_path=_video_path,
+             video_path=args.makeAnimation,
              id=_id,
              is_make_animation=_is_make_animation,
              is_show_plot=args.showPlot,
@@ -259,27 +264,52 @@ if __name__ == "__main__":
     ts_files : str = args.ts
     files = [os.path.join(ts_files, f) for f in os.listdir(ts_files) if os.path.isfile(os.path.join(ts_files, f))]
     files.sort(key=lambda x: os.path.getmtime(x))
-    total_nbr_files : int = len(files)
 
-    for idx, file in tqdm(enumerate(files), total=total_nbr_files, desc="Benchmarking sequences"):
+    pose_files = [f for f in files if f.endswith(".txt")]
+    video_files = [f for f in files if f.endswith("_raw.mp4")]  # TODO: change if you want gui video
 
-        if not file.endswith(".txt"):
-            continue
+    if _is_make_animation:
+        assert len(pose_files) == len(video_files), f"[ERROR]: The number of pose files and video files must be the same \
+                                                    pose files: {len(pose_files)} \
+                                                    video files: {len(video_files)}"
 
+    for idx, file in tqdm(enumerate(pose_files), total=pose_files.__len__(), desc="Benchmarking sequences"):
         _id : str = f"{idx}_" + str(file.split('/')[-1].split('.')[0])
+        print(f"Processing file ID: {_id}")
 
-        file_path = os.path.join(ts_files, file)
-        print(f"processing file: {file} ..")
+        _video_file : str = ""
+        if _is_make_animation:
+            _video_file : str = video_files[idx]
 
         main(gt_path=args.gt,
-            ts_path=file_path,
+            ts_path=pose_files[idx],
             out_dir=_out_subdir,
-            video_path=_video_path,
+            video_path=_video_file,
             id=_id,
             is_make_animation=_is_make_animation,
             is_show_plot=args.showPlot,
             is_img_saved=args.saveImg,
             is_rescale=args.rescale)
+
+    print(f"--- Benchmarking terminated for each sub-sequence.")
+    print("==============================================================================================")
+    print(f"--- Computing overview results of the entire video..")
+    metrics.compute_fab_results(out_dir=_out_subdir,
+                                sess_name=args.name)
+    
+
+    print(f"--- Completed succesfully overview results ..")
+    print("==============================================================================================")
+    end_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    end_timestamp_s : float = datetime.timestamp(datetime.strptime(end_timestamp, "%Y-%m-%d_%H-%M-%S"))
+    start_timestamp_s : float = datetime.timestamp(datetime.strptime(start_timestamp, "%Y-%m-%d_%H-%M-%S"))
+    elapsed_time_s : float = end_timestamp_s - start_timestamp_s
+    elapsed_time_h : str = elapsed_time_s / 60 / 60
+    print(f"--- Ending time: {end_timestamp}")
+    print(f"Total time: {elapsed_time_h} hours")
+    print("==============================================================================================")
+    print("==============================================================================================")
+    print("==============================================================================================")
 
     sys.stdout.close()
 

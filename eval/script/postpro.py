@@ -101,7 +101,6 @@ def align_and_benchmark(src_poss : np.array,
                         tgt_rot_vec : np.array,
                         est_coverage : np.array,
                         est_tags : np.array,
-                        # coverage_threshold : float,
                         tag_threshold : int,
                         is_rescale : bool,
                         distances : np.array) -> dict:
@@ -141,13 +140,15 @@ def align_and_benchmark(src_poss : np.array,
         - tags_mean: the mean of the number of detected tags for each pose
         - drift_poss_mean: the mean of the drift of the position of the tslam with its ground truth
         - drift_rots_mean: the mean of the drift of the rotation of the tslam with its ground truth
-        - poss_xyz: the drift of the position of the tslam with its ground truth for each pose in meters.
-        - rots_xyz: the drift of the rotation of the tslam with its ground truth for each pose in degrees.
+        - drift_poss_xyz: the drift of the position of the tslam with its ground truth for each pose in meters.
+        - drift_rots_xyz: the drift of the rotation of the tslam with its ground truth for each pose in degrees.
     """
     # if the alignement fails return empty results
     if len(__ts_idx_candidates) == 0:
         return None
 
+    # IMPORTANT: for the metrics we use only the values with a true value for coverage, the rest are not used in the evaluation
+    # NB: the coverages values are passed as is to the results output
     src_poss_4_metrics = np.array([src_poss[i] for i in range(len(src_poss)) if est_coverage[i] == True])
     src_rot_vec_4_metrics = np.array([src_rot_vec[i] for i in range(len(src_rot_vec)) if est_coverage[i] == True])
     est_tags_4_metrics = np.array([est_tags[i] for i in range(len(est_tags)) if est_coverage[i] == True])
@@ -155,31 +156,27 @@ def align_and_benchmark(src_poss : np.array,
     tgt_rot_vec_4_metrics = np.array([tgt_rot_vec[i] for i in range(len(tgt_rot_vec)) if est_coverage[i] == True])
     distances_4_metrics = np.array([distances[i] for i in range(len(distances)) if est_coverage[i] == True])
 
-    coverage_perc : float = metrics.compute_coverage(est_coverage)
-    tags_mean : float = metrics.compute_tags_nbr_mean(est_tags_4_metrics)
-    drift_poss_mean, poss_xyz = metrics.compute_position_drift(tgt_poss_4_metrics,
+    mean_coverage_perc = metrics.compute_coverage(est_coverage)
+    tags_mean, tags = metrics.compute_tags_nbr_mean(est_tags_4_metrics)
+    drift_poss_mean, drift_poss_xyz, drift_poss_mean_xyz = metrics.compute_position_drift(tgt_poss_4_metrics,
                                                                src_poss_4_metrics)
-    drift_rots_mean, rots_xyz = metrics.compute_rotation_drift(tgt_rot_vec_4_metrics,
+    drift_rots_mean, drift_rots_xyz, drift_rots_mean_xyz = metrics.compute_rotation_drift(tgt_rot_vec_4_metrics,
                                                                src_rot_vec_4_metrics)
 
     results = {
-        "ts_position": src_poss,
-        "ts_rotation_vec": src_rot_vec,
-        "ts_idx_candidates": __ts_idx_candidates,
-        "coverage_percentage": coverage_perc,
-        "tags_mean": tags_mean,
-        "drift_position_mean": drift_poss_mean,
-        "drift_rotation_mean": drift_rots_mean,
-        "drift_poss_xyz": poss_xyz,
-        "drift_rots_xyz": rots_xyz,
-        "distances_4_metrics": distances_4_metrics
+        "ts_position": src_poss,                     # the transformed positions
+        "ts_rotation_vec": src_rot_vec,              # the transformed rotations as rotation vectors
+        "ts_idx_candidates": __ts_idx_candidates,    # the idxs of the poses used for the registration
+        "mean_coverage_perc": mean_coverage_perc,    # the percentage of coverage of the tslam
+        "tags_mean": tags_mean,                      # the mean of the number of detected tags for each pose
+        "tags" : tags,                               # the number of detected tags for each pose
+        "drift_position_mean": drift_poss_mean,      # the mean of the drift of the position of the tslam with its ground truth
+        "drift_rotation_mean": drift_rots_mean,      # the mean of the drift of the rotation of the tslam with its ground truth
+        "drift_poss_xyz": drift_poss_xyz,            # the drift of the position of the tslam with its ground truth for each pose in meters and per axe.
+        "drift_rots_xyz": drift_rots_xyz,            # the drift of the rotation of the tslam with its ground truth for each pose in degrees and per axe.
+        "drift_poss_mean_xyz": drift_poss_mean_xyz,  # the mean of the drift of the position of the tslam with its ground truth for each pose in meters.
+        "drift_rots_mean_xyz": drift_rots_mean_xyz,   # the mean of the drift of the rotation of the tslam with its ground truth for each pose in degrees.
+        "distances_4_metrics": distances_4_metrics   # the distances at each pose from the start of the trajectory
     }
 
     return results
-
-def compute_overview_sequence() -> None:
-    """
-        This function outputs the overview of the entire sequence based on the results computed
-        for each individual sub-sequence. The overview is composed by the following metrics:
-        - mean_coverage_perc:
-    """
