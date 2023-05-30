@@ -4,6 +4,9 @@ import numpy as np
 import transformations as tfm
 import util
 from dataclasses import dataclass
+import io_stream
+import csv
+from tqdm import tqdm
 
 # ================================================================================================
 # ================================= sub-sequence metrics =========================================
@@ -103,238 +106,102 @@ def compute_rotation_drift(gt_rots : np.array,
 # ================================== sequence metrics ============================================
 # ================================================================================================
 
+# @dataclass
+# class ToolResults():
+#     # wether or not the tool is present in the video fabrication recording
+#     is_present : bool = False
+#     # the number of times the tool is used in the video fabrication recording
+#     nbr_occurences : int = 0
+#     # the mean coverage percentage of the tool
+#     mean_coverage_percentage : float = 0.0
+#     # the mean number of tags detected by the tslam
+#     mean_tags_mean : float = 0.0
+#     # the mean drift of the position of the tslam with its ground truth
+#     mean_drift_position_mean : float = 0.0
+#     # the mean drift of the rotation of the tslam with its ground truth
+#     mean_drift_rotation_mean : float = 0.0
+#     # the number of times where reallignement was not possible
+#     number_reallignement_not_possible : int = 0
+
+class DefaultList(list):
+    def default_factory(self):
+        return []
 @dataclass
-class ToolResults():
-    # wether or not the tool is present in the video fabrication recording
-    is_present : bool = False
-    # the number of times the tool is used in the video fabrication recording
-    nbr_occurences : int = 0
-    # the mean coverage percentage of the tool
-    mean_coverage_percentage : float = 0.0
-    # the mean number of tags detected by the tslam
-    mean_tags_mean : float = 0.0
-    # the mean drift of the position of the tslam with its ground truth
-    mean_drift_position_mean : float = 0.0
-    # the mean drift of the rotation of the tslam with its ground truth
-    mean_drift_rotation_mean : float = 0.0
-    # the number of times where reallignement was not possible
-    number_reallignement_not_possible : int = 0
+class SequenceResults():
+    def __init__(self):
+        self.drift_position_mean = DefaultList()
+        self.drift_rotation_mean = DefaultList()
+        self.tags = DefaultList()
+        self.coverage_percentage = DefaultList()
+        self.frames = DefaultList()
+    # mean_drift_position_mean : list[float] = []
+    # mean_drift_rotation_mean : list[float] = []
+    # tags_mean : list[int] = []
+    # coverage_percentage : list[float] = []
+    # frames : list[int] = []
+
 
 TOOLS = {
-    "circular_sawblade_140": ToolResults(),
-    "saber_sawblade_t1": ToolResults(),
-    "drill_hinge_cutter_bit_50": ToolResults(),
-    "drill_auger_bit_20_200": ToolResults(),
-    "drill_auger_bit_25_500": ToolResults(),
-    "drill_oblique_hole_bit_40": ToolResults(),
-    "st_screw_120": ToolResults(),
-    "st_screw_100": ToolResults(),
-    "st_screw_80": ToolResults(),
-    "st_screw_45": ToolResults()
+    "circular_sawblade_140": SequenceResults(),
+    "saber_sawblade_t1": SequenceResults(),
+    "drill_hinge_cutter_bit_50": SequenceResults(),
+    "drill_auger_bit_20_200": SequenceResults(),
+    "drill_auger_bit_25_500": SequenceResults(),
+    "drill_oblique_hole_bit_40": SequenceResults(),
+    "st_screw_120": SequenceResults(),
+    "st_screw_100": SequenceResults(),
+    "st_screw_80": SequenceResults(),
+    "st_screw_45": SequenceResults()
 }
 
-def _get_benchmark_files(out_dir : str) -> tuple([list[str], list[str], list[str]]):
-    """
-        Get benchmark results from out_dir in a creation time order.
+def _load_tools(csv_paths : str) -> None:
+    """ Loads the csv sub-sequence results into memory of tools dict """
+    for csv_path in tqdm(csv_paths, total=len(csv_paths)):
+        with open(csv_path, 'r') as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            next(csv_reader)
+            drift_poss_mean_IDX = 6
+            drift_rots_mean_IDX = 10
+            tags_IDX = 2
+            coverage_percentage_IDX = 1
+            frames_IDX = 0
 
-        Args:
-            out_dir (str): out_dir
+            TEMP_seqres = SequenceResults()
 
-        Returns:
-            list(str): list of benchmark results sorted by name of the:
-                - x1 overview in txt format
-                - x2 the drft for each pose in csv format for position and rotation
-                - x1 the number of files indicating a failed reallignement
-    """
-    files = [os.path.join(out_dir, f) for f in os.listdir(out_dir) if os.path.isfile(os.path.join(out_dir, f))]
-    files.sort(key=lambda x: os.path.getmtime(x))
+            for key, tool in TOOLS.items():
+                if os.path.basename(csv_path) == f"{key}.csv":
+                    for row in csv_reader:
+                        row = row[0].split(";")
+                        if row[coverage_percentage_IDX] == "True":
+                            TEMP_seqres.drift_position_mean.append(float(row[drift_poss_mean_IDX]))
+                            TEMP_seqres.drift_rotation_mean.append(float(row[drift_rots_mean_IDX]))
+                            TEMP_seqres.tags.append(int(row[tags_IDX]))
+                        else:
+                            TEMP_seqres.drift_position_mean.append(row[drift_poss_mean_IDX])
+                            TEMP_seqres.drift_rotation_mean.append(row[drift_rots_mean_IDX])
+                            TEMP_seqres.tags.append(row[tags_IDX])
+                        TEMP_seqres.coverage_percentage.append(row[coverage_percentage_IDX])
+                        TEMP_seqres.frames.append(row[frames_IDX])
+                    TOOLS[key] = TEMP_seqres
 
-    bench_overview_paths = [os.path.join(out_dir,f) for f in os.listdir(out_dir) if f.endswith("_overview_bench.txt")]
-    bench_drift_poss_drift_paths = [os.path.join(out_dir,f) for f in os.listdir(out_dir) if f.endswith("_drift_poss_xyz_bench.csv")]
-    bench_drift_rots_drift_paths = [os.path.join(out_dir,f) for f in os.listdir(out_dir) if f.endswith("_drift_rots_xyz_bench.csv")]
-    bench_failed_paths = [os.path.join(out_dir,f) for f in os.listdir(out_dir) if f.endswith("_bench_NOALLIGNEMENT.txt")]
-    return (bench_overview_paths,
-            bench_drift_poss_drift_paths,
-            bench_drift_rots_drift_paths,
-            bench_failed_paths)
-
-def _get_commit_hash_from_file(overview_path : str) -> str:
-    with open(overview_path, "r") as f:
-        lines = f.readlines()
-        for l in lines:
-            if "git_commit_name:" in l:
-                return l.split(":")[1].strip()
-def _get_frame_start_from_file(overview_path : str) -> int:
-    with open(overview_path, "r") as f:
-        lines = f.readlines()
-        for l in lines:
-            if "frame_start:" in l:
-                return int(l.split(":")[1].strip())
-def _get_frame_end_from_file(overview_path : str) -> int:
-    with open(overview_path, "r") as f:
-        lines = f.readlines()
-        for l in lines:
-            if "frame_end:" in l:
-                return int(l.split(":")[1].strip())
-def _get_coverage_percentage_from_file(overview_path : str) -> float:
-    with open(overview_path, "r") as f:
-        lines = f.readlines()
-        for l in lines:
-            if "coverage_perc:" in l:
-                return float(l.split(":")[1].strip())
-def _get_tags_mean_from_file(overview_path : str) -> float:
-    with open(overview_path, "r") as f:
-        lines = f.readlines()
-        for l in lines:
-            if "tags_mean:" in l:
-                return float(l.split(":")[1].strip())
-def _get_drift_position_mean_from_file(overview_path : str) -> float:
-    with open(overview_path, "r") as f:
-        lines = f.readlines()
-        for l in lines:
-            if "drift_position_mean [meters]:" in l:
-                return float(l.split(":")[1].strip())
-def _get_drift_rotation_mean_from_file(overview_path : str) -> float:
-    with open(overview_path, "r") as f:
-        lines = f.readlines()
-        for l in lines:
-            if "drift_rotation_mean [degrees]:" in l:
-                return float(l.split(":")[1].strip())
-
-def compute_fab_results(out_dir : str,
-                        sess_name : str) -> None:
+def compute_fab_results(out_dir : str) -> None:
     """
         This function outputs the overview of the entire sequence based on the results computed
-        for each individual sub-sequence. 
-        - for each type of toolhead:
-            - mean_coverage_percentage
-            - mean_tags_mean
-            - mean_drift_position_mean
-            - mean_drift_rotation_mean
-            - number where reallignement was not possible
-            (schemes like the one in drilling with standard deviation)
-
-        - Across all tools:
-            - total_mean_coverage_percentage
-            - total_mean_tags_mean
-            - total_mean_drift_position_mean
-            - total_mean_drift_rotation_mean
-            - total number where reallignement was not possible
 
         Args:
             out_dir (str): the directory where the results are saved.
             sess_name (str): the name of the session
     """
-    circular_sawblade_140_RES = ToolResults()
-    saber_sawblade_t1_RES = ToolResults()
-    drill_hinge_cutter_bit_50_RES = ToolResults()
-    drill_auger_bit_20_200_RES = ToolResults()
-    drill_auger_bit_25_500_RES = ToolResults()
-    drill_oblique_hole_bit_40_RES = ToolResults()
-    st_screw_120_RES = ToolResults()
-    st_screw_100_RES = ToolResults()
-    st_screw_80_RES = ToolResults()
-    st_screw_45_RES = ToolResults()
+    csv_paths = io_stream.get_subseq_metrics_csv(out_dir)
 
-    overview_paths, poss_drift_paths, rots_drift_paths, bench_failed_paths = _get_benchmark_files(out_dir=out_dir)
+    _load_tools(csv_paths)
 
-    circular_sawblade_140_overview_paths = [path for path in overview_paths if list(TOOLS.keys())[0] in path]
-    circular_sawblade_140_poss_drift_paths = [path for path in poss_drift_paths if list(TOOLS.keys())[0] in path]
-    circular_sawblade_140_rots_drift_paths = [path for path in rots_drift_paths if list(TOOLS.keys())[0] in path]
-    saber_sawblade_t1_overview_paths = [path for path in overview_paths if list(TOOLS.keys())[1] in path]
-    saber_sawblade_t1_poss_drift_paths = [path for path in poss_drift_paths if list(TOOLS.keys())[1] in path]
-    saber_sawblade_t1_rots_drift_paths = [path for path in rots_drift_paths if list(TOOLS.keys())[1] in path]
-    drill_hinge_cutter_bit_50_overview_paths = [path for path in overview_paths if list(TOOLS.keys())[2] in path] 
-    drill_hinge_cutter_bit_50_poss_drift_paths = [path for path in poss_drift_paths if list(TOOLS.keys())[2] in path]
-    drill_hinge_cutter_bit_50_rots_drift_paths = [path for path in rots_drift_paths if list(TOOLS.keys())[2] in path]
-    drill_auger_bit_20_200_overview_paths = [path for path in overview_paths if list(TOOLS.keys())[3] in path]
-    drill_auger_bit_20_200_poss_drift_paths = [path for path in poss_drift_paths if list(TOOLS.keys())[3] in path]
-    drill_auger_bit_20_200_rots_drift_paths = [path for path in rots_drift_paths if list(TOOLS.keys())[3] in path]
-    drill_auger_bit_25_500_overview_paths = [path for path in overview_paths if list(TOOLS.keys())[4] in path]
-    drill_auger_bit_25_500_poss_drift_paths = [path for path in poss_drift_paths if list(TOOLS.keys())[4] in path]
-    drill_auger_bit_25_500_rots_drift_paths = [path for path in rots_drift_paths if list(TOOLS.keys())[4] in path]
-    drill_oblique_hole_bit_40_overview_paths = [path for path in overview_paths if list(TOOLS.keys())[5] in path]
-    drill_oblique_hole_bit_40_poss_drift_paths = [path for path in poss_drift_paths if list(TOOLS.keys())[5] in path]
-    drill_oblique_hole_bit_40_rots_drift_paths = [path for path in rots_drift_paths if list(TOOLS.keys())[5] in path]
-    st_screw_120_overview_paths = [path for path in overview_paths if list(TOOLS.keys())[6] in path]
-    st_screw_120_poss_drift_paths = [path for path in poss_drift_paths if list(TOOLS.keys())[6] in path]
-    st_screw_120_rots_drift_paths = [path for path in rots_drift_paths if list(TOOLS.keys())[6] in path]
-    st_screw_100_overview_paths = [path for path in overview_paths if list(TOOLS.keys())[7] in path]
-    st_screw_100_poss_drift_paths = [path for path in poss_drift_paths if list(TOOLS.keys())[7] in path]
-    st_screw_100_rots_drift_paths = [path for path in rots_drift_paths if list(TOOLS.keys())[7] in path]
-    st_screw_80_overview_paths = [path for path in overview_paths if list(TOOLS.keys())[8] in path]
-    st_screw_80_poss_drift_paths = [path for path in poss_drift_paths if list(TOOLS.keys())[8] in path]
-    st_screw_80_rots_drift_paths = [path for path in rots_drift_paths if list(TOOLS.keys())[8] in path]
-    st_screw_45_overview_paths = [path for path in overview_paths if list(TOOLS.keys())[9] in path]
-    st_screw_45_poss_drift_paths = [path for path in poss_drift_paths if list(TOOLS.keys())[9] in path]
-    st_screw_45_rots_drift_paths = [path for path in rots_drift_paths if list(TOOLS.keys())[9] in path]
-    circular_sawblade_140_overview_paths.sort(key=lambda x: os.path.getmtime(x))
-    circular_sawblade_140_poss_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    circular_sawblade_140_rots_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    saber_sawblade_t1_overview_paths.sort(key=lambda x: os.path.getmtime(x))
-    saber_sawblade_t1_poss_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    saber_sawblade_t1_rots_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    drill_hinge_cutter_bit_50_overview_paths.sort(key=lambda x: os.path.getmtime(x))
-    drill_hinge_cutter_bit_50_poss_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    drill_hinge_cutter_bit_50_rots_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    drill_auger_bit_20_200_overview_paths.sort(key=lambda x: os.path.getmtime(x))
-    drill_auger_bit_20_200_poss_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    drill_auger_bit_20_200_rots_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    drill_auger_bit_25_500_overview_paths.sort(key=lambda x: os.path.getmtime(x))
-    drill_auger_bit_25_500_poss_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    drill_auger_bit_25_500_rots_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    drill_oblique_hole_bit_40_overview_paths.sort(key=lambda x: os.path.getmtime(x))
-    drill_oblique_hole_bit_40_poss_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    drill_oblique_hole_bit_40_rots_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    st_screw_120_overview_paths.sort(key=lambda x: os.path.getmtime(x))
-    st_screw_120_poss_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    st_screw_120_rots_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    st_screw_100_overview_paths.sort(key=lambda x: os.path.getmtime(x))
-    st_screw_100_poss_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    st_screw_100_rots_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    st_screw_80_overview_paths.sort(key=lambda x: os.path.getmtime(x))
-    st_screw_80_poss_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    st_screw_80_rots_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    st_screw_45_overview_paths.sort(key=lambda x: os.path.getmtime(x))
-    st_screw_45_poss_drift_paths.sort(key=lambda x: os.path.getmtime(x))
-    st_screw_45_rots_drift_paths.sort(key=lambda x: os.path.getmtime(x))
+    # # print all the tools keys and items
+    # for key, item in TOOLS.items():
+    #     print(key, "driftpos", item.drift_position_mean)
+    #     print(key, "driftrot", item.drift_rotation_mean)
+    #     print(key, "tags", item.tags)
+    #     print(key, "coverage", item.coverage_percentage)
+    #     print(key, "fames", item.frames)
 
-
-    if circular_sawblade_140_overview_paths.__len__() != 0:
-        TOOL["circular_sawblade_140"].is_present = True
-        TOOL["circular_sawblade_140"].nbr_occurences = circular_sawblade_140_overview_paths.__len__()
-
-
-        # TOOL["circular_sawblade_140"].mean_coverage_percentage = np.mean([_get_coverage_percentage_from_file(path) for path in circular_sawblade_140_overview_paths])
-        # TOOL["circular_sawblade_140"].mean_tags_mean = np.mean([_get_tags_mean_from_file(path) for path in circular_sawblade_140_overview_paths])
-        # TOOL["circular_sawblade_140"].mean_drift_position_mean = np.mean([_get_drift_position_mean_from_file(path) for path in circular_sawblade_140_overview_paths])
-        # TOOL["circular_sawblade_140"].mean_drift_rotation_mean = np.mean([_get_drift_rotation_mean(_from_filepath) for path in circular_sawblade_140_overview_paths])
-        # TOOL["circular_sawblade_140"].number_reallignement_not_possible = np.sum([1 for path in circular_sawblade_140_overview_paths if _get_coverage_percentage_from_file(path) == 100.0])
-
-
-
-
-
-
-
-    if saber_sawblade_t1_overview_paths.__len__() != 0:
-        TOOL["saber_sawblade_t1"].is_present = True
-    if drill_hinge_cutter_bit_50_overview_paths.__len__() != 0:
-        TOOL["drill_hinge_cutter_bit_50"].is_present = True
-    if drill_auger_bit_20_200_overview_paths.__len__() != 0:
-        TOOL["drill_auger_bit_20_200"].is_present = True
-    if drill_auger_bit_25_500_overview_paths.__len__() != 0:
-        TOOL["drill_auger_bit_25_500"].is_present = True
-    if drill_oblique_hole_bit_40_overview_paths.__len__() != 0:
-        TOOL["drill_oblique_hole_bit_40"].is_present = True
-    if st_screw_120_overview_paths.__len__() != 0:
-        TOOL["st_screw_120"].is_present = True
-    if st_screw_100_overview_paths.__len__() != 0:
-        TOOL["st_screw_100"].is_present = True
-    if st_screw_80_overview_paths.__len__() != 0:
-        TOOL["st_screw_80"].is_present = True
-    if st_screw_45_overview_paths.__len__() != 0:
-        TOOL["st_screw_45"].is_present = True
-
-    
 

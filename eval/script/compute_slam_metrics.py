@@ -118,7 +118,7 @@ def main(gt_path : str,
     print(f"Alignement and benchmarking terminated.")
     print("==============================================================================================")
     print(f"--- Dumping results to local file..")
-    io_stream.dump_results(out_dir,
+    io_stream.dump_subsequence_results(out_dir,
                            id,
                            frames,
                            results["mean_coverage_perc"],
@@ -172,12 +172,12 @@ def main(gt_path : str,
                             fig_2d_rots_drift=fig_2d_rots_drift)
     print(f"Graphs saved.")
     print("==============================================================================================")
-    print(f"--- Computing animation ..")
     """
         If enabled, we create and save an animation of a comparison side-by-side of the trajectory (gt and est)
         with the corresponding video frames.
     """
     if is_make_animation:
+        print(f"--- Computing animation ..")
         io_stream.dump_animation(results["ts_position"],
                                  results["ts_rotation_vec"],
                                  opti_poss,
@@ -290,16 +290,17 @@ if __name__ == "__main__":
             is_show_plot=args.showPlot,
             is_img_saved=args.saveImg,
             is_rescale=args.rescale)
-
     print(f"--- Benchmarking terminated for each sub-sequence.")
     print("==============================================================================================")
+    print(f"--- Cleaning sub-sequences data..")
+    io_stream.clean_subsequence_results(out_dir=_out_subdir)
+    print(f"--- Completed cleaning sub-sequences data.")
+    print("==============================================================================================")
     print(f"--- Computing overview results of the entire video..")
-    metrics.compute_fab_results(out_dir=_out_subdir,
-                                sess_name=args.name)
-    
-
+    metrics.compute_fab_results(out_dir=_out_subdir)
     print(f"--- Completed succesfully overview results ..")
     print("==============================================================================================")
+    print("--- Closing program..")
     end_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     end_timestamp_s : float = datetime.timestamp(datetime.strptime(end_timestamp, "%Y-%m-%d_%H-%M-%S"))
     start_timestamp_s : float = datetime.timestamp(datetime.strptime(start_timestamp, "%Y-%m-%d_%H-%M-%S"))

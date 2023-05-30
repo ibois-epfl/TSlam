@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 import visuals
+import metrics
 
 # TODO: test debug
 import gc  # for collecting buffer memory
@@ -234,10 +235,10 @@ def run_checks(opti_poss : np.array,
     assert len(ts_tags) == len(ts_coverages), "[ERROR]: The number of frames in the tslam marks and the tslam coverages do not match: {} vs {}".format(len(ts_tags), len(ts_coverages))
 
 #===============================================================================
-# metrics results output
+# sub-sequence metrics results output
 #===============================================================================
 
-def dump_results(out_dir : str,
+def dump_subsequence_results(out_dir : str,
                  id : str,
                  frames : np.array(int),
                  coverage_perc : float,
@@ -255,14 +256,14 @@ def dump_results(out_dir : str,
                  frame_end : int) -> None:
     """ The function save the results of the evaluation to local. """
     overview_path : str = f"{out_dir}/{id}_overview_bench.txt"
-    coverages_path : str = f"{out_dir}/{id}_coverages_bench.csv"
     metrics_csv_path : str = f"{out_dir}/{id}_bench.csv"
 
-    assert len(frames) == len(coverages)
     with open(metrics_csv_path, "w") as f:
         writer = csv.writer(f, delimiter=';')
         writer.writerow([
-                         "tags"
+                         "frames",
+                         "coverages",
+                         "tags",
                          "drift_poss_x",
                          "drift_poss_y",
                          "drift_poss_z",
@@ -272,46 +273,37 @@ def dump_results(out_dir : str,
                          "drift_rots_z",
                          "drift_poss_mean",
                          ])
-        for idx, tag in enumerate(tags):
-            writer.writerow([
-                             tag,
-                             drift_poss_xyz[idx][0],
-                             drift_poss_xyz[idx][1],
-                             drift_poss_xyz[idx][2],
-                             drift_poss_mean_xyz[idx],
-                             drift_rots_xyz[idx][0],
-                             drift_rots_xyz[idx][1],
-                             drift_rots_xyz[idx][2],
-                             drift_rots_mean_xyz[idx],
-                             ])
-
-    with open(coverages_path, "w") as f:
-        # use csv module python
-        writer = csv.writer(f, delimiter=';')
-        writer.writerow([
-                         "frames",
-                         "coverages",
-                         ])
+        idx_candidate = 0
         for idx, frame in enumerate(frames):
-            writer.writerow([
-                             frame,
-                             coverages[idx],
-                             ])
-
-    # np.savetxt(frames_path, frames, delimiter=",")
-    # np.savetxt(drift_poss_path, drift_poss_xyz, delimiter=",")
-    # np.savetxt(drift_poss_path, drift_poss_xyz, delimiter=",")
-    # np.savetxt(drift_rots_path, drift_rots_xyz, delimiter=",")
-    # np.savetxt(drift_poss_mean_xyz_path, drift_poss_mean_xyz, delimiter=",")
-    # np.savetxt(drift_rots_mean_xyz_path, drift_rots_mean_xyz, delimiter=",")
-    # np.savetxt(tags_path, tags, delimiter=",")
-    # # merge all the csv files into one
-    # os.system(f"paste -d ',' {drift_poss_path} {drift_rots_path} {drift_poss_mean_xyz_path} {drift_rots_mean_xyz_path} {tags_path} > {out_dir}/{id}_bench.csv")
-    # # add an header to the csv file
-    # os.system(f"sed -i '1s/^/drift_poss_x,drift_poss_y,drift_poss_z,drift_rots_x,drift_rots_y,drift_rots_z,drift_poss_mean_x,drift_poss_mean_y,drift_poss_mean_z,drift_rots_mean_x,drift_rots_mean_y,drift_rots_mean_z,tags\n/' {out_dir}/{id}_bench.csv")
-
-
-
+            if coverages[idx] == 1:
+                writer.writerow([
+                                 frame,
+                                 coverages[idx],
+                                 tags[idx_candidate],
+                                 drift_poss_xyz[idx_candidate][0],
+                                 drift_poss_xyz[idx_candidate][1],
+                                 drift_poss_xyz[idx_candidate][2],
+                                 drift_poss_mean_xyz[idx_candidate],
+                                 drift_rots_xyz[idx_candidate][0],
+                                 drift_rots_xyz[idx_candidate][1],
+                                 drift_rots_xyz[idx_candidate][2],
+                                 drift_rots_mean_xyz[idx_candidate],
+                                 ])
+                idx_candidate += 1
+            else:
+                writer.writerow([
+                                 frame,
+                                 coverages[idx],
+                                 "nan",
+                                 "nan",
+                                 "nan",
+                                 "nan",
+                                 "nan",
+                                 "nan",
+                                 "nan",
+                                 "nan",
+                                 "nan",
+                                ])
 
     with open(overview_path, "w") as f:
         f.write("---- git commit id\n")
@@ -329,6 +321,140 @@ def dump_results(out_dir : str,
         f.write(f"drift_poss_mean [meters]: {drift_poss_mean}\n")
         f.write(f"drift_rots_mean [degrees]: {drift_rots_mean}\n")
         f.write("-----------------------------------------------------\n")
+
+#===============================================================================
+# sub-sequence metrics cleaning and reorganization
+#===============================================================================
+
+def _get_benchmark_files(out_dir : str) -> tuple([list[str], list[str], list[str]]):
+    """
+        Get benchmark results from out_dir in a creation time order.
+
+        Args:
+            out_dir (str): out_dir
+
+        Returns:
+            list(str): list of benchmark results sorted by name of the:
+                - x1 overview in txt format
+                - x2 the drft for each pose in csv format for position and rotation
+                - x1 the number of files indicating a failed reallignement
+    """
+    files = [os.path.join(out_dir, f) for f in os.listdir(out_dir) if os.path.isfile(os.path.join(out_dir, f))]
+    files.sort(key=lambda x: os.path.getmtime(x))
+
+    bench_overview_paths = [os.path.join(out_dir,f) for f in os.listdir(out_dir) if f.endswith("_overview_bench.txt")]
+    bench_metrics_paths = [os.path.join(out_dir,f) for f in os.listdir(out_dir) if f.endswith("_bench.csv")]
+    bench_failed_paths = [os.path.join(out_dir,f) for f in os.listdir(out_dir) if f.endswith("_bench_NOALLIGNEMENT.txt")]
+    graph_paths = [os.path.join(out_dir,f) for f in os.listdir(out_dir) if f.endswith("_graph.png")]
+    video_paths = [os.path.join(out_dir,f) for f in os.listdir(out_dir) if f.endswith("_video.mp4")]
+    
+    return (bench_overview_paths,
+            bench_metrics_paths,
+            bench_failed_paths,
+            graph_paths,
+            video_paths)
+
+def _merge_metrics_csv(paths_2_merge : list[str], csv_path : str) -> None:
+    """
+        The function merges the csv files in paths_2_merge into a single csv file in csv_path.
+    """
+    with open(csv_path, "w") as f:
+        with open(paths_2_merge[0], "r") as f_first:
+            f.write(f_first.readline())
+        for c2m in paths_2_merge:
+            with open(c2m, "r") as f_csv:
+                f_csv.readline()
+                for idx, line in enumerate(f_csv):
+                    if idx != 0:
+                        f.write(line)
+    for c in paths_2_merge:
+        os.remove(c)
+
+def clean_subsequence_results(out_dir : str) -> None:
+    """
+        The function cleans the sub-sequences by:
+            - merging all the csv per tool
+            - merging all the overview
+            - putting the images (if any) in a folder subsequence > img
+            - putting the video (if any) in a folder subsequence > video
+            - putting the csv grouped by tools and merged from multiple sub-sequences in a folder subsequence > benchmark
+            - putting all the overview in a folder subsequence > benchmark
+    """
+    subsequence_path = os.path.join(out_dir, "subsequences")
+    os.makedirs(subsequence_path, exist_ok=True)
+    subsequence_graph_path = os.path.join(subsequence_path, "graph")
+    os.makedirs(subsequence_graph_path, exist_ok=True)
+    subsequence_benchmark_path = os.path.join(subsequence_path, "benchmark")
+    os.makedirs(subsequence_benchmark_path, exist_ok=True)
+    subsequence_benchmark_overview_file = os.path.join(subsequence_benchmark_path, "overview.txt")
+
+    bench_overview_paths, bench_metrics_paths, bench_failed_paths, graph_paths, video_paths =_get_benchmark_files(out_dir)
+
+    with open(subsequence_benchmark_overview_file, "w") as f:
+        f.write(f"NOALIGNEMENT: {len(bench_failed_paths)}\n")
+        f.write("List of failed sub-sequences (if any):\n")
+        for failed_path in bench_failed_paths:
+            f.write(f"{failed_path}\n")
+        f.write("\n")
+        f.write("-----------------------------------------------------\n")
+        f.write("List of sub-sequences:\n")
+        f.write("\n")
+        for overview_path in bench_overview_paths:
+            with open(overview_path, "r") as f_overview:
+                f.write(f_overview.read())
+    for overview_path in bench_overview_paths:
+        os.remove(overview_path)
+    for failed_path in bench_failed_paths:
+        os.remove(failed_path)
+
+    for graph_path in graph_paths:
+        os.rename(graph_path, os.path.join(subsequence_graph_path, os.path.basename(graph_path)))
+
+    for video_path in video_paths:
+        os.rename(video_path, os.path.join(subsequence_path, os.path.basename(video_path)))
+    
+    circular_sawblade_140_csv_paths = [path for path in bench_metrics_paths if list(metrics.TOOLS.keys())[0] in path]
+    saber_sawblade_t1_csv_paths = [path for path in bench_metrics_paths if list(metrics.TOOLS.keys())[1] in path]
+    drill_hinge_cutter_bit_50_csv_paths = [path for path in bench_metrics_paths if list(metrics.TOOLS.keys())[2] in path] 
+    drill_auger_bit_20_200_csv_paths = [path for path in bench_metrics_paths if list(metrics.TOOLS.keys())[3] in path]
+    drill_auger_bit_25_500_csv_paths = [path for path in bench_metrics_paths if list(metrics.TOOLS.keys())[4] in path]
+    drill_oblique_hole_bit_40_csv_paths = [path for path in bench_metrics_paths if list(metrics.TOOLS.keys())[5] in path]
+    st_screw_120_csv_paths = [path for path in bench_metrics_paths if list(metrics.TOOLS.keys())[6] in path]
+    st_screw_100_csv_paths = [path for path in bench_metrics_paths if list(metrics.TOOLS.keys())[7] in path]
+    st_screw_80_csv_paths = [path for path in bench_metrics_paths if list(metrics.TOOLS.keys())[8] in path]
+    st_screw_45_csv_paths = [path for path in bench_metrics_paths if list(metrics.TOOLS.keys())[9] in path]
+
+    circular_sawblade_140_csv_paths.sort(key=lambda x: int(os.path.basename(x).split("_")[1]))
+    saber_sawblade_t1_csv_paths.sort(key=lambda x: int(os.path.basename(x).split("_")[1]))
+    drill_hinge_cutter_bit_50_csv_paths.sort(key=lambda x: int(os.path.basename(x).split("_")[1]))
+    drill_auger_bit_20_200_csv_paths.sort(key=lambda x: int(os.path.basename(x).split("_")[1]))
+    drill_auger_bit_25_500_csv_paths.sort(key=lambda x: int(os.path.basename(x).split("_")[1]))
+    drill_oblique_hole_bit_40_csv_paths.sort(key=lambda x: int(os.path.basename(x).split("_")[1]))
+    st_screw_120_csv_paths.sort(key=lambda x: int(os.path.basename(x).split("_")[1]))
+    st_screw_100_csv_paths.sort(key=lambda x: int(os.path.basename(x).split("_")[1]))
+    st_screw_80_csv_paths.sort(key=lambda x: int(os.path.basename(x).split("_")[1]))
+    st_screw_45_csv_paths.sort(key=lambda x: int(os.path.basename(x).split("_")[1]))
+
+    if len(circular_sawblade_140_csv_paths) != 0:
+        _merge_metrics_csv(circular_sawblade_140_csv_paths, os.path.join(subsequence_benchmark_path, f"{list(metrics.TOOLS.keys())[0]}.csv"))
+    if len(saber_sawblade_t1_csv_paths) != 0:
+        _merge_metrics_csv(saber_sawblade_t1_csv_paths, os.path.join(subsequence_benchmark_path, f"{list(metrics.TOOLS.keys())[1]}.csv"))
+    if len(drill_hinge_cutter_bit_50_csv_paths) != 0:
+        _merge_metrics_csv(drill_hinge_cutter_bit_50_csv_paths, os.path.join(subsequence_benchmark_path, f"{list(metrics.TOOLS.keys())[2]}.csv"))
+    if len(drill_auger_bit_20_200_csv_paths) != 0:
+        _merge_metrics_csv(drill_auger_bit_20_200_csv_paths, os.path.join(subsequence_benchmark_path, f"{list(metrics.TOOLS.keys())[3]}.csv"))
+    if len(drill_auger_bit_25_500_csv_paths) != 0:
+        _merge_metrics_csv(drill_auger_bit_25_500_csv_paths, os.path.join(subsequence_benchmark_path, f"{list(metrics.TOOLS.keys())[4]}.csv"))
+    if len(drill_oblique_hole_bit_40_csv_paths) != 0:
+        _merge_metrics_csv(drill_oblique_hole_bit_40_csv_paths, os.path.join(subsequence_benchmark_path, f"{list(metrics.TOOLS.keys())[5]}.csv"))
+    if len(st_screw_120_csv_paths) != 0:
+        _merge_metrics_csv(st_screw_120_csv_paths, os.path.join(subsequence_benchmark_path, f"{list(metrics.TOOLS.keys())[6]}.csv"))
+    if len(st_screw_100_csv_paths) != 0:
+        _merge_metrics_csv(st_screw_100_csv_paths, os.path.join(subsequence_benchmark_path, f"{list(metrics.TOOLS.keys())[7]}.csv"))
+    if len(st_screw_80_csv_paths) != 0:
+        _merge_metrics_csv(st_screw_80_csv_paths, os.path.join(subsequence_benchmark_path, f"{list(metrics.TOOLS.keys())[8]}.csv"))
+    if len(st_screw_45_csv_paths) != 0:
+        _merge_metrics_csv(st_screw_45_csv_paths, os.path.join(subsequence_benchmark_path, f"{list(metrics.TOOLS.keys())[9]}.csv"))
 
 #===============================================================================
 # img/graphs/animation output
@@ -445,3 +571,27 @@ def dump_animation(est_pos,
 
     # erasse the temp folder
     os.system(f"rm -rf {temp_dir}")
+
+#===============================================================================
+# sequence results i/o
+#===============================================================================
+
+def get_subseq_metrics_csv(out_dir : str) -> None:
+    out_dir = os.path.join(out_dir, "subsequences/benchmark")
+    files = [os.path.join(out_dir, f) for f in os.listdir(out_dir) if os.path.isfile(os.path.join(out_dir, f))]
+    csv_paths = [os.path.join(out_dir,f) for f in os.listdir(out_dir) if f.endswith(".csv")]
+    return csv_paths
+
+    tool_csv_lst = [
+                    [path for path in files if list(metrics.TOOLS.keys())[0] in path],
+                    [path for path in files if list(metrics.TOOLS.keys())[1] in path],
+                    [path for path in files if list(metrics.TOOLS.keys())[2] in path],
+                    [path for path in files if list(metrics.TOOLS.keys())[3] in path],
+                    [path for path in files if list(metrics.TOOLS.keys())[4] in path],
+                    [path for path in files if list(metrics.TOOLS.keys())[5] in path],
+                    [path for path in files if list(metrics.TOOLS.keys())[6] in path],
+                    [path for path in files if list(metrics.TOOLS.keys())[7] in path],
+                    [path for path in files if list(metrics.TOOLS.keys())[8] in path],
+                    [path for path in files if list(metrics.TOOLS.keys())[9] in path],
+    ]
+    return tool_csv_lst
