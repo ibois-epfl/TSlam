@@ -161,3 +161,7 @@ def visualize_2d_drift(drift_xyz : np.array,
     plt.close()
 
     return fig
+
+# TODO: fill me in
+def visualized_box_plots() -> None:
+    pass

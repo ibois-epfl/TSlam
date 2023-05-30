@@ -7,6 +7,7 @@ from dataclasses import dataclass
 import io_stream
 import csv
 from tqdm import tqdm
+import itertools
 
 # ================================================================================================
 # ================================= sub-sequence metrics =========================================
@@ -106,52 +107,66 @@ def compute_rotation_drift(gt_rots : np.array,
 # ================================== sequence metrics ============================================
 # ================================================================================================
 
-# @dataclass
-# class ToolResults():
-#     # wether or not the tool is present in the video fabrication recording
-#     is_present : bool = False
-#     # the number of times the tool is used in the video fabrication recording
-#     nbr_occurences : int = 0
-#     # the mean coverage percentage of the tool
-#     mean_coverage_percentage : float = 0.0
-#     # the mean number of tags detected by the tslam
-#     mean_tags_mean : float = 0.0
-#     # the mean drift of the position of the tslam with its ground truth
-#     mean_drift_position_mean : float = 0.0
-#     # the mean drift of the rotation of the tslam with its ground truth
-#     mean_drift_rotation_mean : float = 0.0
-#     # the number of times where reallignement was not possible
-#     number_reallignement_not_possible : int = 0
-
 class DefaultList(list):
     def default_factory(self):
-        return []
+        return numpy.array([])
+
 @dataclass
-class SequenceResults():
+class SequenceRes():
+    # how many operations are present with this tool in the video
+    nbr_operations : int = 0
+
+    mean_drift_position_NONAN = DefaultList()
+    mean_drift_position_m : float = 0.0
+    mean_drift_rotation_q1 : float = 0.0
+    mean_drift_rotation_q3 : float = 0.0
+    mean_drift_rotation_min : float = 0.0
+    mean_drift_rotation_max : float = 0.0
+    mean_drift_rotation_outliers = DefaultList()
+
+    mean_drift_rotation_NONAN = DefaultList()
+    mean_drift_rotation_m : float = 0.0
+    mean_drift_rotation_q1 : float = 0.0
+    mean_drift_rotation_q3 : float = 0.0
+    mean_drift_rotation_min : float = 0.0
+    mean_drift_rotation_max : float = 0.0
+    mean_drift_rotation_outliers = DefaultList()
+
+    tags_NONAN = DefaultList()
+    tags_m : float = 0.0
+    tags_q1 : float = 0.0
+    tags_q3 : float = 0.0
+    tags_min : float = 0.0
+    tags_max : float = 0.0
+    tags_outliers = DefaultList()
+    
+    coverages = DefaultList()
+    coverage_m : float = 0.0
+    # TODO: here we need to observe the coverage related to the temporal
+    # sequence of the fabrication
+    coverage_temporal = DefaultList()  # ??
+
+@dataclass
+class SubSequenceRes():
     def __init__(self):
+        self.nbr_operations = 0
         self.drift_position_mean = DefaultList()
         self.drift_rotation_mean = DefaultList()
         self.tags = DefaultList()
-        self.coverage_percentage = DefaultList()
+        self.coverage = DefaultList()
         self.frames = DefaultList()
-    # mean_drift_position_mean : list[float] = []
-    # mean_drift_rotation_mean : list[float] = []
-    # tags_mean : list[int] = []
-    # coverage_percentage : list[float] = []
-    # frames : list[int] = []
-
 
 TOOLS = {
-    "circular_sawblade_140": SequenceResults(),
-    "saber_sawblade_t1": SequenceResults(),
-    "drill_hinge_cutter_bit_50": SequenceResults(),
-    "drill_auger_bit_20_200": SequenceResults(),
-    "drill_auger_bit_25_500": SequenceResults(),
-    "drill_oblique_hole_bit_40": SequenceResults(),
-    "st_screw_120": SequenceResults(),
-    "st_screw_100": SequenceResults(),
-    "st_screw_80": SequenceResults(),
-    "st_screw_45": SequenceResults()
+    "circular_sawblade_140": SubSequenceRes(),
+    "saber_sawblade_t1": SubSequenceRes(),
+    "drill_hinge_cutter_bit_50": SubSequenceRes(),
+    "drill_auger_bit_20_200": SubSequenceRes(),
+    "drill_auger_bit_25_500": SubSequenceRes(),
+    "drill_oblique_hole_bit_40": SubSequenceRes(),
+    "st_screw_120": SubSequenceRes(),
+    "st_screw_100": SubSequenceRes(),
+    "st_screw_80": SubSequenceRes(),
+    "st_screw_45": SubSequenceRes()
 }
 
 def _load_tools(csv_paths : str) -> None:
@@ -163,16 +178,24 @@ def _load_tools(csv_paths : str) -> None:
             drift_poss_mean_IDX = 6
             drift_rots_mean_IDX = 10
             tags_IDX = 2
-            coverage_percentage_IDX = 1
+            coverage_IDX = 1
             frames_IDX = 0
 
-            TEMP_seqres = SequenceResults()
+            TEMP_seqres = SubSequenceRes()
 
             for key, tool in TOOLS.items():
                 if os.path.basename(csv_path) == f"{key}.csv":
-                    for row in csv_reader:
-                        row = row[0].split(";")
-                        if row[coverage_percentage_IDX] == "True":
+                    for current_rowR, next_rowR in util.pairwise(csv_reader):
+                        row = current_rowR[0].split(";")
+
+                        try:
+                            row_next = next_rowR[0].split(";")
+                            if abs(int(row[frames_IDX]) - int(row_next[frames_IDX])) >= 2:
+                                TEMP_seqres.nbr_operations += 1
+                        except StopIteration:
+                            pass
+
+                        if row[coverage_IDX] == "True":
                             TEMP_seqres.drift_position_mean.append(float(row[drift_poss_mean_IDX]))
                             TEMP_seqres.drift_rotation_mean.append(float(row[drift_rots_mean_IDX]))
                             TEMP_seqres.tags.append(int(row[tags_IDX]))
@@ -180,9 +203,39 @@ def _load_tools(csv_paths : str) -> None:
                             TEMP_seqres.drift_position_mean.append(row[drift_poss_mean_IDX])
                             TEMP_seqres.drift_rotation_mean.append(row[drift_rots_mean_IDX])
                             TEMP_seqres.tags.append(row[tags_IDX])
-                        TEMP_seqres.coverage_percentage.append(row[coverage_percentage_IDX])
+                        TEMP_seqres.coverage.append(row[coverage_IDX])
                         TEMP_seqres.frames.append(row[frames_IDX])
+                    
                     TOOLS[key] = TEMP_seqres
+
+def _get_distribution_data(data : np.array) -> tuple[float, float, float, float, list[float], list[float]]:
+    """
+        This function computes the 5 values for the box plot:
+        - mean drift position
+        - the 2 quartiles (q1, q3)
+        - the min and ma
+        - the outliers
+        - the cleaned out data without "nans"
+
+        Args:
+            data (np.array): the data to compute the distribution
+
+        Returns:
+            tuple[float, float, float, float, list[float]]: the 5 values for the box plot + the clean out data
+    """
+    # excluse all the "nan" values from the analysis
+    data_NONAN = util.pop_nans(data)
+
+    data_m = np.mean(data_NONAN)
+    data_q1 = np.quantile(data_NONAN, 0.25)
+    data_q3 = np.quantile(data_NONAN, 0.75)
+    data_min = np.min(data_NONAN)
+    data_max = np.max(data_NONAN)
+    data_outliers = []
+    for idx, drift in enumerate(data_NONAN):
+        if drift < data_min or drift > data_max:
+            data_outliers.append(drift)
+    return data_NONAN, data_m, data_q1, data_q3, data_min, data_max, data_outliers
 
 def compute_fab_results(out_dir : str) -> None:
     """
@@ -196,12 +249,85 @@ def compute_fab_results(out_dir : str) -> None:
 
     _load_tools(csv_paths)
 
-    # # print all the tools keys and items
-    # for key, item in TOOLS.items():
-    #     print(key, "driftpos", item.drift_position_mean)
-    #     print(key, "driftrot", item.drift_rotation_mean)
-    #     print(key, "tags", item.tags)
-    #     print(key, "coverage", item.coverage_percentage)
-    #     print(key, "fames", item.frames)
+    for id, res in TOOLS.items():
+        if res.drift_position_mean.__len__() == 0:
+            print(f"NO DATA FOR {id}")
+            continue
 
+        (drift_position_mean_NONAN,
+        drift_position_mean_m,
+        drift_position_mean_q1,
+        drift_position_mean_q3,
+        drift_position_mean_min,
+        drift_position_mean_max,
+        drift_position_mean_outliers) = _get_distribution_data(res.drift_position_mean)
+        (drift_rotation_mean_NONAN,
+        drift_rotation_mean_m,
+        drift_rotation_mean_q1,
+        drift_rotation_mean_q3,
+        drift_rotation_mean_min,
+        drift_rotation_mean_max,
+        drift_rotation_mean_outliers) = _get_distribution_data(res.drift_rotation_mean)
+        (tags_NONAN,
+        tags_m,
+        tags_q1,
+        tags_q3,
+        tags_min,
+        tags_max,
+        tags_outliers) = _get_distribution_data(res.tags)
+
+        TEMP_seqres = SequenceRes()
+        TEMP_seqres.nbr_operations = res.nbr_operations
+        TEMP_seqres.mean_drift_position_NONAN = drift_position_mean_NONAN
+        TEMP_seqres.mean_drift_position_m = drift_position_mean_m
+        TEMP_seqres.mean_drift_position_q1 = drift_position_mean_q1
+        TEMP_seqres.mean_drift_position_q3 = drift_position_mean_q3
+        TEMP_seqres.mean_drift_position_min = drift_position_mean_min
+        TEMP_seqres.mean_drift_position_max = drift_position_mean_max
+        TEMP_seqres.mean_drift_position_outliers = drift_position_mean_outliers
+        TEMP_seqres.mean_drift_rotation_NONAN = drift_rotation_mean_NONAN
+        TEMP_seqres.mean_drift_rotation_m = drift_rotation_mean_m
+        TEMP_seqres.mean_drift_rotation_q1 = drift_rotation_mean_q1
+        TEMP_seqres.mean_drift_rotation_q3 = drift_rotation_mean_q3
+        TEMP_seqres.mean_drift_rotation_min = drift_rotation_mean_min
+        TEMP_seqres.mean_drift_rotation_max = drift_rotation_mean_max
+        TEMP_seqres.mean_drift_rotation_outliers = drift_rotation_mean_outliers
+        TEMP_seqres.tags_NONAN = tags_NONAN
+        TEMP_seqres.tags_m = tags_m
+        TEMP_seqres.tags_q1 = tags_q1
+        TEMP_seqres.tags_q3 = tags_q3
+        TEMP_seqres.tags_min = tags_min
+        TEMP_seqres.tags_max = tags_max
+        TEMP_seqres.tags_outliers = tags_outliers
+        TEMP_seqres.coverages = res.coverage
+        TEMP_seqres.coverage_m = compute_coverage(res.coverage)
+        
+        TOOLS[id] = TEMP_seqres
+
+        print(f"====================== {id} =====================")
+        print(f"nbr_operations: {res.nbr_operations}")
+        print("--------------------------------------------------")
+        print(f"drift_position_mean_m: {drift_position_mean_m}")
+        print(f"drift_position_mean_q1: {drift_position_mean_q1}")
+        print(f"drift_position_mean_q3: {drift_position_mean_q3}")
+        print(f"drift_position_mean_min: {drift_position_mean_min}")
+        print(f"drift_position_mean_max: {drift_position_mean_max}")
+        print(f"drift_position_mean_outliers: {drift_position_mean_outliers}")
+        print("--------------------------------------------------")
+        print(f"drift_rotation_mean_m: {drift_rotation_mean_m}")
+        print(f"drift_rotation_mean_q1: {drift_rotation_mean_q1}")
+        print(f"drift_rotation_mean_q3: {drift_rotation_mean_q3}")
+        print(f"drift_rotation_mean_min: {drift_rotation_mean_min}")
+        print(f"drift_rotation_mean_max: {drift_rotation_mean_max}")
+        print(f"drift_rotation_mean_outliers: {drift_rotation_mean_outliers}")
+        print("--------------------------------------------------")
+        print(f"tags_m: {tags_m}")
+        print(f"tags_q1: {tags_q1}")
+        print(f"tags_q3: {tags_q3}")
+        print(f"tags_min: {tags_min}")
+        print(f"tags_max: {tags_max}")
+        print(f"tags_outliers: {tags_outliers}")
+        print("--------------------------------------------------")
+        print(f"coverage: {compute_coverage(res.coverage)}")
+        print("--------------------------------------------------")
 

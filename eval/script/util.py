@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import itertools
 
 def verify_trajectories_distortion(trajectory1 : np.ndarray,
                                    trajectory2 : np.ndarray,
@@ -38,3 +39,16 @@ def verify_trajectories_distortion(trajectory1 : np.ndarray,
         if dist_2_origin1 != dist_2_origin2:
             return False
     return True
+
+def pop_nans(list : np.array) -> np.array:
+    list2 = []
+    for idx, item in enumerate(list):
+        if item != "nan":
+            list2.append(item)
+    return np.array(list2)
+
+def pairwise(iterable):
+    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
+    a, b = itertools.tee(iterable)
+    next(b, None)
+    return zip(a, b)
