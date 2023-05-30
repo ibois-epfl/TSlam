@@ -214,10 +214,8 @@ std::pair<cv::Point2f, cv::Point2f>projectToScreen(int imgW, int imgH, std::pair
     };
 
     if( (getZ(p1) < zNear && getZ(p2) < zNear) ) { // both are behind the camera, no need to render
-//        cout << "Both points are behind camera, no need to render." << endl;
         return std::make_pair(cv::Point2f(-1, -1), cv::Point2f(-1, -1));
     } else if ( !(getZ(p1) > zNear && getZ(p2) > zNear) ) {
-//        cout << "Perform near clipping." << endl;
         reprojecPts = clipOnNearPlane(p1, p2);
     } else {
         reprojecPts.first = cv::Vec4f(p1.at<float>(0, 0), p1.at<float>(1, 0), p1.at<float>(2, 0), 1.0f);
@@ -238,8 +236,6 @@ std::pair<cv::Point2f, cv::Point2f>projectToScreen(int imgW, int imgH, std::pair
 
     int x2 = int(imgW - (reprojecPts.second[0] + 1.0f) / 2.0f * imgW);
     int y2 = int(imgH - (reprojecPts.second[1] + 1.0f) / 2.0f * imgH);
-
-//    cout << "x1: " << x1 << " y1: " << y1 << " x2: " << x2 << " y2: " << y2 << endl;
 
     return make_pair(cv::Point2f(x1, y1), cv::Point2f(x2, y2));
 }
@@ -495,6 +491,9 @@ int main(int argc,char **argv){
     int trackedCounter = 0;
 
     while (!finish && !in_image.empty())  {
+        if(currentFrameIndex > 200){
+            finish = true;
+        }
         try{
             FpsComplete.start();
 
@@ -536,16 +535,20 @@ int main(int argc,char **argv){
             }
 
             TimerDraw.start();
-            // Slam->drawMatches(in_image);
+
+            // draw mesh
+            if(cml["-drawMesh"] && !camPose_c2g.empty()){
+                drawMesh(in_image, lines, projectionMatrix, camPose_c2g);
+            }
+
             // char k = TheViewer.show(&Slam, in_image,"#" + std::to_string(currentFrameIndex) + " fps=" + to_string(1./Fps.getAvrg()) );
             char k =0;
             if(!cml["-noX"]) {
-                // draw mesh
-                if(cml["-drawMesh"] && !camPose_c2g.empty()){
-                    drawMesh(in_image, lines, projectionMatrix, camPose_c2g);
-                }
                 // draw tags & points
                 k = TheViewer.show(TheMap, in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex)/* + " fps=" + to_string(1./Fps.getAvrg())*/ ,Slam->getCurrentKeyFrameIndex());
+            } else if(!cml["-noDraw"]){
+                // draw tags & points
+                TheViewer.draw(TheMap, in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex), Slam->getCurrentKeyFrameIndex());
             }
             TimerDraw.stop();
 

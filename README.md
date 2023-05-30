@@ -129,6 +129,7 @@ otherwise, you won't be able to run mapping. In the `assets/voc` folder we provi
 - `-noMapOptimize`: Disable the global optimization when saving the map.
 - `-nokeypoints`: Disable key-point detection (advised at runtime without a mask for the tool).
 - `-noX`: Disable the display of the GUI.
+- `-noDraw`: Disable the SLAM information drawing on the video.
 - `-startFrameID` and `-endFrameID`: When the input video is not a live camera, startFrameID and endFrameID can be set to only process a part of the video. The frame ID starts from 0, and both parameters are inclusive (i.e. [startFrameID, endFrameID]). The endFrameID can be blank if you want to process the video to the end.
 
 When the window pop-out, you can press `s` to start/stop SLAM and `f` to enable the camera tracking in the virtual map, `q` to close and save the output data.

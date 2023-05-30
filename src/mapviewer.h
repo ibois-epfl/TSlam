@@ -702,7 +702,7 @@ public:
 
     }
 
-    void draw(  ) {
+    void draw() {
 
         _mapDrawer.draw(_imshow,TheMap,_cameraImage,_cameraPose_f2g,_additional_msg,curKF);
         drawText(_imshow,_additional_msg);
