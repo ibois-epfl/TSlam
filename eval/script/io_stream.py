@@ -27,9 +27,11 @@ import gc  # for collecting buffer memory
 def __set_coverage_values(camera_pos : np.array,
                           camera_rot_vec : np.array,
                           ts_poss : np.array,
-                          frame_number : int) -> bool:
+                          frame_number : int,
+                          is_only_tag : bool,
+                          ts_tag) -> bool:
     """
-        Check if the data is sane by checking if poses are valid (no drift, no lost tracking, etc).
+        Check if the data is sane by checking if poses are valid (no drift, no lost tracking, no tags detected etc).
         This will define the coverage value for the evaluation.
 
         Args:
@@ -54,6 +56,11 @@ def __set_coverage_values(camera_pos : np.array,
     # if the current position is away from the previous position by more than 5cm, then replace it with the previous known pose
     if ts_poss.__len__() != 0 and np.linalg.norm(camera_pos - ts_poss[-1]) > 0.05 and frame_number != 1:
         is_drifted = True
+        return False
+
+    # if the tag is 0 the coverage is lost
+    if ts_tag == 0 and is_only_tag:
+        is_not_detected = True
         return False
 
     return True
@@ -162,6 +169,7 @@ def process_opti_camera_data(gt_path : str,
     return opti_poss, opti_vec_rots, distances
 
 def process_ts_data(ts_path : str,
+                    is_only_tag : bool,
                     scale_f : float = 0.02,
                     frame_start : int = None,
                     frame_end : int = None) -> np.array:
@@ -170,9 +178,11 @@ def process_ts_data(ts_path : str,
 
         Args:
             ts_path (str): path to the tracking system data
+            is_only_tag (bool): True if the tracking system is only tracking the tag, False otherwise we consider feature points also
             scale_f (float): scale factor to apply to the poses of the tslam.
                              It corresponds to the size of the tag (e.g. 2cm)
-
+            frame_start (int): start frame
+            frame_end (int): end frame
         Returns:
             np.array: positions,the positions of the camera
             np.array: rotations, the rotations of the camera as rotation vectors (from quaternion)
@@ -209,7 +219,9 @@ def process_ts_data(ts_path : str,
             ts_cover = __set_coverage_values(camera_pos,
                                              camera_rot_vec,
                                              ts_poss,
-                                             frame_number)
+                                             frame_number,
+                                             ts_tag,
+                                             is_only_tag)
             ts_poss.append(camera_pos)
             ts_vec_rots.append(camera_rot_vec)
             ts_tags.append(ts_tag)

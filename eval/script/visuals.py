@@ -269,6 +269,10 @@ def visualize_quintiles_plot(out_dir : str) -> None:
     # set manually the xticks
     ax.set_xticks([1, 2, 3, 4, 5])
 
+    # draw one vertical dashed vertical line per quintile 1 and 4
+    ax.axvline(x=1, color='black', linestyle='--', linewidth=1)
+    ax.axvline(x=4, color='black', linestyle='--', linewidth=1)
+
     # set ticks style to be in the middle of the axis
     ax.tick_params(axis='x', which='major', pad=10)
 
@@ -280,13 +284,9 @@ def visualize_quintiles_plot(out_dir : str) -> None:
     clrs = plt.cm.tab20(np.linspace(0, 1, len(TOOLS_clean.keys())))
     from scipy.signal import savgol_filter
 
-    linestyles = mpltex.linestyle_generator(colors=[],
-                                        lines=['-',':'],
-                                        markers=['o','s'],
-                                        hollow_styles=[False, False, True, True],)
-
+    counter : int = 0
     for tool_id, res in TOOLS_clean.items():
-        rndm_clr = np.random.rand(3,)
+        clr = clrs[counter]
 
         y_values = res[1].mean_coverage_perc_quintiles
 
@@ -295,7 +295,10 @@ def visualize_quintiles_plot(out_dir : str) -> None:
         # y_smooth = savgol_filter(y_values, window_size, 2)
         # ax.plot(x_values, y_smooth, label=tool_id, color=rndm_clr)
 
-        ax.plot(x_values, y_values, label=tool_id, color="black", linestyle=next(linestyles), linewidth=1.5)
+        ax.plot(x_values, y_values, label=tool_id, color=clr)
+
+        counter += 1
+    
 
 
 

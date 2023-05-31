@@ -40,6 +40,8 @@ def main(gt_path : str,
     frame_end = int(ts_path.split('/')[-1].split('_')[1].split('.')[0])
     total_frames = frame_end - frame_start
     frames : np.array(int) = np.arange(frame_start, frame_end+1)
+    mode : str = ts_path.split('/')[-1].split('-')[-1].split('.')[0]
+    is_only_tag : bool = True if mode == "onlytag" else False
     """
         We import the data from the ground truth and the tslam and we output the following data:
         - opti_poss: the positions of the camera from the ground truth optitrack
