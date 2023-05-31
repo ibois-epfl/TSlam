@@ -6,6 +6,8 @@ import sys
 import matplotlib.pyplot as plt
 import metrics
 
+CYBERGREEN = '#2DDE98'
+
 #===============================================================================
 # sub-sequence visuals
 #===============================================================================
@@ -197,8 +199,7 @@ def _draw_boxplot(data : np.array,
     for cap in boxplot['caps']:
         cap.set(color='black', linewidth=2)
     for median in boxplot['medians']:
-        cybergreen = '#2DDE98'
-        median.set(color=cybergreen, linewidth=2)
+        median.set(color=CYBERGREEN, linewidth=2)
     for flier in boxplot['fliers']:
         flier.set(marker='+', color="black", alpha=0.5)
 
@@ -253,11 +254,11 @@ def visualize_quintiles_plot(out_dir : str) -> None:
 
     # draw the coverage quartiles as a graph line of different color, each for the tool
     fig, ax = plt.subplots()
-    fig.set_size_inches(10., 5.)
-    ax.set_title(f"Median coverage per fabrications' quintiles")
-    ax.set_xlabel("Quintiles")
+    fig.set_size_inches(10., 4.)
+    ax.set_title(f"Median coverage")
+    ax.set_xlabel("Fabrication timeline [quintiles]")
     ax.set_ylabel("Coverage [%]")
-    ax.set_ylim(0, 100)
+    ax.set_ylim(0, 105)
     ax.set_xlim(0, 5)
 
     # get rid of right axis border
@@ -268,58 +269,59 @@ def visualize_quintiles_plot(out_dir : str) -> None:
     
     # set manually the xticks
     ax.set_xticks([1, 2, 3, 4, 5])
+    ax.set_yticks([0, 20, 40, 60, 80, 100])
+    ax.labels = ["Qt1", "Qt2", "Qt3", "Qt4", "Qt5"]
+    ax.set_xticklabels(ax.labels)
 
     # draw one vertical dashed vertical line per quintile 1 and 4
-    ax.axvline(x=1, color='black', linestyle='--', linewidth=1)
-    ax.axvline(x=4, color='black', linestyle='--', linewidth=1)
+    CLR_AXVLN = "gray"
+    ax.axvline(x=1, color=CLR_AXVLN, linewidth=1)
+    ax.axvline(x=4, color=CLR_AXVLN, linewidth=1)
 
-    # set ticks style to be in the middle of the axis
-    ax.tick_params(axis='x', which='major', pad=10)
+    # add text to tick 0.5 and y=10
+    H_Y_TEXT = 2.5
+    ax.text(0.5, H_Y_TEXT, "S(0%-20%)", fontsize=10, horizontalalignment='center')
+    ax.text(2.5, H_Y_TEXT, "B(20%-80%)", fontsize=10, horizontalalignment='center')
+    ax.text(4.5, H_Y_TEXT, "E(80%-100%)", fontsize=10, horizontalalignment='center')
 
 
-    x_values = np.array([0, 1.5, 2.5, 3.5, 5])
-    # apply a filter and multiply the x values
+    # line points style
+    #                0    1    2    3    4    5    6    7    8    9   10   11   12   14   15   16   17   18   19   20
+    ln_pts_style = ['o', 'v', 's', 'P', 'X', 'D', 'p', 'h', 'H', '8', '*', 'd', 'x', '1', '2', '3', '4', '+', '|', '_']
+    keys = list(metrics.TOOLS.keys())
+    ln_pt_dict = {
+        keys[0] : ln_pts_style[6],
+        keys[1] : ln_pts_style[0],
+        keys[2] : ln_pts_style[5],
+        keys[3] : ln_pts_style[19],
+        keys[4] : ln_pts_style[17],
+        keys[5] : ln_pts_style[12],
+        keys[6] : ln_pts_style[1],
+        keys[7] : ln_pts_style[14],
+        keys[8] : ln_pts_style[2],
+        keys[9] : ln_pts_style[10],
+    }
 
-    # get a list of cold variety of colors
-    clrs = plt.cm.tab20(np.linspace(0, 1, len(TOOLS_clean.keys())))
-    from scipy.signal import savgol_filter
+    x_values = np.array([0.5, 1.5, 2.5, 3.5, 4.5])
+
+    # clrs = plt.cm.tab20(np.linspace(0, 1, len(TOOLS_clean.keys())))
 
     counter : int = 0
     for tool_id, res in TOOLS_clean.items():
-        clr = clrs[counter]
-
         y_values = res[1].mean_coverage_perc_quintiles
-
-        # window_size = 5  # Adjust the window size as needed
-        # order = 5  # Adjust the order of the polynomial fit as needed
-        # y_smooth = savgol_filter(y_values, window_size, 2)
-        # ax.plot(x_values, y_smooth, label=tool_id, color=rndm_clr)
-
-        ax.plot(x_values, y_values, label=tool_id, color=clr)
-
+        ax.plot(x_values, y_values, label=tool_id, color="black", marker=ln_pt_dict[tool_id], markersize=5, linewidth=1, linestyle='--')
         counter += 1
+
+    # draw in green a plot of the mean coverage among all the tools for each quintile
+    mean_coverage_perc_quintiles = np.array([TOOLS_clean[key][1].mean_coverage_perc_quintiles for key in TOOLS_clean.keys()])
+    mean_coverage_perc_quintiles = np.mean(mean_coverage_perc_quintiles, axis=0)
+    ax.plot(x_values, mean_coverage_perc_quintiles, label="mean", color=CYBERGREEN, marker='x', markersize=5, linewidth=2, linestyle='-')
     
+    # add a legend and show
+    plt.legend(loc='upper right', bbox_to_anchor=(1.15, 1), ncol=1, 
+               fontsize=8, frameon=False)
+    fig.tight_layout()
 
-
-
-
-
-
-
-    # VER1: all the sub-sequences
-    # for tool_id, res in TOOLS_clean.items():
-    #     rndm_clr = np.random.rand(3,)
-    #     for coverage_means_quintiles_fab in res[1]._coverage_mean_per_fabrication_quintiles:
-    #         ax.plot(xvalues, coverage_means_quintiles_fab, label=tool_id, color=rndm_clr)
-
-    # VER2: only median of the sub-sequences confondu
-    # for tool_id, res in TOOLS_clean.items():
-        # rndm_clr = np.random.rand(3,)
-        # ax.plot(xvalues, res[1].mean_coverage_perc_quintiles, label=tool_id, color=rndm_clr)
-
-
-    plt.show()
-    
     fig.savefig(graph_dir, dpi=300)
 
     plt.close()
