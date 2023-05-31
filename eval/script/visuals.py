@@ -4,6 +4,11 @@ import os
 from tqdm import tqdm
 import sys
 import matplotlib.pyplot as plt
+import metrics
+
+#===============================================================================
+# sub-sequence visuals
+#===============================================================================
 
 def __draw_local_axis_pose(ax : plt.Axes,
                            origin : np.array,
@@ -162,6 +167,161 @@ def visualize_2d_drift(drift_xyz : np.array,
 
     return fig
 
-# TODO: fill me in
-def visualized_box_plots() -> None:
-    pass
+#===============================================================================
+# sequence visuals
+#===============================================================================
+
+# TODO: we could add:
+# - on the top of the graph write the median, mean, std, min, max of the drift
+# - the mean time for each operation
+def _draw_boxplot(data : np.array,
+                  labels : np.array,
+                  ylabel : str) -> plt.figure:
+    fig, ax = plt.subplots()
+    fig.set_size_inches(10., 5.)
+    ax.set_xlabel("Tools' names (nbr of operations)")
+    ax.set_ylabel(ylabel)
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['left'].set_visible(True)
+    ax.spines['bottom'].set_visible(True)
+
+    boxplot = ax.boxplot(data, labels=labels,
+        #     patch_artist = True,
+        #    boxprops = dict(facecolor = "lightgray", color = "black"),
+        notch=False, sym='+', vert=True, whis=1.5,
+        positions=None, widths=None,
+        bootstrap=None, usermedians=None, conf_intervals=None)
+    for whisker in boxplot['whiskers']:
+        whisker.set(color='black', linewidth=1)
+    for cap in boxplot['caps']:
+        cap.set(color='black', linewidth=2)
+    for median in boxplot['medians']:
+        cybergreen = '#2DDE98'
+        median.set(color=cybergreen, linewidth=2)
+    for flier in boxplot['fliers']:
+        flier.set(marker='+', color="black", alpha=0.5)
+
+    fig.autofmt_xdate()  # to avoid xlabels overlapping
+
+    fig.tight_layout()
+    return fig
+
+def _get_clean_empty_tool_results() -> dict:
+    """ Return a copy of the tool dictionary without the empty results """
+    TOOLS_clean = {}
+    for key, value in metrics.TOOLS.items():
+        if len(value[1]._mean_drift_position_NONAN) == 0:
+            continue
+        TOOLS_clean[key] = value
+    return TOOLS_clean
+
+def visualize_box_plots(out_dir : str) -> None:
+    """ Visualize the box plots """
+    graph_dir = os.path.join(out_dir, "sequence", "graph")
+    os.makedirs(graph_dir, exist_ok=True)
+
+    TOOLS_clean = _get_clean_empty_tool_results()
+    
+    boxplot_labels = np.array([f"{key}\n({TOOLS_clean[key][1].nbr_operations})" for key in TOOLS_clean.keys()])
+    boxplot_body_position = np.array([TOOLS_clean[key][1]._mean_drift_position_NONAN for key in TOOLS_clean.keys()])
+    boxplot_outliers_position = np.array([TOOLS_clean[key][1].mean_drift_position_outliers for key in TOOLS_clean.keys()])
+    boxplot_body_orientation = np.array([TOOLS_clean[key][1]._mean_drift_rotation_NONAN for key in TOOLS_clean.keys()])
+    boxplot_outliers_orientation = np.array([TOOLS_clean[key][1].mean_drift_rotation_outliers for key in TOOLS_clean.keys()])
+    boxplot_body_tags = np.array([TOOLS_clean[key][1]._tags_NONAN for key in TOOLS_clean.keys()])
+    boxplot_outliers_tags = np.array([TOOLS_clean[key][1].tags_outliers for key in TOOLS_clean.keys()])
+
+    fig_position = _draw_boxplot(boxplot_body_position, boxplot_labels, "Error position [m]")
+    fig_rotation = _draw_boxplot(boxplot_body_orientation, boxplot_labels, "Error orientation [deg]")
+    fig_tags = _draw_boxplot(boxplot_body_tags, boxplot_labels, "Detected tags [nbr]")
+
+    fig_position.savefig(os.path.join(graph_dir, "boxplot_position_graph.png"), dpi=300)
+    fig_rotation.savefig(os.path.join(graph_dir, "boxplot_rotation_graph.png"), dpi=300)
+    fig_tags.savefig(os.path.join(graph_dir, "boxplot_tags_graph.png"), dpi=300)
+
+    plt.close()
+
+# TODO: we can just indicate the median value here for each curve
+def visualize_quintiles_plot(out_dir : str) -> None:
+    """ Visualize the quintiles plot to inform about the coverage distribution during the fabrication """
+    graph_dir = os.path.join(out_dir, "sequence", "graph")
+    if not os.path.exists(graph_dir):
+        os.makedirs(graph_dir)
+    graph_dir = os.path.join(graph_dir, "quintiles_graph.png")
+
+    TOOLS_clean = _get_clean_empty_tool_results()
+
+    # draw the coverage quartiles as a graph line of different color, each for the tool
+    fig, ax = plt.subplots()
+    fig.set_size_inches(10., 5.)
+    ax.set_title(f"Median coverage per fabrications' quintiles")
+    ax.set_xlabel("Quintiles")
+    ax.set_ylabel("Coverage [%]")
+    ax.set_ylim(0, 100)
+    ax.set_xlim(0, 5)
+
+    # get rid of right axis border
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['left'].set_visible(True)
+    ax.spines['bottom'].set_visible(True)
+    
+    # set manually the xticks
+    ax.set_xticks([1, 2, 3, 4, 5])
+
+    # set ticks style to be in the middle of the axis
+    ax.tick_params(axis='x', which='major', pad=10)
+
+
+    x_values = np.array([0, 1.5, 2.5, 3.5, 5])
+    # apply a filter and multiply the x values
+
+    # get a list of cold variety of colors
+    clrs = plt.cm.tab20(np.linspace(0, 1, len(TOOLS_clean.keys())))
+    from scipy.signal import savgol_filter
+
+    linestyles = mpltex.linestyle_generator(colors=[],
+                                        lines=['-',':'],
+                                        markers=['o','s'],
+                                        hollow_styles=[False, False, True, True],)
+
+    for tool_id, res in TOOLS_clean.items():
+        rndm_clr = np.random.rand(3,)
+
+        y_values = res[1].mean_coverage_perc_quintiles
+
+        # window_size = 5  # Adjust the window size as needed
+        # order = 5  # Adjust the order of the polynomial fit as needed
+        # y_smooth = savgol_filter(y_values, window_size, 2)
+        # ax.plot(x_values, y_smooth, label=tool_id, color=rndm_clr)
+
+        ax.plot(x_values, y_values, label=tool_id, color="black", linestyle=next(linestyles), linewidth=1.5)
+
+
+
+
+
+
+
+    # VER1: all the sub-sequences
+    # for tool_id, res in TOOLS_clean.items():
+    #     rndm_clr = np.random.rand(3,)
+    #     for coverage_means_quintiles_fab in res[1]._coverage_mean_per_fabrication_quintiles:
+    #         ax.plot(xvalues, coverage_means_quintiles_fab, label=tool_id, color=rndm_clr)
+
+    # VER2: only median of the sub-sequences confondu
+    # for tool_id, res in TOOLS_clean.items():
+        # rndm_clr = np.random.rand(3,)
+        # ax.plot(xvalues, res[1].mean_coverage_perc_quintiles, label=tool_id, color=rndm_clr)
+
+
+    plt.show()
+    
+    fig.savefig(graph_dir, dpi=300)
+
+    plt.close()
+
+
+
+
+

@@ -5,11 +5,14 @@ import math
 import os
 import transformations as tfm
 import sys
+from datetime import datetime
+import pickle
 
 import matplotlib
 matplotlib.use('TkAgg')  # <-- to avoid memory leak
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import pandas as pd
 
 import visuals
 import metrics
@@ -595,3 +598,106 @@ def get_subseq_metrics_csv(out_dir : str) -> None:
                     [path for path in files if list(metrics.TOOLS.keys())[9] in path],
     ]
     return tool_csv_lst
+
+def dump_sequence_results(out_dir : str) -> str:
+    """ Save the analysis of the sequence to a local csv file """
+    sequence_summary_csv_path = os.path.join(out_dir, "sequence")
+    os.makedirs(sequence_summary_csv_path, exist_ok=True)
+    sequence_benchmark_path = os.path.join(sequence_summary_csv_path, "benchmark")
+    os.makedirs(sequence_benchmark_path, exist_ok=True)
+
+    # save all the metrics per tool as a py pickle
+    for tool_id, res in metrics.TOOLS.items():
+        with open(os.path.join(sequence_benchmark_path, f"{tool_id}_bench.pickle"), 'wb') as f:
+            pickle.dump(res, f)
+
+    # save a summary as a csv
+    csv_overview_path = os.path.join(sequence_benchmark_path, "summarys_sequence_bench.csv")
+    with open(csv_overview_path, "w") as f:
+        writer = csv.writer(f, delimiter=',')
+        writer.writerow([
+            "tool_id",
+
+            "nbr_operations",
+            "average_time_per_operation",
+
+            "mean_drift_position_m",
+            "mean_drift_position_q1",
+            "mean_drift_position_q3",
+            "mean_drift_position_min",
+            "mean_drift_position_max",
+
+            "mean_drift_rotation_m",
+            "mean_drift_rotation_q1",
+            "mean_drift_rotation_q3",
+            "mean_drift_rotation_min",
+            "mean_drift_rotation_max",
+
+            "tags_m",
+            "tags_q1",
+            "tags_q3",
+            "tags_min",
+            "tags_max",
+
+            "coverage_m",
+            "mean_coverage_perc_quintile1",
+            "mean_coverage_perc_quintile2",
+            "mean_coverage_perc_quintile3",
+            "mean_coverage_perc_quintile4",
+            "mean_coverage_perc_quintile5"
+                         ])
+        for tool_id, res in metrics.TOOLS.items():
+            mean_coverage_perc_quintile1 = res[1].mean_coverage_perc_quintiles[0] if len(res[1].mean_coverage_perc_quintiles) > 0 else 0
+            mean_coverage_perc_quintile2 = res[1].mean_coverage_perc_quintiles[1] if len(res[1].mean_coverage_perc_quintiles) > 1 else 0
+            mean_coverage_perc_quintile3 = res[1].mean_coverage_perc_quintiles[2] if len(res[1].mean_coverage_perc_quintiles) > 2 else 0
+            mean_coverage_perc_quintile4 = res[1].mean_coverage_perc_quintiles[3] if len(res[1].mean_coverage_perc_quintiles) > 3 else 0
+            mean_coverage_perc_quintile5 = res[1].mean_coverage_perc_quintiles[4] if len(res[1].mean_coverage_perc_quintiles) > 4 else 0
+
+            writer.writerow([
+                tool_id,
+
+                res[1].nbr_operations,
+                res[1].average_time_per_operation,
+
+                res[1].mean_drift_position_m,
+                res[1].mean_drift_position_q1,
+                res[1].mean_drift_position_q3,
+                res[1].mean_drift_position_min,
+                res[1].mean_drift_position_max,
+
+                res[1].mean_drift_rotation_m,
+                res[1].mean_drift_rotation_q1,
+                res[1].mean_drift_rotation_q3,
+                res[1].mean_drift_rotation_min,
+                res[1].mean_drift_rotation_max,
+
+                res[1].tags_m,
+                res[1].tags_q1,
+                res[1].tags_q3,
+                res[1].tags_min,
+                res[1].tags_max,
+
+                res[1].coverage_m,
+                mean_coverage_perc_quintile1,
+                mean_coverage_perc_quintile2,
+                mean_coverage_perc_quintile3,
+                mean_coverage_perc_quintile4,
+                mean_coverage_perc_quintile5
+                ])
+
+    return csv_overview_path
+
+def dump_summary_as_tex_table(out_dir : str,
+                              summary_csv_path : str) -> None:
+    """ Output a table of the results from the csv summary of the entire sequence """
+    table_dir = os.path.join(out_dir, "sequence", "table")
+    if not os.path.exists(table_dir):
+        os.makedirs(table_dir)
+
+    # read the summary csv and store the data make a table
+    df = pd.read_csv(summary_csv_path)
+
+    # save as a latex table
+    table_path = os.path.join(table_dir, "table.tex")
+    with open(table_path, 'w') as tf:
+        tf.write(df.to_latex(index=False))

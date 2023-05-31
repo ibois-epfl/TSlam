@@ -175,7 +175,7 @@ def align_and_benchmark(src_poss : np.array,
         "drift_poss_xyz": drift_poss_xyz,            # the drift of the position of the tslam with its ground truth for each pose in meters and per axe.
         "drift_rots_xyz": drift_rots_xyz,            # the drift of the rotation of the tslam with its ground truth for each pose in degrees and per axe.
         "drift_poss_mean_xyz": drift_poss_mean_xyz,  # the mean of the drift of the position of the tslam with its ground truth for each pose in meters.
-        "drift_rots_mean_xyz": drift_rots_mean_xyz,   # the mean of the drift of the rotation of the tslam with its ground truth for each pose in degrees.
+        "drift_rots_mean_xyz": drift_rots_mean_xyz,  # the mean of the drift of the rotation of the tslam with its ground truth for each pose in degrees.
         "distances_4_metrics": distances_4_metrics   # the distances at each pose from the start of the trajectory
     }
 

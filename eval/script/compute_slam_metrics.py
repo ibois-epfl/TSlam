@@ -61,6 +61,7 @@ def main(gt_path : str,
                                                                                          (frame_end+30))
     ts_poss, ts_vec_rots, ts_tags, ts_coverages = io_stream.process_ts_data(ts_path)
     io_stream.run_checks(opti_poss, opti_vec_rots, ts_poss, ts_vec_rots, ts_tags, ts_coverages)
+    
     print(f"Streams processed succesfully.")
     print("==============================================================================================")
     print(f"--- Filtering ..")
@@ -299,6 +300,15 @@ if __name__ == "__main__":
     print(f"--- Computing overview results of the entire video..")
     metrics.compute_fab_results(out_dir=_out_subdir)
     print(f"--- Completed succesfully overview results ..")
+    print(f"--- Dumping sequence results..")
+    sequence_summary_csv_path = io_stream.dump_sequence_results(out_dir=_out_subdir)
+    print(f"--- Completed writing locally the results ..")
+    print(f"--- Generating visualization for results ..")
+    visuals.visualize_box_plots(out_dir=_out_subdir)
+    visuals.visualize_quintiles_plot(out_dir=_out_subdir)
+    io_stream.dump_summary_as_tex_table(out_dir=_out_subdir,
+                            summary_csv_path=sequence_summary_csv_path)
+    print(f"--- Completed visualizations ..")
     print("==============================================================================================")
     print("--- Closing program..")
     end_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
