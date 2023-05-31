@@ -61,7 +61,7 @@ def main(gt_path : str,
     opti_poss_p30, opti_vec_rots_p30, distances_p30 = io_stream.process_opti_camera_data(gt_path,
                                                                                          (frame_start+30),
                                                                                          (frame_end+30))
-    ts_poss, ts_vec_rots, ts_tags, ts_coverages = io_stream.process_ts_data(ts_path)
+    ts_poss, ts_vec_rots, ts_tags, ts_coverages = io_stream.process_ts_data(ts_path, is_only_tag)
     io_stream.run_checks(opti_poss, opti_vec_rots, ts_poss, ts_vec_rots, ts_tags, ts_coverages)
     
     print(f"Streams processed succesfully.")
