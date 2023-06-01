@@ -80,6 +80,7 @@ def _compute_poses(_frames : list[tuple],
                                 f"{param_no_keypoints} " \
                                 f"-outCamPose {_out_dir}/{out_pose_name} " \
                                 f"{param_video_record} " \
+                                f"-f -s" \
                                 f"| tee -a {tee_path}"
         os.system(f"echo -----command only_tags: {cmd}----- | tee -a {tee_path}")
         os.system(f"echo -----start recording only_tags {out_pose_name_base}----- | tee -a {tee_path}")

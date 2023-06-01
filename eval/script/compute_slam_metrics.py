@@ -271,11 +271,6 @@ if __name__ == "__main__":
     pose_files = [f for f in files if f.endswith(".txt")]
     video_files = [f for f in files if f.endswith("_raw.mp4")]  # TODO: change if you want gui video
 
-    if _is_make_animation:
-        assert len(pose_files) == len(video_files), f"[ERROR]: The number of pose files and video files must be the same \
-                                                    pose files: {len(pose_files)} \
-                                                    video files: {len(video_files)}"
-
     for idx, file in tqdm(enumerate(pose_files), total=pose_files.__len__(), desc="Benchmarking sequences"):
         _id : str = f"{idx}_" + str(file.split('/')[-1].split('.')[0])
         print(f"Processing file ID: {_id}")

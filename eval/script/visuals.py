@@ -173,14 +173,12 @@ def visualize_2d_drift(drift_xyz : np.array,
 # sequence visuals
 #===============================================================================
 
-# TODO: we could add:
-# - on the top of the graph write the median, mean, std, min, max of the drift
-# - the mean time for each operation
 def _draw_boxplot(data : np.array,
                   labels : np.array,
+                  metrics_info : list[str],
                   ylabel : str) -> plt.figure:
     fig, ax = plt.subplots()
-    fig.set_size_inches(10., 5.)
+    fig.set_size_inches(10., 6.)
     ax.set_xlabel("Tools' names (nbr of operations)")
     ax.set_ylabel(ylabel)
     ax.spines['right'].set_visible(False)
@@ -205,6 +203,33 @@ def _draw_boxplot(data : np.array,
 
     fig.autofmt_xdate()  # to avoid xlabels overlapping
 
+    metrics_info_str = []
+    for idx, info in enumerate(metrics_info):
+        i_txt_O = f"O:{info[0]}"
+        i_txt_M = f"M:{info[1]}"
+        i_txt_Q1 = f"q1:{info[2]}"
+        i_txt_Q3 = f"q3:{info[3]}"
+        i_txt_MIN = f"mn:{info[4]}"
+        i_txt_MAX = f"Mx:{info[5]}"
+
+        i_txt_OM = f"{i_txt_O} {i_txt_M}"
+        i_txt_Q1Q3 = f"{i_txt_Q1} {i_txt_Q3}"
+        i_txt_MINMAX = f"{i_txt_MIN} {i_txt_MAX}"
+        metrics_info_str.append(f"{i_txt_OM}\n{i_txt_Q1Q3}\n{i_txt_MINMAX}")
+
+    # find emplacement for info text
+    xlabels_loc = ax.get_xticks()
+    max_y_lst = []
+    for d in data:
+        max_y_lst.append(np.max(d))
+    MAX_y = np.max(np.array(max_y_lst))
+    max_y_lst = []
+    for d in data:
+        max_y_extra = np.max(d) + 0.1 * MAX_y
+        max_y_lst.append(max_y_extra)
+    for idx, xloc in enumerate(xlabels_loc):
+        ax.text(x=xloc, y=max_y_lst[idx], s=metrics_info_str[idx], fontsize=8, horizontalalignment='center')
+
     fig.tight_layout()
     return fig
 
@@ -224,17 +249,56 @@ def visualize_box_plots(out_dir : str) -> None:
 
     TOOLS_clean = _get_clean_empty_tool_results()
     
-    boxplot_labels = np.array([f"{key}\n({TOOLS_clean[key][1].nbr_operations})" for key in TOOLS_clean.keys()])
+    boxplot_labels = np.array([f"{key}" for key in TOOLS_clean.keys()])
+    
     boxplot_body_position = np.array([TOOLS_clean[key][1]._mean_drift_position_NONAN for key in TOOLS_clean.keys()])
-    boxplot_outliers_position = np.array([TOOLS_clean[key][1].mean_drift_position_outliers for key in TOOLS_clean.keys()])
-    boxplot_body_orientation = np.array([TOOLS_clean[key][1]._mean_drift_rotation_NONAN for key in TOOLS_clean.keys()])
-    boxplot_outliers_orientation = np.array([TOOLS_clean[key][1].mean_drift_rotation_outliers for key in TOOLS_clean.keys()])
-    boxplot_body_tags = np.array([TOOLS_clean[key][1]._tags_NONAN for key in TOOLS_clean.keys()])
-    boxplot_outliers_tags = np.array([TOOLS_clean[key][1].tags_outliers for key in TOOLS_clean.keys()])
+    boxplot_metrics_position_info = [
+        [
+            f"{TOOLS_clean[key][1].nbr_operations}\n",
+            f"{round(TOOLS_clean[key][1].mean_drift_position_m, 3)}\n",
+            f"{round(TOOLS_clean[key][1].mean_drift_position_q1, 3)}\n",
+            f"{round(TOOLS_clean[key][1].mean_drift_position_q3, 3)}\n",
+            f"{round(TOOLS_clean[key][1].mean_drift_position_min, 3)}\n",
+            f"{round(TOOLS_clean[key][1].mean_drift_position_max, 3)}\n",
+        ] for key in TOOLS_clean.keys()
+    ]
 
-    fig_position = _draw_boxplot(boxplot_body_position, boxplot_labels, "Error position [m]")
-    fig_rotation = _draw_boxplot(boxplot_body_orientation, boxplot_labels, "Error orientation [deg]")
-    fig_tags = _draw_boxplot(boxplot_body_tags, boxplot_labels, "Detected tags [nbr]")
+    boxplot_body_rotation = np.array([TOOLS_clean[key][1]._mean_drift_rotation_NONAN for key in TOOLS_clean.keys()])
+    boxplot_metrics_rotation_info = [
+        [
+            f"{round(TOOLS_clean[key][1].nbr_operations, 3)}\n",
+            f"{round(TOOLS_clean[key][1].mean_drift_rotation_m, 3)}\n",
+            f"{round(TOOLS_clean[key][1].mean_drift_rotation_q1, 3)}\n",
+            f"{round(TOOLS_clean[key][1].mean_drift_rotation_q3, 3)}\n",
+            f"{round(TOOLS_clean[key][1].mean_drift_rotation_min, 3)}\n",
+            f"{round(TOOLS_clean[key][1].mean_drift_rotation_max, 3)}\n",
+        ] for key in TOOLS_clean.keys()
+    ]
+
+    boxplot_body_tags = np.array([TOOLS_clean[key][1]._tags_NONAN for key in TOOLS_clean.keys()])
+    boxplot_metrics_tag_info = [
+        [
+            f"{TOOLS_clean[key][1].nbr_operations}\n",
+            f"{round(TOOLS_clean[key][1].tags_m, 1)}\n",
+            f"{round(TOOLS_clean[key][1].tags_q1, 1)}\n",
+            f"{round(TOOLS_clean[key][1].tags_q3, 1)}\n",
+            f"{round(TOOLS_clean[key][1].tags_min, 1)}\n",
+            f"{round(TOOLS_clean[key][1].tags_max, 1)}\n",
+        ] for key in TOOLS_clean.keys()
+    ]
+
+    fig_position = _draw_boxplot(data=boxplot_body_position,
+                                 labels=boxplot_labels,
+                                 metrics_info=boxplot_metrics_position_info,
+                                 ylabel="Error position [m]")
+    fig_rotation = _draw_boxplot(data=boxplot_body_rotation,
+                                 labels=boxplot_labels,
+                                 metrics_info=boxplot_metrics_rotation_info,
+                                 ylabel="Error orientation [deg]")
+    fig_tags = _draw_boxplot(data=boxplot_body_tags,
+                             labels=boxplot_labels,
+                             metrics_info=boxplot_metrics_tag_info,
+                             ylabel="Detected tags [nbr]")
 
     fig_position.savefig(os.path.join(graph_dir, "boxplot_position_graph.png"), dpi=300)
     fig_rotation.savefig(os.path.join(graph_dir, "boxplot_rotation_graph.png"), dpi=300)
@@ -242,7 +306,6 @@ def visualize_box_plots(out_dir : str) -> None:
 
     plt.close()
 
-# TODO: we can just indicate the median value here for each curve
 def visualize_quintiles_plot(out_dir : str) -> None:
     """ Visualize the quintiles plot to inform about the coverage distribution during the fabrication """
     graph_dir = os.path.join(out_dir, "sequence", "graph")
@@ -284,7 +347,6 @@ def visualize_quintiles_plot(out_dir : str) -> None:
     ax.text(2.5, H_Y_TEXT, "B(20%-80%)", fontsize=10, horizontalalignment='center')
     ax.text(4.5, H_Y_TEXT, "E(80%-100%)", fontsize=10, horizontalalignment='center')
 
-
     # line points style
     #                0    1    2    3    4    5    6    7    8    9   10   11   12   14   15   16   17   18   19   20
     ln_pts_style = ['o', 'v', 's', 'P', 'X', 'D', 'p', 'h', 'H', '8', '*', 'd', 'x', '1', '2', '3', '4', '+', '|', '_']
@@ -303,8 +365,6 @@ def visualize_quintiles_plot(out_dir : str) -> None:
     }
 
     x_values = np.array([0.5, 1.5, 2.5, 3.5, 4.5])
-
-    # clrs = plt.cm.tab20(np.linspace(0, 1, len(TOOLS_clean.keys())))
 
     counter : int = 0
     for tool_id, res in TOOLS_clean.items():
