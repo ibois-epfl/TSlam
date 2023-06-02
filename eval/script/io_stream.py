@@ -9,15 +9,15 @@ from datetime import datetime
 import pickle
 
 import matplotlib
-matplotlib.use('TkAgg')  # <-- to avoid memory leak
+# matplotlib.use('TkAgg')  # <-- to avoid memory leak
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
+# import matplotlib.animation as animation
 import pandas as pd
 
 import visuals
 import metrics
 
-# TODO: test debug
+from tqdm import tqdm
 import gc  # for collecting buffer memory
 
 #===============================================================================
@@ -401,6 +401,8 @@ def clean_subsequence_results(out_dir : str) -> None:
     os.makedirs(subsequence_graph_path, exist_ok=True)
     subsequence_benchmark_path = os.path.join(subsequence_path, "benchmark")
     os.makedirs(subsequence_benchmark_path, exist_ok=True)
+    subsquence_video_path = os.path.join(subsequence_path, "video")
+    os.makedirs(subsquence_video_path, exist_ok=True)
     subsequence_benchmark_overview_file = os.path.join(subsequence_benchmark_path, "overview.txt")
 
     bench_overview_paths, bench_metrics_paths, bench_failed_paths, graph_paths, video_paths =_get_benchmark_files(out_dir)
@@ -426,7 +428,7 @@ def clean_subsequence_results(out_dir : str) -> None:
         os.rename(graph_path, os.path.join(subsequence_graph_path, os.path.basename(graph_path)))
 
     for video_path in video_paths:
-        os.rename(video_path, os.path.join(subsequence_path, os.path.basename(video_path)))
+        os.rename(video_path, os.path.join(subsquence_video_path, os.path.basename(video_path)))
     
     circular_sawblade_140_csv_paths = [path for path in bench_metrics_paths if list(metrics.TOOLS.keys())[0] in path]
     saber_sawblade_t1_csv_paths = [path for path in bench_metrics_paths if list(metrics.TOOLS.keys())[1] in path]
@@ -502,23 +504,25 @@ def dump_animation(est_pos,
     """ Create a side-by-side animation with the video of the sequence of the trajectory """
     temp_dir = os.path.join(out_dir, "temp")
     temp_video_dir = os.path.join(temp_dir, "video")
+    vid_graph_temp_path = os.path.join(temp_dir, "graph")
+    vidgraph_dir = os.path.join(temp_dir, "vidgraph")
 
     os.makedirs(temp_dir, exist_ok=True)
     os.makedirs(temp_video_dir, exist_ok=True)
+    os.makedirs(vid_graph_temp_path, exist_ok=True)
+    os.makedirs(vidgraph_dir, exist_ok=True)
 
     video_filename = f"{id}_animation3d_video.mp4"
+    video_out_path = os.path.join(out_dir, video_filename)
 
     # extract each frame of the video in the temp_video_dir between frame_start and frame_end
     os.system(f"ffmpeg -y -i {video_path} -r 30 {temp_video_dir}/%d.png")
 
     fig = plt.figure()
-    height_mm = 160 # 160
-    width_mm = 380 # 380
-    height = int(height_mm / 25.4)
-    width = int(width_mm / 25.4)
+    height = 7.
+    width = 7.
     fig.set_size_inches(width, height)
-    plt.subplots_adjust(left=0.0, right=1.00, top=1.00, bottom=0.01)
-    ax = fig.add_subplot(1, 2, 2, projection='3d')
+    ax = fig.add_subplot(projection='3d')
     ax.grid(False)
 
     ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
@@ -533,17 +537,13 @@ def dump_animation(est_pos,
     FONT_SIZE = 10
     XYZ_LIM = 0.10
     SCALE_AXIS = 0.02
-    idx = 0
 
-    img = plt.imread(os.path.join(temp_video_dir, f"{idx+1}.png"))
-    ax2 = fig.add_subplot(1, 2, 1)
-    ax2.imshow(img)
-    ax2.axis('off')
+    fig.tight_layout()
 
-    def update(idx):
-        ax.clear()
-        ax2.clear()
+    fig.subplots_adjust(left=0.1)
+    fig.subplots_adjust(top=0.9)
 
+    for idx in tqdm(range(total_frames), total=total_frames, desc="Creating animation..."):
         ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
         ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
         ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
@@ -556,35 +556,30 @@ def dump_animation(est_pos,
         ax.set_xlabel('X [m]')
         ax.set_ylabel('Y [m]')
         ax.set_zlabel('Z [m]')
-        ax.text2D(0.00, 0.03, "Ground Truth (gt)", transform=ax.transAxes, color=CLR_GT, fontsize=FONT_SIZE)
-        ax.text2D(0.00, 0.00, "Tslam (ts)", transform=ax.transAxes, color=CLR_EST, fontsize=FONT_SIZE)
-        ax.set_position([0.3, 0.1, 0.9, 0.9])  # reduce the top border of the graph
 
-        ax.plot(gt_pos[:idx, 0], gt_pos[:idx, 1], gt_pos[:idx, 2], color=CLR_GT)
-        ax.plot(est_pos[:idx, 0], est_pos[:idx, 1], est_pos[:idx, 2], color=CLR_EST, alpha=0.5)
+        ax.plot(gt_pos[:idx, 0], gt_pos[:idx, 1], gt_pos[:idx, 2], color=CLR_GT, label="Ground Truth")
+        ax.plot(est_pos[:idx, 0], est_pos[:idx, 1], est_pos[:idx, 2], color=CLR_EST, alpha=0.5, label="Tslam")
+
+        ax.legend(loc='lower right', fontsize=FONT_SIZE)
 
         visuals.__draw_local_axis_pose(ax, est_pos[idx], est_rot[idx],
                                     scale_f=SCALE_AXIS, alpha=0.25, linewidth=2)
         visuals.__draw_local_axis_pose(ax, gt_pos[idx], gt_rot[idx],
                                 scale_f=SCALE_AXIS, alpha=1, linewidth=1)
 
-        img = plt.imread(os.path.join(temp_video_dir, f"{idx+1}.png"))
-        ax2.imshow(img)
-        ax2.axis('off')
+        fig.savefig(os.path.join(vid_graph_temp_path, f"{idx+1}.png"), dpi=300)
+        ax.clear()
 
-        idx += 1
+        # merge the two images to the same height side by side with imagemagick
+        os.system(f"montage {os.path.join(temp_video_dir, f'{idx+1}.png')} {os.path.join(vid_graph_temp_path, f'{idx+1}.png')} -geometry +0+0 -resize x500 {os.path.join(vidgraph_dir, f'{idx+1}.png')}")
 
         plt.close(fig)
         gc.collect()  # for collecting buffer memory
 
-    # create the animation
-    ani = animation.FuncAnimation(fig, update,
-                                  frames=total_frames,
-                                  interval=1000/30,
-                                  save_count=0)  # 30fps equivalent in ms
-    ani.save(os.path.join(out_dir, video_filename), writer='ffmpeg', fps=30, dpi=300)
+    # use ffmpeg to create a video from the images in folder temp_video_dir at 30fps
+    os.system(f"ffmpeg -y -r 30 -i {os.path.join(vidgraph_dir, '%d.png')} -vcodec libx264 -crf 25 {video_out_path}")
 
-    # erasse the temp folder
+    # erase the temp folder
     os.system(f"rm -rf {temp_dir}")
 
 #===============================================================================
