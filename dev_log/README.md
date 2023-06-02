@@ -38,14 +38,14 @@ std::string info;
 ---
 
 `June 4`
-- I tried to used the `-nokeypoints` flag to map the timber, but the program would crash. The solution is to downgrade the UcoSLAM from 1.2.4 to 1.1.0, which is tagged "stable" in the releasing website. However, the result is unpromising (worse than the result with key points).
+- I tried to used the `-noKeyPoints` flag to map the timber, but the program would crash. The solution is to downgrade the UcoSLAM from 1.2.4 to 1.1.0, which is tagged "stable" in the releasing website. However, the result is unpromising (worse than the result with key points).
 ![](./mapping_nokeypoints.png)
 
 - Tried with smaller object and slightly bigger tags (2cm vs 2.3cm), works pretty well!
 ![](./mapping_nokeypoints_good.png)
 
 - Debug command
-`gdb --args ./tslam_monocular '/home/tpp/UCOSlam-IBOIS/result/STag23mm_smallCube/use.mp4' '/home/tpp/UCOSlam-IBOIS/result/calibration_pixel3.yml' '-map' '/home/tpp/UCOSlam-IBOIS/result/STag23mm_smallCube/markers.map' "-aruco-markerSize" "0.023"`
+`gdb --args ./tslam_monocular '/home/tpp/UCOSlam-IBOIS/result/STag23mm_smallCube/use.mp4' '/home/tpp/UCOSlam-IBOIS/result/calibration_pixel3.yml' '-map' '/home/tpp/UCOSlam-IBOIS/result/STag23mm_smallCube/markers.map' "-markerSize" "0.023"`
 
 ## UcoSLAM 1.2.4 vs 1.1.0
 | Function              | 1.2.4 | 1.1.0 |

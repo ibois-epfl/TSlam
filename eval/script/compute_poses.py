@@ -65,8 +65,8 @@ def _compute_poses(_frames : list[tuple],
         out_pose_name_base : str = f"{f[0]}_{f[1]}_{f[2]}"
 
         out_name_mod : str = "onlytag" if _is_only_tag else "keypoints"
-        param_no_keypoints : str = "-nokeypoints" if _is_only_tag else ""
-        param_video_record : str = f"-outvideo {_out_dir}/{out_pose_name_base}" if _is_video_export else ""
+        param_no_keypoints : str = "-noKeyPoints" if _is_only_tag else ""
+        param_video_record : str = f"-exportVideo {_out_dir}/{out_pose_name_base}" if _is_video_export else ""
 
         out_pose_name : str = f"{out_pose_name_base}-{out_name_mod}.txt"
         cmd : str = f"{_input_monoexe_path} " \

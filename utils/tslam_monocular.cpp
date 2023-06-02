@@ -47,32 +47,32 @@ public: CmdLineParser(int _argc,char **_argv):argc(_argc),argv(_argv){}  bool op
 };
 
 void overwriteParamsByCommandLine(CmdLineParser &cml,tslam::Params &params){
-    if (cml["-aruco-markerSize"])           params.aruco_markerSize = stof(cml("-aruco-markerSize", "1"));
-    if (cml["-marker_minsize"])             params.aruco_minMarkerSize= stod(cml("-marker_minsize", "0.025"));
-    if (cml["-nokeypoints"])                params.detectKeyPoints=false;
-    if (cml["-nomarkers"])                  params.detectMarkers =false;
+    if (cml["-markerSize"])           params.aruco_markerSize = stof(cml("-markerSize", "1"));
+    if (cml["-minMarkerSize"])             params.aruco_minMarkerSize= stod(cml("-minMarkerSize", "0.025"));
+    if (cml["-noKeyPoints"])                params.detectKeyPoints=false;
+    if (cml["-noMarkers"])                  params.detectMarkers =false;
     if (cml["-sequential"])                 params.runSequential=true;
     if (cml["-maxFeatures"])                params.maxFeatures = stoi(cml("-maxFeatures","4000"));
     if (cml["-nOct"])                       params.nOctaveLevels = stoi(cml("-nOct","8"));
     if (cml["-fdt"])                        params.nthreads_feature_detector = stoi(cml("-fdt", "1"));
     if (cml["-desc"])                       params.kpDescriptorType = tslam::DescriptorTypes::fromString(cml("-desc", "orb"));
     if (cml["-dict"])                       params.aruco_Dictionary = cml("-dict");
-    if (cml["-tfocus"])                     params.targetFocus =stof(cml("-tfocus","-1"));
+    if (cml["-targetFocus"])                     params.targetFocus =stof(cml("-targetFocus","-1"));
     if (cml["-KFMinConfidence"])            params.KFMinConfidence =stof(cml("-KFMinConfidence"));
-    if (cml["-nonmax"])                     params.KPNonMaximaSuppresion=true;
+    if (cml["-nonMax"])                     params.KPNonMaximaSuppresion=true;
     if (cml["-saveImages"])                 params.saveImageInMap=true;
     if (cml["-localizeOnly"])               params.localizeOnly=true;
     if (cml["-autoAdjustKpSensitivity"])    params.autoAdjustKpSensitivity=true;
-    if (cml["-extra_params"])               params.extraParams=cml("-extra_params");
+    if (cml["-extraParams"])               params.extraParams=cml("-extraParams");
     if (cml["-scale"])                      params.kptImageScaleFactor=stof(cml("-scale"));
-    if (cml["-nokploopclosure"])            params.reLocalizationWithKeyPoints=false;
-    if(cml["-enableLoopClosure"])           params.enableLoopClosure=true;
+    if (cml["-noKPLoopClosure"])            params.reLocalizationWithKeyPoints=false;
+    if (cml["-enableLoopClosure"])           params.enableLoopClosure=true;
     else                                    params.enableLoopClosure=false;
-    if (cml["-inplanemarkers"])             params.inPlaneMarkers=true;
+    if (cml["-inPlaneMarkers"])             params.inPlaneMarkers=true;
 
     params.aruco_CornerRefimentMethod=cml("-aruco-cornerRefinementM","CORNER_SUBPIX");
 
-    if (cml["-dbg_str"]) tslam::debug::Debug::addString(cml("-dbg_str"),"");
+    if (cml["-dbgStr"]) tslam::debug::Debug::addString(cml("-dbgStr"),"");
 }
 
 std::pair<std::string,std::string> getSplit(std::string str){
@@ -269,18 +269,18 @@ int main(int argc,char **argv){
                 "[-loc_only do not update map, only do localization. Requires -in]"
                 "\n"
                 "[-desc descriptor orb,akaze,brisk,freak] "
-                "[-aruco-markerSize markers_size] [-dict <dictionary>:. By default ARUCO_MIP_36h12]  "
-                "[-nomarkers]  [-debug level] [-voc bow_volcabulary_file] "
+                "[-markerSize markers_size] [-dict <dictionary>:. By default ARUCO_MIP_36h12]  "
+                "[-noMarkers]  [-debug level] [-voc bow_volcabulary_file] "
                 "[-t_fe n:number of threads of the feature detector] [-st starts the processing stopped ] "
-                "[-nokeypoints] [-marker_minsize <val_[0,1]>] [-em . Uses enclosed markers] [-nFoX disabled windows] "
-                "[-fps X: set video sequence frames per second] [-outvideo filename]"
+                "[-noKeyPoints] [-minMarkerSize <val_[0,1]>] [-em . Uses enclosed markers] [-nFoX disabled windows] "
+                "[-fps X: set video sequence frames per second] [-exportVideo filename]"
                 "[-featDensity <float>:features density]"
                 "[-nOct <int>:number of octave layers]"
                 "[-noMapUpdate]"
-                "[-tfocus <float>: target focus employed to create the map. Replaces the one of the camera] "
+                "[-targetFocus <float>: target focus employed to create the map. Replaces the one of the camera] "
                 "[-undistort] will undistort image before processing it"
-                "[-extra_params \"param1=value1 param2=value2...\"]"
-                "[-vspeed <int:def 1> video analysis speed ]"
+                "[-extraParams \"param1=value1 param2=value2...\"]"
+                "[-vSpeed <int:def 1> video analysis speed ]"
                 "[-liveImageSize w:h]"
                 "[-outCamPose <filename>]"
                 << endl;        
@@ -290,12 +290,13 @@ int main(int argc,char **argv){
     bool liveVideo = false;
     InputReader vcap;
 
-    bool isExportingVideo = !cml("-outvideo").empty();
-    cv::VideoWriter outVideoWriter;
+    bool isExportingVideo = !cml("-exportVideo").empty();
+    bool isExportingRawVideo = !cml("-exportRawVideo").empty();
+    cv::VideoWriter exportVideoWriter;
     cv::VideoWriter outRawVideoWriter;
     string inputVideo = string(argv[1]);
-    string outputVideoPath = cml("-outvideo") + ".mp4";
-    string outputRawVideoPath = cml("-outvideo") + "_raw.mp4";
+    string outputVideoPath = cml("-exportVideo") + ".mp4";
+    string outputRawVideoPath = cml("-exportRawVideo") + "_raw.mp4";
 
     // if using live camera
     if (inputVideo.find("live") != std::string::npos)
@@ -356,7 +357,7 @@ int main(int argc,char **argv){
         cout << "Running in localization only mode." << endl;
     }
 
-    if(cml["-nokeypoints"]){
+    if(cml["-noKeyPoints"]){
         cout << "No keypoints detection. (Running in tag-only mode.)" << endl;
     }
 
@@ -377,7 +378,6 @@ int main(int argc,char **argv){
         imageParams.CamSize.width = TheMap->keyframes.begin()->imageParams.CamSize.width;
         imageParams.CameraMatrix = TheMap->keyframes.begin()->imageParams.CameraMatrix;
     }
-
     Slam->setParams(TheMap, params, cml("-voc"));
 
     if(!cml["-voc"]  && !cml["-map"]) {
@@ -446,6 +446,7 @@ int main(int argc,char **argv){
     tslam::MapViewer TheViewer;
     float focalLength = imageParams.CameraMatrix.at<float>(1, 1) / imageParams.CamSize.height;
     TheViewer.setParams(focalLength, imageParams.CamSize.width, imageParams.CamSize.height, "TSlam");
+    TheViewer.set("FOLLOWCAMERA", "1");
 
     cv::Mat auxImage;
     //Ok, lets start
@@ -455,7 +456,7 @@ int main(int argc,char **argv){
     tslam::TimerAvrg TimerPreprocessing;
     bool finish = false;
     cv::Mat camPose_c2g;
-    int vspeed = stoi(cml("-vspeed","1"));
+    int vSpeed = stoi(cml("-vSpeed","1"));
 
     vector<cv::Mat> rawFramesToWrite;
     vector<cv::Mat> slamFramesToWrite;
@@ -491,6 +492,9 @@ int main(int argc,char **argv){
     int trackedCounter = 0;
 
     while (!finish && !in_image.empty())  {
+        if (currentFrameIndex == 200){
+            finish = true;
+        }
         try{
             FpsComplete.start();
 
@@ -498,7 +502,7 @@ int main(int argc,char **argv){
 
             if(subSeqFrameIDStartAndEnd[1] != -1 && currentFrameIndex > subSeqFrameIDStartAndEnd[1]) break;
 
-            if (isExportingVideo) {
+            if (isExportingRawVideo) {
                 auto rawInFrame = in_image.clone();
                 rawFramesToWrite.emplace_back(rawInFrame);
             }
@@ -547,7 +551,6 @@ int main(int argc,char **argv){
                 // draw tags & points
                 TheViewer.draw(TheMap, in_image, camPose_c2g,"#" + std::to_string(currentFrameIndex), Slam->getCurrentKeyFrameIndex());
             }
-            TimerDraw.stop();
 
             if (int(k) == 27 || k=='q') finish = true; //pressed ESC
 
@@ -585,7 +588,11 @@ int main(int argc,char **argv){
 
             // save to output video?
             if (isExportingVideo) {
-                slamFramesToWrite.emplace_back(TheViewer.getImage().clone());
+                if(cml["-noDraw"]){
+                    cerr << "Error: cannot export video with -noDraw flag" << endl;
+                } else {
+                    slamFramesToWrite.emplace_back(TheViewer.getImage().clone());
+                }
             }
 
             //reset?
@@ -644,7 +651,7 @@ int main(int argc,char **argv){
         frameCaptureTime = std::chrono::system_clock::now();
 
 //        if(!camPose_c2g.empty()){
-//            for(int s=0;s<vspeed-1;s++)
+//            for(int s=0;s<vSpeed-1;s++)
 //                vcap >> in_image;
 //        }
     }
@@ -653,33 +660,42 @@ int main(int argc,char **argv){
     if(isExportingVideo){
         cout << "Exporting Video..." << endl;
         bool errFlag = false;
-        if(slamFramesToWrite.empty() || rawFramesToWrite.empty()){
+        if(slamFramesToWrite.empty()){
             cerr << "No frames to write" << endl;
             errFlag = true;
         }
         if(!errFlag){
-            cout << "Raw size: " << rawFramesToWrite.at(0).size() << endl;
             cout << "Slam video size: " << slamFramesToWrite.at(0).size() << endl;
-            outVideoWriter.open(
+            exportVideoWriter.open(
                     outputVideoPath,
                     CV_FOURCC('m', 'p', '4', 'v'),
                     stof(cml("-fps","30")),
                     slamFramesToWrite.at(0).size(), slamFramesToWrite.at(0).channels()!=1);
+
+            for(auto image : slamFramesToWrite){
+                exportVideoWriter.write(image);
+            }
+            exportVideoWriter.release();
+        }
+    }
+    if(isExportingRawVideo){
+        cout << "Exporting Raw Video..." << endl;
+        bool errFlag = false;
+        if(rawFramesToWrite.empty()){
+            cerr << "No frames to write" << endl;
+            errFlag = true;
+        }
+        if(!errFlag){
+            cout << "Raw video size: " << rawFramesToWrite.at(0).size() << endl;
             outRawVideoWriter.open(
                     outputRawVideoPath,
                     CV_FOURCC('m', 'p', '4', 'v'),
                     stof(cml("-fps","30")),
                     rawFramesToWrite.at(0).size(), rawFramesToWrite.at(0).channels()!=1);
 
-            for(auto image : slamFramesToWrite){
-                outVideoWriter.write(image);
-            }
-
             for(auto image : rawFramesToWrite){
                 outRawVideoWriter.write(image);
             }
-
-            outVideoWriter.release();
             outRawVideoWriter.release();
         }
     }
