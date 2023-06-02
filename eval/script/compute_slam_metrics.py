@@ -269,7 +269,7 @@ if __name__ == "__main__":
     files.sort(key=lambda x: os.path.getmtime(x))
 
     pose_files = [f for f in files if f.endswith(".txt")]
-    video_files = [f for f in files if f.endswith("_raw.mp4")]  # TODO: change if you want gui video
+    video_files = [f for f in files if not f.endswith("_raw.mp4")]  # TODO: change if you want gui video
 
     for idx, file in tqdm(enumerate(pose_files), total=pose_files.__len__(), desc="Benchmarking sequences"):
         _id : str = f"{idx}_" + str(file.split('/')[-1].split('.')[0])
