@@ -14,7 +14,7 @@
 - [ ] start video recording for tslam mapping
 - [ ] start tslam mapping console app:
   ```bash
-    ./tslam_monocular live:0 '/home/tpp/TSlam/assets/calibrationf/calibration_orange_A_1280_720_r.yml' -voc '/home/tpp/TSlam/assets/voc/orb.fbow' -out /home/tpp/TSlam/temp/01/01_opti_map -outvideo /home/tpp/TSlam/temp/01/01_mapping.mp4`
+    ./tslam_monocular live:0 '/home/tpp/TSlam/assets/calibrationf/calibration_orange_A_1280_720_r.yml' -voc '/home/tpp/TSlam/assets/voc/orb.fbow' -out /home/tpp/TSlam/temp/01/01_opti_map -exportVideo /home/tpp/TSlam/temp/01/01_mapping.mp4`
   ```
 - [ ] stop tslam mapping and save map
 - [ ] reconstruct the mesh

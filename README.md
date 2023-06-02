@@ -46,64 +46,6 @@ gantt
     Refinement for reconstruction       :crit, 20d
 ```
 
-```mermaid
-gantt
-    dateFormat  YYYY-MM-DD
-    title       HB internship planning
-    axisFormat %Y-%m
-
-    Start                                                  :milestone, 2023-06-01, 0d
-
-    section Vocation
-    days off                                               :crit, off, 2023-06-05, 5d
-
-    section Eval refinement
-    (1)Evaluation pipeline for 3d model                       :active, epf3m, 2023-06-12, 5d
-    (2)Batch pipeline for all dataset                         :bpfad, after epf3m, 6d
-
-    section TSlamV2
-    (4)troubleshooting of bugs from V1                        :domsv2, after bpfad 2023-08-01, 15d
-    
-    section AC-TSlam integration
-    (5)Integration of simple .ply mesh import                 :iomi, 2023-06-25, 2d
-    (6)Refinement of visualization of object interlocking     :rovooi, after iomi, 15d
-    (7)Smoke dev for TSlam in AC                              :stftia, after rovooi, 4d
-
-    section AC-Rhino designer
-    (8a)plug-in Rhino8 import slam/export .auca               :pirte, after stftia, 25d
-    (8b)importer AC of .auca (instruct, visuals)              :iaoa, after stftia, 25d
-
-    End                                                       :milestone, 2023-08-14, 0d
-```
-## HB description working packages
-- [ ] **(1) Evaluation pipeline for 3d model**: in the folder `eval\compute_model_metrics.py`, the script needs to evaluate the error in the reconstructed model from the tslam with its scanned ground truth. The stage for the working packages are the following:
-  - [ ] clean out the gtg data in Rhino to reconstruct a perfect gt point cloud model
-  - [ ] in the py script:
-    - [ ] import gt model (*pcdGt*) and run the reconstruction for the dataset to obtain a `.ply` model
-    - [ ] populate the tslam mesh model to obtain a pointcloud (*pcdTs*)
-    - [ ] register and refine the realignement (e.g., umeyama + icp) of the two pcd
-    - [ ] apply a Horn distance calculation to get the mean error
-    - [ ] output a table + graph of the mean error (same style as the tslam evaluation)
-
-- [ ] **(2) Batch pipeline for all dataset**: the entire evaluation for the tslam and model evaluation needs to be resumed in a `.sh` script that:
-  - [ ] if it doesn't exist it downloads the zenodo dataset
-  - [ ] run the compute of the pose, eval tracking and model for the entire dataset
-  - [ ] (optional) it should be easy to be used on the machine downstairs and all the visualisations should be there
-
-- [ ] **(3) Troubleshooting of bugs from V1**: the remaining bugs from the tslam should be investigate and troubleshooted to get to a v2 (e.g. drift away, mapping crashing and low speed, etc). If not all solved a list of the remaining bugs should be compiled.
-
-- [ ] **(4) Integration of simple .ply mesh import**: integrate a general ply importer for tslam mesh.ply export to work on the correct visualization with the AC visualization geometry and rendering system.
-
-- [ ] **(6) Refinement of visualization of object interlocking**: the alignment of the visualized object in the live feedback must be as perfect as possible. Investigate the quality and what we can improve (e.g. better calibration for the camera, etc)
-
-- [ ] **(7) Smoke dev for TSlam in AC**: we have to be sure that the tslam is not breaking AC during fabrication and all the features of TSlam are integrated:
-  - [ ] (optional) multi thread TSlam layer
-  - [ ] implement a system that preven the fail of TSlam to shut down the entire AC
-  - [ ] be sure that all the functionalities of TSlam have an interface (mapping, running, rebooting)
-  - [ ] write a test for AC on a video turning min. 1h with tslam on.
-
-- [ ] **(8a-b) Plug-in Rhino8 import slam/export .auca + importer AC of .auca (instruct, visuals)**: we need to build a plug in on Rhino to draw on the imported reconstruction of tslam and export them in the same transformation a file that reads all the metadata draw (planes and axis for cuts and drills) by the import of AC.
-
 
 # TSlam
 This is a modified version of [UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62) for augmented carpentry research. The main features are:
@@ -178,16 +120,17 @@ Here are some optional parameters:
 otherwise, you won't be able to run mapping. In the `assets/voc` folder we provide `orb.fbow` for you to use.
 - `-out`: Path to the output map.
 - `-map`: Path to the input map.
-- `-outvideo`: Path and filename (without extension) to the output video. Two videos will be generated: `[filename]_raw.mp4` is the original video captured by the camera, another video `[filename].mp4` is the processed frames with SLAM information.
+- `-exportVideo`: Path and filename (without extension) to the output video. A video `[file/path/and/name].mp4` will be exported, containing the processed frames with SLAM information.
+- `-exportRawVideo`:  Path and filename (without extension) to the output RAW video. A video `[file/path/and/name]_raw.mp4` will be exported, containing the original frames captured by the camera (exclude any processing).
 - `-localizeOnly`: Indicating it's not mapping, so we can skip some operations.
 - `-outCamPose`: Path to the output of the camera pose. The file will be a txt file with record in following format: `frame_id timestamp_in_sec(e.g. 1.232934542394) pos_x pos_y pos_z rot_quaternion_x rot_quaternion_y rot_quaternion_z rot_quaternion_w valid_marker_num` (separate by space). For untracked frames, the pose will be set to 0 and rotation quaternion will be `(x = 0, y = 0, z = 0, w = 1)`.
 - `-drawMesh`: Path to the mesh to draw (in `.ply`) The mesh should be generated by the same input map.
 - `-enableLoopClosure`: Enable optimization when loop closure is detected. You may notice dramatic lag during mapping with this flag on.
 - `-noUndistort`: Disable the image undistortion (the program undistort the image based on the distortion matrix in the camera calibration file by default). You should only set this flag when you are using a pre-processed video sequence.
 - `-noMapOptimize`: Disable the global optimization when saving the map.
-- `-nokeypoints`: Disable key-point detection (advised at runtime without a mask for the tool).
+- `-noKeyPoints`: Disable key-point detection (advised at runtime without a mask for the tool).
 - `-noX`: Disable the display of the GUI.
-- `-noDraw`: Disable the SLAM information drawing on the video.
+- `-noDraw`: Disable the SLAM information drawing on the video. Enable this option to speed up when you only need to get the trajectory.
 - `-startFrameID` and `-endFrameID`: When the input video is not a live camera, startFrameID and endFrameID can be set to only process a part of the video. The frame ID starts from 0, and both parameters are inclusive (i.e. [startFrameID, endFrameID]). The endFrameID can be blank if you want to process the video to the end.
 
 When the window pop-out, you can press `s` to start/stop SLAM and `f` to enable the camera tracking in the virtual map, `q` to close and save the output data.
