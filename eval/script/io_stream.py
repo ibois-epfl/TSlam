@@ -571,7 +571,10 @@ def dump_animation(est_pos,
         ax.clear()
 
         # merge the two images to the same height side by side with imagemagick
-        os.system(f"montage {os.path.join(temp_video_dir, f'{idx+1}.png')} {os.path.join(vid_graph_temp_path, f'{idx+1}.png')} -geometry +0+0 -resize x500 {os.path.join(vidgraph_dir, f'{idx+1}.png')}")
+        vid_frame = os.path.join(temp_video_dir, f"{idx+1}.png")
+        graph_frame = os.path.join(vid_graph_temp_path, f"{idx+1}.png")
+        out_frame = os.path.join(vidgraph_dir, f"{idx+1}.png")
+        os.system(f"montage {vid_frame} {graph_frame} -geometry +0+0 -resize x500 {out_frame}")
 
         plt.close(fig)
         gc.collect()  # for collecting buffer memory

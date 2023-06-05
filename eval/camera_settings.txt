@@ -1,1 +1,0 @@
-camera settings:: fps: 4, cap_width: 1920.0, cap_height: 1080.0

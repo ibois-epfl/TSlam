@@ -196,7 +196,7 @@ def _draw_boxplot(data : np.array,
         whisker.set(color='black', linewidth=1)
     for cap in boxplot['caps']:
         cap.set(color='black', linewidth=2)
-    for median in boxplot['medians']:
+    for median in boxplot['medians']:  # <--- FIXME: check for mean
         median.set(color=CYBERGREEN, linewidth=2)
     for flier in boxplot['fliers']:
         flier.set(marker='+', color="black", alpha=0.5)
