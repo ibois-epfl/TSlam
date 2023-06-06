@@ -149,7 +149,13 @@ if __name__ == "__main__":
     if not os.path.exists(args.output):
         print("\033[93m[WARNING]: --output folder does not exist, creating one\n\033[0m")
         os.makedirs(args.output)
-    output_dir : str = f"{args.output}/{args.name}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
+    output_dir : str = f"{args.output}/{args.name}"
+    # check if the subfolder exists, if it is so erase it
+    if os.path.exists(output_dir):
+        print("\033[93m[WARNING]: --output folder already exists, erasing it\n\033[0m")
+        shutil.rmtree(output_dir)
+    os.makedirs(output_dir)
+
     os.system(f"mkdir {output_dir}")
 
     main(input_frames_path=args.frames,

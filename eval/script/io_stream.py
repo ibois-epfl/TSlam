@@ -59,7 +59,7 @@ def __set_coverage_values(camera_pos : np.array,
         return False
 
     # if the tag is 0 the coverage is lost
-    if ts_tag == 0 and is_only_tag:
+    if ts_tag == 0 and is_only_tag==True:
         is_not_detected = True
         return False
 

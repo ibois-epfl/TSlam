@@ -102,10 +102,10 @@ def visualize_trajectories_3d(est_pos,
     if title is not None:
         ax.set_title(title, fontsize=10)
 
-    FONT_SIZE = 7
-    ax.text2D(0.02, 0.04, "Computed error (ce)", transform=ax.transAxes, color=CLR_DIST, fontsize=FONT_SIZE)
-    ax.text2D(0.02, 0.02, "Ground Truth (gt)", transform=ax.transAxes, color=CLR_GT, fontsize=FONT_SIZE)
-    ax.text2D(0.02, 0.00, "Tslam (ts)", transform=ax.transAxes, color=CLR_EST, fontsize=FONT_SIZE)
+    FONT_SIZE = 10
+    # ax.text2D(0.02, 0.04, "Computed error (ce)", transform=ax.transAxes, color=CLR_DIST, fontsize=FONT_SIZE)
+    # ax.text2D(0.02, 0.02, "Ground Truth (gt)", transform=ax.transAxes, color=CLR_GT, fontsize=FONT_SIZE)
+    # ax.text2D(0.02, 0.00, "Tslam (ts)", transform=ax.transAxes, color=CLR_EST, fontsize=FONT_SIZE)
 
     center = np.mean(gt_pos, axis=0)
     XYZ_LIM = 0.10
@@ -117,22 +117,25 @@ def visualize_trajectories_3d(est_pos,
     ax.set_ylabel('Y [m]')
     ax.set_zlabel('Z [m]')
 
-    ax.plot(gt_pos[:, 0], gt_pos[:, 1], gt_pos[:, 2], color=CLR_GT)
-    ax.plot(est_pos[:, 0], est_pos[:, 1], est_pos[:, 2], color=CLR_EST, alpha=0.5)
+    ax.plot(gt_pos[:, 0], gt_pos[:, 1], gt_pos[:, 2], color=CLR_GT, label="Ground Truth")
+    ax.plot(est_pos[:, 0], est_pos[:, 1], est_pos[:, 2], color=CLR_EST, alpha=0.5, label="Tslam")
+    ax.plot([], [], [], color=CLR_DIST, alpha=0.5, linewidth=1, label="Distance error")
+
+    ax.legend(loc='lower right', fontsize=FONT_SIZE)
 
     for idx, _ in enumerate(gt_pos):
         if coverages[idx] == True:
             ax.plot([gt_pos[idx, 0], est_pos[idx, 0]],
                     [gt_pos[idx, 1], est_pos[idx, 1]],
                     [gt_pos[idx, 2], est_pos[idx, 2]],
-                    color=CLR_DIST, alpha=0.5, linewidth=1)
+                    color=CLR_DIST, alpha=0.5, linewidth=1, label="Distance error")
         if is_draw_rot_vec:
             if coverages[idx] == True:
                 __draw_local_axis_pose(ax, est_pos[idx], est_rot[idx],
                                     scale_f=0.01, alpha=0.25, linewidth=2)
             __draw_local_axis_pose(ax, gt_pos[idx], gt_rot[idx],
                                    scale_f=0.01, alpha=1, linewidth=1)
-
+    
     if is_show:
         plt.show()
     plt.close()

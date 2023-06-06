@@ -17,10 +17,6 @@ import numpy as np
 from scipy.signal import savgol_filter
 from scipy.spatial.transform import Rotation
 
-
-# FIXME: the path to the video of the animation needs to be adjusted for patchingt
-# TODO: output overview result of all the sequences in a single file
-
 def main(gt_path : str,
          ts_path : str,
          out_dir : str,
@@ -269,8 +265,10 @@ if __name__ == "__main__":
     files.sort(key=lambda x: os.path.getmtime(x))
 
     pose_files = [f for f in files if f.endswith(".txt")]
-    video_files = [f for f in files if f.endswith(".mp4")]
-    assert pose_files.__len__() == video_files.__len__(), f"Number of pose files and video files must be the same: {pose_files.__len__()} != {video_files.__len__()}"
+
+    if _is_make_animation:
+        video_files = [f for f in files if f.endswith(".mp4")]
+        assert pose_files.__len__() == video_files.__len__(), f"Number of pose files and video files must be the same: {pose_files.__len__()} != {video_files.__len__()}"
 
     for idx, file in tqdm(enumerate(pose_files), total=pose_files.__len__(), desc="Benchmarking sequences"):
         _id : str = f"{idx}_" + str(file.split('/')[-1].split('.')[0])
