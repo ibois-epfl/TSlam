@@ -11,7 +11,8 @@ folders=$(ls $__video_dir__)
 for folder in $folders
 do
     name=$(echo $folder | cut -c 1-2)
-    vid_path=$__video_dir__/$folder/${name}/${name}_video.mp4
+    echo $name
+    vid_path=$__video_dir__/$folder/${name}_video.mp4
     vid_path_out=$__output_dir__/${name}_video_lbl_frames.mp4
     echo $vid_path
 
