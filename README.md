@@ -20,30 +20,30 @@ gantt
     Tracking                        :done, trck, 2022-10-20, 2023-01-30
     Reconstruction                  :done, rec, 2022-10-30, 2023-03-05
     AC integration                  :done, aci, 2022-09-10, 2022-12-10
-    Stand-up demo                   :milestone, 2023-02-24, 0d
+    Stand-up demo                   :milestone, done, 2023-02-24, 0d
 
     section Evaluation
     protocols design                :done, ptrd, 2023-02-24, 2023-03-20
-    Protocol submission             :milestone, 2023-03-14, 0d
+    Protocol submission             :milestone, done, 2023-03-14, 0d
     preparation of eval             :done, 15d
-    Fabrication eval                :active, 70d
-    Benchmark/visual processing     :crit, 30d
+    Fabrication eval                :active, 85d
+    Benchmark/visual processing     :bvpr, 2023-09-25, 30d
     
-    section Release Preparation
-    debugging features              :active, 2023-06-01, 2023-06-15
-    AC integration for visuals      :active, 2023-06-15, 2023-07-30
-    TSlam Rhino design package      :crit, 2023-07-20, 2023-08-15
+    section HB internship
+    start HB                        :milestone, done, 2023-06-01,
+    AC integration for visuals      :active,2023-06-01, 2023-07-15
+    TSlam Rhino design package      :active, 2023-07-15, 2023-08-15
+    start HB                        :milestone, 2023-08-14,
 
     section Paper redaction
-    Redaction text/illustration     :active, pprd, 2023-09-25, 20d
-    Submission                      :milestone, 1d
+    Redaction text/illustration     :pprd, after bvpr, 30d
+    Paper submission                :milestone, after pprd, 1d
     
-    section Maintenance            
+    section Maintenance
     Profiling of tslam                  :done, opti, 2023-04-19, 10d
-    Optimization of tslam               :active, 2023-06-20, 2023-09-01
+    Optimization of tslam               :active, 2023-06-01, 2023-09-01
     Student project for optimization    :crit, 90d, 2023-09-15, 2023-12-01
-    Testing coverage for TSlam/ACTslam  :crit, 30d
-    Refinement for reconstruction       :crit, 20d
+    Student project for reconstruction  :crit, 90d, 2023-09-15, 2023-12-01
 ```
 
 
