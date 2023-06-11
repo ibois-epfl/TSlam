@@ -321,7 +321,7 @@ def visualize_quintiles_plot(out_dir : str) -> None:
     # draw the coverage quartiles as a graph line of different color, each for the tool
     fig, ax = plt.subplots()
     fig.set_size_inches(10., 4.)
-    ax.set_title(f"Median coverage")
+    ax.set_title(f"Mean coverage")
     ax.set_xlabel("Fabrication timeline [quintiles]")
     ax.set_ylabel("Coverage [%]")
     ax.set_ylim(0, 105)

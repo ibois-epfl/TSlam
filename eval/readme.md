@@ -30,5 +30,4 @@ flowchart TD
     B --> C(script/compute_poses.py)
     B --> D(script/compute_slam_metrics.py)
     B --> F(script/compute_model_metrics.py)
-
 ```
