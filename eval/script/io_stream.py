@@ -111,8 +111,8 @@ def process_opti_timber_data(gt_path : str,
                 if frame_number < frame_start and frame_number > frame_end:
                     continue
             timestamp = float(data[1])
-            timber_pos = np.array([float(data[9]), float(data[10]), float(data[11])])
-            timber_rot = np.array([float(data[12]), float(data[13]), float(data[14]), float(data[15])])
+            timber_pos = np.array([float(data[11]), float(data[12]), float(data[13])])
+            timber_rot = np.array([float(data[14]), float(data[15]), float(data[16]), float(data[17])])
             timber_rot_vec = tfm.quaternion_to_rotation_vector(timber_rot)
 
             opti_poss.append(timber_pos)
@@ -136,7 +136,23 @@ def process_opti_camera_data(gt_path : str,
             np.array: positions, the positions of the camera
             np.array: rotations, the rotations of the camera as rotation vectors (from quaternion)
             np.array: dists, the travelled total distance at each pose
+            np.array: ts_diffs, the time difference between each pose
     """
+
+    # https://math.stackexchange.com/questions/40164/how-do-you-rotate-a-vector-by-a-unit-quaternion
+    def quaternion_multiply(quaternion1, quaternion0):
+        w0, x0, y0, z0 = quaternion0
+        w1, x1, y1, z1 = quaternion1
+        return np.array([-x1 * x0 - y1 * y0 - z1 * z0 + w1 * w0,
+                        x1 * w0 + y1 * z0 - z1 * y0 + w1 * x0,
+                        -x1 * z0 + y1 * w0 + z1 * x0 + w1 * y0,
+                        x1 * y0 - y1 * x0 + z1 * w0 + w1 * z0], dtype=np.float64)
+    
+    def quaternion_inv(quaternion):
+        return np.array([quaternion[0], -quaternion[1], -quaternion[2], -quaternion[3]])
+
+    pos_offset_vec = (np.array([0, 21.981419, -40.096341, -19.385569]) * 1e-3)
+
     opti_poss = []
     opti_vec_rots = []
     with open(gt_path, 'r') as f:
@@ -148,12 +164,20 @@ def process_opti_camera_data(gt_path : str,
                 if frame_number < frame_start or frame_number > frame_end:
                     continue
             timestamp = float(data[1])
-            camera_pos = np.array([float(data[2]), float(data[3]), float(data[4])])
-            camera_rot = np.array([float(data[5]), float(data[6]), float(data[7]), float(data[8])])
+            camera_pos = np.array([float(data[4]), float(data[5]), float(data[6])])
+            camera_rot = np.array([float(data[7]), float(data[8]), float(data[9]), float(data[10])])
+            
+            # tmp_offset = quaternion_multiply(quaternion_multiply(camera_rot, pos_offset_vec), quaternion_inv(camera_rot))
+            # camera_pos_offset = camera_pos - tmp_offset[1:]
+            
+            # # print(camera_pos, camera_pos_offset, tmp_offset[1:])
+            # camera_pos = camera_pos_offset
+
             camera_rot_vec = tfm.quaternion_to_rotation_vector(camera_rot)
 
             opti_poss.append(camera_pos)
             opti_vec_rots.append(camera_rot_vec)
+
     opti_poss = np.array(opti_poss)
     opti_vec_rots = np.array(opti_vec_rots)
 
