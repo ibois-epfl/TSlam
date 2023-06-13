@@ -97,7 +97,7 @@ def main(_verbose : int,
             Wrighter.create_video(IMG_OUTPUT_PATH, OUTPUT_DIR)
 
             print("[INFO] Post processing video frames and optitrack poses...")
-            refinement.refine_poses(CSV_OUTPUT_PATH, IMG_OUTPUT_PATH, FFMPEG_LOG_PATH)
+            refinement.refine_poses(CSV_OUTPUT_PATH, FFMPEG_LOG_PATH, OUTPUT_DIR)
 
             try:
                 sys.exit(0)
