@@ -2,6 +2,10 @@
 ## TODO:
 - add `scripts/compute_model_metrics.py` to `batch_sequence.sh`
 - add `scripts/compute_summary.py` to `batch_dataset.sh`
+- replace all the `refined_stream.csv` with the new interpolation
+    - the data format is changed, check if there is something using it other than `io_stream.py`
+- check if the 30 frames shift is still needed (probably not)
+- modify `optitrack/capture.py` to replace the refinement with the new function
 
 ## Run
 ### Results for the entire dataset
@@ -14,7 +18,7 @@ c) If a new version of the dataset is out change the link in the code.
 
 ### Results for one single sequence
 ```bash
-./batch_sequence.sh -s dataset/01 -e
+./batch_sequence.sh -s dataset/01 -t
 ```
 - `-s`: path to the folder sequence
 - `-e`: to export videos
