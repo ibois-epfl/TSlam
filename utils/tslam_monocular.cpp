@@ -492,9 +492,6 @@ int main(int argc,char **argv){
     int trackedCounter = 0;
 
     while (!finish && !in_image.empty())  {
-        if (currentFrameIndex == 200){
-            finish = true;
-        }
         try{
             FpsComplete.start();
 
