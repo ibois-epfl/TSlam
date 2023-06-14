@@ -5,6 +5,18 @@ import sys
 import numpy as np
 from scipy.spatial.transform import Rotation
 
+# https://math.stackexchange.com/questions/40164/how-do-you-rotate-a-vector-by-a-unit-quaternion
+def quaternion_multiply(quaternion1, quaternion0):
+    w0, x0, y0, z0 = quaternion0
+    w1, x1, y1, z1 = quaternion1
+    return np.array([-x1 * x0 - y1 * y0 - z1 * z0 + w1 * w0,
+                    x1 * w0 + y1 * z0 - z1 * y0 + w1 * x0,
+                    -x1 * z0 + y1 * w0 + z1 * x0 + w1 * y0,
+                    x1 * y0 - y1 * x0 + z1 * w0 + w1 * z0], dtype=np.float64)
+
+def quaternion_inv(quaternion):
+    return np.array([quaternion[0], -quaternion[1], -quaternion[2], -quaternion[3]])
+
 def cvt_quat_to_ROSformat(quat):
     """ Convert an OptiTrack quaternion to a ROS quaternion """
     return np.array([quat[3], quat[0], quat[1], quat[2]])

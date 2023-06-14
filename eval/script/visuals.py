@@ -79,6 +79,7 @@ def visualize_trajectories_3d(est_pos,
                               gt_pos,
                               gt_rot,
                               coverages,
+                              idx_candidates,
                               is_show : bool = False,
                               is_draw_dist_error : bool = False,
                               is_draw_rot_vec : bool = False,
@@ -124,11 +125,11 @@ def visualize_trajectories_3d(est_pos,
     ax.legend(loc='lower right', fontsize=FONT_SIZE)
 
     for idx, _ in enumerate(gt_pos):
-        if coverages[idx] == True:
-            ax.plot([gt_pos[idx, 0], est_pos[idx, 0]],
-                    [gt_pos[idx, 1], est_pos[idx, 1]],
-                    [gt_pos[idx, 2], est_pos[idx, 2]],
-                    color=CLR_DIST, alpha=0.5, linewidth=1, label="Distance error")
+        # if coverages[idx] == True:
+        #     ax.plot([gt_pos[idx, 0], est_pos[idx, 0]],
+        #             [gt_pos[idx, 1], est_pos[idx, 1]],
+        #             [gt_pos[idx, 2], est_pos[idx, 2]],
+        #             color=CLR_DIST, alpha=0.5, linewidth=1, label="Distance error")
         if is_draw_rot_vec:
             if coverages[idx] == True:
                 __draw_local_axis_pose(ax, est_pos[idx], est_rot[idx],
@@ -136,6 +137,21 @@ def visualize_trajectories_3d(est_pos,
             __draw_local_axis_pose(ax, gt_pos[idx], gt_rot[idx],
                                    scale_f=0.01, alpha=1, linewidth=1)
     
+    # draw sphere for each candidate
+    # print(np.average(np.sqrt((gt_pos - est_pos) ** 2).sum(axis=1))) # Average distance error
+
+    for idx in idx_candidates:
+        if idx % 5 != 0:
+            continue
+        ax.plot([gt_pos[idx, 0], est_pos[idx, 0]],
+                [gt_pos[idx, 1], est_pos[idx, 1]],
+                [gt_pos[idx, 2], est_pos[idx, 2]],
+                color=CLR_DIST, alpha=1, linewidth=1, label="Distance error")
+
+        ax.plot(gt_pos[idx, 0], gt_pos[idx, 1], gt_pos[idx, 2], color=CLR_GT, alpha=1, linewidth=1, marker='o', markersize=5)
+        ax.plot(est_pos[idx, 0], est_pos[idx, 1], est_pos[idx, 2], color=CLR_EST, alpha=1, linewidth=1, marker='o', markersize=5)
+        
+
     if is_show:
         plt.show()
     plt.close()

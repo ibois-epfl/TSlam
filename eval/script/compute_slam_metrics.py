@@ -53,8 +53,8 @@ def main(gt_path : str,
                         - drifted (drifted data when the signal is lost)
                         - undetected (no data)
     """
-    opti_poss, opti_vec_rots, distances = io_stream.process_opti_camera_data(gt_path, frame_start, frame_end)
-    opti_poss_p30, opti_vec_rots_p30, distances_p30 = io_stream.process_opti_camera_data(gt_path,
+    opti_poss, opti_vec_rots, distances, opti_poss_valid = io_stream.process_opti_camera_data(gt_path, frame_start, frame_end)
+    opti_poss_p30, opti_vec_rots_p30, distances_p30, opti_poss_valid_p30 = io_stream.process_opti_camera_data(gt_path,
                                                                                          (frame_start+30),
                                                                                          (frame_end+30))
     ts_poss, ts_vec_rots, ts_tags, ts_coverages = io_stream.process_ts_data(ts_path, is_only_tag)
@@ -81,7 +81,7 @@ def main(gt_path : str,
         threshold of detected tags. If the candidates are less than 3, we consider the transformation
         not to be possible.
     """
-    TAG_THRESH = 2
+    TAG_THRESH = 3
     print(f"Number of minimum tag detected per pose: {TAG_THRESH}")
     results = postpro.align_and_benchmark(src_poss=ts_poss,
                                           tgt_poss=opti_poss,
@@ -90,6 +90,7 @@ def main(gt_path : str,
                                           est_coverage=ts_coverages,
                                           est_tags=ts_tags,
                                           tag_threshold=TAG_THRESH,
+                                          tgt_poss_valid=opti_poss_valid,
                                           is_rescale=is_rescale,
                                           distances=distances,
                                           )
@@ -100,6 +101,7 @@ def main(gt_path : str,
                                           est_coverage=ts_coverages,
                                           est_tags=ts_tags,
                                           tag_threshold=TAG_THRESH,
+                                          tgt_poss_valid=opti_poss_valid_p30,
                                           is_rescale=is_rescale,
                                           distances=distances_p30,
                                           )
@@ -110,6 +112,7 @@ def main(gt_path : str,
         return
 
     if results["drift_position_mean"] > results_p30["drift_position_mean"]:
+        print("Using post 30 frames for opti track")
         results = results_p30
         opti_poss = opti_poss_p30
         opti_vec_rots = opti_vec_rots_p30
@@ -147,6 +150,7 @@ def main(gt_path : str,
                                                 gt_pos=opti_poss,
                                                 gt_rot=opti_vec_rots,
                                                 coverages=ts_coverages,
+                                                idx_candidates=results["ts_idx_candidates"],
                                                 is_draw_dist_error=True,
                                                 is_show=is_show_plot)
         fig_2d_poss_drift = visuals.visualize_2d_drift(results["drift_poss_xyz"],

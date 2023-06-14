@@ -11,7 +11,8 @@ from scipy.spatial.transform import Rotation
 
 def __select_best_idx(_tag_threshold,
                       _ts_tags : np.array,
-                      _ts_coverages : np.array) -> np.array:
+                      _ts_coverages : np.array,
+                      _tgt_poss_valid : np.array) -> np.array:
     """
         It selects the idxs of poses with the highest score of detected tags
         
@@ -26,23 +27,25 @@ def __select_best_idx(_tag_threshold,
     ts_idx_candidates = []
 
     for idx, tag in enumerate(_ts_tags):
-        if tag >= _tag_threshold and _ts_coverages[idx] == 1:
+        if tag >= _tag_threshold and _ts_coverages[idx] == 1 and _tgt_poss_valid[idx] is True:
             ts_idx_candidates.append(idx)
     if len(ts_idx_candidates) < 2:
         ts_idx_candidates = []
 
-    return np.array(ts_idx_candidates)
+    return np.array(ts_idx_candidates, dtype=int)
 
 def align_trajectories(src_poss : np.array,
                        tgt_poss : np.array,
                        src_rot_vec : np.array,
                        tgt_rot_vec : np.array,
-
+        
                        est_coverage : np.array,
                        est_tags : np.array,
                        tag_threshold : int = 3,
 
-                       is_rescale : bool = False,
+                       tgt_poss_valid: np.array = None,
+
+                       is_rescale : bool = True,
                        ) -> np.array:
     """
         The main function responsible for register the tslam trajectory to the gt trajectory based
@@ -66,7 +69,8 @@ def align_trajectories(src_poss : np.array,
             np.array: the idxs of the poses which have been used for the registration (this value is used only in this function)
     """
     # select the best idxs for the alignment (only valid poses)
-    est_idx_candidates = __select_best_idx(tag_threshold, est_tags, est_coverage)
+    est_idx_candidates = __select_best_idx(tag_threshold, est_tags, est_coverage, tgt_poss_valid)
+
     if len(est_idx_candidates) < 3:
         print(F"\033[93m[WARNING]: less than 3 candidates, not possible to define alignement vector \n\033[0m")
         ts_idx_candidates = []
@@ -84,7 +88,7 @@ def align_trajectories(src_poss : np.array,
         est_tags_candidate = est_tags.copy()
         src_rot_vec_candidate = src_rot_vec.copy()
         tgt_rot_vec_candidate = tgt_rot_vec.copy()
-    
+
     trans_mat = tfm.get_rigid_trans_mat_umeyama(src_poss_candidate, tgt_poss_candidate,
                                                 use_scale=is_rescale)
     aligned_src_poss = tfm.transform(trans_mat, src_poss)
@@ -102,6 +106,7 @@ def align_and_benchmark(src_poss : np.array,
                         est_coverage : np.array,
                         est_tags : np.array,
                         tag_threshold : int,
+                        tgt_poss_valid: np.array,
                         is_rescale : bool,
                         distances : np.array) -> dict:
     # #######################################################
@@ -121,14 +126,15 @@ def align_and_benchmark(src_poss : np.array,
         , not only the candidate positions and rotation.
     """
     src_poss, src_rot_vec, __ts_idx_candidates = align_trajectories(src_poss,
-                                                                           tgt_poss,
-                                                                           src_rot_vec,
-                                                                           tgt_rot_vec,
-                                                                           est_coverage,
-                                                                           est_tags,
-                                                                           tag_threshold,
-                                                                           is_rescale
-                                                                           )
+                                                                    tgt_poss,
+                                                                    src_rot_vec,
+                                                                    tgt_rot_vec,
+                                                                    est_coverage,
+                                                                    est_tags,
+                                                                    tag_threshold,
+                                                                    tgt_poss_valid,
+                                                                    is_rescale,
+                                                                    )
     # #######################################################
     # # Analytics
     # #######################################################

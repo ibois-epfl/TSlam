@@ -123,7 +123,9 @@ def process_opti_timber_data(gt_path : str,
 
 def process_opti_camera_data(gt_path : str,
                              frame_start : int = None,
-                             frame_end : int = None) -> np.array:
+                             frame_end : int = None,
+                             time_diff_threshold : float = 0.01,
+                             offset_correction : bool = False) -> np.array:
     """
         Process the data from the optitrack.
 
@@ -139,44 +141,48 @@ def process_opti_camera_data(gt_path : str,
             np.array: ts_diffs, the time difference between each pose
     """
 
-    # https://math.stackexchange.com/questions/40164/how-do-you-rotate-a-vector-by-a-unit-quaternion
-    def quaternion_multiply(quaternion1, quaternion0):
-        w0, x0, y0, z0 = quaternion0
-        w1, x1, y1, z1 = quaternion1
-        return np.array([-x1 * x0 - y1 * y0 - z1 * z0 + w1 * w0,
-                        x1 * w0 + y1 * z0 - z1 * y0 + w1 * x0,
-                        -x1 * z0 + y1 * w0 + z1 * x0 + w1 * y0,
-                        x1 * y0 - y1 * x0 + z1 * w0 + w1 * z0], dtype=np.float64)
-    
-    def quaternion_inv(quaternion):
-        return np.array([quaternion[0], -quaternion[1], -quaternion[2], -quaternion[3]])
-
     pos_offset_vec = (np.array([0, 21.981419, -40.096341, -19.385569]) * 1e-3)
 
+    opti_poss_valid = []
     opti_poss = []
     opti_vec_rots = []
     with open(gt_path, 'r') as f:
         reader = csv.reader(f, delimiter=';')
         next(reader) # skip header
+        
+        tracked_counter = 0
+        not_tracked_counter = 0
+        
         for data in reader:
             frame_number = int(data[0])
             if frame_start != None and frame_end != None:
                 if frame_number < frame_start or frame_number > frame_end:
                     continue
-            timestamp = float(data[1])
+            frame_timestamp = float(data[1])
+            opti_timestamp = float(data[3])
+
+            time_sample_diff = abs(frame_timestamp - opti_timestamp)
+            
+            if time_sample_diff > time_diff_threshold: # 0.01 = 10 ms
+                opti_poss_valid.append(False)
+                not_tracked_counter += 1
+            else:
+                opti_poss_valid.append(True)
+                tracked_counter += 1
+
             camera_pos = np.array([float(data[4]), float(data[5]), float(data[6])])
             camera_rot = np.array([float(data[7]), float(data[8]), float(data[9]), float(data[10])])
             
-            # tmp_offset = quaternion_multiply(quaternion_multiply(camera_rot, pos_offset_vec), quaternion_inv(camera_rot))
-            # camera_pos_offset = camera_pos - tmp_offset[1:]
-            
-            # # print(camera_pos, camera_pos_offset, tmp_offset[1:])
-            # camera_pos = camera_pos_offset
+            if offset_correction:
+                tmp_offset = tfm.quaternion_multiply(tfm.quaternion_multiply(camera_rot, pos_offset_vec), tfm.quaternion_inv(camera_rot))
+                camera_pos = camera_pos - tmp_offset[1:]
 
             camera_rot_vec = tfm.quaternion_to_rotation_vector(camera_rot)
 
             opti_poss.append(camera_pos)
             opti_vec_rots.append(camera_rot_vec)
+
+    # print("Tracked:", tracked_counter, " / Not tracked:", not_tracked_counter)
 
     opti_poss = np.array(opti_poss)
     opti_vec_rots = np.array(opti_vec_rots)
@@ -190,7 +196,7 @@ def process_opti_camera_data(gt_path : str,
             dist_temp += np.linalg.norm(pos - opti_poss[idx-1])
             distances.append(dist_temp)
 
-    return opti_poss, opti_vec_rots, distances
+    return opti_poss, opti_vec_rots, distances, opti_poss_valid
 
 def process_ts_data(ts_path : str,
                     is_only_tag : bool,
