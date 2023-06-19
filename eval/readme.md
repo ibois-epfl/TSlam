@@ -25,6 +25,13 @@ c) If a new version of the dataset is out change the link in the code.
 - `-t`: to compute only tag mode, otherwise tags only and tags + features
 
 
+### Results for model reconstruction error
+```bash
+python3 compute_model_metrics.py --data_path /mnt/c/Users/eyang/Desktop/cleaned_pcd_merged --out_path ./test_resul
+```
+- `--data_path`: root of the dataset path
+- `--out_path`: root of the export data
+
 ## Source code dependencies
 Dependecy for all the scripts in the `eval/` folder.
 ```mermaid

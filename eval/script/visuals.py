@@ -2,7 +2,10 @@ import numpy as np
 import transformations as tfm
 import os
 from tqdm import tqdm
+import cv2
 import sys
+import open3d as o3d
+import matplotlib
 import matplotlib.pyplot as plt
 import metrics
 
@@ -405,7 +408,139 @@ def visualize_quintiles_plot(out_dir : str) -> None:
 
     plt.close()
 
+######################################
+### reconstructed model evaluation ###
+######################################
+def draw_model_comp_result_o3d(point_cloud, save_path, to_show=False):
+    """ Draw the reconstructed 3D model on open3d and export it as png.
+        it's faster for preview, but it has some issues with the camera position
+        and exporting to png. """
+    
+    """ Draw the reconstructed 3D model on open3d and export it as png """
+
+    # bbox = o3d.geometry.OrientedBoundingBox.create_from_points(objs[0].points)
+    # o3d.visualization.draw_geometries(objs,
+    #                                   zoom=0.4459,
+    #                                   front=[0.9288, -0.2951, -0.2242],
+    #                                   lookat=bbox.get_center(),
+    #                                   up=[-0.3402, -0.9189, -0.1996])
+
+    save_path = os.path.join(save_path, f"{id}_3d_error_map_o3d.png")
+    vis = o3d.visualization.Visualizer()
+    vis.create_window(visible=True)
+    view_ctr = vis.get_view_control()
+    view_ctr.set_lookat([0, 0, 0])
+    view_ctr.camera_local_translate(0.5, -0.5, 0.25)
+    # view_ctr.change_field_of_view(step=50)
+    # view_ctr.set_front([0, 0, -1])
+    # view_ctr.set_up([0.5, -0.5, 0.25])
+
+    vis.add_geometry(point_cloud)
+    vis.update_geometry(point_cloud)
+    vis.poll_events()
+    vis.update_renderer()
+    vis.capture_screen_image(save_path)
+    vis.destroy_window()
+
+def draw_model_comp_result(id, point_cloud, save_path, to_show=False):
+    """ Draw the reconstructed 3D model on matplotlib and export to png """
+
+    pts = np.asarray(point_cloud.points)
+    colors = np.asarray(point_cloud.colors)
+
+    fig = plt.figure(figsize=(8, 8))
+    ax = fig.add_subplot(projection='3d')
+    ax.set_aspect("equal")
+    ax.scatter(pts[:, 0], pts[:, 1], pts[:, 2], color=colors, marker='.', s=0.05)
+    ax.set_xlim(-1.2, 1.2)
+    ax.set_ylim(-1.2, 1.2)
+    ax.set_zlim(-1.2, 1.2)
+    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.set_facecolor((1.0, 1.0, 1.0, 0.0))
+    ax.grid(False)
+    ax.axis('off')
+    ax.view_init(elev=15, azim=315)
+
+    save_path = os.path.join(save_path, f"{id}_3d_error_map.png")
+    plt.savefig(save_path, bbox_inches='tight', dpi=300)
+    
+    # center crop image
+    img = cv2.imread(save_path)
+    img = img[750:1101, 600:1401]
+    cv2.imwrite(save_path, img)
+
+    if to_show:
+        plt.show()
+    plt.close()
 
 
+def draw_model_metric_histogram(data, bins, id, save_path, range = None, to_show = False):
+    """ Draw the histogram of the metric """
+
+    fig = plt.figure(figsize=(8, 8))
+    ax = plt.axes()
+    plt.ylabel("Point Amount")
+    values, base, _ = plt.hist(data, bins=bins, alpha=0.2, color=CYBERGREEN, range=range, label= "Histogram")
+    ax_bis = ax.twinx()
+    values = np.append(values,0)
+    ax_bis.plot(base, np.cumsum(values)/np.cumsum(values)[-1], color='darkcyan', marker='.', linestyle='-', markersize = 1, label = "Cumulative Histogram" )
+    plt.ylabel("Proportion")
+    ax.set_xlabel("Distance (m)")
+    ax.legend()
+    ax_bis.legend()
+    save_path = os.path.join(save_path, f"{id}_histogram.png")
+    plt.savefig(save_path, bbox_inches='tight', dpi=300)
+
+    if to_show:
+        plt.show()
+    plt.close()
+
+    return
 
 
+def draw_combined_model_metric_histogram(batch_data, bins, title, save_path, x_range = None, to_show = False):
+    init_stat_disc = ["0 joinery", "1 joinery", "2 joinery", "3 joinery", "4 joinery"]
+    
+    fig = plt.figure(figsize=(8, 8))
+
+    ax = plt.axes()
+
+    all_values = []
+    ax.set_ylabel("Point Amount")
+    for i, data in enumerate(batch_data):
+        data = np.asarray(data)
+        values, base, _ = ax.hist(data, bins=bins, alpha=0.2, color=CYBERGREEN, range=x_range)
+        values = np.append(values,0)
+        all_values.append(values)
+    
+    ax_twinx = ax.twinx()
+    for i, values in enumerate(all_values):
+        max_propotion = (np.asarray(batch_data[i]) <= x_range[1]).sum() / len(batch_data[i])
+        cum_max_value = np.cumsum(values)[-1]
+        ax_twinx.plot(base, (np.cumsum(values)/cum_max_value) * max_propotion, alpha=0.2 + 0.15*i, color="purple", marker='.', linestyle='-', markersize = 1, label = init_stat_disc[i])
+        
+
+    ax_twinx.set_ylabel("Proportion")
+    ax.set_xlabel("Distance (m)")
+
+    hist_handles = matplotlib.patches.Rectangle((0,0),1,1,color=CYBERGREEN, alpha=0.2)
+    hist_labels = "Distance Distribution"
+    line, label = ax_twinx.get_legend_handles_labels()
+    
+    line.append(hist_handles)
+    label.append(hist_labels)
+
+    ax.legend(line, label, loc='center right')
+
+    plt.title(title)
+    filename = title.replace(",","").replace(" ","_")
+    save_path = os.path.join(save_path, f"{filename}_histogram.png")
+    plt.savefig(save_path, bbox_inches='tight', dpi=300)
+
+    if to_show:
+        plt.show()
+    plt.close()
+
+    return
