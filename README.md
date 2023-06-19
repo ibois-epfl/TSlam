@@ -26,7 +26,7 @@ gantt
     protocols design                :done, ptrd, 2023-02-24, 2023-03-20
     Protocol submission             :milestone, done, 2023-03-14, 0d
     preparation of eval             :done, 15d
-    Fabrication eval                :active, 85d
+    Fabrication eval                :done, 85d
     Benchmark/visual processing     :bvpr, 2023-09-25, 30d
     
     section HB internship
