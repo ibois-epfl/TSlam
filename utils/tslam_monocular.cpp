@@ -245,7 +245,7 @@ void drawMesh(cv::Mat img, vector<pair<cv::Vec3f, cv::Vec3f>> linesToDraw, cv::M
     int count = 0;
     for(auto &ptsToDraw:linesToDraw) {
         auto ptsScreen = projectToScreen(img.cols, img.rows, ptsToDraw, projectionMatrix, cameraPose);
-        cv::line(img, ptsScreen.first, ptsScreen.second, cv::Scalar(0, 0, 255), 2);
+        cv::line(img, ptsScreen.first, ptsScreen.second, cv::Scalar(70,192,22), 2);
     }
 }
 
