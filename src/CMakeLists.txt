@@ -56,5 +56,5 @@ install(FILES ${tslam_hdrs_base}
     COMPONENT main)
 
 install(FILES ${tslam_map_hdr}         DESTINATION include/${PROJECT_NAME}/map_types COMPONENT main)
-install(FILES ${tslam_basictypes_hdr}         DESTINATION include/${PROJECT_NAME}/basictypes COMPONENT main)
-
+install(FILES ${tslam_basictypes_hdr}  DESTINATION include/${PROJECT_NAME}/basictypes COMPONENT main)
+install(FILES ${tslam_reconstruction_hdr}         DESTINATION include/${PROJECT_NAME}/reconstruction COMPONENT main)

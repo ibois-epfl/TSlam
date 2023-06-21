@@ -48,6 +48,8 @@ if(BUILD_UTILS)
     add_subdirectory(utils)
 endif()
 
+# install CGAL
+install(DIRECTORY 3rdparty/CGAL/include/CGAL DESTINATION include)
 
 #------------------------------------------------------------------------------------------------------------
 #   Uninstall target, for "make uninstall"
