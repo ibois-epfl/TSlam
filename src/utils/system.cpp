@@ -193,11 +193,13 @@ cv::Mat System::process(const Frame &frame) {
     else{
         //tracking mode
         if( currentState==STATE_TRACKING){
+            auto prevPose = se3(_curPose_f2g);
             _curKFRef=getBestReferenceFrame(_prevFrame,_curPose_f2g);
             _curPose_f2g=track(_cFrame,_curPose_f2g);
             _debug_msg_("current pose="<<_curPose_f2g);
             __TSLAM_TIMER_EVENT__("track");
-            if( !_curPose_f2g.isValid())
+            // if the pose is too far away, we are actually lost
+            if( !_curPose_f2g.isValid() || cv::norm(cv::Mat(prevPose - _curPose_f2g)) > 5.0f)
                 currentState=STATE_LOST;
         }
         //lost??

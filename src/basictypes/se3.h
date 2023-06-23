@@ -31,6 +31,7 @@ struct  se3{
     se3(){  for(int i=0;i<6;i++) rt[i]=std::numeric_limits<float>::quiet_NaN();}
     se3(float rx,float ry,float rz,float tx,float ty,float tz){   rt[0]=rx;rt[1]=ry;rt[2]=rz;rt[3]=tx;rt[4]=ty;rt[5]=tz;}
     se3(float v){  for(int i=0;i<6;i++) rt[i]=v;}
+    se3(const se3 &v){  for(int i=0;i<6;i++) rt[i]=v.rt[i];}
     se3(const float * v){ for(int i=0;i<6;i++) rt[i]=v[i];}
     se3(const cv::Mat &rt){  *this=convert(rt);}
     se3(const cv::Mat &r,const cv::Mat &t){  *this=convert(r,t);}

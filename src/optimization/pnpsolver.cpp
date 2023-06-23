@@ -176,13 +176,12 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
     optimizer.addVertex(G2oVertexCamera);
     // Set MapPoint vertices
 
-    const float Chi2D =  5.99;
-    const float Chi3D =  7.815;
-    const float Chi8D = 15.507;
-    const float thHuber2D =  sqrt(5.99);
-    const float thHuber3D= sqrt(7.815);
-    const float thHuber8D = sqrt(15.507);
-
+    const float Chi2D =  5.99 * 2;
+    const float Chi3D =  7.815 * 2;
+    const float Chi8D = 15.507 * 2;
+    const float thHuber2D =  sqrt(5.99 * 2);
+    const float thHuber3D= sqrt(7.815 * 2);
+    const float thHuber8D = sqrt(15.507 * 2);
 
     float fx=frame.imageParams.fx();
     float fy=frame.imageParams.fy();
