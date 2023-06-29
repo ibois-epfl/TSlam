@@ -297,6 +297,7 @@ int main(int argc,char **argv){
     string inputVideo = string(argv[1]);
     string outputVideoPath = cml("-exportVideo") + ".mp4";
     string outputRawVideoPath = cml("-exportRawVideo") + "_raw.mp4";
+    int limitNbFrames = stoi(cml("-limitNbFrames", "0"));
 
     // if using live camera
     if (inputVideo.find("live") != std::string::npos)
@@ -647,6 +648,9 @@ int main(int argc,char **argv){
         vcap >> in_image;
         frameCaptureTime = std::chrono::system_clock::now();
 
+        if (limitNbFrames != 0 and currentFrameIndex > limitNbFrames) {
+            finish = true;
+        }
 //        if(!camPose_c2g.empty()){
 //            for(int s=0;s<vSpeed-1;s++)
 //                vcap >> in_image;
