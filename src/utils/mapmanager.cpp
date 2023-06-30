@@ -33,6 +33,8 @@
 #ifdef USE_OMP
 #include <omp.h>
 #endif
+
+
 namespace tslam{
 
 MapManager::MapManager(){
@@ -61,8 +63,8 @@ std::shared_ptr<BaseLoopDetector> MapManager::createLoopDetector(bool loopClosur
 
 
 int MapManager::newFrame(Frame &kf, int32_t curkeyFrame  ){
-    __TSLAM_ADDTIMER__
-            _CurkeyFrame=curkeyFrame;
+    __TSLAM_ADDTIMER__;
+    _CurkeyFrame=curkeyFrame;
     nFramesAnalyzedWithoutAddingKF++;
     bigChangeHasHappen=false;
     int returnValue=0;
@@ -121,7 +123,7 @@ bool MapManager::mapUpdate(){
         return  false  ;
 
     _curState=WORKING;
-    __TSLAM_ADDTIMER__
+    __TSLAM_ADDTIMER__;
 
     TheMap->lock(__FUNCTION__,__FILE__,__LINE__);
 
@@ -161,10 +163,7 @@ bool MapManager::mapUpdate(){
 
     _lastAddedKFPose=TheMap->keyframes[_lastAddedKeyFrame].pose_f2g;
 
-
-
-     TheMap->removeWeakConnections(_CurkeyFrame,8);
-
+    TheMap->removeWeakConnections(_CurkeyFrame,8);
 
     TheMap->unlock(__FUNCTION__,__FILE__,__LINE__);
     //---------------------------------------------------------
@@ -175,7 +174,6 @@ bool MapManager::mapUpdate(){
     KeyFramesToRemove.clear();
     _curState=IDLE;
     return true;
-
 }
 
 
@@ -514,8 +512,9 @@ void MapManager::mainFunction(){
     // if there is > the specified number of new added frame, remove them to maintain the fps
     if (System::getParams().localizeOnly) {
         const int maxNewKF = 20;
-        while (TheMap->keyframes.size() - numInitKFs > maxNewKF) {
-            auto numKFtoRemove = TheMap->keyframes.size() - numInitKFs - maxNewKF;
+        auto keyframes_size = TheMap->keyframes.size();
+        while (keyframes_size - numInitKFs > maxNewKF) {
+            auto numKFtoRemove = keyframes_size - numInitKFs - maxNewKF;
             auto kfIDtoRemove = newInsertedKeyFrames.front();
             int counter = 0;
             while(!newInsertedKeyFrames.empty() && counter < numKFtoRemove) {
@@ -526,6 +525,8 @@ void MapManager::mainFunction(){
                 }
                 newInsertedKeyFrames.pop();
             }
+
+            keyframes_size = TheMap->keyframes.size();
         }
     }
 

@@ -27,6 +27,10 @@
 #include <aruco/markerdetector.h>
 #include "basictypes/osadapter.h"
 #include "basictypes/cvversioning.h"
+
+#include <tbb/task_group.h>
+
+
 namespace tslam {
 
 
@@ -298,19 +302,22 @@ void FrameExtractor::preprocessImages(float scaleFactor,const cv::Mat &im1,const
 void FrameExtractor::extractFrame(const ImgInfo &Iinfo,   Frame &frame, uint32_t frameseq_idx){
 
     frame.clear();
-    __TSLAM_ADDTIMER__
+    __TSLAM_ADDTIMER__;
 
+    tbb::task_group group;
+
+    std::unique_ptr<std::thread> kp_thread, aruco_thread;
 
     vector<cv::KeyPoint> frame_kpts;
-    std::thread kp_thread( [&]{
-        if(_detectKeyPoints){
+    if(_detectKeyPoints){
+        group.run([&]{
             _fdetector->detectAndCompute(InputImages[0].im_resized,cv::Mat(),frame_kpts,frame.desc,_featParams);
             frame.KpDescType=_fdetector->getDescriptorType();
-        }
-    });
+        });
+    }
 
-    std::thread aruco_thread( [&]{
-        if (_detectMarkers){
+    if (_detectMarkers){
+        group.run([&]{
             auto markers=_mdetector->detect(Iinfo.im_org);
             for(const auto&m:markers){
                 tslam::MarkerObservation uslm_marker;
@@ -330,14 +337,10 @@ void FrameExtractor::extractFrame(const ImgInfo &Iinfo,   Frame &frame, uint32_t
                 }
                 frame.markers.push_back(uslm_marker);
             }
-        }
+        });
     }
-    );
-    kp_thread.join();
-    aruco_thread.join();
 
-
-
+    group.wait();
 
     if (debug::Debug::getLevel()>=100|| _tslamParams.saveImageInMap){
             //encode

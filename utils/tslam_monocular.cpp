@@ -492,6 +492,8 @@ int main(int argc,char **argv){
 
     int trackedCounter = 0;
 
+//    cv::setNumThreads(4);
+
     while (!finish && !in_image.empty())  {
         try{
             FpsComplete.start();

@@ -19,7 +19,7 @@ set(EXTRA_CXX_FLAGS "-shared -march=native -Wall")
          set(GENERAL_FLAGS "${GENERAL_FLAGS}  -mabi=aapcs-linux -marm  -march=armv6 -mfloat-abi=hard  -mfp16-format=none -mfpu=vfp -mlittle-endian -mpic-data-is-text-relative -mrestrict-it -msched-prolog -mstructure-size-boundary=0x20 -mtp=auto -mtls-dialect=gnu -munaligned-access -mvectorize-with-neon-quad")
  else() #x86_64
 
-     SET(GENERAL_FLAGS "-std=c++14 -mmmx -msse -msse2 -msse3")
+     SET(GENERAL_FLAGS "-std=c++14")
      add_definitions( -DUSE_SSE)
      IF(WARNINGS_ARE_ERRORS)
          SET(GENERAL_FLAGS   "${GENERAL_FLAGS}  -Werror -Wno-ignored-attributes  ")
@@ -31,9 +31,9 @@ set(EXTRA_CXX_FLAGS "-shared -march=native -Wall")
 endif()
 
 
- SET(CMAKE_CXX_FLAGS_RELEASE         "${CMAKE_CXX_FLAGS} ${GENERAL_FLAGS}  -O3 -g0  -DNDEBUG")
- SET(CMAKE_CXX_FLAGS_DEBUG           "${CMAKE_CXX_FLAGS} ${GENERAL_FLAGS}  -O1 -g3  -DDEBUG -D_DEBUG -DPRINT_DEBUG_MESSAGES")
- SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS} ${GENERAL_FLAGS}  -O1 -g3  -D_DEBUG -DDEBUG -DPRINT_DEBUG_MESSAGES")
+ SET(CMAKE_CXX_FLAGS_RELEASE         "${CMAKE_CXX_FLAGS} ${GENERAL_FLAGS} -O3 -g  -DNDEBUG")
+ SET(CMAKE_CXX_FLAGS_DEBUG           "${CMAKE_CXX_FLAGS} ${GENERAL_FLAGS} -O1 -g3 -DDEBUG -D_DEBUG -DPRINT_DEBUG_MESSAGES")
+ SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS} ${GENERAL_FLAGS} -O2 -g3 -DNDEBUG")
 
  ELSE()  # MSVC
 
