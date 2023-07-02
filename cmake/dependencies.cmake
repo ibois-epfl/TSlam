@@ -15,6 +15,9 @@ endif()
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
 link_directories(${CMAKE_BINARY_DIR}/libs)
 
+find_package(TBB REQUIRED)
+set(TSLAM_REQUIRED_LIBRARIES TBB::tbb)
+
 if(NOT USE_OWN_EIGEN3)
     find_package( Eigen3 REQUIRED )
 else()

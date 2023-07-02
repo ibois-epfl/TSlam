@@ -38,19 +38,19 @@
 #include "utils/frameextractor.h"
 #include "basictypes/hash.h"
 
-namespace tslam{
-   //System global params
-   Params System::_params;
-   Params  & System::getParams()  {return _params;}
+#include <tbb/parallel_for.h>
 
+namespace tslam {
 
+// System global params
+Params System::_params;
+Params  & System::getParams() { return _params; }
 
-   //returns the index of the current keyframe
-   uint32_t System::getCurrentKeyFrameIndex(){return _curKFRef;}
+// returns the index of the current keyframe
+uint32_t System::getCurrentKeyFrameIndex() { return _curKFRef; }
 
-
-   //returns a pointer to the map being used
-   std::shared_ptr<Map> System::getMap(){return TheMap;}
+// returns a pointer to the map being used
+std::shared_ptr<Map> System::getMap() { return TheMap; }
 
 
 System::System(){
@@ -234,7 +234,6 @@ cv::Mat System::process(const Frame &frame) {
 
     assert(TheMap->checkConsistency(debug::Debug::getLevel()>=10));
 
-
     //if lost after very few keyframes, reset map
     if( currentState==STATE_LOST && currentMode==MODE_SLAM && TheMap->keyframes.size()<=5 && TheMap->keyframes.size()!=0){
         TheMapManager->reset();
@@ -273,9 +272,6 @@ cv::Mat System::process(const Frame &frame) {
 
 
 cv::Mat System::process(  cv::Mat &InputImage, const ImageParams &img_params,uint32_t frameseq_idx, const cv::Mat & depth, const cv::Mat &RIn_image) {
-
-
-
     __TSLAM_ADDTIMER__;
 
     assert( (img_params.bl>0 && !depth.empty()) || depth.empty());//if rgbd, then ip must  have the params set
@@ -479,7 +475,7 @@ bool System::initialize_monocular(Frame &f2 ){
 
 
     globalOptimization();
-     assert(TheMap->checkConsistency(true));
+    assert(TheMap->checkConsistency(true));
     //if only with matches, scale to have an appropriate mean
     if (TheMap->map_markers.size()==0){
         if ( TheMap->map_points.size()<50) {//enough points after the global optimization??
@@ -606,64 +602,73 @@ uint32_t System::getBestReferenceFrame(const Frame &curKeyFrame,  const se3 &cur
 }
 std::vector<System::kp_reloc_solution> System::relocalization_withkeypoints_( Frame &curFrame,se3 &pose_f2g_out ,const std::set<uint32_t> &excluded ){
     _debug_msg_("");
-    if (curFrame.ids.size()==0)return { };
-    if (TheMap->TheKFDataBase.isEmpty())return  {};
-    vector<uint32_t> kfcandidates=TheMap->relocalizationCandidates(curFrame,excluded);
+    if (curFrame.ids.size() == 0) return {};
+    if (TheMap->TheKFDataBase.isEmpty()) return {};
+    vector<uint32_t> kfcandidates = TheMap->relocalizationCandidates(curFrame, excluded);
 
-    if (kfcandidates.size()==0)return  {};
+    if (kfcandidates.size() == 0) return {};
 
     vector<System::kp_reloc_solution> Solutions(kfcandidates.size());
 
     FrameMatcher FMatcher;
-    FMatcher.setParams(curFrame,FrameMatcher::MODE_ALL,_params.maxDescDistance*2);
+    FMatcher.setParams(curFrame, FrameMatcher::MODE_ALL, _params.maxDescDistance*2);
 
-#pragma omp parallel for
-    for(int cf=0;cf<kfcandidates.size();cf++){
+    auto nb_candidates = kfcandidates.size();
 
-        auto kf=kfcandidates[cf];
-        auto &KFrame=TheMap->keyframes[kf];
-        Solutions[cf].matches=FMatcher.match(KFrame,FrameMatcher::MODE_ASSIGNED);
+    tbb::parallel_for(tbb::blocked_range<std::size_t>(0, nb_candidates), [&](const tbb::blocked_range<std::size_t> &range) {
+        for(auto cf = range.begin(); cf < range.end(); ++cf) {
+            auto kf = kfcandidates[cf];
+            auto &KFrame = TheMap->keyframes[kf];
+            Solutions[cf].matches = FMatcher.match(KFrame, FrameMatcher::MODE_ASSIGNED);
 
+            //change trainIdx and queryIdx to match the  solvePnpRansac requeriments
+            for(auto &m : Solutions[cf].matches){
+                std::swap(m.queryIdx, m.trainIdx);
+                m.trainIdx = KFrame.ids[m.trainIdx];
+            }
 
-        //change trainIdx and queryIdx to match the  solvePnpRansac requeriments
-        for(auto &m:Solutions[cf].matches){
-            std::swap(m.queryIdx,m.trainIdx);
-            m.trainIdx= KFrame.ids[m.trainIdx];
+            //remove bad point matches
+            for(int i = 0; i < Solutions[cf].matches.size(); i++) {
+                auto &mp = Solutions[cf].matches[i].trainIdx;
+                if(!TheMap->map_points.is(mp) or TheMap->map_points[mp].isBad())
+                    Solutions[cf].matches[i].trainIdx = -1;
+            }
+
+            remove_unused_matches(Solutions[cf].matches);
+            if (Solutions[cf].matches.size() < 25) continue;
+            Solutions[cf].pose = KFrame.pose_f2g;
+
+            //estimate initial position
+            PnPSolver::solvePnPRansac(curFrame, TheMap,
+                                      Solutions[cf].matches, Solutions[cf].pose);
+            if (Solutions[cf].matches.size() < 15) continue;
+
+            //go to the map looking for more matches
+            Solutions[cf].matches = TheMap->matchFrameToMapPoints(TheMap->TheKpGraph.getNeighborsVLevel2(kf, true),
+                                                                  curFrame,
+                                                                  Solutions[cf].pose,
+                                                                  _params.maxDescDistance*2,
+                                                                  2.5,
+                                                                  true);
+            if (Solutions[cf].matches.size() < 30) continue;
+
+            //now refine
+            PnPSolver::solvePnp(curFrame, TheMap, Solutions[cf].matches, Solutions[cf].pose);
+            if (Solutions[cf].matches.size() < 30) continue;
+
+            Solutions[cf].ids = curFrame.ids;
+            for(auto match : Solutions[cf].matches)
+                Solutions[cf].ids[match.queryIdx] = match.trainIdx;
         }
-        //remove bad point matches
-        for(int i=0;i<Solutions[cf].matches.size();i++){
-            auto &mp=Solutions[cf].matches[i].trainIdx;
-            if( !TheMap->map_points.is(mp))
-                Solutions[cf].matches[i].trainIdx=-1;
-            if( TheMap->map_points[mp].isBad()  )
-                Solutions[cf].matches[i].trainIdx=-1;
-        }
-
-        remove_unused_matches(Solutions[cf].matches);
-        if (Solutions[cf].matches.size()<25)continue;
-        Solutions[cf].pose=KFrame.pose_f2g;
-         //estimate initial position
-        PnPSolver::solvePnPRansac(curFrame,TheMap,Solutions[cf].matches,Solutions[cf].pose);
-         if (Solutions[cf].matches.size()<15) continue;
-        //go to the map looking for more matches
-        Solutions[cf].matches= TheMap->matchFrameToMapPoints ( TheMap->TheKpGraph.getNeighborsVLevel2( kf,true) , curFrame,  Solutions[cf].pose ,_params.maxDescDistance*2, 2.5,true);
-        if (Solutions[cf].matches.size()<30) continue;
-
-        //now refine
-        PnPSolver::solvePnp(curFrame,TheMap,Solutions[cf].matches,Solutions[cf].pose);
-         if (Solutions[cf].matches.size()<30) continue;
-        Solutions[cf]. ids=curFrame.ids;
-        for(auto match: Solutions[cf].matches)
-            Solutions[cf].ids[ match.queryIdx]=match.trainIdx;
-    }
+    });
 
     //take the solution with more matches
-    std::remove_if(Solutions.begin(),Solutions.end(),[](const kp_reloc_solution &a){return a.matches.size()<=30;});
-    std::sort( Solutions.begin(),Solutions.end(),[](const kp_reloc_solution &a,const kp_reloc_solution &b){return a.matches.size()>b.matches.size();});
+    std::remove_if(Solutions.begin(), Solutions.end(),
+                   [](const kp_reloc_solution &a){return a.matches.size()<=30; });
+    std::sort(Solutions.begin(), Solutions.end(),
+              [](const kp_reloc_solution &a, const kp_reloc_solution &b){ return a.matches.size()>b.matches.size(); });
 
    return Solutions;
-
-
 }
 
 bool System::relocalize_withkeypoints( Frame &curFrame,se3 &pose_f2g_out , const std::set<uint32_t> &excluded ){
