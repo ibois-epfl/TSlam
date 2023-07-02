@@ -42,8 +42,6 @@ gantt
     section Maintenance
     Profiling of tslam                  :done, opti, 2023-04-19, 10d
     Optimization of tslam               :active, 2023-06-01, 2023-09-01
-    Student project for optimization    :crit, 90d, 2023-09-15, 2023-12-01
-    Student project for reconstruction  :crit, 90d, 2023-09-15, 2023-12-01
 ```
 
 
