@@ -170,10 +170,28 @@ namespace tslam{
         TheMapA->saveToFile(std::move(outputPath));
     }
 
-    bool Reconstruct3DModelAndExportPly(const std::string filepath){
+    bool Reconstruct3DModelAndExportPly(const std::string importMapPath,
+                                        const std::string exportPlyPath,
+                                        float radiusSearch,
+                                        double creaseAngleThreshold,
+                                        int minClusterSize,
+                                        double maxPlnDist,
+                                        double maxPlnAngle,
+                                        double aabbScaleFactor,
+                                        double maxPolyDist,
+                                        double eps) {
         tslam::Reconstruction::TSLAMReconstructor reconstructor =
-                tslam::Reconstruction::TSLAMReconstructor();
-        reconstructor.loadMap(filepath);
+                tslam::Reconstruction::TSLAMReconstructor(
+                    radiusSearch,
+                    creaseAngleThreshold,
+                    minClusterSize,
+                    maxPlnDist,
+                    maxPlnAngle,
+                    aabbScaleFactor,
+                    maxPolyDist,
+                    eps
+                );
+        reconstructor.loadMap(importMapPath);
         reconstructor.run();
 
         // check the inner values of the geometric solver
@@ -183,7 +201,7 @@ namespace tslam{
             return false;
         }
 
-        reconstructor.saveMeshAsPLY(filepath);
+        reconstructor.saveMeshAsPLY(exportPlyPath);
         return true;
     }
 

@@ -167,7 +167,16 @@ namespace tslam{
          * @param filepath output path of the exported .ply
          * @return true if succeed, false otherwise
          */
-        static bool Reconstruct3DModelAndExportPly(const std::string filepath);
+        static bool Reconstruct3DModelAndExportPly(const std::string importMapPath,
+                                                   const std::string exportPlyPath,
+                                                   float radiusSearch,
+                                                   double creaseAngleThreshold,
+                                                   int minClusterSize,
+                                                   double maxPlnDist,
+                                                   double maxPlnAngle,
+                                                   double aabbScaleFactor,
+                                                   double maxPolyDist,
+                                                   double eps);
     };
 
 }
