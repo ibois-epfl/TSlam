@@ -62,7 +62,7 @@ System::System(){
 
 System::~System(){
 
-    waitForFinished();
+    // waitForFinished();
 }
 
 

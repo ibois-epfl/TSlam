@@ -185,6 +185,9 @@ void MapManager::start(){
 }
 void MapManager::stop(){
     if (_TThread.joinable()) { //is running
+        // deconstruct _TThread
+        // _TThread.~thread();
+
         mustExit=true;
         _hurryUp=false;
         keyframesToAdd.push(NULL);//this will wakeup in mainFuntion if sleeping
@@ -510,15 +513,20 @@ void MapManager::mainFunction(){
     }
 
     // if there is > the specified number of new added frame, remove them to maintain the fps
+    // FIXME: the logic is weird here, but it is functional now, so I will leave it as it is;
+    // The "counter" part was originally a while loop which try to remove all the redundant keyframes at once,
+    // but if we do that, the program will not be able to remove some keyframes and stuck.
     if (System::getParams().localizeOnly) {
         const int maxNewKF = 20;
         auto keyframes_size = TheMap->keyframes.size();
-        while (keyframes_size - numInitKFs > maxNewKF) {
-            auto numKFtoRemove = keyframes_size - numInitKFs - maxNewKF;
+        if (keyframes_size - numInitKFs > maxNewKF) {
+            auto numKFtoRemove = keyframes_size - numInitKFs - maxNewKF + 1;
             auto kfIDtoRemove = newInsertedKeyFrames.front();
             int counter = 0;
-            while(!newInsertedKeyFrames.empty() && counter < numKFtoRemove) {
-                if (TheMap->keyframes.is(kfIDtoRemove) && kfIDtoRemove != _lastAddedKeyFrame) {
+            if(!newInsertedKeyFrames.empty() && counter < numKFtoRemove) {
+                if(!TheMap->keyframes.is(kfIDtoRemove)){
+                    counter++;
+                } else if (kfIDtoRemove != _lastAddedKeyFrame) {
                     TheMap->keyframes[kfIDtoRemove].setBad(true);
                     KeyFramesToRemove.insert(kfIDtoRemove);
                     counter++;
