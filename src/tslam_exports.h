@@ -30,7 +30,6 @@
     #pragma warning ( disable : 4290 ) //disable warning due to exception specifications.
     #pragma warning ( disable : 4996 ) //disable warning regarding unsafe vsprintf.
     #pragma warning ( disable : 4244 ) //disable warning convesions with lost of data.
-
 #else
     #define TSLAM_API
 #endif

@@ -1,18 +1,18 @@
-#include "g2o/core/base_binary_edge.h"
-#include "g2o/core/base_unary_edge.h"
-#include "g2o/core/base_multi_edge.h"
-#include "g2o/core/base_vertex.h"
-#include "g2o/solvers/eigen/linear_solver_eigen.h"
-#include "g2o/core/optimization_algorithm_levenberg.h"
-#include "g2o/core/block_solver.h"
-#include "g2o/core/robust_kernel_impl.h"
+#include <g2o/core/base_binary_edge.h>
+#include <g2o/core/base_unary_edge.h>
+#include <g2o/core/base_multi_edge.h>
+#include <g2o/core/base_vertex.h>
+#include <g2o/solvers/eigen/linear_solver_eigen.h>
+#include <g2o/core/optimization_algorithm_levenberg.h>
+#include <g2o/core/block_solver.h>
+#include <g2o/core/robust_kernel_impl.h>
 #include <iostream>
 #include <exception>
 #include <opencv2/core.hpp>
 #include <opencv2/calib3d.hpp>
 #include <type_traits>
 #include "cvprojectpoint.h"
-#include "tslam.h"
+#include <tslam.h>
 #include "g2oba.h"
 class CmdLineParser{int argc; char **argv;
 public: CmdLineParser(int _argc,char **_argv):argc(_argc),argv(_argv){}  bool operator[] ( string param ) {int idx=-1;  for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i;    return ( idx!=-1 ) ;    } string operator()(string param,string defvalue=""){int idx=-1;    for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i; if ( idx==-1 ) return defvalue;   else  return ( argv[  idx+1] ); }
