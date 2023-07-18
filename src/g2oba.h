@@ -289,13 +289,13 @@ public:
             auto proj= __projectPoint( cv::Point3d(p3d(0),p3d(1),p3d(2)),nullptr,nullptr,cam->fx(),cam->fy(),cam->cx(),cam->cy(),cam->dist());
             _error(i*2)=_measurement(i*2)-proj.x;
             _error(i*2+1)=_measurement(i*2+1)-proj.y;
-            if( std::isnan(_error(i*2)) || std::isnan(_error(i*2+1))){
-                std::cout<<c2g->getRT()<<std::endl;
-                std::cout<<g2m->getRT()<<std::endl;
-                std::cout<<Transform_C2M<<std::endl;
+            // if( std::isnan(_error(i*2)) || std::isnan(_error(i*2+1))){
+            //     std::cout<<c2g->getRT()<<std::endl;
+            //     std::cout<<g2m->getRT()<<std::endl;
+            //     std::cout<<Transform_C2M<<std::endl;
 
-                std::cerr<<"JERE"<<std::endl;
-            }
+            //     std::cerr<<"JERE"<<std::endl;
+            // }
         }
     }
 

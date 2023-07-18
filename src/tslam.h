@@ -162,12 +162,28 @@ namespace tslam{
          * @param niters how many iterations to run during optimization
          */
         static void CombineMap(string mapPathA, string mapPathB, string outputPath, bool exportYml=true, bool exportPly=true, ImageParams *estimatedImageParam=nullptr, int niters=50);
+        
+        struct Reconstruct3DParams{
+            float radiusSearch;
+            double creaseAngleThreshold;
+            int minClusterSize;
+            double maxPlnDist;
+            double maxPlnAngle;
+            double aabbScaleFactor;
+            double maxPolyDist;
+            double eps;
+        };
         /**
          * @brief Reconstruct the 3D model from the current mapping and export the .ply mesh
-         * @param filepath output path of the exported .ply
+         * @param importTagMapPath path to the .yml file
+         * @param exportPlyPath path to the .ply file
+         * @param params parameters for the reconstruction
          * @return true if succeed, false otherwise
          */
-        static bool Reconstruct3DModelAndExportPly(const std::string importMapPath,
+        static bool Reconstruct3DModelAndExportPly(const std::string importTagMapPath,
+                                                   const std::string exportPlyPath,
+                                                   Reconstruct3DParams params);
+        static bool Reconstruct3DModelAndExportPly(const std::string importTagMapPath,
                                                    const std::string exportPlyPath,
                                                    float radiusSearch,
                                                    double creaseAngleThreshold,

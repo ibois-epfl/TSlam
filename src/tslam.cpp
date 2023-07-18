@@ -170,16 +170,30 @@ namespace tslam{
         TheMapA->saveToFile(std::move(outputPath));
     }
 
-    bool Reconstruct3DModelAndExportPly(const std::string importMapPath,
-                                        const std::string exportPlyPath,
-                                        float radiusSearch,
-                                        double creaseAngleThreshold,
-                                        int minClusterSize,
-                                        double maxPlnDist,
-                                        double maxPlnAngle,
-                                        double aabbScaleFactor,
-                                        double maxPolyDist,
-                                        double eps) {
+    bool TSlam::Reconstruct3DModelAndExportPly(const std::string importTagMapPath,
+                                               const std::string exportPlyPath,
+                                               Reconstruct3DParams params) {
+        return Reconstruct3DModelAndExportPly(importTagMapPath, exportPlyPath,
+                                              params.radiusSearch,
+                                              params.creaseAngleThreshold,
+                                              params.minClusterSize,
+                                              params.maxPlnDist,
+                                              params.maxPlnAngle,
+                                              params.aabbScaleFactor,
+                                              params.maxPolyDist,
+                                              params.eps);
+    }
+
+    bool TSlam::Reconstruct3DModelAndExportPly(const std::string importTagMapPath,
+                                                const std::string exportPlyPath,
+                                                float radiusSearch,
+                                                double creaseAngleThreshold,
+                                                int minClusterSize,
+                                                double maxPlnDist,
+                                                double maxPlnAngle,
+                                                double aabbScaleFactor,
+                                                double maxPolyDist,
+                                                double eps){
         tslam::Reconstruction::TSLAMReconstructor reconstructor =
                 tslam::Reconstruction::TSLAMReconstructor(
                     radiusSearch,
@@ -191,7 +205,7 @@ namespace tslam{
                     maxPolyDist,
                     eps
                 );
-        reconstructor.loadMap(importMapPath);
+        reconstructor.loadMap(importTagMapPath);
         reconstructor.run();
 
         // check the inner values of the geometric solver
@@ -201,8 +215,13 @@ namespace tslam{
             return false;
         }
 
-        reconstructor.saveMeshAsPLY(exportPlyPath);
-        return true;
+        try {
+            reconstructor.saveMeshAsPLY(exportPlyPath);
+            return true;
+        } catch (std::exception &e) {
+            std::cout << "Error: " << e.what() << std::endl;
+            return false;
+        }
     }
 
 }
