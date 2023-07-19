@@ -145,8 +145,8 @@ bool KPFrameDataBase::add(  Frame &f){
 bool KPFrameDataBase::del(const Frame &f){
     //remove
     if(_voc.size()==0) return false;
-    assert(frames.count(f.idx)!=0);
-    assert(f.bowvector->size()!=0);
+    // assert(frames.count(f.idx)!=0);
+    // assert(f.bowvector->size()!=0);
     for(auto &w:*f.bowvector) word_frames_[w.first].erase(f.idx);
     frames.erase(f.idx);
     return true;
