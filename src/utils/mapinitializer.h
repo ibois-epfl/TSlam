@@ -23,7 +23,6 @@
 #include <utility>
 #include "map.h"
 #include "framematcher.h"
-using namespace std;
 namespace tslam
 {
 
