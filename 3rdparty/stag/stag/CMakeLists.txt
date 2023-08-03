@@ -1,4 +1,4 @@
-find_package(OpenCV REQUIRED)
+find_package(OpenCV REQUIRED COMPONENTS core imgcodecs)
 
 # set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 file(GLOB SRC_FILE1 "*.c*")
