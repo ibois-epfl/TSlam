@@ -3,20 +3,24 @@ FROM ubuntu:latest
 ARG DEBIAN_FRONTEND=noninteractive # ignore user input required
 
 # install required dependencies
-RUN apt-get -y update && apt-get install -y
-RUN apt-get -y install g++ cmake git
-RUN apt-get install -y apt-utils
+# # install required dependencies
+RUN apt-get -qq update && apt-get -qq -y install \
+    g++ cmake git \
+    && rm -rf /var/lib/apt/lists/*
 
 # install tslam deps
-RUN apt-get -y install libopencv-dev=4.5.4+dfsg-9ubuntu4
-RUN apt-get -y install libgmp-dev libgmp-dev
-RUN apt-get -y install libmpfr-dev
-RUN apt-get -y install libeigen3-dev
-RUN apt-get -y install libboost-all-dev
+RUN apt-get -qq update && apt-get -qq -y install \
+    libopencv-dev=4.5.4+dfsg-9ubuntu4 \
+    libgmp-dev \
+    libmpfr-dev \
+    libeigen3-dev \
+    libboost-all-dev\
+    && rm -rf /var/lib/apt/lists/*
 
-COPY . .
-WORKDIR .
 
-# Config/build cmake 
-RUN cmake -S . -B build
-RUN cmake --build build
+# COPY . .
+# WORKDIR .
+
+# # Config/build cmake
+# RUN cmake -S . -B build
+# RUN cmake --build build
