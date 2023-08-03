@@ -39,3 +39,5 @@ jobs:
           retention-days: 1
       - name: Build
         run: cmake --build build
+      - name: Test
+        run: ctest --test-dir build --output-on_failure

@@ -7,9 +7,6 @@ project(TSlam VERSION "1.1.0" LANGUAGES CXX)
 set(PROJECT_SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
 
 set(BUILD_SHARED_LIBS ON)
-#set(CMAKE_CXX_STANDARD_REQUIRED ON) #...is required...
-#set(CMAKE_CXX_EXTENSIONS ON) #...with compiler extensions like gnu++11
-#set(CMAKE_CXX_STANDARD 17) # C++11...
 
 # Set the build type for API integration into third software or not
 if(BUILD_4_API)
@@ -72,7 +69,10 @@ endif()
 #------------------------------------------------------------------------------------------------------------
 
 if(TSLAM_BUILD_TESTS)
-    add_subdirectory(tests)
+  include(CTest)
+  enable_testing()
+
+  add_subdirectory(tests)
 endif()
 
 #------------------------------------------------------------------------------------------------------------

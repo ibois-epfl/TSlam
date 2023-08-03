@@ -10,6 +10,6 @@ option(TSLAM_USE_TIMERS "SET ON/OFF for see time of execution" OFF)
 option(TSLAM_XFEATURES2D "SET ON/OFF" OFF)
 
 option(TSLAM_BUILD_UTILS "Set to OFF to not build utils" ON)
-option(TSLAM_BUILD_TESTS "Set to OFF to not build tests" OFF)
+option(TSLAM_BUILD_TESTS "Set to OFF to not build tests" ON)
 option(TSLAM_BUILD_DEBUGTESTS "Set to OFF to not build tests" OFF)
 option(TSLAM_BUILD_DEBPACKAGE "Set to ON to build deb package" OFF)

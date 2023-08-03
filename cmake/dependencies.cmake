@@ -58,7 +58,7 @@ else()
 
     install(DIRECTORY ${_eigen_files_path}/src
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/eigen3/Eigen
-        COMPONENT Devel
+        COMPONENT Developpment
         FILES_MATCHING PATTERN "*.h")
 
     mark_as_advanced_prefix(EIGEN)
@@ -86,14 +86,23 @@ if(NOT TSLAM_USE_OWN_CGAL)
     endif()
 else()
     set(CGAL_INCLUDE_DIR
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/3rdparty/CGAL/include>)
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/3rdparty/CGAL/include>
+        $<INSTALL_INTERFACE:include>)
 
-    find_package(MPFR REQUIRED)
+    include(GNUInstallDirs)
+    install(DIRECTORY ${PROJECT_SOURCE_DIR}/3rdparty/CGAL/include/CGAL
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        COMPONENT Developpment
+        FILES_MATCHING PATTERN "*.h")
+
+
     list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/3rdparty/CGAL/cmake/modules)
+    find_package(MPFR REQUIRED)
+
     list(APPEND TSLAM_PRIVATE_EXTERNAL_LIBRARIES MPFR::mpfr)
 endif()
 
-list(APPEND TSLAM_PRIVATE_EXTERNAL_INCLUDE_DIRS ${CGAL_INCLUDE_DIR})
+list(APPEND TSLAM_PUBLIC_EXTERNAL_INCLUDE_DIRS ${CGAL_INCLUDE_DIR})
 
 if(NOT TSLAM_USE_OWN_CILANTRO)
     find_package(cilantro REQUIRED)
