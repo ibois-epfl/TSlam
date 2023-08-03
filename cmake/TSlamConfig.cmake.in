@@ -30,7 +30,7 @@ if(NOT TSLAM_USE_OWN_EIGEN3)
 endif()
 
 if(NOT TSLAM_USE_OWN_CGAL)
-  find_dependency(CGAL QUIET COMPONENTS Core)
+  find_dependency(CGAL)
   if(CGAL_FOUND)
     #Don't let CGAL override flags
     set(CGAL_DONT_OVERRIDE_CMAKE_FLAGS TRUE CACHE BOOL "Force CGAL to maintain CMAKE flags")
@@ -41,3 +41,5 @@ endif()
 if(NOT TSLAM_USE_OWN_CILANTRO)
   find_dependency(cilantro)
 endif()
+
+find_dependency(OpenCV)

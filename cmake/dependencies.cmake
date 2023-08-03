@@ -11,7 +11,15 @@ set(TSLAM_EXPORT_LIST)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 include(cmake/external_tools.cmake)
 
-find_package(OpenCV 4.5.4 REQUIRED COMPONENTS )
+find_package(OpenCV 4.5.4 REQUIRED
+    COMPONENTS
+      calib3d
+      core
+      highgui
+      imgcodecs
+      videoio
+)
+
 #list(APPEND TSLAM_PUBLIC_EXTERNAL_INCLUDE_DIRS ${OpenCV_INCLUDE_DIRS})
 list(APPEND TSLAM_PUBLIC_EXTERNAL_LIBRARIES ${OpenCV_LIBS})
 
