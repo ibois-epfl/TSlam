@@ -24,7 +24,6 @@ set_target_properties(tslam_g2o_stuff PROPERTIES # create *nix style library ver
 if(WIN32)
     target_compile_definitions(tslam_g2o_stuff PUBLIC WINDOWS)
 endif()
-list(APPEND TSLAM_EXPORT_LIST tslam_g2o_stuff)
 
 # install(TARGETS tslam_g2o_stuff
 #     RUNTIME DESTINATION bin COMPONENT main # Install the dll file in bin directory

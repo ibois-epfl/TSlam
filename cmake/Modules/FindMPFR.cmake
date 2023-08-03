@@ -2,8 +2,8 @@
 find_library(MPFR_LIBRARIES NAMES mpfr)
 find_path(MPFR_INCLUDE_DIRS NAMES mpfr.h)
 
-if(MPFR_INCLUDE_DIR)
-  file(STRINGS ${SCOTCH_INCLUDE_DIR}/scotch.h _versions
+if(MPFR_INCLUDE_DIRS)
+  file(STRINGS ${MPFR_INCLUDE_DIRS}/mpfr.h _versions
     REGEX "^#define\ +MPFR_VERSION_(MAJOR|MINOR|PATCHLEVEL) .*")
   foreach(_ver ${_versions})
     string(REGEX MATCH "MPFR_VERSION_(MAJOR|MINOR|PATCHLEVEL) +([0-9.]+)" _tmp "${_ver}")

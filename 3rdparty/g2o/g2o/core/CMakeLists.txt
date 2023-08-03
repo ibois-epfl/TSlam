@@ -1,5 +1,4 @@
-SET(THIS_LIBNAME ${EXTRALIBNAME}g2o_core)
-add_library(tslam_g2o_core
+add_library(tslam_g2o
     dynamic_aligned_buffer.hpp
     ownership.h
     base_edge.h
@@ -40,18 +39,17 @@ add_library(tslam_g2o_core
     g2o_core_api.h
 )
 
-target_compile_definitions(tslam_g2o_core PUBLIC core_EXPORTS)
-target_include_directories(tslam_g2o_core PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_definitions(tslam_g2o PUBLIC core_EXPORTS)
+target_include_directories(tslam_g2o PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-set_target_properties(tslam_g2o_core PROPERTIES # create *nix style library versions + symbolic links
+set_target_properties(tslam_g2o PROPERTIES # create *nix style library versions + symbolic links
     DEFINE_SYMBOL core_EXPORTS
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_SOVERSION}
     CLEAN_DIRECT_OUTPUT 1 # allow creating static and shared libs without conflicts
 #    OUTPUT_NAME "${THIS_LIBNAME}${PROJECT_DLLVERSION}" # avoid conflicts between library and binary target names
 )
-target_link_libraries(tslam_g2o_core PRIVATE tslam_g2o_stuff INTERFACE tslam_g2o_config)
-list(APPEND TSLAM_EXPORT_LIST tslam_g2o_core)
+target_link_libraries(tslam_g2o PRIVATE tslam_g2o_stuff INTERFACE tslam_g2o_config)
 
 # INSTALL(TARGETS ${EXTRALIBNAME}g2o_core
 #     RUNTIME DESTINATION bin COMPONENT main			# Install the dll file in bin directory

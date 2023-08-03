@@ -20,7 +20,7 @@ file(GLOB tslam_basictypes_srcs "basictypes/*.cpp" )
 file(GLOB tslam_reconstruction_hdrs "reconstruction/*.hh" )
 file(GLOB tslam_reconstruction_srcs "reconstruction/*.cc" )
 
-add_library(tslam_lib
+add_library(tslam
     ${tslam_base_srcs}
     ${tslam_basictypes_srcs}
     ${tslam_fextractors_srcs}
@@ -36,7 +36,7 @@ add_library(tslam_lib
     ${tslam_utils_hdrs}
 )
 
-set_target_properties(tslam_lib PROPERTIES
+set_target_properties(tslam PROPERTIES
     DEFINE_SYMBOL TSLAM_DSO_EXPORTS
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_SOVERSION}
@@ -44,11 +44,11 @@ set_target_properties(tslam_lib PROPERTIES
     OUTPUT_NAME "${PROJECT_NAME}"
 )
 
-target_link_libraries(tslam_lib
+target_link_libraries(tslam
     PRIVATE ${TSLAM_PRIVATE_EXTERNAL_LIBRARIES}
     PUBLIC ${TSLAM_PUBLIC_EXTERNAL_LIBRARIES})
 
-target_include_directories(tslam_lib
+target_include_directories(tslam
     PRIVATE
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/map_types>
@@ -64,7 +64,7 @@ target_include_directories(tslam_lib
       ${TSLAM_PUBLIC_EXTERNAL_INCLUDE_DIRS}
 )
 
-set_property(TARGET tslam_lib APPEND PROPERTY
+set_property(TARGET tslam APPEND PROPERTY
     INTERFACE_INCLUDE_DIRECTORIES
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/map_types>
@@ -72,41 +72,38 @@ set_property(TARGET tslam_lib APPEND PROPERTY
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/reconstruction>
 )
 
-target_compile_features(tslam_lib PUBLIC cxx_std_17)
+target_compile_features(tslam PUBLIC cxx_std_17)
 
 if(TSLAM_XFEATURES2D)
-    target_compile_definitions(tslam_lib PRIVATE XFEATURES2D)
+    target_compile_definitions(tslam PRIVATE XFEATURES2D)
 endif()
 
 if(TSLAM_USE_TIMERS)
-    target_compile_definitions(tslam_lib PUBLIC USE_TIMERS)
+    target_compile_definitions(tslam PUBLIC USE_TIMERS)
 endif()
 
-add_library(TSlam::tslam ALIAS tslam_lib)
+add_library(TSlam::tslam ALIAS tslam)
 
 if(NOT TSLAM_TARGETS_EXPORT)
   set(TSLAM_TARGETS_EXPORT ${PROJECT_NAME}Targets)
 endif()
 
-list(APPEND TSLAM_EXPORT_LIST tslam_lib)
+list(APPEND TSLAM_EXPORT_LIST tslam)
 
+include(GNUInstallDirs)
 install(TARGETS ${TSLAM_EXPORT_LIST}
     EXPORT ${TSLAM_TARGETS_EXPORT}
-    RUNTIME DESTINATION bin
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
       COMPONENT main
-    LIBRARY DESTINATION lib
-      PERMISSIONS
-        OWNER_READ  OWNER_WRITE OWNER_EXECUTE
-        GROUP_READ GROUP_EXECUTE
-        WORLD_READ WORLD_EXECUTE
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
       COMPONENT main
-    ARCHIVE DESTINATION lib
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
       COMPONENT main
 )
 
 install(EXPORT ${TSLAM_TARGETS_EXPORT}
     NAMESPACE TSlam::
-    DESTINATION lib/cmake/${PROJECT_NAME}
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
     COMPONENT Developpment)
 
 # Export for build tree
@@ -114,13 +111,33 @@ export(EXPORT ${TSLAM_TARGETS_EXPORT}
     FILE "${CMAKE_CURRENT_BINARY_DIR}/${TSLAM_TARGETS_EXPORT}.cmake")
 
 install(FILES ${tslam_base_hdrs}
-    DESTINATION include/${PROJECT_NAME}
-    COMPONENT main
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
+    COMPONENT Developpment
 )
 
-install(FILES ${tslam_map_hdr}
-    DESTINATION include/${PROJECT_NAME}/map_types COMPONENT main)
-install(FILES ${tslam_basictypes_hdr}
-    DESTINATION include/${PROJECT_NAME}/basictypes COMPONENT main)
-install(FILES ${tslam_reconstruction_hdr}
-    DESTINATION include/${PROJECT_NAME}/reconstruction COMPONENT main)
+install(FILES ${tslam_map_hdrs}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/map_types
+    COMPONENT Developpment)
+install(FILES ${tslam_basictypes_hdrs}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/basictypes
+    COMPONENT Developpment)
+install(FILES ${tslam_reconstruction_hdrs}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/reconstruction
+    COMPONENT Developpment)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
+  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+  )
+
+write_basic_package_version_file(${PROJECT_BINARY_DIR}/TSlamConfigVersion.cmake
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion)
+
+install(
+  FILES
+    ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+    ${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)

@@ -1,13 +1,12 @@
 #------------------------------------------------------------------------------------------------------------
 #   Basic Configuration
 #------------------------------------------------------------------------------------------------------------
-
 cmake_minimum_required(VERSION 3.5)
-
 
 project(TSlam VERSION "1.1.0" LANGUAGES CXX)
 set(PROJECT_SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+set(BUILD_SHARED_LIBS ON)
 #set(CMAKE_CXX_STANDARD_REQUIRED ON) #...is required...
 #set(CMAKE_CXX_EXTENSIONS ON) #...with compiler extensions like gnu++11
 #set(CMAKE_CXX_STANDARD 17) # C++11...
@@ -24,7 +23,6 @@ endif()
 #------------------------------------------------------------------------------------------------------------
 # Lib Names and Dirs
 #------------------------------------------------------------------------------------------------------------
-
 include(cmake/options.cmake)
 include(cmake/compiler.cmake)
 include(cmake/dependencies.cmake)
@@ -46,23 +44,17 @@ if(TSLAM_BUILD_UTILS)
     add_subdirectory(utils)
 endif()
 
-# install CGAL
-install(DIRECTORY 3rdparty/CGAL/include/CGAL DESTINATION include)
-
 #------------------------------------------------------------------------------------------------------------
 #   Uninstall target, for "make uninstall"
 #------------------------------------------------------------------------------------------------------------
-#configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
+#configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
+#               "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+#               IMMEDIATE @ONLY)
 add_custom_target(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
-
 
 #------------------------------------------------------------------------------------------------------------
 # create configuration file from .in file (If you use windows take care with paths)
 #------------------------------------------------------------------------------------------------------------
-
-configure_file("${PROJECT_SOURCE_DIR}/cmake/config.cmake.in" "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake")
-install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake" DESTINATION share/${PROJECT_NAME} )
-
 include(cmake/display.cmake)
 
 #------------------------------------------------------------------------------------------------------------
@@ -86,7 +78,6 @@ endif()
 #------------------------------------------------------------------------------------------------------------
 # CPack packaging
 #------------------------------------------------------------------------------------------------------------
-
 if(TSLAM_BUILD_DEBPACKAGE)
     include(cmake/cpack.cmake)
 endif()

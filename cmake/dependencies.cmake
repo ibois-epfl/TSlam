@@ -9,6 +9,7 @@ set(TSLAM_PUBLIC_DEFINITIONS)
 set(TSLAM_EXPORT_LIST)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
+include(cmake/external_tools.cmake)
 
 find_package(OpenCV 4.5.4 REQUIRED COMPONENTS )
 #list(APPEND TSLAM_PUBLIC_EXTERNAL_INCLUDE_DIRS ${OpenCV_INCLUDE_DIRS})
@@ -28,41 +29,44 @@ if(NOT TSLAM_USE_OWN_EIGEN3)
 else()
     add_library(eigen INTERFACE)
     target_include_directories(eigen INTERFACE
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/3rdparty/eigen3/eigen3>)
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/3rdparty/eigen3/eigen3>
+        $<INSTALL_INTERFACE:include/eigen3>)
     add_library(Eigen3::Eigen ALIAS eigen)
+
+    set(_eigen_files_path ${PROJECT_SOURCE_DIR}/3rdparty/eigen3/eigen3/Eigen)
+    file(GLOB _eigen_directory_files "${_eigen_files_path}/*")
+
+    set(_eigen_directory_files_to_install)
+    foreach(f ${_eigen_directory_files})
+        if(NOT (IS_DIRECTORY "${f}" OR "${f}" MATCHES "\\.txt"))
+            list(APPEND _eigen_directory_files_to_install ${f})
+        endif()
+    endforeach()
+
+    include(GNUInstallDirs)
+    install(FILES ${_eigen_directory_files_to_install}
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/eigen3/Eigen
+        COMPONENT Developpment)
+
+    install(DIRECTORY ${_eigen_files_path}/src
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/eigen3/Eigen
+        COMPONENT Devel
+        FILES_MATCHING PATTERN "*.h")
+
+    mark_as_advanced_prefix(EIGEN)
     list(APPEND TSLAM_EXPORT_LIST eigen)
 endif()
 list(APPEND TSLAM_PUBLIC_EXTERNAL_LIBRARIES Eigen3::Eigen)
 
 # XLFANN (depends OpenCV)
 set(XFLANN_OPENCV ON)
-add_subdirectory(3rdparty/xflann/xflann)
-list(APPEND TSLAM_PUBLIC_EXTERNAL_LIBRARIES tslam_xflann)
-list(APPEND TSLAM_EXPORT_LIST tslam_xflann)
+foreach(_deps xflann g2o fbow stag aruco)
+    add_subdirectory(3rdparty/${_deps}/${_deps})
+    list(APPEND TSLAM_PUBLIC_EXTERNAL_LIBRARIES tslam_${_deps})
+    list(APPEND TSLAM_EXPORT_LIST tslam_${_deps})
+endforeach()
+list(APPEND TSLAM_EXPORT_LIST tslam_g2o_config tslam_g2o_stuff)
 
-# g2o (depends OpenCV Eigen)
-add_subdirectory(3rdparty/g2o/g2o)
-list(APPEND TSLAM_PRIVATE_EXTERNAL_LIBRARIES tslam_g2o_core)
-list(APPEND TSLAM_EXPORT_LIST tslam_g2o_core tslam_g2o_stuff tslam_g2o_config)
-
-if(CHANGED_BUILD_TYPE STREQUAL "YES")
-    set(CMAKE_BUILD_TYPE "Debug")
-endif()
-
-add_subdirectory(3rdparty/fbow/fbow)
-list(APPEND TSLAM_PRIVATE_EXTERNAL_LIBRARIES tslam_fbow)
-list(APPEND TSLAM_EXPORT_LIST tslam_fbow)
-
-add_subdirectory(3rdparty/stag/stag)
-list(APPEND TSLAM_PRIVATE_EXTERNAL_LIBRARIES tslam_stag)
-list(APPEND TSLAM_EXPORT_LIST tslam_stag)
-
-add_subdirectory(3rdparty/aruco/aruco)
-list(APPEND TSLAM_PRIVATE_EXTERNAL_LIBRARIES tslam_aruco)
-list(APPEND TSLAM_EXPORT_LIST tslam_aruco)
-
-find_package(MPFR REQUIRED)
-list(APPEND TSLAM_PRIVATE_EXTERNAL_LIBRARIES MPFR::mpfr)
 
 # FIXME: for tslam reconstruction integration
 if(NOT TSLAM_USE_OWN_CGAL)
@@ -75,7 +79,12 @@ if(NOT TSLAM_USE_OWN_CGAL)
 else()
     set(CGAL_INCLUDE_DIR
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/3rdparty/CGAL/include>)
+
+    find_package(MPFR REQUIRED)
+    list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/3rdparty/CGAL/cmake/modules)
+    list(APPEND TSLAM_PRIVATE_EXTERNAL_LIBRARIES MPFR::mpfr)
 endif()
+
 list(APPEND TSLAM_PRIVATE_EXTERNAL_INCLUDE_DIRS ${CGAL_INCLUDE_DIR})
 
 if(NOT TSLAM_USE_OWN_CILANTRO)
