@@ -29,8 +29,6 @@ jobs:
       image: ghcr.io/ibois-epfl/tslam:latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          lfs: true
       - name: Configure
         run: cmake -B build -DTSLAM_USE_OWN_EIGEN3:BOOL=OFF .
       - uses: actions/upload-artifact@v3
