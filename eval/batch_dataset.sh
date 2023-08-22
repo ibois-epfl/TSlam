@@ -27,7 +27,7 @@ cd $__workin_dir__
 # 00. activate conda env tslameval
 #==========================================================================================
 
-__zenodo_url__="https://zenodo.org/record/8006484"  # <---TODO: replace with newest version
+__zenodo_url__="https://zenodo.org/record/8269641"  # <---TODO: replace with newest version
 
 #==========================================================================================
 # 0. activate conda env tslameval
