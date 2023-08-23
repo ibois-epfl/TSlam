@@ -1,0 +1,45 @@
+# ===================================================================================
+# TSLAM is developed at IBOIS, EPFL @ 2023
+# It is distributed under the GNU GPL license (https://www.gnu.org/licenses/gpl-3.0.en.html) and 
+# is build on top of TSlet (
+# ===================================================================================
+set(TSLAM_VERSION @PROJECT_VERSION@)
+@PACKAGE_INIT@
+
+get_filename_component(TSLAM_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+if(EXISTS "${TSLAM_CMAKE_DIR}/CMakeCache.txt")
+  # In build tree
+else()
+  # In install tree
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${TSLAM_CMAKE_DIR}")
+endif()
+
+include("${TSLAM_CMAKE_DIR}/TSlamTargets.cmake")
+
+check_required_components(@PROJECT_NAME@)
+
+include(CMakeFindDependencyMacro)
+
+set(TSLAM_USE_OWN_EIGEN3 @TSLAM_USE_OWN_EIGEN3@)
+set(TSLAM_USE_OWN_CGAL @TSLAM_USE_OWN_CGAL@)
+set(TSLAM_USE_OWN_CILANTRO @TSLAM_USE_OWN_CILANTRO@)
+
+if(NOT TSLAM_USE_OWN_EIGEN3)
+  find_dependency(Eigen3)
+endif()
+
+if(NOT TSLAM_USE_OWN_CGAL)
+  find_dependency(CGAL)
+  if(CGAL_FOUND)
+    #Don't let CGAL override flags
+    set(CGAL_DONT_OVERRIDE_CMAKE_FLAGS TRUE CACHE BOOL "Force CGAL to maintain CMAKE flags")
+    include(${CGAL_USE_FILE})
+  endif()
+endif()
+
+if(NOT TSLAM_USE_OWN_CILANTRO)
+  find_dependency(cilantro)
+endif()
+
+find_dependency(OpenCV)

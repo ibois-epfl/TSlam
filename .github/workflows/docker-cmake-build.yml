@@ -1,19 +1,43 @@
-name: docker-cmake-build
+name: "Configure and build"
 
 on:
   push:
-    branches: [ "main", "optiv0" ]
+    branches: ["main", "optiv0"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
-
   build-container:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build container
+        run: docker build -t ghcr.io/ibois-epfl/tslam:latest ${{ github.workspace }}
+      - name: Push
+        run: docker push ghcr.io/ibois-epfl/tslam:latest
 
-    - name: Build the Docker image
-      run: sudo docker build -t tslam .
+  configure-and-build:
+    needs: build-container
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/ibois-epfl/tslam:latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure
+        run: cmake -B build -DTSLAM_USE_OWN_EIGEN3:BOOL=OFF .
+      - uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: configure-artifacts
+          path: build/
+          retention-days: 1
+      - name: Build
+        run: cmake --build build
+      - name: Test
+        run: ctest --test-dir build --output-on_failure
