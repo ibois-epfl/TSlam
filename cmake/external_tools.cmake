@@ -25,7 +25,7 @@ function(download_external_project project_name)
   endif()
 
   if(_dep_args_BACKEND)
-    set(_ep_backend "${dep_args_BACKEND}_REPOSITORY \"${_dep_args_URL}\"")
+    set(_ep_backend "${_dep_args_BACKEND}_REPOSITORY \"${_dep_args_URL}\"")
   else()
     set(_ep_backend "URL \"${_dep_args_URL}\"")
     if(CMAKE_VERSION VERSION_GREATER 3.23)
