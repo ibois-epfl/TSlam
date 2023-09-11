@@ -25,7 +25,7 @@ function(download_external_project project_name)
   endif()
 
   if(_dep_args_BACKEND)
-    set(_ep_backend "${dep_args_BACKEND}_REPOSITORY \"${_dep_args_URL}\"")
+    set(_ep_backend "${_dep_args_BACKEND}_REPOSITORY \"${_dep_args_URL}\"")
   else()
     set(_ep_backend "URL \"${_dep_args_URL}\"")
     if(CMAKE_VERSION VERSION_GREATER 3.23)
@@ -119,7 +119,6 @@ endfunction()
 function(add_external_package package)
   include(CMakeParseArguments)
 
-
   set(_aep_flags
     IGNORE_SYSTEM
     )
@@ -153,9 +152,15 @@ function(add_external_package package)
     set(_required REQUIRED)
   endif()
 
-  if(NOT _aep_args_IGNORE_SYSTEM)
+  string(TOUPPER "${package}" u_package)
+  if(NOT DEFINED  ${PROJECT_NAME}_USE_EXTERNAL_${u_package})
+    set(${PROJECT_NAME}_USE_EXTERNAL_${u_package} FALSE CACHE INTERNAL "")
+  endif()
+
+  if(NOT _aep_args_IGNORE_SYSTEM AND NOT ${PROJECT_NAME}_USE_EXTERNAL_${u_package})
     find_package(${package} ${_${package}_version} ${_required} ${_aep_UNPARSED_ARGUMENTS} QUIET)
     if(${package}_FOUND AND NOT ${package}_FOUND_EXTERNAL)
+      message(STATUS "Found system ${package}")
       string(TOUPPER ${package} u_package)
       mark_as_advanced_prefix(${package})
       mark_as_advanced_prefix(${u_package})
@@ -164,7 +169,9 @@ function(add_external_package package)
   endif()
 
   if(EXISTS ${_cmake_includes}/${package}.cmake)
+    message(STATUS "Using own ${package}")
     include(${_cmake_includes}/${package}.cmake)
+    set(${PROJECT_NAME}_USE_EXTERNAL_${u_package} TRUE CACHE INTERNAL "")
   endif()
   string(TOUPPER ${package} u_package)
   mark_as_advanced_prefix(${package})
