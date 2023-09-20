@@ -159,20 +159,13 @@ def process_opti_camera_data(gt_path : str,
                 if frame_number < frame_start or frame_number > frame_end:
                     continue
             frame_timestamp = float(data[1])
-            opti_timestamp = float(data[3])
 
-            time_sample_diff = abs(frame_timestamp - opti_timestamp)
-            
-            if time_sample_diff > time_diff_threshold: # 0.01 = 10 ms
-                opti_poss_valid.append(False)
-                not_tracked_counter += 1
-            else:
-                opti_poss_valid.append(True)
-                tracked_counter += 1
+            opti_poss_valid.append(True)
+            tracked_counter += 1
 
-            camera_pos = np.array([float(data[4]), float(data[5]), float(data[6])])
-            camera_rot = np.array([float(data[7]), float(data[8]), float(data[9]), float(data[10])])
-            
+            camera_pos = np.array([float(data[2]), float(data[3]), float(data[4])])
+            camera_rot = np.array([float(data[5]), float(data[6]), float(data[7]), float(data[8])])
+
             if offset_correction:
                 tmp_offset = tfm.quaternion_multiply(tfm.quaternion_multiply(camera_rot, pos_offset_vec), tfm.quaternion_inv(camera_rot))
                 camera_pos = camera_pos - tmp_offset[1:]
@@ -604,7 +597,9 @@ def dump_animation(est_pos,
         vid_frame = os.path.join(temp_video_dir, f"{idx+1}.png")
         graph_frame = os.path.join(vid_graph_temp_path, f"{idx+1}.png")
         out_frame = os.path.join(vidgraph_dir, f"{idx+1}.png")
-        os.system(f"montage {vid_frame} {graph_frame} -geometry +0+0 -resize x500 {out_frame}")
+        
+        # put the two image side by side with the same height of 500px and save it to out_frame
+        os.system(f"convert {vid_frame} {graph_frame} +append -resize x500 {out_frame}")
 
         plt.close(fig)
         gc.collect()  # for collecting buffer memory
