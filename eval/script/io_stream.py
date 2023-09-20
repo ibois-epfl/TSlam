@@ -598,8 +598,10 @@ def dump_animation(est_pos,
         graph_frame = os.path.join(vid_graph_temp_path, f"{idx+1}.png")
         out_frame = os.path.join(vidgraph_dir, f"{idx+1}.png")
         
-        # put the two image side by side with the same height of 500px and save it to out_frame
-        os.system(f"convert {vid_frame} {graph_frame} +append -resize x500 {out_frame}")
+        # put the two image side by side with the same height of 500px and save it to out_frame but leave 20 px margin
+        os.system(f"convert {vid_frame} -resize x500 -bordercolor white -border 80x80 {vid_frame}")
+        os.system(f"convert {vid_frame} {graph_frame} +append -resize x500 -bordercolor white -gravity center -border 20x20 {out_frame}")
+        os.system(f"convert {out_frame} -crop +40+0 {out_frame}")  # reduce the size of the image by 40px only on the left
 
         plt.close(fig)
         gc.collect()  # for collecting buffer memory
