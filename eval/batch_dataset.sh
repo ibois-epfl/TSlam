@@ -86,7 +86,7 @@ for link in $download_links; do
     print_process "----------------------------------------"
     print_process "Starting evaluation of $filename_zip..."
     filename_sequence=$(basename $filename_zip .zip)
-    ./batch_sequence.sh -s "$__dataset_dir__/$filename_sequence" -e
+    ./batch_sequence.sh -s "$__dataset_dir__/$filename_sequence" -e -t
 done
 print_success "Single sequence evaluation done"
 
