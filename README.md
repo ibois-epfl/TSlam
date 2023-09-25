@@ -31,17 +31,16 @@ gantt
     
     section HB internship
     start HB                        :milestone, done, 2023-06-01,
-    AC integration for visuals      :active,2023-06-01, 2023-07-15
-    TSlam Rhino design package      :active, 2023-07-15, 2023-08-15
-    start HB                        :milestone, 2023-08-14,
+    AC integration for visuals      :done, 2023-06-01, 2023-07-15
+    start HB                        :milestone, done, 2023-08-14,
 
     section Paper redaction
-    Redaction text/illustration     :pprd, after bvpr, 30d
+    Redaction text/illustration     :active, pprd, after bvpr, 30d
     Paper submission                :milestone, after pprd, 1d
     
     section Maintenance
     Profiling of tslam                  :done, opti, 2023-04-19, 10d
-    Optimization of tslam               :active, 2023-06-01, 2023-09-01
+    Optimization of tslam               :done, 2023-06-01, 2023-09-01
 ```
 
 
