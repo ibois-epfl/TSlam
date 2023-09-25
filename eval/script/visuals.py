@@ -409,7 +409,6 @@ def visualize_quintiles_plot(out_dir : str) -> None:
     plt.close()
 
 
-
 ######################################
 ### reconstructed model evaluation ###
 ######################################

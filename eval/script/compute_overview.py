@@ -36,7 +36,8 @@ __SEQUENCES_MAP_HIGHD_RING__ = [3,7,11,15,19]
 
 
 def main(out_subdir : str,
-         csv_paths : list[str]) -> None:
+         csv_sequ_paths : list[str],
+         csv_subsequ_paths : list[str]) -> None:
     """
         We need to regroup the results of boxplots in the categories of tag params (density/layout):
         - a) low/high density
@@ -68,14 +69,45 @@ def main(out_subdir : str,
         - 9) coverage distribution - mean high/ mean low density for stripe and ring layout (4 lines)
 
         :param out_subdir: path to the output directory to dump results/graphs
-        :param csv_paths: list of paths to the csv files containing the results of the analysis per sequence
+        :param csv_sequ_paths: list of paths to the csv files containing the results of the analysis per sequence
     """
 
+    #================================================
+    #================================================
+
     # mean and merge all csv based on the density/layout/stripe/ring matrix (20 csv -> 4 csv)
-    csv_paths_lowD_stripe : list[str] = [x for x in csv_paths if int(x.split("/")[-6].split("_")[0]) in __SEQUENCES_MAP_LOWD_STRIPE__]
-    csv_paths_lowD_ring : list[str] = [x for x in csv_paths if int(x.split("/")[-6].split("_")[0]) in __SEQUENCES_MAP_LOWD_RING__]
-    csv_paths_highD_stripe : list[str] = [x for x in csv_paths if int(x.split("/")[-6].split("_")[0]) in __SEQUENCES_MAP_HIGHD_STRIPE__]
-    csv_paths_highD_ring : list[str] = [x for x in csv_paths if int(x.split("/")[-6].split("_")[0]) in __SEQUENCES_MAP_HIGHD_RING__]
+    csv_sequ_paths_lowD_stripe : list[str] = [x for x in csv_sequ_paths if int(x.split("/")[-6].split("_")[0]) in __SEQUENCES_MAP_LOWD_STRIPE__]
+    csv_sequ_paths_lowD_ring : list[str] = [x for x in csv_sequ_paths if int(x.split("/")[-6].split("_")[0]) in __SEQUENCES_MAP_LOWD_RING__]
+    csv_sequ_paths_highD_stripe : list[str] = [x for x in csv_sequ_paths if int(x.split("/")[-6].split("_")[0]) in __SEQUENCES_MAP_HIGHD_STRIPE__]
+    csv_sequ_paths_highD_ring : list[str] = [x for x in csv_sequ_paths if int(x.split("/")[-6].split("_")[0]) in __SEQUENCES_MAP_HIGHD_RING__]
+
+    #================================================
+    ## 6.A) LOWDENSITY STRIPE
+    # merge all values by line in csv by averaging them
+    tool_id : int = 0
+    nbr_operations : int = 0
+    average_time_per_operation : float = 0.0
+    mean_drift_position_m : float = 0.0
+    mean_drift_position_q1 : float = 0.0
+    mean_drift_position_q3 : float = 0.0
+    mean_drift_position_min : float = 0.0
+    mean_drift_position_max : float = 0.0
+    mean_drift_rotation_m : float = 0.0
+    mean_drift_rotation_q1 : float = 0.0
+    mean_drift_rotation_q3 : float = 0.0
+    mean_drift_rotation_min : float = 0.0
+    mean_drift_rotation_max : float = 0.0
+    tags_m : float = 0.0
+    tags_q1 : float = 0.0
+    tags_q3 : float = 0.0
+    tags_min : float = 0.0
+    tags_max : float = 0.0
+    coverage_m : float = 0.0
+    mean_coverage_perc_quintile1 : float = 0.0
+    mean_coverage_perc_quintile2 : float = 0.0
+    mean_coverage_perc_quintile3 : float = 0.0
+    mean_coverage_perc_quintile4 : float = 0.0
+    mean_coverage_perc_quintile5 : float = 0.0
 
 
 
@@ -103,16 +135,42 @@ if __name__ == "__main__":
     _out_subdir : str = f"{args.outDir}/{time_stamp}"
     os.system(f"mkdir {_out_subdir}")
 
-    _csv_paths : list[str] = []
+    _csv_sequ_paths : list[str] = []
     for root, dirs, files in os.walk(args.inDir):
         for file in files:
             if file.endswith("summarys_sequence_bench.csv"):
-                _csv_paths.append(os.path.join(root, file))
-    assert _csv_paths.__len__() == 20, f"Wrong number of csv found in {args.inDir}"
-    _csv_paths_nbr : list[str] = []
-    for csv in _csv_paths:
-        _csv_paths_nbr.append(int(csv.split("/")[-6].split("_")[0]))
-    _csv_paths = [x for _,x in sorted(zip(_csv_paths_nbr,_csv_paths))]
+                _csv_sequ_paths.append(os.path.join(root, file))
+    assert _csv_sequ_paths.__len__() == 20, f"Wrong number of csv found in {args.inDir}"
+    _csv_sequ_paths_nbr : list[str] = []
+    for csv in _csv_sequ_paths:
+        _csv_sequ_paths_nbr.append(int(csv.split("/")[-6].split("_")[0]))
+    _csv_sequ_paths = [x for _,x in sorted(zip(_csv_sequ_paths_nbr,_csv_sequ_paths))]
+
+    _csv_subsequ_paths : list[list[str]] = []
+    _in_subdirs = os.listdir(args.inDir)
+    for subd in _in_subdirs:
+        _csv_lst_temp : list[str] = []
+        for root, dirs, files in os.walk(f"{args.inDir}/{subd}"):
+            for file in files:
+                if file.endswith("circular_sawblade_140.csv") or \
+                   file.endswith("drill_auger_bit_20_200.csv") or \
+                   file.endswith("drill_auger_bit_25_500.csv") or \
+                   file.endswith("drill_hinge_cutter_bit_50.csv") or \
+                   file.endswith("drill_oblique_hole_bit_40.csv") or \
+                   file.endswith("saber_sawblade_t1.csv") or \
+                   file.endswith("st_screw_45.csv") or \
+                   file.endswith("st_screw_80.csv") or \
+                   file.endswith("st_screw_100.csv") or \
+                   file.endswith("st_screw_120.csv"):
+                    _csv_lst_temp.append(os.path.join(root, file))
+        if _csv_lst_temp.__len__() == 0:
+            _csv_subsequ_paths.append(_csv_lst_temp)
+            print(f"\033[93m[WARNING]: no subsequences found in {subd}\n\033[0m")
+            continue
+        _csv_subsequ_paths.append(_csv_lst_temp)
+
+
 
     main(out_subdir=_out_subdir,
-         csv_paths=_csv_paths)
+         csv_sequ_paths=_csv_sequ_paths,
+         csv_subsequ_paths=_csv_subsequ_paths)
