@@ -27,7 +27,7 @@ cd $__workin_dir__
 # 00. activate conda env tslameval
 #==========================================================================================
 
-__zenodo_url__="https://zenodo.org/record/8275529"  # <---TODO: replace with newest version
+__zenodo_url__="https://zenodo.org/record/8377793"  # <---TODO: replace with newest version
 
 #==========================================================================================
 # 0. activate conda env tslameval
@@ -86,7 +86,7 @@ for link in $download_links; do
     print_process "----------------------------------------"
     print_process "Starting evaluation of $filename_zip..."
     filename_sequence=$(basename $filename_zip .zip)
-    ./batch_sequence.sh -s "$__dataset_dir__/$filename_sequence" -e
+    ./batch_sequence.sh -s "$__dataset_dir__/$filename_sequence" -e -t
 done
 print_success "Single sequence evaluation done"
 
