@@ -408,9 +408,12 @@ def visualize_quintiles_plot(out_dir : str) -> None:
 
     plt.close()
 
+
+
 ######################################
 ### reconstructed model evaluation ###
 ######################################
+
 def draw_model_comp_result_o3d(point_cloud, save_path, to_show=False):
     """ Draw the reconstructed 3D model on open3d and export it as png.
         it's faster for preview, but it has some issues with the camera position
@@ -475,7 +478,6 @@ def draw_model_comp_result(id, point_cloud, save_path, to_show=False):
         plt.show()
     plt.close()
 
-
 def draw_model_metric_histogram(data, bins, id, save_path, range = None, to_show = False):
     """ Draw the histogram of the metric """
 
@@ -498,7 +500,6 @@ def draw_model_metric_histogram(data, bins, id, save_path, range = None, to_show
     plt.close()
 
     return
-
 
 def draw_combined_model_metric_histogram(batch_data, bins, title, save_path, x_range = None, to_show = False):
     init_stat_disc = ["0 joinery", "1 joinery", "2 joinery", "3 joinery", "4 joinery"]
