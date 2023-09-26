@@ -544,3 +544,122 @@ def draw_combined_model_metric_histogram(batch_data, bins, title, save_path, x_r
     plt.close()
 
     return
+
+######################################
+###         summary graphs         ###
+######################################
+
+def draw_double_boxplot(data_a : np.array,
+                        data_b : np.array,
+                        labels : np.array
+                        ) -> plt.figure:
+
+
+
+    fig, ax = plt.subplots()
+    fig.set_size_inches(10., 6.)
+    ax.set_xlabel("Title")
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['left'].set_visible(True)
+    ax.spines['bottom'].set_visible(True)
+
+    labels_test = np.array(['A', 'B'])
+
+    # first boxplot pair
+
+    # set thick on y axis
+    # ax.tick_params(axis='y', which='major', width=2)
+
+    boxplot = ax.boxplot(data_a, labels=labels_test,
+        notch=False, sym='+', vert=True, whis=1.5,
+        positions=[1,2], widths=None,
+        bootstrap=None, usermedians=None, conf_intervals=None)
+    # for whisker in boxplot['whiskers']:
+    #     whisker.set(color='black', linewidth=1)
+    # for cap in boxplot['caps']:
+    #     cap.set(color='black', linewidth=2)
+    # for median in boxplot['medians']:
+    #     median.set(color='black', linewidth=2)
+    # # for mean in boxplot['means']:
+    # #     mean.set(color=CYBERGREEN, linewidth=2)
+    # for flier in boxplot['fliers']:
+    #     flier.set(marker='+', color="black", alpha=0.5)
+
+    boxplot = ax.boxplot(data_b,
+        notch=False, sym='+', vert=True, whis=1.5,
+        positions=[4,5], widths=None,
+        bootstrap=None, usermedians=None, conf_intervals=None)
+    # for whisker in boxplot['whiskers']:
+    #     whisker.set(color='black', linewidth=1)
+    # for cap in boxplot['caps']:
+    #     cap.set(color='black', linewidth=2)
+    # for median in boxplot['medians']:
+    #     median.set(color='black', linewidth=2)
+    # # for mean in boxplot['means']:
+    # #     mean.set(color=CYBERGREEN, linewidth=2)
+    # for flier in boxplot['fliers']:
+    #     flier.set(marker='+', color="black", alpha=0.5)
+
+    
+    # # legend
+    # hB, = plt.plot([1,1],'b-')
+    # hR, = plt.plot([1,1],'r-')
+    # plt.legend((hB, hR),('Apples', 'Oranges'))
+    # hB.set_visible(False)
+    # hR.set_visible(False)
+
+
+
+    fig.autofmt_xdate()  # to avoid xlabels overlapping
+
+
+
+
+
+
+    # metrics_info_str = []
+    # for idx, info in enumerate(metrics_info):
+    #     i_txt_O = f"O:{info[0]}"
+    #     i_txt_M = f"M:{info[1]}"
+    #     i_txt_Q1 = f"q1:{info[2]}"
+    #     i_txt_Q3 = f"q3:{info[3]}"
+    #     i_txt_MIN = f"mn:{info[4]}"
+    #     i_txt_MAX = f"Mx:{info[5]}"
+
+    #     i_txt_OM = f"{i_txt_O} {i_txt_M}"
+    #     i_txt_Q1Q3 = f"{i_txt_Q1} {i_txt_Q3}"
+    #     i_txt_MINMAX = f"{i_txt_MIN} {i_txt_MAX}"
+    #     metrics_info_str.append(f"{i_txt_OM}\n{i_txt_Q1Q3}\n{i_txt_MINMAX}")
+
+
+
+
+
+    # # find emplacement for info text
+    # xlabels_loc = ax.get_xticks()
+    # max_y_lst = []
+    # for d in data:
+    #     max_y_lst.append(np.max(d))
+    # MAX_y = np.max(np.array(max_y_lst))
+    # max_y_lst = []
+    # for d in data:
+    #     max_y_extra = np.max(d) + 0.1 * MAX_y
+    #     max_y_lst.append(max_y_extra)
+
+
+
+
+
+
+    # for idx, xloc in enumerate(xlabels_loc):
+    #     ax.text(x=xloc, y=max_y_lst[idx], s=metrics_info_str[idx], fontsize=8, horizontalalignment='center')
+
+    fig.tight_layout()
+
+    # TODO: get rid: show the plot
+    plt.show()
+    plt.close()
+
+
+    return fig

@@ -738,3 +738,107 @@ def dump_summary_as_tex_table(out_dir : str,
     table_path = os.path.join(table_dir, "table.tex")
     with open(table_path, 'w') as tf:
         tf.write(df.to_latex(index=False))
+
+#===============================================================================
+# summary
+#===============================================================================
+
+def merge_csv_by_categ(csv_paths : list[str]) -> list[str]:
+    """
+        To merge the csv paths by categories of tool labels.
+
+        :param list_paths: list of csv paths
+        :return: list of merged csv paths by category as numpy array
+    """
+    csv_data__circular_sawblade_140 = []
+    csv_data__saber_sawblade_t1 = []
+    csv_data__drill_hinge_cutter_bit_50 = []
+    csv_data__drill_auger_bit_20_200 = []
+    csv_data__drill_auger_bit_25_500 = []
+    csv_data__drill_oblique_hole_bit_40 = []
+    csv_data__st_screw_120 = []
+    csv_data__st_screw_100 = []
+    csv_data__st_screw_80 = []
+    csv_data__st_screw_45 = []
+
+    lst_TOOLS_keys = list(metrics.TOOLS.keys())
+
+    for path in csv_paths:
+        name_csv_file = os.path.basename(path).split(".")[0]
+        if name_csv_file in lst_TOOLS_keys:
+            id = lst_TOOLS_keys.index(name_csv_file)
+            with open(path, 'r') as f:
+                csv_data = f.read()
+            for idx, row in enumerate(csv_data.split("\n")):
+                if idx == 0:
+                    continue
+                if row == "":
+                    continue
+                if "nan" in row:
+                    continue
+                np_temp_data = np.array(row.split(";"))
+                
+                if lst_TOOLS_keys[id] == "circular_sawblade_140":
+                    csv_data__circular_sawblade_140.append(np_temp_data)
+                elif lst_TOOLS_keys[id] == "saber_sawblade_t1":
+                    csv_data__saber_sawblade_t1.append(np_temp_data)
+                elif lst_TOOLS_keys[id] == "drill_hinge_cutter_bit_50":
+                    csv_data__drill_hinge_cutter_bit_50.append(np_temp_data)
+                elif lst_TOOLS_keys[id] == "drill_auger_bit_20_200":
+                    csv_data__drill_auger_bit_20_200.append(np_temp_data)
+                elif lst_TOOLS_keys[id] == "drill_auger_bit_25_500":
+                    csv_data__drill_auger_bit_25_500.append(np_temp_data)
+                elif lst_TOOLS_keys[id] == "drill_oblique_hole_bit_40":
+                    csv_data__drill_oblique_hole_bit_40.append(np_temp_data)
+                elif lst_TOOLS_keys[id] == "st_screw_120":
+                    csv_data__st_screw_120.append(np_temp_data)
+                elif lst_TOOLS_keys[id] == "st_screw_100":
+                    csv_data__st_screw_100.append(np_temp_data)
+                elif lst_TOOLS_keys[id] == "st_screw_80":
+                    csv_data__st_screw_80.append(np_temp_data)
+                elif lst_TOOLS_keys[id] == "st_screw_45":
+                    csv_data__st_screw_45.append(np_temp_data)
+
+    return [np.array(csv_data__circular_sawblade_140),
+            np.array(csv_data__saber_sawblade_t1),
+            np.array(csv_data__drill_hinge_cutter_bit_50),
+            np.array(csv_data__drill_auger_bit_20_200),
+            np.array(csv_data__drill_auger_bit_25_500),
+            np.array(csv_data__drill_oblique_hole_bit_40),
+            np.array(csv_data__st_screw_120),
+            np.array(csv_data__st_screw_100),
+            np.array(csv_data__st_screw_80),
+            np.array(csv_data__st_screw_45)]
+
+def cvt_csv_summary_to_data(csv_paths : list[str]) -> list[str]:
+    """
+        To convert the csv summary of sequences to one averaged data (no tools subdivision).
+        NB.:! we are skipping the saber_sawblade if it exists because are too bad!
+
+        :param csv_paths: list of csv paths
+        :return: list of averaged data
+    """
+    csv_data_out = []
+    for path in csv_paths:
+        with open(path, 'r') as f:
+            csv_data = f.read()
+        for idx, row in enumerate(csv_data.split("\n")):
+            if idx == 0:
+                continue
+            if row == "":
+                continue
+            if "nan" in row:
+                continue
+            if "saber_sawblade_t1" in row:  ## <--! we are not including the saber_sawblade_t1 because it is too bad!
+                continue
+
+            temp_data = row.split(";")[0].split(',')
+            temp_data.pop(0)
+            temp_data = [float(x) for x in temp_data]
+
+            csv_data_out.append(temp_data)
+
+    np_csv_data = np.array(csv_data_out)
+    np_csv_data = np_csv_data.transpose()
+
+    return np_csv_data

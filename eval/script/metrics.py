@@ -468,3 +468,16 @@ def compute_fab_results(out_dir : str) -> None:
         print(f"mean_coverage_perc_quintiles3 [percentage]: {TOOLS[id][1].mean_coverage_perc_quintiles[2]}")
         print(f"mean_coverage_perc_quintiles4 [percentage]: {TOOLS[id][1].mean_coverage_perc_quintiles[3]}")
         print(f"mean_coverage_perc_quintiles5 [percentage]: {TOOLS[id][1].mean_coverage_perc_quintiles[4]}")
+
+# ================================================================================================
+# ================================== summary metrics ============================================
+# ================================================================================================
+
+def compute_average_summary_values(data : np.array(float)) -> np.array(float):
+    """
+        This function computes the average values of the summary metrics.
+    """
+    avr_data = []
+    for idx, param in enumerate(data):
+        avr_data.append(np.mean(param))
+    return np.array(avr_data)

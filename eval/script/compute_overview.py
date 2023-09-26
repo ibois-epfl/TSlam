@@ -6,6 +6,13 @@ import sys
 from tqdm import tqdm
 from datetime import datetime
 
+import numpy as np
+
+import metrics
+import io_stream
+import visuals
+
+
 __SEQUENCES_MAP__ = {
     # name sequence : [density (0=low, 1=high), layout(0=stripe, 1=ring)]
     "sequence_1" :  [0,0],
@@ -37,7 +44,7 @@ __SEQUENCES_MAP_HIGHD_RING__ = [3,7,11,15,19]
 
 def main(out_subdir : str,
          csv_sequ_paths : list[str],
-         csv_subsequ_paths : list[str]) -> None:
+         csv_subsequ_paths : list[list[str]]) -> None:
     """
         We need to regroup the results of boxplots in the categories of tag params (density/layout):
         - a) low/high density
@@ -46,20 +53,20 @@ def main(out_subdir : str,
         Second we will average all the tools and provide an overview based uniquely on the mean for à`and `b`.
 
         Here's the final graphs/results to output:
-        ----------------------- part 1 - per tool summary -----------------------
-        - 1.A) position boxplot - high/low density for stripe layout
-        - 1.B) position boxplot - high/low density for ring layout
+        # ----------------------- part 1 - per tool summary(SUSPENDED) -----------------------
+        # - 1.A) position boxplot - high/low density for stripe layout
+        # - 1.B) position boxplot - high/low density for ring layout
 
-        - 2.A) rotation boxplot - high/low density for stripe layout
-        - 2.B) rotation boxplot - high/low density for ring layout
+        # - 2.A) rotation boxplot - high/low density for stripe layout
+        # - 2.B) rotation boxplot - high/low density for ring layout
 
-        - 3.A) tags detection boxplot - high/low density for stripe layout
-        - 3.B) tags detection boxplot - high/low density for ring layout
+        # - 3.A) tags detection boxplot - high/low density for stripe layout
+        # - 3.B) tags detection boxplot - high/low density for ring layout
 
-        - 4.A) coverage distribution - high density for stripe layout
-        - 4.B) coverage distribution - high density for ring layout
-        - 4.C) coverage distribution - low density for stripe layout
-        - 4.D) coverage distribution - low density for ring layout
+        # - 4.A) coverage distribution - high density for stripe layout
+        # - 4.B) coverage distribution - high density for ring layout
+        # - 4.C) coverage distribution - low density for stripe layout
+        # - 4.D) coverage distribution - low density for ring layout
 
         ----------------------- part 2 - fabrication summary --------------------
         - 5) preparation time columns - mean high/ mean low density for stripe and ring layout
@@ -69,10 +76,55 @@ def main(out_subdir : str,
         - 9) coverage distribution - mean high/ mean low density for stripe and ring layout (4 lines)
 
         :param out_subdir: path to the output directory to dump results/graphs
-        :param csv_sequ_paths: list of paths to the csv files containing the results of the analysis per sequence
+        :param csv_sequ_paths: list of list of paths to the csv files containing the results of the analysis per sequence
     """
+    #================================================
+    ## Part 1
+    #================================================
+
+    # # parse the csv by the 4 groups and merge them by category
+    # sequences_map_group : list[list[str]] = [[],[],[],[]]
+
+    # csv_subsequ_paths_lowD_stripe : list[str] = []
+    # for i in tqdm(__SEQUENCES_MAP_LOWD_STRIPE__):
+    #     csv_subsequ_paths_lowD_stripe.extend(csv_subsequ_paths[i])
+    # csv_subsequ_paths_lowD_ring : list[str] = []
+    # for i in tqdm(__SEQUENCES_MAP_LOWD_RING__):
+    #     csv_subsequ_paths_lowD_ring.extend(csv_subsequ_paths[i])
+    # csv_subsequ_paths_highD_stripe : list[str] = []
+    # for i in tqdm(__SEQUENCES_MAP_HIGHD_STRIPE__):
+    #     csv_subsequ_paths_highD_stripe.extend(csv_subsequ_paths[i])
+    # csv_subsequ_paths_highD_ring : list[str] = []
+    # for i in tqdm(__SEQUENCES_MAP_HIGHD_RING__):
+    #     csv_subsequ_paths_highD_ring.extend(csv_subsequ_paths[i])
+
+    # sequences_map_group[0] = csv_subsequ_paths_lowD_stripe
+    # sequences_map_group[1] = csv_subsequ_paths_lowD_ring
+    # sequences_map_group[2] = csv_subsequ_paths_highD_stripe
+    # sequences_map_group[3] = csv_subsequ_paths_highD_ring
+
+    # #================================================
+    # # for each group:
+    # # 1. check if one typology exists
+    # # 2. if other exists, merge all the same csv into one
+    # sequence_map_data : list[list[list[str]]] = [[],[],[],[]]
+
+    # for idx, path_lst in enumerate(tqdm(sequences_map_group)):
+    #     sequence_map_data[idx] = io_stream.merge_csv_by_categ(csv_paths=path_lst)
+
+    # #================================================
+    # # prepare the data and labels for the boxplots
+
+
+
+
+
+
+
+
 
     #================================================
+    ## Part 2
     #================================================
 
     # mean and merge all csv based on the density/layout/stripe/ring matrix (20 csv -> 4 csv)
@@ -81,33 +133,66 @@ def main(out_subdir : str,
     csv_sequ_paths_highD_stripe : list[str] = [x for x in csv_sequ_paths if int(x.split("/")[-6].split("_")[0]) in __SEQUENCES_MAP_HIGHD_STRIPE__]
     csv_sequ_paths_highD_ring : list[str] = [x for x in csv_sequ_paths if int(x.split("/")[-6].split("_")[0]) in __SEQUENCES_MAP_HIGHD_RING__]
 
+    # #================================================
+    # ## 6.A) LOWDENSITY STRIPE
+    # # merge all values by line in csv by averaging them
+    # tool_id : int = 0  x
+    # nbr_operations : int = 0
+    # average_time_per_operation : float = 0.0
+    # mean_drift_position_m : float = 0.0
+    # mean_drift_position_q1 : float = 0.0
+    # mean_drift_position_q3 : float = 0.0
+    # mean_drift_position_min : float = 0.0
+    # mean_drift_position_max : float = 0.0
+    # mean_drift_rotation_m : float = 0.0
+    # mean_drift_rotation_q1 : float = 0.0
+    # mean_drift_rotation_q3 : float = 0.0
+    # mean_drift_rotation_min : float = 0.0
+    # mean_drift_rotation_max : float = 0.0
+    # tags_m : float = 0.0
+    # tags_q1 : float = 0.0
+    # tags_q3 : float = 0.0
+    # tags_min : float = 0.0
+    # tags_max : float = 0.0
+    # coverage_m : float = 0.0
+    # mean_coverage_perc_quintile1 : float = 0.0
+    # mean_coverage_perc_quintile2 : float = 0.0
+    # mean_coverage_perc_quintile3 : float = 0.0
+    # mean_coverage_perc_quintile4 : float = 0.0
+    # mean_coverage_perc_quintile5 : float = 0.0
+
     #================================================
-    ## 6.A) LOWDENSITY STRIPE
-    # merge all values by line in csv by averaging them
-    tool_id : int = 0
-    nbr_operations : int = 0
-    average_time_per_operation : float = 0.0
-    mean_drift_position_m : float = 0.0
-    mean_drift_position_q1 : float = 0.0
-    mean_drift_position_q3 : float = 0.0
-    mean_drift_position_min : float = 0.0
-    mean_drift_position_max : float = 0.0
-    mean_drift_rotation_m : float = 0.0
-    mean_drift_rotation_q1 : float = 0.0
-    mean_drift_rotation_q3 : float = 0.0
-    mean_drift_rotation_min : float = 0.0
-    mean_drift_rotation_max : float = 0.0
-    tags_m : float = 0.0
-    tags_q1 : float = 0.0
-    tags_q3 : float = 0.0
-    tags_min : float = 0.0
-    tags_max : float = 0.0
-    coverage_m : float = 0.0
-    mean_coverage_perc_quintile1 : float = 0.0
-    mean_coverage_perc_quintile2 : float = 0.0
-    mean_coverage_perc_quintile3 : float = 0.0
-    mean_coverage_perc_quintile4 : float = 0.0
-    mean_coverage_perc_quintile5 : float = 0.0
+    # convert csv to data
+    # NB.:! we are skipping the saber_sawblade if it exists because its performance is too bad and we know
+    data_lowD_stripe = io_stream.cvt_csv_summary_to_data(csv_paths=csv_sequ_paths_lowD_stripe)
+    data_lowD_ring = io_stream.cvt_csv_summary_to_data(csv_paths=csv_sequ_paths_lowD_ring)
+    data_highD_stripe = io_stream.cvt_csv_summary_to_data(csv_paths=csv_sequ_paths_highD_stripe)
+    data_highD_ring = io_stream.cvt_csv_summary_to_data(csv_paths=csv_sequ_paths_highD_ring)
+
+    # get the avrages of each values in the summary groups
+    avr_data_lowD_stripe = metrics.compute_average_summary_values(data=data_lowD_stripe)
+    avr_data_lowD_ring = metrics.compute_average_summary_values(data=data_lowD_ring)
+    avr_data_highD_stripe = metrics.compute_average_summary_values(data=data_highD_stripe)
+    avr_data_highD_ring = metrics.compute_average_summary_values(data=data_highD_ring)
+
+    #================================================
+    # visualize and dump
+
+    # position drift
+    pair_pos_stripe = np.array([data_lowD_stripe[2], data_highD_stripe[2]])
+    pair_pos_ring = np.array([data_lowD_ring[2], data_highD_ring[2]])
+
+    print(f"pair ring: {pair_pos_ring}")
+
+    visuals.draw_double_boxplot(data_a=pair_pos_stripe,
+                                data_b=pair_pos_ring,
+                                labels=["low density stripe", "low density ring", "high density stripe", "high density ring"])
+
+
+
+
+    #================================================
+    # print csv + latex table
 
 
 
@@ -145,6 +230,30 @@ if __name__ == "__main__":
     for csv in _csv_sequ_paths:
         _csv_sequ_paths_nbr.append(int(csv.split("/")[-6].split("_")[0]))
     _csv_sequ_paths = [x for _,x in sorted(zip(_csv_sequ_paths_nbr,_csv_sequ_paths))]
+    # check if there are all 0 summary values
+    for path in _csv_sequ_paths:
+        with open(path, 'r') as f:
+            lns = f.readlines()
+            lns.pop(0)
+            all_zero : bool = True
+            for ln in lns:
+                ln = ln.split(",")
+                for i in range(1,ln.__len__()):
+                    if float(ln[i]) != 0.0:
+                        all_zero = False
+                        break
+                if not all_zero:
+                    break
+            if all_zero:
+                _csv_sequ_paths.remove(path)
+                print(f"\033[93m[WARNING]: all values are 0 in {path}, removing it from the list\n\033[0m")
+
+
+
+
+
+
+
 
     _csv_subsequ_paths : list[list[str]] = []
     _in_subdirs = os.listdir(args.inDir)
@@ -168,8 +277,6 @@ if __name__ == "__main__":
             print(f"\033[93m[WARNING]: no subsequences found in {subd}\n\033[0m")
             continue
         _csv_subsequ_paths.append(_csv_lst_temp)
-
-
 
     main(out_subdir=_out_subdir,
          csv_sequ_paths=_csv_sequ_paths,
