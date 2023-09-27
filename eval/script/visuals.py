@@ -8,8 +8,12 @@ import open3d as o3d
 import matplotlib
 import matplotlib.pyplot as plt
 import metrics
+from pylab import setp, axes, MultipleLocator
 
 CYBERGREEN = '#2DDE98'
+CYBERGRAPE = '#6F2DBD'
+CYBERBLUE = '#2D9CDB'
+CYBERORANGE = '#F2994A'
 
 #===============================================================================
 # sub-sequence visuals
@@ -551,115 +555,81 @@ def draw_combined_model_metric_histogram(batch_data, bins, title, save_path, x_r
 
 def draw_double_boxplot(data_a : np.array,
                         data_b : np.array,
-                        labels : np.array
+                        data_c : np.array=None,
+                        ytitle : str=None,
+                        xtitle : str=None,
+                        xthick : float=0.01,
                         ) -> plt.figure:
-
-
+    def _set_vi_props(vi):
+        setp(vi['bodies'][0],
+            edgecolor='black',
+            color='lightgray',
+             alpha=1,
+            linewidth=0.8)
+        setp(vi['bodies'][1],
+            edgecolor='black',
+            color='white',
+            alpha=1,
+            linewidth=0.8)
+        setp(vi['cmedians'], color=CYBERGREEN, linewidth=2)
 
     fig, ax = plt.subplots()
-    fig.set_size_inches(10., 6.)
-    ax.set_xlabel("Title")
+    fig.set_size_inches(10., 3.)
+
+    # revert the data to obtain an horizontal boxplot
+    data_a = np.transpose(data_a)
+    data_b = np.transpose(data_b)
+
+    ax.set_xlabel(ytitle)
+    ax.set_ylabel(xtitle)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
-    ax.spines['left'].set_visible(True)
-    ax.spines['bottom'].set_visible(True)
+    ax.spines['left'].set_visible(False)
+    ax.spines['bottom'].set_visible(True)  ## <-- x axis
+    ax.set_ylim(-0.4, 6)
+    ax.yaxis.set_ticks_position('none')
+    plt.yticks([])
+    ax.xaxis.set_tick_params(width=1)
+    ax.xaxis.set_major_locator(MultipleLocator(xthick))
 
-    labels_test = np.array(['A', 'B'])
+    fig.subplots_adjust(left=0.25, right=0.95, top=0.95, bottom=0.25)
 
-    # first boxplot pair
+    width = 0.9
 
-    # set thick on y axis
-    # ax.tick_params(axis='y', which='major', width=2)
+    labels = ["Stripe\nlayout", "Ring\nlayout"]
+    ax.set_yticks([1.5, 4.5])
+    ax.set_yticklabels(labels)
 
-    boxplot = ax.boxplot(data_a, labels=labels_test,
-        notch=False, sym='+', vert=True, whis=1.5,
-        positions=[1,2], widths=None,
-        bootstrap=None, usermedians=None, conf_intervals=None)
-    # for whisker in boxplot['whiskers']:
-    #     whisker.set(color='black', linewidth=1)
-    # for cap in boxplot['caps']:
-    #     cap.set(color='black', linewidth=2)
-    # for median in boxplot['medians']:
-    #     median.set(color='black', linewidth=2)
-    # # for mean in boxplot['means']:
-    # #     mean.set(color=CYBERGREEN, linewidth=2)
-    # for flier in boxplot['fliers']:
-    #     flier.set(marker='+', color="black", alpha=0.5)
+    vi_a = ax.violinplot(data_a,
+        vert=False,
+        showmeans=False,
+        showmedians=True,
+        showextrema=False,
+        widths=width,
+        positions=[1,2],
+        points=100,
+        bw_method='scott',
+        )
+    vi_b = ax.violinplot(data_b,
+        vert=False,
+        showmeans=False,
+        showmedians=True,
+        showextrema=False,
+        widths=width,
+        positions=[4,5],
+        points=100,
+        bw_method='scott',
+        )
+    _set_vi_props(vi_a)
+    _set_vi_props(vi_b)
 
-    boxplot = ax.boxplot(data_b,
-        notch=False, sym='+', vert=True, whis=1.5,
-        positions=[4,5], widths=None,
-        bootstrap=None, usermedians=None, conf_intervals=None)
-    # for whisker in boxplot['whiskers']:
-    #     whisker.set(color='black', linewidth=1)
-    # for cap in boxplot['caps']:
-    #     cap.set(color='black', linewidth=2)
-    # for median in boxplot['medians']:
-    #     median.set(color='black', linewidth=2)
-    # # for mean in boxplot['means']:
-    # #     mean.set(color=CYBERGREEN, linewidth=2)
-    # for flier in boxplot['fliers']:
-    #     flier.set(marker='+', color="black", alpha=0.5)
-
-    
-    # # legend
-    # hB, = plt.plot([1,1],'b-')
-    # hR, = plt.plot([1,1],'r-')
-    # plt.legend((hB, hR),('Apples', 'Oranges'))
-    # hB.set_visible(False)
-    # hR.set_visible(False)
-
-
+    ax.legend([vi_a["bodies"][0], vi_b["bodies"][1]],
+            ["Low density", "High density"],
+            loc='upper right',
+            bbox_to_anchor=(1, 1), 
+            ncol=1, fontsize=10, frameon=False)
 
     fig.autofmt_xdate()  # to avoid xlabels overlapping
-
-
-
-
-
-
-    # metrics_info_str = []
-    # for idx, info in enumerate(metrics_info):
-    #     i_txt_O = f"O:{info[0]}"
-    #     i_txt_M = f"M:{info[1]}"
-    #     i_txt_Q1 = f"q1:{info[2]}"
-    #     i_txt_Q3 = f"q3:{info[3]}"
-    #     i_txt_MIN = f"mn:{info[4]}"
-    #     i_txt_MAX = f"Mx:{info[5]}"
-
-    #     i_txt_OM = f"{i_txt_O} {i_txt_M}"
-    #     i_txt_Q1Q3 = f"{i_txt_Q1} {i_txt_Q3}"
-    #     i_txt_MINMAX = f"{i_txt_MIN} {i_txt_MAX}"
-    #     metrics_info_str.append(f"{i_txt_OM}\n{i_txt_Q1Q3}\n{i_txt_MINMAX}")
-
-
-
-
-
-    # # find emplacement for info text
-    # xlabels_loc = ax.get_xticks()
-    # max_y_lst = []
-    # for d in data:
-    #     max_y_lst.append(np.max(d))
-    # MAX_y = np.max(np.array(max_y_lst))
-    # max_y_lst = []
-    # for d in data:
-    #     max_y_extra = np.max(d) + 0.1 * MAX_y
-    #     max_y_lst.append(max_y_extra)
-
-
-
-
-
-
-    # for idx, xloc in enumerate(xlabels_loc):
-    #     ax.text(x=xloc, y=max_y_lst[idx], s=metrics_info_str[idx], fontsize=8, horizontalalignment='center')
-
     fig.tight_layout()
-
-    # TODO: get rid: show the plot
-    plt.show()
-    plt.close()
-
 
     return fig

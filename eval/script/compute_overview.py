@@ -78,9 +78,9 @@ def main(out_subdir : str,
         :param out_subdir: path to the output directory to dump results/graphs
         :param csv_sequ_paths: list of list of paths to the csv files containing the results of the analysis per sequence
     """
-    #================================================
-    ## Part 1
-    #================================================
+    # #================================================
+    # ## Part 1
+    # #================================================
 
     # # parse the csv by the 4 groups and merge them by category
     # sequences_map_group : list[list[str]] = [[],[],[],[]]
@@ -126,6 +126,7 @@ def main(out_subdir : str,
     #================================================
     ## Part 2
     #================================================
+    #TODO: explain well what we are doing
 
     # mean and merge all csv based on the density/layout/stripe/ring matrix (20 csv -> 4 csv)
     csv_sequ_paths_lowD_stripe : list[str] = [x for x in csv_sequ_paths if int(x.split("/")[-6].split("_")[0]) in __SEQUENCES_MAP_LOWD_STRIPE__]
@@ -177,22 +178,40 @@ def main(out_subdir : str,
 
     #================================================
     # visualize and dump
-
+    # NB: in green is the median!
     # position drift
-    pair_pos_stripe = np.array([data_lowD_stripe[2], data_highD_stripe[2]])
-    pair_pos_ring = np.array([data_lowD_ring[2], data_highD_ring[2]])
-
-    print(f"pair ring: {pair_pos_ring}")
-
-    visuals.draw_double_boxplot(data_a=pair_pos_stripe,
+    pair_pos_stripe = np.array(([data_lowD_stripe[2], data_highD_stripe[2]]), dtype=object)
+    pair_pos_ring = np.array(([data_lowD_ring[2], data_highD_ring[2]]), dtype=object)
+    graph_pos = visuals.draw_double_boxplot(data_a=pair_pos_stripe,
                                 data_b=pair_pos_ring,
-                                labels=["low density stripe", "low density ring", "high density stripe", "high density ring"])
+                                ytitle="Position drift (m)",
+                                xthick=0.001)
+    
+    # rotation drift
+    pair_rot_stripe = np.array(([data_lowD_stripe[7], data_highD_stripe[7]]), dtype=object)
+    pair_rot_ring = np.array(([data_lowD_ring[7], data_highD_ring[7]]), dtype=object)
+    graph_rot = visuals.draw_double_boxplot(data_a=pair_rot_stripe,
+                                data_b=pair_rot_ring,
+                                ytitle="Rotation drift (deg)")
 
+    # tags detection
+    pair_tags_stripe = np.array(([data_lowD_stripe[12], data_highD_stripe[12]]), dtype=object)
+    pair_tags_ring = np.array(([data_lowD_ring[12], data_highD_ring[12]]), dtype=object)
+    graph_tags = visuals.draw_double_boxplot(data_a=pair_tags_stripe,
+                                data_b=pair_tags_ring,
+                                ytitle="Tags detection (m)",
+                                xthick=1)
 
+    #TODO: time graph
 
+    # save the graphs
+    io_stream.save_graph(graph=graph_pos, path=f"{out_subdir}/summary_position_drift.png")
+    io_stream.save_graph(graph=graph_rot, path=f"{out_subdir}/summary_rotation_drift.png")
+    io_stream.save_graph(graph=graph_tags, path=f"{out_subdir}/summary_tags_detection.png")
 
     #================================================
     # print csv + latex table
+    #TODO: output tables
 
 
 

@@ -776,7 +776,13 @@ def merge_csv_by_categ(csv_paths : list[str]) -> list[str]:
                     continue
                 if "nan" in row:
                     continue
+
                 np_temp_data = np.array(row.split(";"))
+                if np_temp_data[1] == "True":
+                    np_temp_data[1] = 1
+                elif np_temp_data[1] == "False":
+                    np_temp_data[1] = 0
+                np_temp_data = np_temp_data.astype(np.float)
                 
                 if lst_TOOLS_keys[id] == "circular_sawblade_140":
                     csv_data__circular_sawblade_140.append(np_temp_data)
@@ -799,16 +805,16 @@ def merge_csv_by_categ(csv_paths : list[str]) -> list[str]:
                 elif lst_TOOLS_keys[id] == "st_screw_45":
                     csv_data__st_screw_45.append(np_temp_data)
 
-    return [np.array(csv_data__circular_sawblade_140),
-            np.array(csv_data__saber_sawblade_t1),
-            np.array(csv_data__drill_hinge_cutter_bit_50),
-            np.array(csv_data__drill_auger_bit_20_200),
-            np.array(csv_data__drill_auger_bit_25_500),
-            np.array(csv_data__drill_oblique_hole_bit_40),
-            np.array(csv_data__st_screw_120),
-            np.array(csv_data__st_screw_100),
-            np.array(csv_data__st_screw_80),
-            np.array(csv_data__st_screw_45)]
+    return [csv_data__circular_sawblade_140,
+            csv_data__saber_sawblade_t1,
+            csv_data__drill_hinge_cutter_bit_50,
+            csv_data__drill_auger_bit_20_200,
+            csv_data__drill_auger_bit_25_500,
+            csv_data__drill_oblique_hole_bit_40,
+            csv_data__st_screw_120,
+            csv_data__st_screw_100,
+            csv_data__st_screw_80,
+            csv_data__st_screw_45]
 
 def cvt_csv_summary_to_data(csv_paths : list[str]) -> list[str]:
     """
@@ -836,9 +842,19 @@ def cvt_csv_summary_to_data(csv_paths : list[str]) -> list[str]:
             temp_data.pop(0)
             temp_data = [float(x) for x in temp_data]
 
+            # sift for not detected tools
+            if np.sum(np.array(temp_data)) == 0:
+                continue
+
             csv_data_out.append(temp_data)
 
     np_csv_data = np.array(csv_data_out)
     np_csv_data = np_csv_data.transpose()
 
     return np_csv_data
+
+def save_graph(graph : matplotlib.figure.Figure,
+               path : str) -> None:
+    """ Save the graph to local. Provide the path with extension .png """
+    graph_path = os.path.join(path)
+    graph.savefig(graph_path)
