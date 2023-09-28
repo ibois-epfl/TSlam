@@ -11,6 +11,7 @@ import numpy as np
 import metrics
 import io_stream
 import visuals
+import postpro
 
 
 __SEQUENCES_MAP__ = {
@@ -46,123 +47,22 @@ def main(out_subdir : str,
          csv_sequ_paths : list[str],
          csv_subsequ_paths : list[list[str]]) -> None:
     """
-        We need to regroup the results of boxplots in the categories of tag params (density/layout):
-        - a) low/high density
-        - b) stripe/ring layout
-        First we will give an overview by keeping evident each tool results based on criteria `a` and `b`.
-        Second we will average all the tools and provide an overview based uniquely on the mean for à`and `b`.
-
-        Here's the final graphs/results to output:
-        # ----------------------- part 1 - per tool summary(SUSPENDED) -----------------------
-        # - 1.A) position boxplot - high/low density for stripe layout
-        # - 1.B) position boxplot - high/low density for ring layout
-
-        # - 2.A) rotation boxplot - high/low density for stripe layout
-        # - 2.B) rotation boxplot - high/low density for ring layout
-
-        # - 3.A) tags detection boxplot - high/low density for stripe layout
-        # - 3.B) tags detection boxplot - high/low density for ring layout
-
-        # - 4.A) coverage distribution - high density for stripe layout
-        # - 4.B) coverage distribution - high density for ring layout
-        # - 4.C) coverage distribution - low density for stripe layout
-        # - 4.D) coverage distribution - low density for ring layout
-
-        ----------------------- part 2 - fabrication summary --------------------
-        - 5) preparation time columns - mean high/ mean low density for stripe and ring layout
-        - 6) position boxplot - mean high/ mean low density for stripe and ring layout
-        - 7) rotation boxplot - mean high/ mean low density for stripe and ring layout
-        - 8) tags detection boxplot - mean high/ mean low density for stripe and ring layout
-        - 9) coverage distribution - mean high/ mean low density for stripe and ring layout (4 lines)
-
-        :param out_subdir: path to the output directory to dump results/graphs
-        :param csv_sequ_paths: list of list of paths to the csv files containing the results of the analysis per sequence
+        In this part we produce the summary results.
+        We use the averaged results of the per-sequence (20 sequences) averages per tool.
+        These averages are averaged together since we consider the entire fabrication sequence, 
+        all tools EXCEPT THE SABERSAW BECAUSE WE KNOW THE TRACKING IS NOT WORKING.
+        We produce the following graphs:
+        - A) the position drift (m) for the 4 groups (low/high density, stripe/ring layout)
+        - B) the rotation drift (deg) for the 4 groups (low/high density, stripe/ring layout)
+        - C) the tags detection (m) for the 4 groups (low/high density, stripe/ring layout)
+        - D) the time (s) for the 4 groups (low/high density, stripe/ring layout) as column graph
     """
-    # #================================================
-    # ## Part 1
-    # #================================================
-
-    # # parse the csv by the 4 groups and merge them by category
-    # sequences_map_group : list[list[str]] = [[],[],[],[]]
-
-    # csv_subsequ_paths_lowD_stripe : list[str] = []
-    # for i in tqdm(__SEQUENCES_MAP_LOWD_STRIPE__):
-    #     csv_subsequ_paths_lowD_stripe.extend(csv_subsequ_paths[i])
-    # csv_subsequ_paths_lowD_ring : list[str] = []
-    # for i in tqdm(__SEQUENCES_MAP_LOWD_RING__):
-    #     csv_subsequ_paths_lowD_ring.extend(csv_subsequ_paths[i])
-    # csv_subsequ_paths_highD_stripe : list[str] = []
-    # for i in tqdm(__SEQUENCES_MAP_HIGHD_STRIPE__):
-    #     csv_subsequ_paths_highD_stripe.extend(csv_subsequ_paths[i])
-    # csv_subsequ_paths_highD_ring : list[str] = []
-    # for i in tqdm(__SEQUENCES_MAP_HIGHD_RING__):
-    #     csv_subsequ_paths_highD_ring.extend(csv_subsequ_paths[i])
-
-    # sequences_map_group[0] = csv_subsequ_paths_lowD_stripe
-    # sequences_map_group[1] = csv_subsequ_paths_lowD_ring
-    # sequences_map_group[2] = csv_subsequ_paths_highD_stripe
-    # sequences_map_group[3] = csv_subsequ_paths_highD_ring
-
-    # #================================================
-    # # for each group:
-    # # 1. check if one typology exists
-    # # 2. if other exists, merge all the same csv into one
-    # sequence_map_data : list[list[list[str]]] = [[],[],[],[]]
-
-    # for idx, path_lst in enumerate(tqdm(sequences_map_group)):
-    #     sequence_map_data[idx] = io_stream.merge_csv_by_categ(csv_paths=path_lst)
-
-    # #================================================
-    # # prepare the data and labels for the boxplots
-
-
-
-
-
-
-
-
-
-    #================================================
-    ## Part 2
-    #================================================
-    #TODO: explain well what we are doing
-
     # mean and merge all csv based on the density/layout/stripe/ring matrix (20 csv -> 4 csv)
     csv_sequ_paths_lowD_stripe : list[str] = [x for x in csv_sequ_paths if int(x.split("/")[-6].split("_")[0]) in __SEQUENCES_MAP_LOWD_STRIPE__]
     csv_sequ_paths_lowD_ring : list[str] = [x for x in csv_sequ_paths if int(x.split("/")[-6].split("_")[0]) in __SEQUENCES_MAP_LOWD_RING__]
     csv_sequ_paths_highD_stripe : list[str] = [x for x in csv_sequ_paths if int(x.split("/")[-6].split("_")[0]) in __SEQUENCES_MAP_HIGHD_STRIPE__]
     csv_sequ_paths_highD_ring : list[str] = [x for x in csv_sequ_paths if int(x.split("/")[-6].split("_")[0]) in __SEQUENCES_MAP_HIGHD_RING__]
 
-    # #================================================
-    # ## 6.A) LOWDENSITY STRIPE
-    # # merge all values by line in csv by averaging them
-    # tool_id : int = 0  x
-    # nbr_operations : int = 0
-    # average_time_per_operation : float = 0.0
-    # mean_drift_position_m : float = 0.0
-    # mean_drift_position_q1 : float = 0.0
-    # mean_drift_position_q3 : float = 0.0
-    # mean_drift_position_min : float = 0.0
-    # mean_drift_position_max : float = 0.0
-    # mean_drift_rotation_m : float = 0.0
-    # mean_drift_rotation_q1 : float = 0.0
-    # mean_drift_rotation_q3 : float = 0.0
-    # mean_drift_rotation_min : float = 0.0
-    # mean_drift_rotation_max : float = 0.0
-    # tags_m : float = 0.0
-    # tags_q1 : float = 0.0
-    # tags_q3 : float = 0.0
-    # tags_min : float = 0.0
-    # tags_max : float = 0.0
-    # coverage_m : float = 0.0
-    # mean_coverage_perc_quintile1 : float = 0.0
-    # mean_coverage_perc_quintile2 : float = 0.0
-    # mean_coverage_perc_quintile3 : float = 0.0
-    # mean_coverage_perc_quintile4 : float = 0.0
-    # mean_coverage_perc_quintile5 : float = 0.0
-
-    #================================================
     # convert csv to data
     # NB.:! we are skipping the saber_sawblade if it exists because its performance is too bad and we know
     data_lowD_stripe = io_stream.cvt_csv_summary_to_data(csv_paths=csv_sequ_paths_lowD_stripe)
@@ -170,14 +70,49 @@ def main(out_subdir : str,
     data_highD_stripe = io_stream.cvt_csv_summary_to_data(csv_paths=csv_sequ_paths_highD_stripe)
     data_highD_ring = io_stream.cvt_csv_summary_to_data(csv_paths=csv_sequ_paths_highD_ring)
 
-    # get the avrages of each values in the summary groups
     avr_data_lowD_stripe = metrics.compute_average_summary_values(data=data_lowD_stripe)
     avr_data_lowD_ring = metrics.compute_average_summary_values(data=data_lowD_ring)
     avr_data_highD_stripe = metrics.compute_average_summary_values(data=data_highD_stripe)
     avr_data_highD_ring = metrics.compute_average_summary_values(data=data_highD_ring)
 
-    #================================================
+    # get the preparation times from videos and retain only the not pre-fabricated piece
+    # in-fact the comparison will not equal with the manual timing due to the fact that
+    # with more joinery the sticking time would be longer and the manual timing is not.
+    # wee consider and show in the time graph the standard situation where the piece
+    # is not pre-fabricated (i.e. box shape).
+    vid_manual_mark_paths, vid_mapping_paths, vid_tag_paths  = io_stream.get_video_path()
+
+    vid_manual_lens : list[float] = postpro.cvt_video_2_time(vid_paths=vid_manual_mark_paths)
+    vid_tag_lens : list[float] = postpro.cvt_video_2_time(vid_paths=vid_tag_paths)
+    vid_mapping_lens : list[float] = postpro.cvt_video_2_time(vid_paths=vid_mapping_paths)
+
+    time_manual_lowD_stripe : float = vid_manual_lens[__SEQUENCES_MAP_LOWD_STRIPE__[0]]
+    time_manual_lowD_ring : float = vid_manual_lens[__SEQUENCES_MAP_LOWD_RING__[0]]
+    time_manual_highD_stripe : float = vid_manual_lens[__SEQUENCES_MAP_HIGHD_STRIPE__[0]]
+    time_manual_highD_ring : float = vid_manual_lens[__SEQUENCES_MAP_HIGHD_RING__[0]]
+    time_tag_lowD_stripe : float = vid_tag_lens[__SEQUENCES_MAP_LOWD_STRIPE__[0]]
+    time_tag_lowD_ring : float = vid_tag_lens[__SEQUENCES_MAP_LOWD_RING__[0]]
+    time_tag_highD_stripe : float = vid_tag_lens[__SEQUENCES_MAP_HIGHD_STRIPE__[0]]
+    time_tag_highD_ring : float = vid_tag_lens[__SEQUENCES_MAP_HIGHD_RING__[0]]
+    time_mapping_lowD_stripe : float = vid_mapping_lens[__SEQUENCES_MAP_LOWD_STRIPE__[0]]
+    time_mapping_lowD_ring : float = vid_mapping_lens[__SEQUENCES_MAP_LOWD_RING__[0]]
+    time_mapping_highD_stripe : float = vid_mapping_lens[__SEQUENCES_MAP_HIGHD_STRIPE__[0]]
+    time_mapping_highD_ring : float = vid_mapping_lens[__SEQUENCES_MAP_HIGHD_RING__[0]]
+
+    # ==========================================
     # visualize and dump
+
+    # time prep
+    #TODO: finish graph
+    graph_time = visuals.draw_time_graph(data_a=np.array([time_tag_lowD_stripe,
+                                                 time_tag_highD_stripe,
+                                                 time_tag_lowD_ring,
+                                                 time_tag_highD_ring], dtype=object),
+                                         data_b=np.array([time_manual_lowD_stripe,
+                                                 time_manual_highD_stripe,
+                                                 time_manual_lowD_ring,
+                                                 time_manual_highD_ring], dtype=object))
+
     # NB: in green is the median!
     # position drift
     pair_pos_stripe = np.array(([data_lowD_stripe[2], data_highD_stripe[2]]), dtype=object)
@@ -202,17 +137,15 @@ def main(out_subdir : str,
                                 ytitle="Tags detection (m)",
                                 xthick=1)
 
-    #TODO: time graph
-
     # save the graphs
     io_stream.save_graph(graph=graph_pos, path=f"{out_subdir}/summary_position_drift.png")
     io_stream.save_graph(graph=graph_rot, path=f"{out_subdir}/summary_rotation_drift.png")
     io_stream.save_graph(graph=graph_tags, path=f"{out_subdir}/summary_tags_detection.png")
 
-    #================================================
+    #===========================================
+    #TODO:
     # print csv + latex table
-    #TODO: output tables
-
+    # metrics.compute_summary_table
 
 
     return None

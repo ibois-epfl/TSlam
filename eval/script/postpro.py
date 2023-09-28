@@ -1,5 +1,9 @@
 import metrics
 
+import os
+import sys
+import subprocess
+
 from datetime import datetime
 import transformations as tfm
 import math
@@ -187,6 +191,21 @@ def align_and_benchmark(src_poss : np.array,
 
     return results
 
+#===============================================================================
+# summary
+#===============================================================================
 
+def cvt_video_2_time(vid_paths : list[str]) -> list[float]:
+    """ Convert the videos to timelength for each video in minutes"""
+    timelens : list[float] = []
 
+    for path in vid_paths:
+        
+        cmd = F"ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 {path}"
+        result = subprocess.run(cmd.split(" "), stdout=subprocess.PIPE)
+        timelen_min = float(result.stdout) / 60
+        timelen_min = round(timelen_min, 1)
+        timelens.append(timelen_min)
+
+    return timelens
 

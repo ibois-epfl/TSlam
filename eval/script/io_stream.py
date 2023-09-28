@@ -858,3 +858,51 @@ def save_graph(graph : matplotlib.figure.Figure,
     """ Save the graph to local. Provide the path with extension .png """
     graph_path = os.path.join(path)
     graph.savefig(graph_path)
+
+def get_video_path() -> tuple[list[str], list[str], list[str]]:
+    """
+        Load the video paths from the dataset and arrange them into categories
+        of low/high density and stripe/rign layout
+
+        :return video_paths_out: tuple of 3 lists of video paths grouped in 3 categories (manual, map, tag)
+    """
+    video_paths_out = []
+
+    script_path : str = os.path.dirname(os.path.realpath(__file__))
+    dataset_dir : str = (script_path.split("/")[:-1])
+    dataset_dir = "/".join(dataset_dir)
+    dataset_dir = os.path.join(dataset_dir, "dataset")
+
+    # reorder the video paths by number
+    video_paths : list[str] = [os.path.join(dataset_dir, f) for f in os.listdir(dataset_dir)]
+    dataset_strnbr : list[int] = [x for x in os.listdir(dataset_dir)]
+    dataset_nbr : list[int] = [int(x) for x in os.listdir(dataset_dir)]
+    video_paths_tmp_ord = [x for _,x in sorted(zip(dataset_nbr, video_paths))]
+    dataset_strnbr_ord = [x for _,x in sorted(zip(dataset_strnbr, dataset_strnbr))]
+
+    vid_manual_mark_paths_lst = []
+    vid_mapping_paths_lst = []
+    vid_tag_paths_lst = []
+
+    for idx, path in enumerate(video_paths_tmp_ord):
+        vid_dir_path = os.path.join(path, f"{dataset_strnbr_ord[idx]}_camera_recordings")
+        vid_dir_paths = [os.path.join(vid_dir_path, f) for f in os.listdir(vid_dir_path)]
+
+        # if it has "manual_mark" in the name then it is a video
+        vid_manual_mark_paths = [path for path in vid_dir_paths if "manual_mark" in path]
+        vid_manual_mark_paths = [os.path.join(path, f) for path in vid_manual_mark_paths for f in os.listdir(path) if f.endswith(".avi")]
+        vid_mapping_paths = [path for path in vid_dir_paths if "mapping" in path]
+        vid_mapping_paths = [os.path.join(path, f) for path in vid_mapping_paths for f in os.listdir(path) if f.endswith(".avi")]
+        vid_tag_paths = [path for path in vid_dir_paths if "tag" in path]
+        vid_tag_paths = [os.path.join(path, f) for path in vid_tag_paths for f in os.listdir(path) if f.endswith(".avi")]
+
+        # rewrite the path without ../
+        vid_manual_mark_paths = [path.replace("../", "") for path in vid_manual_mark_paths]
+        vid_mapping_paths = [path.replace("../", "") for path in vid_mapping_paths]
+        vid_tag_paths = [path.replace("../", "") for path in vid_tag_paths]
+
+        vid_manual_mark_paths_lst.append(vid_manual_mark_paths[0])
+        vid_mapping_paths_lst.append(vid_mapping_paths[0])
+        vid_tag_paths_lst.append(vid_tag_paths[0])
+
+    return vid_manual_mark_paths_lst, vid_mapping_paths_lst, vid_tag_paths_lst

@@ -633,3 +633,46 @@ def draw_double_boxplot(data_a : np.array,
     fig.tight_layout()
 
     return fig
+
+def draw_time_graph(data_a, data_b) -> plt.figure:
+    # # do a column graph
+    fig, ax = plt.subplots()
+    fig.set_size_inches(5, 7.)
+
+    ax.set_ylabel("Time [min]")
+
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['left'].set_visible(True)
+    ax.spines['bottom'].set_visible(True)  ## <-- x axis
+    ax.yaxis.set_ticks_position('none')
+
+    species = (
+    "Stripe_lowD",
+    "Stripe_highD",
+    "Ring_lowD",
+    "Ring_highD"
+    )
+
+    weight_counts = {
+        "Tag sticking": np.array([data_a[0], data_a[1], data_a[2], data_a[3]]),
+        "Mapping": np.array([data_b[0], data_b[1], data_b[2], data_b[3]])
+    }
+
+    width = 0.5
+    bottom = np.zeros(4)
+
+    for boolean, weight_count in weight_counts.items():
+        p = ax.bar(species, weight_count, width, label=boolean, bottom=bottom)
+        bottom += weight_count
+
+    ax.set_title("TSlam preparation time")
+    ax.legend(loc="upper right")
+
+    plt.show()
+
+
+    return fig
+
+
+
