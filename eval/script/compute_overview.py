@@ -70,6 +70,18 @@ def main(out_subdir : str,
     data_highD_stripe = io_stream.cvt_csv_summary_to_data(csv_paths=csv_sequ_paths_highD_stripe)
     data_highD_ring = io_stream.cvt_csv_summary_to_data(csv_paths=csv_sequ_paths_highD_ring)
 
+    # total number of operations analysed
+    total_nbr_operations : int = 0
+    data1 = data_lowD_stripe[0]
+    data2 = data_highD_stripe[0]
+    data3 = data_lowD_ring[0]
+    data4 = data_highD_ring[0]
+    for i in range(data1.__len__()):
+        total_nbr_operations += data1[i]
+        total_nbr_operations += data2[i]
+        total_nbr_operations += data3[i]
+        total_nbr_operations += data4[i]
+
     # time parsing
     # # get the preparation times from videos and retain only the not pre-fabricated piece
     # # in-fact the comparison will not equal with the manual timing due to the fact that
@@ -145,7 +157,6 @@ def main(out_subdir : str,
                                             ytitle="Position drift (m)",
                                             xthick=0.001)
 
-    
     # # rotation drift
     data_lowD_stripe_rot_np = np.array(data_lowD_stripe[7], dtype=float)
     data_highD_stripe_rot_np = np.array(data_highD_stripe[7], dtype=float)
@@ -180,21 +191,34 @@ def main(out_subdir : str,
     io_stream.save_graph(graph=graph_time, path=f"{out_subdir}/summary_time.png")
 
     # #===========================================
-    # #TODO:
-    # # print csv + latex table (at least to have the main values like mean, median, std, min, max)
-    # # - get also the total number of operations
-    # # metrics.compute_summary_table
+    # drop csv + latex table of the summary metrics
 
-    total_nbr_operations : int = 0
-    # do a mass addition of the total number of operations
-    for data in [data_lowD_stripe, data_highD_stripe, data_lowD_ring, data_highD_ring]:
-        total_nbr_operations += int(data[0])
-    print(f"total_nbr_operations: {total_nbr_operations}")
+    dict_res = metrics.compute_summary_table(pair_pos_stripe=pair_pos_stripe,
+                                    pair_pos_ring=pair_pos_ring,
+                                    pair_rot_stripe=pair_rot_stripe,
+                                    pair_rot_ring=pair_rot_ring,
+                                    pair_tags_stripe=pair_tags_stripe,
+                                    pair_tags_ring=pair_tags_ring,
+                                    mean_time_tag_lowD_stripe=mean_time_tag_lowD_stripe,
+                                    mean_time_tag_lowD_ring=mean_time_tag_lowD_ring,
+                                    mean_time_tag_highD_stripe=mean_time_tag_highD_stripe,
+                                    mean_time_tag_highD_ring=mean_time_tag_highD_ring,
+                                    mean_time_mapping_lowD_stripe=mean_time_mapping_lowD_stripe,
+                                    mean_time_mapping_lowD_ring=mean_time_mapping_lowD_ring,
+                                    mean_time_mapping_highD_stripe=mean_time_mapping_highD_stripe,
+                                    mean_time_mapping_highD_ring=mean_time_mapping_highD_ring,
+                                    total_nbr_operations=total_nbr_operations)
 
-    # create a new csv file in the out_subdir
-    csv_summary_path : str = f"{out_subdir}/summary.csv"
-    with open(csv_summary_path, 'w') as f:
-        f.write("total_nbr_operations
+    csv_path = os.path.join(out_subdir, "summary.csv")
+    with open(csv_path, 'w') as f:
+        for key, item in dict_res.items():
+            f.write(f"{key};")
+        f.write("\n")
+        for key, item in dict_res.items():
+            f.write(f"{item};")
+        f.write("\n")
+
+    # #===========================================
 
     return None
 

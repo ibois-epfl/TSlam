@@ -482,97 +482,126 @@ def compute_average_summary_values(data : np.array(float)) -> np.array(float):
         avr_data.append(np.mean(param))
     return np.array(avr_data)
 
-
 def compute_summary_table(pair_pos_stripe : list[list[float]],
                           pair_pos_ring : list[list[float]],
                           pair_rot_stripe : list[list[float]],
                           pair_rot_ring : list[list[float]],
                           pair_tags_stripe : list[list[float]],
                           pair_tags_ring : list[list[float]],
-                          pair_prep_time : list[list[float]]=None ## TODO: add!
-                          ) -> list[float]:
+                          mean_time_tag_lowD_stripe : float,
+                          mean_time_tag_lowD_ring : float,
+                          mean_time_tag_highD_stripe : float,
+                          mean_time_tag_highD_ring : float,
+                          mean_time_mapping_lowD_stripe : float,
+                          mean_time_mapping_lowD_ring : float,
+                          mean_time_mapping_highD_stripe : float,
+                          mean_time_mapping_highD_ring : float,
+                          total_nbr_operations : int,
+                          pair_time_traditional : int=35,
+                          pair_time_layout : int=22,
+                          ) -> dict:
     """
         This function computes the values of the final evaluation table based
         on the averaged values (all tools values merged and averaged):
         - (A) position drift (mean, median, std, min, max)
         - (B) rotation drift (mean, median, std, min, max)
         - (C) nbr tags detected (mean, median, std, min, max)
-        - (D) preparation time
+        - (D) total time (means, traditional, layout)
+        - (E) total number operations
     """
-    #TODO: missing time calcuation
-    return [
-        np.mean(pair_pos_stripe[0]),                # pos_mean__stripe_low
-        np.mean(pair_pos_stripe[1]),                # pos_mean__stripe_high
-        np.mean(pair_pos_ring[0]),                  # pos_mean__ring_low
-        np.mean(pair_pos_ring[1]),                  # pos_mean__ring_high
+    dict_results = {
+        # >>>>>>>>>>>>>> A >>>>>>>>>>>>>>>
+        "pos_mean__stripe_low" : np.mean(pair_pos_stripe[0]),
+        "pos_mean__stripe_high" : np.mean(pair_pos_stripe[1]),
+        "pos_mean__ring_low" : np.mean(pair_pos_ring[0]),
+        "pos_mean__ring_high" : np.mean(pair_pos_ring[1]),
 
-        np.median(pair_pos_stripe[0]),              # pos_median__stripe_low
-        np.median(pair_pos_stripe[1]),              # pos_median__stripe_high
-        np.median(pair_pos_ring[0]),                # pos_median__ring_low
-        np.median(pair_pos_ring[1]),                # pos_median__ring_high
+        "pos_median__stripe_low" : np.median(pair_pos_stripe[0]),
+        "pos_median__stripe_high" : np.median(pair_pos_stripe[1]),
+        "pos_median__ring_low" : np.median(pair_pos_ring[0]),
+        "pos_median__ring_high" : np.median(pair_pos_ring[1]),
 
-        np.std(pair_pos_stripe[0]),                 # pos_std__stripe_low
-        np.std(pair_pos_stripe[1]),                 # pos_std__stripe_high
-        np.std(pair_pos_ring[0]),                   # pos_std__ring_low
-        np.std(pair_pos_ring[1]),                   # pos_std__ring_high
+        "pos_std__stripe_low" : np.std(pair_pos_stripe[0]),
+        "pos_std__stripe_high" : np.std(pair_pos_stripe[1]),
+        "pos_std__ring_low" : np.std(pair_pos_ring[0]),
+        "pos_std__ring_high" : np.std(pair_pos_ring[1]),
 
-        np.min(pair_pos_stripe[0]),                 # pos_min__stripe_low
-        np.min(pair_pos_stripe[1]),                 # pos_min__stripe_high
-        np.min(pair_pos_ring[0]),                   # pos_min__ring_low
-        np.min(pair_pos_ring[1]),                   # pos_min__ring_high
+        "pos_min__stripe_low" : np.min(pair_pos_stripe[0]),
+        "pos_min__stripe_high" : np.min(pair_pos_stripe[1]),
+        "pos_min__ring_low" : np.min(pair_pos_ring[0]),
+        "pos_min__ring_high" : np.min(pair_pos_ring[1]),
 
-        np.max(pair_pos_stripe[0]),                 # pos_max__stripe_low
-        np.max(pair_pos_stripe[1]),                 # pos_max__stripe_high
-        np.max(pair_pos_ring[0]),                   # pos_max__ring_low
-        np.max(pair_pos_ring[1]),                   # pos_max__ring_high
+        "pos_max__stripe_low" : np.max(pair_pos_stripe[0]),
+        "pos_max__stripe_high" : np.max(pair_pos_stripe[1]),
+        "pos_max__ring_low" : np.max(pair_pos_ring[0]),
+        "pos_max__ring_high" : np.max(pair_pos_ring[1]),
 
-        np.mean(pair_rot_stripe[0]),                # rot_mean__stripe_low
-        np.mean(pair_rot_stripe[1]),                # rot_mean__stripe_high
-        np.mean(pair_rot_ring[0]),                  # rot_mean__ring_low
-        np.mean(pair_rot_ring[1]),                  # rot_mean__ring_high
+        # >>>>>>>>>>>>>> B >>>>>>>>>>>>>>>
+        "rot_mean__stripe_low" : np.mean(pair_rot_stripe[0]),
+        "rot_mean__stripe_high" : np.mean(pair_rot_stripe[1]),
+        "rot_mean__ring_low" : np.mean(pair_rot_ring[0]),
+        "rot_mean__ring_high" : np.mean(pair_rot_ring[1]),
 
-        np.median(pair_rot_stripe[0]),              # rot_median__stripe_low
-        np.median(pair_rot_stripe[1]),              # rot_median__stripe_high
-        np.median(pair_rot_ring[0]),                # rot_median__ring_low
-        np.median(pair_rot_ring[1]),                # rot_median__ring_high
+        "rot_median__stripe_low" : np.median(pair_rot_stripe[0]),
+        "rot_median__stripe_high" : np.median(pair_rot_stripe[1]),
+        "rot_median__ring_low" : np.median(pair_rot_ring[0]),
+        "rot_median__ring_high" : np.median(pair_rot_ring[1]),
 
-        np.std(pair_rot_stripe[0]),                 # rot_std__stripe_low
-        np.std(pair_rot_stripe[1]),                 # rot_std__stripe_high
-        np.std(pair_rot_ring[0]),                   # rot_std__ring_low
-        np.std(pair_rot_ring[1]),                   # rot_std__ring_high
+        "rot_std__stripe_low" : np.std(pair_rot_stripe[0]),
+        "rot_std__stripe_high" : np.std(pair_rot_stripe[1]),
+        "rot_std__ring_low" : np.std(pair_rot_ring[0]),
+        "rot_std__ring_high" : np.std(pair_rot_ring[1]),
 
-        np.min(pair_rot_stripe[0]),                 # rot_min__stripe_low
-        np.min(pair_rot_stripe[1]),                 # rot_min__stripe_high
-        np.min(pair_rot_ring[0]),                   # rot_min__ring_low
-        np.min(pair_rot_ring[1]),                   # rot_min__ring_high
+        "rot_min__stripe_low" : np.min(pair_rot_stripe[0]),
+        "rot_min__stripe_high" : np.min(pair_rot_stripe[1]),
+        "rot_min__ring_low" : np.min(pair_rot_ring[0]),
+        "rot_min__ring_high" : np.min(pair_rot_ring[1]),
 
-        np.max(pair_rot_stripe[0]),                 # rot_max__stripe_low
-        np.max(pair_rot_stripe[1]),                 # rot_max__stripe_high
-        np.max(pair_rot_ring[0]),                   # rot_max__ring_low
-        np.max(pair_rot_ring[1]),                   # rot_max__ring_high
+        "rot_max__stripe_low" : np.max(pair_rot_stripe[0]),
+        "rot_max__stripe_high" : np.max(pair_rot_stripe[1]),
+        "rot_max__ring_low" : np.max(pair_rot_ring[0]),
+        "rot_max__ring_high" : np.max(pair_rot_ring[1]),
 
-        np.mean(pair_tags_stripe[0]),               # tags_mean__stripe_low
-        np.mean(pair_tags_stripe[1]),               # tags_mean__stripe_high
-        np.mean(pair_tags_ring[0]),                 # tags_mean__ring_low
-        np.mean(pair_tags_ring[1]),                 # tags_mean__ring_high
+        # >>>>>>>>>>>>>> C >>>>>>>>>>>>>>>
+        "tags_mean__stripe_low" : np.mean(pair_tags_stripe[0]),
+        "tags_mean__stripe_high" : np.mean(pair_tags_stripe[1]),
+        "tags_mean__ring_low" : np.mean(pair_tags_ring[0]),
+        "tags_mean__ring_high" : np.mean(pair_tags_ring[1]),
 
-        np.median(pair_tags_stripe[0]),             # tags_median__stripe_low
-        np.median(pair_tags_stripe[1]),             # tags_median__stripe_high
-        np.median(pair_tags_ring[0]),               # tags_median__ring_low
-        np.median(pair_tags_ring[1]),               # tags_median__ring_high
+        "tags_median__stripe_low" : np.median(pair_tags_stripe[0]),
+        "tags_median__stripe_high" : np.median(pair_tags_stripe[1]),
+        "tags_median__ring_low" : np.median(pair_tags_ring[0]),
+        "tags_median__ring_high" : np.median(pair_tags_ring[1]),
 
-        np.std(pair_tags_stripe[0]),                # tags_std__stripe_low
-        np.std(pair_tags_stripe[1]),                # tags_std__stripe_high
-        np.std(pair_tags_ring[0]),                  # tags_std__ring_low
-        np.std(pair_tags_ring[1]),                  # tags_std__ring_high
+        "tags_std__stripe_low" : np.std(pair_tags_stripe[0]),
+        "tags_std__stripe_high" : np.std(pair_tags_stripe[1]),
+        "tags_std__ring_low" : np.std(pair_tags_ring[0]),
+        "tags_std__ring_high" : np.std(pair_tags_ring[1]),
 
-        np.min(pair_tags_stripe[0]),                # tags_min__stripe_low
-        np.min(pair_tags_stripe[1]),                # tags_min__stripe_high
-        np.min(pair_tags_ring[0]),                  # tags_min__ring_low
-        np.min(pair_tags_ring[1]),                  # tags_min__ring_high
-    
-        np.max(pair_tags_stripe[0]),                # tags_max__stripe_low
-        np.max(pair_tags_stripe[1]),                # tags_max__stripe_high
-        np.max(pair_tags_ring[0]),                  # tags_max__ring_low
-        np.max(pair_tags_ring[1])                   # tags_max__ring_high
-    ]
+        "tags_min__stripe_low" : np.min(pair_tags_stripe[0]),
+        "tags_min__stripe_high" : np.min(pair_tags_stripe[1]),
+        "tags_min__ring_low" : np.min(pair_tags_ring[0]),
+        "tags_min__ring_high" : np.min(pair_tags_ring[1]),
+
+        "tags_max__stripe_low" : np.max(pair_tags_stripe[0]),
+        "tags_max__stripe_high" : np.max(pair_tags_stripe[1]),
+        "tags_max__ring_low" : np.max(pair_tags_ring[0]),
+        "tags_max__ring_high" : np.max(pair_tags_ring[1]),
+
+        # >>>>>>>>>>>>>> D >>>>>>>>>>>>>>>
+        "time_tag_lowD_stripe" : mean_time_tag_lowD_stripe,
+        "time_tag_lowD_ring" : mean_time_tag_lowD_ring,
+        "time_tag_highD_stripe" : mean_time_tag_highD_stripe,
+        "time_tag_highD_ring" : mean_time_tag_highD_ring,
+        "time_mapping_lowD_stripe" : mean_time_mapping_lowD_stripe,
+        "time_mapping_lowD_ring" : mean_time_mapping_lowD_ring,
+        "time_mapping_highD_stripe" : mean_time_mapping_highD_stripe,
+        "time_mapping_highD_ring" : mean_time_mapping_highD_ring,
+        "time_traditional" : pair_time_traditional,
+        "time_layout" : pair_time_layout,
+
+        # >>>>>>>>>>>>>> E >>>>>>>>>>>>>>>
+        "total_nbr_operations" : total_nbr_operations
+    }
+
+    return dict_results
