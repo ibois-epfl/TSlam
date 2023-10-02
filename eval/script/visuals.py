@@ -562,13 +562,13 @@ def draw_double_boxplot(data_a : np.array,
                         ) -> plt.figure:
     def _set_vi_props(vi):
         setp(vi['bodies'][0],
-            edgecolor='black',
             color='lightgray',
-             alpha=1,
+            edgecolor='black',
+            alpha=1,
             linewidth=0.8)
         setp(vi['bodies'][1],
-            edgecolor='black',
             color='white',
+            edgecolor='black',
             alpha=1,
             linewidth=0.8)
         setp(vi['cmedians'], color=CYBERGREEN, linewidth=2)
@@ -576,37 +576,9 @@ def draw_double_boxplot(data_a : np.array,
     fig, ax = plt.subplots()
     fig.set_size_inches(10., 3.)
 
-
-    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-    # print(f"data_b: {data_b}")
-    # print(f"last list length: {len(data_b[-1])}")
-
-
-    # print(f"data_a type: {type(data_a)}")
-    # print(f"data_a shape: {data_a.shape}")
-
-    # print(f"data_b type: {type(data_b)}")
-    # print(f"data_b shape: {data_b.shape}")
-
-    # data_b_numpy1 = np.array(data_b)
-    # for i in range(len(data_b_numpy1)):
-    #     data_b_numpy1[i] = np.array(data_b_numpy1[i])
-    # print(f"data_b_numpy1 type: {type(data_b_numpy1)}")
-    # print(f"data_b_numpy1 shape: {data_b_numpy1.shape}")
-
-
-
-
-    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-
-
     # revert the data to obtain an horizontal boxplot
     data_a = np.transpose(data_a)  # << original
     data_b = np.transpose(data_b)  # << original
-
-
 
     ax.set_xlabel(ytitle)
     ax.set_ylabel(xtitle)
@@ -662,7 +634,13 @@ def draw_double_boxplot(data_a : np.array,
 
     return fig
 
-def draw_time_graph(data_a, data_b) -> plt.figure:
+def draw_time_graph(data_a : list[float],
+                    data_b : list[float],
+                    t_traditional : int=35,
+                    t_layout : int=22) -> plt.figure:
+    """
+        Show the time graph for the preparation of the TSlam
+    """
     # TODO: missing line
     # # do a column graph
     fig, ax = plt.subplots()
@@ -673,14 +651,15 @@ def draw_time_graph(data_a, data_b) -> plt.figure:
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(True)
-    ax.spines['bottom'].set_visible(True)  ## <-- x axis
-    ax.yaxis.set_ticks_position('none')
+    ax.spines['bottom'].set_visible(False)  ## <-- x axis
+    ax.xaxis.set_ticks_position('none')
+
 
     species = (
-    "Stripe_lowD",
-    "Stripe_highD",
-    "Ring_lowD",
-    "Ring_highD"
+    "Low\ndensity ",
+    "High\ndensity ",
+    "Low\ndensity",
+    "High\ndensity"
     )
 
     weight_counts = {
@@ -692,16 +671,36 @@ def draw_time_graph(data_a, data_b) -> plt.figure:
     bottom = np.zeros(4)
 
     for boolean, weight_count in weight_counts.items():
-        p = ax.bar(species, weight_count, width, label=boolean, bottom=bottom)
+        if boolean == "Tag sticking":
+            ax.bar(species, weight_count, width,
+                   label=boolean, bottom=bottom,
+                   edgecolor='black',
+                   color='white')
+        else:
+            ax.bar(species, weight_count, width,
+                   label=boolean, bottom=bottom,
+                   edgecolor='black',
+                   color='lightgray')
         bottom += weight_count
+    
+    # trace an horizontal line for the traditional method
+    ax.axhline(y=t_traditional, color=CYBERGREEN, linestyle='--', linewidth=2, label="Traditional")
+
+    # trace an horizontal line for the layout method
+    ax.axhline(y=t_layout, color=CYBERGREEN, linestyle='-', linewidth=2, label="Layout")
+
+    # add a title underneath the graph for the first two columns and the last two columns
+    ax.text(0.5, -5, "Stripe", fontsize=10, horizontalalignment='center')
+    ax.text(2.5, -5, "Ring", fontsize=10, horizontalalignment='center')
+
+    # draw black segment from (y=0 and x=0.5) to (y=0 and x=1.5)
+    ax.plot([-0.24, 1.0+0.24], [0.01, 0.01], color='black', linewidth=2.5)
+    # draw black segment from (y=0 and x=2.5) to (y=0 and x=3.5)
+    ax.plot([1.76, 3.0+0.24], [0.01, 0.01], color='black', linewidth=2.5)
 
     ax.set_title("TSlam preparation time")
-    ax.legend(loc="upper right")
+    ax.legend(loc="upper left")
 
-    plt.show()
-
+    fig.tight_layout()
 
     return fig
-
-
-

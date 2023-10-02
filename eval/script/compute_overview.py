@@ -37,10 +37,10 @@ __SEQUENCES_MAP__ = {
     "sequence_19" : [0,1],
     "sequence_20" : [1,1]
 }
-__SEQUENCES_MAP_LOWD_STRIPE__ = [0,4,8,12,16]
-__SEQUENCES_MAP_LOWD_RING__ = [1,5,9,13,17]
-__SEQUENCES_MAP_HIGHD_STRIPE__ = [2,6,10,14,18]
-__SEQUENCES_MAP_HIGHD_RING__ = [3,7,11,15,19]
+__SEQUENCES_MAP_LOWD_STRIPE__ = [1,5,9,13,17]
+__SEQUENCES_MAP_LOWD_RING__ = [2,6,10,14,18]
+__SEQUENCES_MAP_HIGHD_STRIPE__ = [3,7,11,15,19]
+__SEQUENCES_MAP_HIGHD_RING__ = [4,8,12,16,20]
 
 
 def main(out_subdir : str,
@@ -70,45 +70,65 @@ def main(out_subdir : str,
     data_highD_stripe = io_stream.cvt_csv_summary_to_data(csv_paths=csv_sequ_paths_highD_stripe)
     data_highD_ring = io_stream.cvt_csv_summary_to_data(csv_paths=csv_sequ_paths_highD_ring)
 
-    # ==========================================
     # time parsing
     # # get the preparation times from videos and retain only the not pre-fabricated piece
     # # in-fact the comparison will not equal with the manual timing due to the fact that
     # # with more joinery the sticking time would be longer and the manual timing is not.
-    # # wee consider and show in the time graph the standard situation where the piece
+    # # we consider and show in the time graph the standard situation where the piece
     # # is not pre-fabricated (i.e. box shape).
-    # vid_manual_mark_paths, vid_mapping_paths, vid_tag_paths  = io_stream.get_video_path()
+    vid_manual_mark_paths, vid_mapping_paths, vid_tag_paths  = io_stream.get_video_path()
 
-    # vid_manual_lens : list[float] = postpro.cvt_video_2_time(vid_paths=vid_manual_mark_paths)
-    # vid_tag_lens : list[float] = postpro.cvt_video_2_time(vid_paths=vid_tag_paths)
-    # vid_mapping_lens : list[float] = postpro.cvt_video_2_time(vid_paths=vid_mapping_paths)
+    path_time_manual_lowD_stripe : float = [x for x in vid_manual_mark_paths if int(x.split("/")[-3].split("_")[0]) in __SEQUENCES_MAP_LOWD_STRIPE__]
+    path_time_manual_lowD_ring : float = [x for x in vid_manual_mark_paths if int(x.split("/")[-3].split("_")[0]) in __SEQUENCES_MAP_LOWD_RING__]
+    path_time_manual_highD_stripe : float = [x for x in vid_manual_mark_paths if int(x.split("/")[-3].split("_")[0]) in __SEQUENCES_MAP_HIGHD_STRIPE__]
+    path_time_manual_highD_ring : float = [x for x in vid_manual_mark_paths if int(x.split("/")[-3].split("_")[0]) in __SEQUENCES_MAP_HIGHD_RING__]
+    path_time_tag_lowD_stripe : float = [x for x in vid_tag_paths if int(x.split("/")[-3].split("_")[0]) in __SEQUENCES_MAP_LOWD_STRIPE__]
+    path_time_tag_lowD_ring : float = [x for x in vid_tag_paths if int(x.split("/")[-3].split("_")[0]) in __SEQUENCES_MAP_LOWD_RING__]
+    path_time_tag_highD_stripe : float = [x for x in vid_tag_paths if int(x.split("/")[-3].split("_")[0]) in __SEQUENCES_MAP_HIGHD_STRIPE__]
+    path_time_tag_highD_ring : float = [x for x in vid_tag_paths if int(x.split("/")[-3].split("_")[0]) in __SEQUENCES_MAP_HIGHD_RING__]
+    path_time_mapping_lowD_stripe : float = [x for x in vid_mapping_paths if int(x.split("/")[-3].split("_")[0]) in __SEQUENCES_MAP_LOWD_STRIPE__]
+    path_time_mapping_lowD_ring : float = [x for x in vid_mapping_paths if int(x.split("/")[-3].split("_")[0]) in __SEQUENCES_MAP_LOWD_RING__]
+    path_time_mapping_highD_stripe : float = [x for x in vid_mapping_paths if int(x.split("/")[-3].split("_")[0]) in __SEQUENCES_MAP_HIGHD_STRIPE__]
+    path_time_mapping_highD_ring : float = [x for x in vid_mapping_paths if int(x.split("/")[-3].split("_")[0]) in __SEQUENCES_MAP_HIGHD_RING__]
 
-    # time_manual_lowD_stripe : float = vid_manual_lens[__SEQUENCES_MAP_LOWD_STRIPE__[0]]
-    # time_manual_lowD_ring : float = vid_manual_lens[__SEQUENCES_MAP_LOWD_RING__[0]]
-    # time_manual_highD_stripe : float = vid_manual_lens[__SEQUENCES_MAP_HIGHD_STRIPE__[0]]
-    # time_manual_highD_ring : float = vid_manual_lens[__SEQUENCES_MAP_HIGHD_RING__[0]]
-    # time_tag_lowD_stripe : float = vid_tag_lens[__SEQUENCES_MAP_LOWD_STRIPE__[0]]
-    # time_tag_lowD_ring : float = vid_tag_lens[__SEQUENCES_MAP_LOWD_RING__[0]]
-    # time_tag_highD_stripe : float = vid_tag_lens[__SEQUENCES_MAP_HIGHD_STRIPE__[0]]
-    # time_tag_highD_ring : float = vid_tag_lens[__SEQUENCES_MAP_HIGHD_RING__[0]]
-    # time_mapping_lowD_stripe : float = vid_mapping_lens[__SEQUENCES_MAP_LOWD_STRIPE__[0]]
-    # time_mapping_lowD_ring : float = vid_mapping_lens[__SEQUENCES_MAP_LOWD_RING__[0]]
-    # time_mapping_highD_stripe : float = vid_mapping_lens[__SEQUENCES_MAP_HIGHD_STRIPE__[0]]
-    # time_mapping_highD_ring : float = vid_mapping_lens[__SEQUENCES_MAP_HIGHD_RING__[0]]
+    time_manual_lowD_stripe : list[float] = postpro.cvt_video_2_time(vid_paths=path_time_manual_lowD_stripe)
+    time_manual_lowD_ring : list[float] = postpro.cvt_video_2_time(vid_paths=path_time_manual_lowD_ring)
+    time_manual_highD_stripe : list[float] = postpro.cvt_video_2_time(vid_paths=path_time_manual_highD_stripe)
+    time_manual_highD_ring : list[float] = postpro.cvt_video_2_time(vid_paths=path_time_manual_highD_ring)
+    time_tag_lowD_stripe : list[float] = postpro.cvt_video_2_time(vid_paths=path_time_tag_lowD_stripe)
+    time_tag_lowD_ring : list[float] = postpro.cvt_video_2_time(vid_paths=path_time_tag_lowD_ring)
+    time_tag_highD_stripe : list[float] = postpro.cvt_video_2_time(vid_paths=path_time_tag_highD_stripe)
+    time_tag_highD_ring : list[float] = postpro.cvt_video_2_time(vid_paths=path_time_tag_highD_ring)
+    time_mapping_lowD_stripe : list[float] = postpro.cvt_video_2_time(vid_paths=path_time_mapping_lowD_stripe)
+    time_mapping_lowD_ring : list[float] = postpro.cvt_video_2_time(vid_paths=path_time_mapping_lowD_ring)
+    time_mapping_highD_stripe : list[float] = postpro.cvt_video_2_time(vid_paths=path_time_mapping_highD_stripe)
+    time_mapping_highD_ring : list[float] = postpro.cvt_video_2_time(vid_paths=path_time_mapping_highD_ring)
+
+    mean_time_manual_lowD_stripe : float = np.mean(time_manual_lowD_stripe)
+    mean_time_manual_lowD_ring : float = np.mean(time_manual_lowD_ring)
+    mean_time_manual_highD_stripe : float = np.mean(time_manual_highD_stripe)
+    mean_time_manual_highD_ring : float = np.mean(time_manual_highD_ring)
+    mean_time_tag_lowD_stripe : float = np.mean(time_tag_lowD_stripe)
+    mean_time_tag_lowD_ring : float = np.mean(time_tag_lowD_ring)
+    mean_time_tag_highD_stripe : float = np.mean(time_tag_highD_stripe)
+    mean_time_tag_highD_ring : float = np.mean(time_tag_highD_ring)
+    mean_time_mapping_lowD_stripe : float = np.mean(time_mapping_lowD_stripe)
+    mean_time_mapping_lowD_ring : float = np.mean(time_mapping_lowD_ring)
+    mean_time_mapping_highD_stripe : float = np.mean(time_mapping_highD_stripe)
+    mean_time_mapping_highD_ring : float = np.mean(time_mapping_highD_ring)
+
 
     # # ==========================================
     # # visualize and dump
-
     # # time prep
-    # #TODO: finish graph + sift for empty values (missing map) after the I/O
-    # graph_time = visuals.draw_time_graph(data_a=np.array([time_tag_lowD_stripe,
-    #                                              time_tag_highD_stripe,
-    #                                              time_tag_lowD_ring,
-    #                                              time_tag_highD_ring], dtype=object),
-    #                                      data_b=np.array([time_manual_lowD_stripe,
-    #                                              time_manual_highD_stripe,
-    #                                              time_manual_lowD_ring,
-    #                                              time_manual_highD_ring], dtype=object))
+    graph_time = visuals.draw_time_graph(data_a=np.array([mean_time_tag_lowD_stripe,
+                                                 mean_time_tag_highD_stripe,
+                                                 mean_time_tag_lowD_ring,
+                                                 mean_time_tag_highD_ring], dtype=object),
+                                         data_b=np.array([mean_time_manual_lowD_stripe,
+                                                 mean_time_manual_highD_stripe,
+                                                 mean_time_manual_lowD_ring,
+                                                 mean_time_manual_highD_ring], dtype=object))
 
     # NB: in green is the median!
     # position drift
@@ -157,12 +177,24 @@ def main(out_subdir : str,
     io_stream.save_graph(graph=graph_pos, path=f"{out_subdir}/summary_position_drift.png")
     io_stream.save_graph(graph=graph_rot, path=f"{out_subdir}/summary_rotation_drift.png")
     io_stream.save_graph(graph=graph_tags, path=f"{out_subdir}/summary_tags_detection.png")
+    io_stream.save_graph(graph=graph_time, path=f"{out_subdir}/summary_time.png")
 
     # #===========================================
     # #TODO:
     # # print csv + latex table (at least to have the main values like mean, median, std, min, max)
+    # # - get also the total number of operations
     # # metrics.compute_summary_table
 
+    total_nbr_operations : int = 0
+    # do a mass addition of the total number of operations
+    for data in [data_lowD_stripe, data_highD_stripe, data_lowD_ring, data_highD_ring]:
+        total_nbr_operations += int(data[0])
+    print(f"total_nbr_operations: {total_nbr_operations}")
+
+    # create a new csv file in the out_subdir
+    csv_summary_path : str = f"{out_subdir}/summary.csv"
+    with open(csv_summary_path, 'w') as f:
+        f.write("total_nbr_operations
 
     return None
 

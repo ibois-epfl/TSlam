@@ -888,7 +888,7 @@ def get_video_path() -> tuple[list[str], list[str], list[str]]:
         vid_dir_path = os.path.join(path, f"{dataset_strnbr_ord[idx]}_camera_recordings")
         vid_dir_paths = [os.path.join(vid_dir_path, f) for f in os.listdir(vid_dir_path)]
 
-        # catch those sequences where the mapping recording is corrupted or absent FIXME: replace with empty value
+        # catch those sequences where the mapping recording is corrupted or absent
         if [path for path in vid_dir_paths if "MISSING" in path]:
             continue
 
