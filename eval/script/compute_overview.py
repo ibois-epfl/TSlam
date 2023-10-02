@@ -70,82 +70,98 @@ def main(out_subdir : str,
     data_highD_stripe = io_stream.cvt_csv_summary_to_data(csv_paths=csv_sequ_paths_highD_stripe)
     data_highD_ring = io_stream.cvt_csv_summary_to_data(csv_paths=csv_sequ_paths_highD_ring)
 
-    avr_data_lowD_stripe = metrics.compute_average_summary_values(data=data_lowD_stripe)
-    avr_data_lowD_ring = metrics.compute_average_summary_values(data=data_lowD_ring)
-    avr_data_highD_stripe = metrics.compute_average_summary_values(data=data_highD_stripe)
-    avr_data_highD_ring = metrics.compute_average_summary_values(data=data_highD_ring)
-
-    # get the preparation times from videos and retain only the not pre-fabricated piece
-    # in-fact the comparison will not equal with the manual timing due to the fact that
-    # with more joinery the sticking time would be longer and the manual timing is not.
-    # wee consider and show in the time graph the standard situation where the piece
-    # is not pre-fabricated (i.e. box shape).
-    vid_manual_mark_paths, vid_mapping_paths, vid_tag_paths  = io_stream.get_video_path()
-
-    vid_manual_lens : list[float] = postpro.cvt_video_2_time(vid_paths=vid_manual_mark_paths)
-    vid_tag_lens : list[float] = postpro.cvt_video_2_time(vid_paths=vid_tag_paths)
-    vid_mapping_lens : list[float] = postpro.cvt_video_2_time(vid_paths=vid_mapping_paths)
-
-    time_manual_lowD_stripe : float = vid_manual_lens[__SEQUENCES_MAP_LOWD_STRIPE__[0]]
-    time_manual_lowD_ring : float = vid_manual_lens[__SEQUENCES_MAP_LOWD_RING__[0]]
-    time_manual_highD_stripe : float = vid_manual_lens[__SEQUENCES_MAP_HIGHD_STRIPE__[0]]
-    time_manual_highD_ring : float = vid_manual_lens[__SEQUENCES_MAP_HIGHD_RING__[0]]
-    time_tag_lowD_stripe : float = vid_tag_lens[__SEQUENCES_MAP_LOWD_STRIPE__[0]]
-    time_tag_lowD_ring : float = vid_tag_lens[__SEQUENCES_MAP_LOWD_RING__[0]]
-    time_tag_highD_stripe : float = vid_tag_lens[__SEQUENCES_MAP_HIGHD_STRIPE__[0]]
-    time_tag_highD_ring : float = vid_tag_lens[__SEQUENCES_MAP_HIGHD_RING__[0]]
-    time_mapping_lowD_stripe : float = vid_mapping_lens[__SEQUENCES_MAP_LOWD_STRIPE__[0]]
-    time_mapping_lowD_ring : float = vid_mapping_lens[__SEQUENCES_MAP_LOWD_RING__[0]]
-    time_mapping_highD_stripe : float = vid_mapping_lens[__SEQUENCES_MAP_HIGHD_STRIPE__[0]]
-    time_mapping_highD_ring : float = vid_mapping_lens[__SEQUENCES_MAP_HIGHD_RING__[0]]
-
     # ==========================================
-    # visualize and dump
+    # time parsing
+    # # get the preparation times from videos and retain only the not pre-fabricated piece
+    # # in-fact the comparison will not equal with the manual timing due to the fact that
+    # # with more joinery the sticking time would be longer and the manual timing is not.
+    # # wee consider and show in the time graph the standard situation where the piece
+    # # is not pre-fabricated (i.e. box shape).
+    # vid_manual_mark_paths, vid_mapping_paths, vid_tag_paths  = io_stream.get_video_path()
 
-    # time prep
-    #TODO: finish graph
-    graph_time = visuals.draw_time_graph(data_a=np.array([time_tag_lowD_stripe,
-                                                 time_tag_highD_stripe,
-                                                 time_tag_lowD_ring,
-                                                 time_tag_highD_ring], dtype=object),
-                                         data_b=np.array([time_manual_lowD_stripe,
-                                                 time_manual_highD_stripe,
-                                                 time_manual_lowD_ring,
-                                                 time_manual_highD_ring], dtype=object))
+    # vid_manual_lens : list[float] = postpro.cvt_video_2_time(vid_paths=vid_manual_mark_paths)
+    # vid_tag_lens : list[float] = postpro.cvt_video_2_time(vid_paths=vid_tag_paths)
+    # vid_mapping_lens : list[float] = postpro.cvt_video_2_time(vid_paths=vid_mapping_paths)
+
+    # time_manual_lowD_stripe : float = vid_manual_lens[__SEQUENCES_MAP_LOWD_STRIPE__[0]]
+    # time_manual_lowD_ring : float = vid_manual_lens[__SEQUENCES_MAP_LOWD_RING__[0]]
+    # time_manual_highD_stripe : float = vid_manual_lens[__SEQUENCES_MAP_HIGHD_STRIPE__[0]]
+    # time_manual_highD_ring : float = vid_manual_lens[__SEQUENCES_MAP_HIGHD_RING__[0]]
+    # time_tag_lowD_stripe : float = vid_tag_lens[__SEQUENCES_MAP_LOWD_STRIPE__[0]]
+    # time_tag_lowD_ring : float = vid_tag_lens[__SEQUENCES_MAP_LOWD_RING__[0]]
+    # time_tag_highD_stripe : float = vid_tag_lens[__SEQUENCES_MAP_HIGHD_STRIPE__[0]]
+    # time_tag_highD_ring : float = vid_tag_lens[__SEQUENCES_MAP_HIGHD_RING__[0]]
+    # time_mapping_lowD_stripe : float = vid_mapping_lens[__SEQUENCES_MAP_LOWD_STRIPE__[0]]
+    # time_mapping_lowD_ring : float = vid_mapping_lens[__SEQUENCES_MAP_LOWD_RING__[0]]
+    # time_mapping_highD_stripe : float = vid_mapping_lens[__SEQUENCES_MAP_HIGHD_STRIPE__[0]]
+    # time_mapping_highD_ring : float = vid_mapping_lens[__SEQUENCES_MAP_HIGHD_RING__[0]]
+
+    # # ==========================================
+    # # visualize and dump
+
+    # # time prep
+    # #TODO: finish graph + sift for empty values (missing map) after the I/O
+    # graph_time = visuals.draw_time_graph(data_a=np.array([time_tag_lowD_stripe,
+    #                                              time_tag_highD_stripe,
+    #                                              time_tag_lowD_ring,
+    #                                              time_tag_highD_ring], dtype=object),
+    #                                      data_b=np.array([time_manual_lowD_stripe,
+    #                                              time_manual_highD_stripe,
+    #                                              time_manual_lowD_ring,
+    #                                              time_manual_highD_ring], dtype=object))
 
     # NB: in green is the median!
     # position drift
-    pair_pos_stripe = np.array(([data_lowD_stripe[2], data_highD_stripe[2]]), dtype=object)
-    pair_pos_ring = np.array(([data_lowD_ring[2], data_highD_ring[2]]), dtype=object)
-    graph_pos = visuals.draw_double_boxplot(data_a=pair_pos_stripe,
-                                data_b=pair_pos_ring,
-                                ytitle="Position drift (m)",
-                                xthick=0.001)
-    
-    # rotation drift
-    pair_rot_stripe = np.array(([data_lowD_stripe[7], data_highD_stripe[7]]), dtype=object)
-    pair_rot_ring = np.array(([data_lowD_ring[7], data_highD_ring[7]]), dtype=object)
-    graph_rot = visuals.draw_double_boxplot(data_a=pair_rot_stripe,
-                                data_b=pair_rot_ring,
-                                ytitle="Rotation drift (deg)")
+    data_lowD_stripe_pos_np = np.array(data_lowD_stripe[2], dtype=float)
+    data_highD_stripe_pos_np = np.array(data_highD_stripe[2], dtype=float)
+    data_lowD_ring_pos_np = np.array(data_lowD_ring[2], dtype=float)
+    data_highD_ring_pos_np = np.array(data_highD_ring[2], dtype=float)
 
-    # tags detection
-    pair_tags_stripe = np.array(([data_lowD_stripe[12], data_highD_stripe[12]]), dtype=object)
-    pair_tags_ring = np.array(([data_lowD_ring[12], data_highD_ring[12]]), dtype=object)
+    pair_pos_stripe = list([data_lowD_stripe_pos_np, data_highD_stripe_pos_np])
+    pair_pos_ring = list([data_lowD_ring_pos_np, data_highD_ring_pos_np])
+
+    graph_pos = visuals.draw_double_boxplot(data_a=pair_pos_stripe,
+                                            data_b=pair_pos_ring,
+                                            ytitle="Position drift (m)",
+                                            xthick=0.001)
+
+    
+    # # rotation drift
+    data_lowD_stripe_rot_np = np.array(data_lowD_stripe[7], dtype=float)
+    data_highD_stripe_rot_np = np.array(data_highD_stripe[7], dtype=float)
+    data_lowD_ring_rot_np = np.array(data_lowD_ring[7], dtype=float)
+    data_highD_ring_rot_np = np.array(data_highD_ring[7], dtype=float)
+
+    pair_rot_stripe = list([data_lowD_stripe_rot_np, data_highD_stripe_rot_np])
+    pair_rot_ring = list([data_lowD_ring_rot_np, data_highD_ring_rot_np])
+
+    graph_rot = visuals.draw_double_boxplot(data_a=pair_rot_stripe,
+                                            data_b=pair_rot_ring,
+                                            ytitle="Rotation drift (deg)")
+
+    # # tags detection
+    data_lowD_stripe_tags_np = np.array(data_lowD_stripe[12], dtype=float)
+    data_highD_stripe_tags_np = np.array(data_highD_stripe[12], dtype=float)
+    data_lowD_ring_tags_np = np.array(data_lowD_ring[12], dtype=float)
+    data_highD_ring_tags_np = np.array(data_highD_ring[12], dtype=float)
+
+    pair_tags_stripe = list([data_lowD_stripe_tags_np, data_highD_stripe_tags_np])
+    pair_tags_ring = list([data_lowD_ring_tags_np, data_highD_ring_tags_np])
+
     graph_tags = visuals.draw_double_boxplot(data_a=pair_tags_stripe,
                                 data_b=pair_tags_ring,
                                 ytitle="Tags detection (m)",
                                 xthick=1)
 
-    # save the graphs
+    # # save the graphs
     io_stream.save_graph(graph=graph_pos, path=f"{out_subdir}/summary_position_drift.png")
     io_stream.save_graph(graph=graph_rot, path=f"{out_subdir}/summary_rotation_drift.png")
     io_stream.save_graph(graph=graph_tags, path=f"{out_subdir}/summary_tags_detection.png")
 
-    #===========================================
-    #TODO:
-    # print csv + latex table
-    # metrics.compute_summary_table
+    # #===========================================
+    # #TODO:
+    # # print csv + latex table (at least to have the main values like mean, median, std, min, max)
+    # # metrics.compute_summary_table
 
 
     return None
@@ -177,7 +193,9 @@ if __name__ == "__main__":
         for file in files:
             if file.endswith("summarys_sequence_bench.csv"):
                 _csv_sequ_paths.append(os.path.join(root, file))
-    assert _csv_sequ_paths.__len__() == 20, f"Wrong number of csv found in {args.inDir}"
+    if _csv_sequ_paths.__len__() != 20:
+        print(f"\033[91m[ERROR]:Found {_csv_sequ_paths.__len__()} csv in {args.inDir}\n\033[0m")
+    # assert _csv_sequ_paths.__len__() == 20, f"Wrong number of csv found in {args.inDir}"
     _csv_sequ_paths_nbr : list[str] = []
     for csv in _csv_sequ_paths:
         _csv_sequ_paths_nbr.append(int(csv.split("/")[-6].split("_")[0]))
@@ -199,13 +217,6 @@ if __name__ == "__main__":
             if all_zero:
                 _csv_sequ_paths.remove(path)
                 print(f"\033[93m[WARNING]: all values are 0 in {path}, removing it from the list\n\033[0m")
-
-
-
-
-
-
-
 
     _csv_subsequ_paths : list[list[str]] = []
     _in_subdirs = os.listdir(args.inDir)

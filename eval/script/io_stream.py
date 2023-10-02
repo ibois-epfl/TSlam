@@ -888,6 +888,10 @@ def get_video_path() -> tuple[list[str], list[str], list[str]]:
         vid_dir_path = os.path.join(path, f"{dataset_strnbr_ord[idx]}_camera_recordings")
         vid_dir_paths = [os.path.join(vid_dir_path, f) for f in os.listdir(vid_dir_path)]
 
+        # catch those sequences where the mapping recording is corrupted or absent FIXME: replace with empty value
+        if [path for path in vid_dir_paths if "MISSING" in path]:
+            continue
+
         # if it has "manual_mark" in the name then it is a video
         vid_manual_mark_paths = [path for path in vid_dir_paths if "manual_mark" in path]
         vid_manual_mark_paths = [os.path.join(path, f) for path in vid_manual_mark_paths for f in os.listdir(path) if f.endswith(".avi")]

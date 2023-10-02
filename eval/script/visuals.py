@@ -576,9 +576,37 @@ def draw_double_boxplot(data_a : np.array,
     fig, ax = plt.subplots()
     fig.set_size_inches(10., 3.)
 
+
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+    # print(f"data_b: {data_b}")
+    # print(f"last list length: {len(data_b[-1])}")
+
+
+    # print(f"data_a type: {type(data_a)}")
+    # print(f"data_a shape: {data_a.shape}")
+
+    # print(f"data_b type: {type(data_b)}")
+    # print(f"data_b shape: {data_b.shape}")
+
+    # data_b_numpy1 = np.array(data_b)
+    # for i in range(len(data_b_numpy1)):
+    #     data_b_numpy1[i] = np.array(data_b_numpy1[i])
+    # print(f"data_b_numpy1 type: {type(data_b_numpy1)}")
+    # print(f"data_b_numpy1 shape: {data_b_numpy1.shape}")
+
+
+
+
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
     # revert the data to obtain an horizontal boxplot
-    data_a = np.transpose(data_a)
-    data_b = np.transpose(data_b)
+    data_a = np.transpose(data_a)  # << original
+    data_b = np.transpose(data_b)  # << original
+
+
 
     ax.set_xlabel(ytitle)
     ax.set_ylabel(xtitle)
@@ -635,6 +663,7 @@ def draw_double_boxplot(data_a : np.array,
     return fig
 
 def draw_time_graph(data_a, data_b) -> plt.figure:
+    # TODO: missing line
     # # do a column graph
     fig, ax = plt.subplots()
     fig.set_size_inches(5, 7.)
