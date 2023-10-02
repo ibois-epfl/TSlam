@@ -639,7 +639,12 @@ def draw_time_graph(data_a : list[float],
                     t_traditional : int=35,
                     t_layout : int=22) -> plt.figure:
     """
-        Show the time graph for the preparation of the TSlam
+        Show the time graph for the preparation of the TSlam.
+        
+        :param data_a: list of 4 values for the tag sticking time for the stripe layout
+        :param data_b: list of 4 values for the mapping time for the stripe layout
+        :param t_traditional: time for the traditional method (hardcoded)
+        :param t_layout: time for the layout method (hardcoded)
     """
     # TODO: missing line
     # # do a column graph
