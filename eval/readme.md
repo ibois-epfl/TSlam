@@ -1,13 +1,10 @@
 # TSlam evaluation
-## TODO:
-- add `scripts/compute_model_metrics.py` to `batch_sequence.sh`
-- add `scripts/compute_summary.py` to `batch_dataset.sh`
-- replace all the `refined_stream.csv` with the new interpolation
-    - the data format is changed, check if there is something using it other than `io_stream.py`
-- check if the 30 frames shift is still needed (probably not)
-- modify `optitrack/capture.py` to replace the refinement with the new function
+This folder contains all the necessary files and scripts to reproduce the evaluation of the 
 
-## Run
+## How to Run
+### Before you start
+Install the python dependencies in Anaconda and run it from there (see `environment.yml`).
+
 ### Results for the entire dataset
 a) it will erase the `dataset/` folder everytime and redownload the dataset.
 b) The output can be found in `results/`.
