@@ -61,10 +61,10 @@ print_success "tslammonocular executable built or found in $__tslammono_exe__"
 #==========================================================================================
 
 __dataset_dir__=$__workin_dir__/dataset
-# mkdir -p $__dataset_dir__
+mkdir -p $__dataset_dir__
 
 # # clean out the dataset folder
-# rm -rf $__dataset_dir__/*
+rm -rf $__dataset_dir__/*
 
 # Define the Zenodo URL
 print_process "Downloading dataset from Zenodo + extraction + sequence evaluation.."
@@ -76,12 +76,12 @@ for link in $download_links; do
     print_process "----------------------------------------"
     print_process "----------------------------------------"
     print_info "Downloading $filename_zip... to $__dataset_dir__"
-    # wget -O $__dataset_dir__/$filename_zip $link
+    wget -O $__dataset_dir__/$filename_zip $link
     print_success "$filename_zip downloaded"
     print_process "----------------------------------------"
     print_process "extracting $filename_zip..."
-    # unzip -o $__dataset_dir__/$filename_zip -d $__dataset_dir__
-    # rm $__dataset_dir__/$filename_zip
+    unzip -o $__dataset_dir__/$filename_zip -d $__dataset_dir__
+    rm $__dataset_dir__/$filename_zip
     print_success "$filename_zip extracted"
     print_process "----------------------------------------"
     print_process "Starting evaluation of $filename_zip..."
