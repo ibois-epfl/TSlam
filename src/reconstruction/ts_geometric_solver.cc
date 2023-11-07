@@ -438,7 +438,7 @@ namespace tslam::Reconstruction
             }
         }
 
-        // (c) remove duplicate segments
+        // (c) remove duplicate segmentscode 
         for (auto& segGroup : segmentsGrouped)
         {
             for (uint i = 0; i < segGroup.size(); i++)
