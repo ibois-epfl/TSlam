@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="./assets/logo/logo_linux_violet.png" width="200">
+    <img src="./assets/logo/logo_linux_violet.png" width="140">
 </p>
 <p align="center">
     <a href="https://doi.org/10.5281/zenodo.10093230"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.10093230.svg" alt="DOI"></a>
