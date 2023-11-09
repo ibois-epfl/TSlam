@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Settimi"
+  given-names: "Andrea"
+  orcid: "https://orcid.org/0000-0001-5020-7331"
+- family-names: "Yang"
+  given-names: "Hong-Bin"
+  orcid: "https://orcid.org/0000-0002-3269-8242"
+title: "Software of TSlam: a Hybrid Tag-based Object-Centered Monocular Navigation System for Augmented Manual Wood-working Fabrication"
+version: 1.0.0
+doi: 10.5281/zenodo.10093230
+date-released: 2023-11-09
+url: "https://github.com/ibois-epfl/TSlam"
