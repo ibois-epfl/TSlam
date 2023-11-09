@@ -8,14 +8,6 @@
     <img src="https://img.shields.io/badge/license-GPL--v3-brightgreen">
 </p>
 
-<div align="center">
-    <img src = "./assets/logo/ibosiTraspBlack.png" height="30"/>
-    <img src = "./assets/logo/50x50-00000000.png" height="20"/>
-    <img src = "./assets/logo/logoEPFLblack.png" height="30"/>
-</div>
-
-<br>
-
 <p align="center">
     <img src="assets/img/une_image.png" width="500">
     <img src="assets/img/objectrefissue.png" width="300">
@@ -24,7 +16,7 @@
     <i><small>Augmented interface for woodworking powered by the TSlam's navigation system for subtractive fabrication. After the object is mapped, you can move it, cut it, or drill it and the camera will still be able to self-localize. </small></i>
 </p>
 
-🪵🌲 `TSlam` is developed at the [**Laboratory for Timber Construction**](https://www.epfl.ch/labs/ibois/)(director: Prof.Yves Weinand), at EPFL, Lausanne, Switzerland. The project is part of the [**Augmented Carpentry Research**](https://www.epfl.ch/labs/ibois/augmented-carpentry/).
+🪵🌲 `TSlam` is developed at the [**Laboratory for Timber Construction**](https://www.epfl.ch/labs/ibois/) (director: Prof.Yves Weinand), at [**EPFL**](https://www.epfl.ch/en/), Lausanne, Switzerland. The project is part of the [**Augmented Carpentry Research**](https://www.epfl.ch/labs/ibois/augmented-carpentry/).
 
 🪚🔨 `TSlam` is an open-source **object-centered**, tag-based visual **navigation software for monocular RGB cameras** specifically developed in C++ and for UNIX systems to support a robust and accurate augmented reality pipeline for close-range, noisy, and cluttered fabrication sequences involving **wood-working operations** such as cutting, drilling, sawing and screwing with multiple tools and end-effectors.
 
