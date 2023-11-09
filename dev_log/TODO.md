@@ -1,4 +1,5 @@
-# TODO
+
+## Tracked issue
 
 - [ ] (to be defined) integration to AC
 - [x] add flag to console app tslam_monocular to disable GUI and run only slam
@@ -8,18 +9,7 @@
 - [ ] write a test for mapping phase of tslam
 - [ ] @Andrea: write exporter of single tags from the tslam_reconstruct for manually reconstruction
 - [x] change slamuco to tslam when possible
-- [ ] clean out copyright info: Copyright (C) 2018 Rafael Munoz Salinas <rmsalinas at uco dot es> (University of Cordoba)
 
-
-
-
-
-
-
-
-
-
-==============================================================
 
 - [x] Update dev_log (for optimization, +video)
 - [x] Console program -> +trajectory (list of matrix)

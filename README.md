@@ -7,62 +7,20 @@
     <img src="https://img.shields.io/badge/license-GPL--v3-brightgreen">
 </p>
 
-```mermaid
-gantt
-    dateFormat  YYYY-MM-DD
-    title       General TSlam dev planning
-    axisFormat %Y-%m
+🪵🌲 **TSlam** is developed at the [**Laboratory for Timber Construction**](https://www.epfl.ch/labs/ibois/)(director: Prof.Yves Weinand), at EPFL, Lausanne, Switzerland. The project is part of the [**Augmented Carpentry Research**](https://www.epfl.ch/labs/ibois/augmented-carpentry/).
 
-    section Core development
-    Base code modification          :done, ucm, 2022-06-01, 2022-08-10
-    RTag integration                :done, rti, 2022-07-30, 2022-10-01
-    Mapping                         :done, map, 2022-08-20, 2022-12-20
-    Tracking                        :done, trck, 2022-10-20, 2023-01-30
-    Reconstruction                  :done, rec, 2022-10-30, 2023-03-05
-    AC integration                  :done, aci, 2022-09-10, 2022-12-10
-    Stand-up demo                   :milestone, done, 2023-02-24, 0d
+🪚🔨 **TSlam** is an object-centered, tag-based visual **navigation software for monocular** RGB cameras specifically developed to support a robust and accurate augmented reality pipeline for close-range, noisy, and cluttered fabrication sequences involving **wood-working operations** such as cutting, drilling, sawing and screwing with multiple tools and end-effectors.
 
-    section Evaluation
-    protocols design                :done, ptrd, 2023-02-24, 2023-03-20
-    Protocol submission             :milestone, done, 2023-03-14, 0d
-    preparation of eval             :done, 15d
-    Fabrication eval                :done, 85d
-    Benchmark/visual processing     :bvpr, 2023-09-25, 30d
-    
-    section HB internship
-    start HB                        :milestone, done, 2023-06-01,
-    AC integration for visuals      :done, 2023-06-01, 2023-07-15
-    start HB                        :milestone, done, 2023-08-14,
+🖧 **TSlam** leverages and combines multiple open-source projects ([UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62), [STag](https://github.com/bbenligiray/stag), [CGAL](https://www.cgal.org/)) to obtain a functional pipeline that can map, 3D reconstruct, and finally provide a robust camera pose stream at fabrication time to overlay an execution model with its digital twin model.
 
-    section Paper redaction
-    Redaction text/illustration     :active, pprd, after bvpr, 30d
-    Paper submission                :milestone, after pprd, 1d
-    
-    section Maintenance
-    Profiling of tslam                  :done, opti, 2023-04-19, 10d
-    Optimization of tslam               :done, 2023-06-01, 2023-09-01
-```
+🔖 For more details about the development go in the [Dev Log](./dev_log)
 
+↳ If you just want to use TSlam, grap a webcam, a machine with Ubuntu 22.04 installed and follow our [Wiki](https://github.com/ibois-epfl/TSlam/wiki).
 
-# TSlam
-This is a modified version of [UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62) for augmented carpentry research. The main features are:
-- Better API for use.
-- Using [STag](https://github.com/bbenligiray/stag)
-- Can do map fusion (merging one map into another).
-- By indicating it's in instance mode, the system stop running global optimization and only keeps a fixed number of new added keyframes, which smooth the overall experience.
-- Add [CLAHE](https://en.wikipedia.org/wiki/Adaptive_histogram_equalization) for preprocessing.
-- Several [bugs are resolved](./dev_log/Bug_tracing.md).
-- we add a reconstruction pipeline to obtain digital models of the physically tagged objects
-
-
-
-Here are some reference related to this project:
-- The publication for UcoSLAM:  [link]([https://docs.google.com/document/d/12EGJ3cI-m8XMXgI5bYW1dLi5lBO-vxxr6Cf769wQzJc](https://arxiv.org/abs/1902.03729))
-- [STag ROS](https://github.com/usrl-uofsc/stag_ros): Code of STag is from this repo. This one upgrade the original STag from OpenCV 3 to OpenCV 4.
-- [Dev Log of this modification](./dev_log)
 
 ## Evaluation
 <text-to-be-filled>
+To benchmark the proposed navigation system under real fabrication scenarios, we produced a dataset of 1344 close-up different woodworking operations with multiple tools, tool heads, and varying parameters such as tags' layout and area density. The evaluation campaign indicates that TSlam is satisfyingly capable of detecting the camera's millimetric position and sub-angular rotation during the fabrication sequences to the exception of the saber saw. The [dataset can be found here](https://zenodo.org/record/8377793).
 
 https://github.com/ibois-epfl/TSlam/assets/50238678/557149ee-6f63-4261-916d-d3cf4825473e
 
@@ -376,3 +334,71 @@ brew unlink gmp
 
 ## License
 GPLv3
+
+## Bibitex citation
+This is the citation for the software:
+```bibitex
+@software{TSlam2023,
+  author = {Andrea, Settimi and Hong-Bin, Yang},
+  doi = {},
+  title = {{Software Repository for TSlam: TSlam: a Hybrid Tag-based Object-Centered Monocular Navigation System for Augmented Manual Wood-working Fabrication}},
+  url = {https://github.com/ibois-epfl/TSlam},
+  version = {beta},
+  year = {2023}
+}
+```
+To cite the dataset:
+```bibitex
+@misc{TSlamDataset2023,
+  doi = {10.5281/ZENODO.8377793},
+  url = {https://zenodo.org/record/8377793},
+  author = {Settimi,  Andrea and Yang,  Hong-Bin and Gamerro,  Julien and Weinand,  Yves},
+  keywords = {augmented-reality,  computer-vision,  digital-fabrication,  slam,  3D-vision,  evaluation-method,  timber-construction},
+  language = {en},
+  title = {TSlam-dataset},
+  publisher = {Zenodo},
+  year = {2023},
+  copyright = {Creative Commons Attribution 4.0 International}
+}
+```
+The citation for the paper is coming..
+
+## RoadMap
+```mermaid
+gantt
+    dateFormat  YYYY-MM-DD
+    title       TSlam Roadmap
+    axisFormat %Y-%m
+
+    section Core development
+    Base code modification          :done, ucm, 2022-06-01, 2022-08-10
+    RTag integration                :done, rti, 2022-07-30, 2022-10-01
+    Mapping                         :done, map, 2022-08-20, 2022-12-20
+    Tracking                        :done, trck, 2022-10-20, 2023-01-30
+    Reconstruction                  :done, rec, 2022-10-30, 2023-03-05
+    AC integration                  :done, aci, 2022-09-10, 2022-12-10
+    Stand-up demo                   :milestone, done, 2023-02-24, 0d
+
+    section Evaluation
+    protocols design                :done, ptrd, 2023-02-24, 2023-03-20
+    Protocol submission             :milestone, done, 2023-03-14, 0d
+    preparation of eval             :done, 15d
+    Fabrication eval                :done, 85d
+    Benchmark/visual processing     :bvpr, 2023-09-25, 30d
+    
+    section HB internship
+    start HB                        :milestone, done, 2023-06-01,
+    AC integration for visuals      :done, 2023-06-01, 2023-07-15
+    start HB                        :milestone, done, 2023-08-14,
+
+    section Paper redaction
+    Redaction text/illustration     :active, pprd, after bvpr, 30d
+    Paper submission                :milestone, after pprd, 1d
+    
+    section Maintenance
+    Profiling of tslam                  :done, opti, 2023-04-19, 10d
+    Optimization of tslam               :done, 2023-06-01, 2023-09-01
+    Windows compatibility               :active, wincomp, 2023-12-11, 2024-01-20
+    Python wrapping                     :pywrap, 2024-01-20, 2024-02-20
+    Grasshopper integration (not confirmed)  :crit, after pywrap, 4w
+```

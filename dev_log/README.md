@@ -1,7 +1,18 @@
-# Dev Log
+# Tslam implementation
+
+TSlam is built on top of [UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62) for augmented carpentry research. The main features are:
+- Better API for use.
+- Using [STag](https://github.com/bbenligiray/stag)
+- Can do map fusion (merging one map into another).
+- By indicating it's in instance mode, the system stop running global optimization and only keeps a fixed number of new added keyframes, which smooth the overall experience.
+- Add [CLAHE](https://en.wikipedia.org/wiki/Adaptive_histogram_equalization) for preprocessing.
+- Several [bugs are resolved](./dev_log/Bug_tracing.md).
+- we add a reconstruction pipeline to obtain digital models of the physically tagged objects
+
+## Table of Contents
 - [TODO](./TODO.md)
 - [Bug Tracing](./Bug_tracing.md)
----
+
 
 `June 20`
 - Replaced 3rd party library [ArUco](https://www.uco.es/investiga/grupos/ava/node/26) to version `3.1.15` to avoid the uglified code in the original repo.
