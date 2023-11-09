@@ -49,8 +49,7 @@ To benchmark the proposed navigation system under real fabrication scenarios, we
 
 There are two ways you can consume the tags:
 - `ready to print`: 450 stripes for a total of 21149 tags are available in batches of 50 stripes with an A0 format. They are ready to print (better as stickers) and can be downloaded [here](https://zenodo.org/record/7738721/files/stag_stickers_ready.zip?download=1).
-- `generate your custom stripes`: if you need a specific tags layout you can run the python script from the terminal (from UNIX):
-  `calibration_webcam.yml -voc ../../orb.fbow -out test`
+- `generate your custom stripes`: if you need a specific tags layout you can run the python script in `./py_scripts/stag_util/sticker_generator_with_text.py`.
 
 ## Build
 ```bash
