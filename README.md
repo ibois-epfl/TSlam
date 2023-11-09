@@ -17,21 +17,15 @@
 
 <p align="center">
     <img src="assets/img/une_image.png" width="500">
+    <img src="assets/img/objectrefissue.png" width="300">
 </p>
 <p align="center">
-    <i>Augmented interface for woodworking powered by the TSlam's navigation system for subtractive fabrication.</i>
+    <i><small>Augmented interface for woodworking powered by the TSlam's navigation system for subtractive fabrication. After the object is mapped, you can move it, cut it, or drill it and the camera will still be able to self-localize. </small></i>
 </p>
 
 🪵🌲 `TSlam` is developed at the [**Laboratory for Timber Construction**](https://www.epfl.ch/labs/ibois/)(director: Prof.Yves Weinand), at EPFL, Lausanne, Switzerland. The project is part of the [**Augmented Carpentry Research**](https://www.epfl.ch/labs/ibois/augmented-carpentry/).
 
 🪚🔨 `TSlam` is an open-source **object-centered**, tag-based visual **navigation software for monocular RGB cameras** specifically developed in C++ and for UNIX systems to support a robust and accurate augmented reality pipeline for close-range, noisy, and cluttered fabrication sequences involving **wood-working operations** such as cutting, drilling, sawing and screwing with multiple tools and end-effectors.
-
-<p align="center">
-    <img src="assets/img/objectrefissue.png" width="300">
-</p>
-<p align="center">
-    <i>After the object is mapped, you can move it, cut it, or drill it and the camera will still be able to self-localize.</i>
-</p>
 
 🖧 `TSlam` leverages and combines multiple open-source projects ([UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62), [STag](https://github.com/bbenligiray/stag), [CGAL](https://www.cgal.org/)) to obtain a functional pipeline that can map, 3D reconstruct, and finally provide a robust camera pose stream at fabrication time to overlay an execution model with its digital twin model.
 
@@ -46,14 +40,14 @@ To benchmark the proposed navigation system under real fabrication scenarios, we
 https://github.com/ibois-epfl/TSlam/assets/50238678/557149ee-6f63-4261-916d-d3cf4825473e
 
 
-<p align="center"><i>One of the sub-sequences of the dataset was evaluated with an Optitrack system to obtain ground truth trajectories. In magenta: the ground-truth, in dark cyan: tslam tracking. </i></p>
+<p align="center"><i><small>One of the sub-sequences of the dataset was evaluated with an Optitrack system to obtain ground truth trajectories. In magenta: the ground-truth, in dark cyan: tslam tracking. </i></small></p>
     
 ## Tag stickers
 <p align = "center">
   <img src=assets/img/stripetag.png> </img>
 </p>
 <p align = "center">
-  <i>Example of a stripe as sticker employed in TSlam. Each stripe contains 50 fiducial markers of 20mm width. </i>
+  <i><small>Example of a stripe as sticker employed in TSlam. Each stripe contains 50 fiducial markers of 20mm width.</small></i>
 </p>
 
 There are two ways you can consume the tags:
