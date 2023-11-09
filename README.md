@@ -33,6 +33,8 @@
 
 ↳ `TSlam` can be imported as a C++ API in your project or used as an executable.
 
+![Alt](https://repobeats.axiom.co/api/embed/1d0a652170a09d7569e8675428a319c6feb06866.svg "Repobeats analytics image")
+
 ## Benchmark
 
 To benchmark the proposed navigation system under real fabrication scenarios, we produced a dataset of 1344 close-up different woodworking operations with multiple tools, tool heads, and varying parameters such as tags' layout and area density. The evaluation campaign indicates that TSlam is satisfyingly capable of detecting the camera's millimetric position and sub-angular rotation during the fabrication sequences to the exception of the saber saw. The dataset can be found [here](https://zenodo.org/record/8377793).
