@@ -7,6 +7,7 @@
     <img src="https://img.shields.io/badge/os-Ubuntu22.04-blueviolet">
     <img src="https://img.shields.io/badge/license-GPL--v3-brightgreen">
     <img alt="GitHub release (with filter)" src="https://img.shields.io/github/v/release/ibois-epfl/TSlam">
+    <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/ibois-epfl/TSlam">
 </p>
 
 <p align="center">
