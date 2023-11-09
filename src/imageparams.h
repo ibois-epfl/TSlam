@@ -27,7 +27,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 The views and conclusions contained in the software and documentation are those of the
 authors and should not be interpreted as representing official policies, either expressed
 or implied, of Rafael Muñoz Salinas.
-*/#ifndef tslam_ImageParmas_H
+*/
+#ifndef tslam_ImageParmas_H
 #define tslam_ImageParmas_H
 #include <opencv2/core/core.hpp>
 #include "tslam_exports.h"
