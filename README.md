@@ -32,7 +32,45 @@
     <i>TSlam is a navigation system able to track a camera and the timber to fabricate during woodworking, close-range operations. </i>
 </p>
 
+## RoadMap
+```mermaid
+gantt
+    dateFormat  YYYY-MM-DD
+    title       TSlam Roadmap
+    axisFormat %Y-%m
 
+    section Core development
+    Base code modification          :done, ucm, 2022-06-01, 2022-08-10
+    RTag integration                :done, rti, 2022-07-30, 2022-10-01
+    Mapping                         :done, map, 2022-08-20, 2022-12-20
+    Tracking                        :done, trck, 2022-10-20, 2023-01-30
+    Reconstruction                  :done, rec, 2022-10-30, 2023-03-05
+    AC integration                  :done, aci, 2022-09-10, 2022-12-10
+    Stand-up demo                   :milestone, done, 2023-02-24, 0d
+
+    section Evaluation
+    protocols design                :done, ptrd, 2023-02-24, 2023-03-20
+    Protocol submission             :milestone, done, 2023-03-14, 0d
+    preparation of eval             :done, 15d
+    Fabrication eval                :done, 85d
+    Benchmark/visual processing     :bvpr, 2023-09-25, 30d
+    
+    section HB internship
+    start HB                        :milestone, done, 2023-06-01,
+    AC integration for visuals      :done, 2023-06-01, 2023-07-15
+    start HB                        :milestone, done, 2023-08-14,
+
+    section Paper redaction
+    Redaction text/illustration     :active, pprd, after bvpr, 30d
+    Paper submission                :milestone, after pprd, 1d
+    
+    section Maintenance
+    Profiling of tslam                  :done, opti, 2023-04-19, 10d
+    Optimization of tslam               :done, 2023-06-01, 2023-09-01
+    Windows compatibility               :active, wincomp, 2023-12-11, 2024-01-20
+    Python wrapping                     :pywrap, 2024-01-20, 2024-02-20
+    Grasshopper integration (not confirmed)  :crit, after pywrap, 4w
+```
 
 ## Benchmark
 <text-to-be-filled>
@@ -346,47 +384,4 @@ clang: error: linker command failed with exit code 1 (use -v to see invocation)
 Please manually unlink GMP:
 ```bash
 brew unlink gmp
-```
-
-## License
-GPLv3
-
-## RoadMap
-```mermaid
-gantt
-    dateFormat  YYYY-MM-DD
-    title       TSlam Roadmap
-    axisFormat %Y-%m
-
-    section Core development
-    Base code modification          :done, ucm, 2022-06-01, 2022-08-10
-    RTag integration                :done, rti, 2022-07-30, 2022-10-01
-    Mapping                         :done, map, 2022-08-20, 2022-12-20
-    Tracking                        :done, trck, 2022-10-20, 2023-01-30
-    Reconstruction                  :done, rec, 2022-10-30, 2023-03-05
-    AC integration                  :done, aci, 2022-09-10, 2022-12-10
-    Stand-up demo                   :milestone, done, 2023-02-24, 0d
-
-    section Evaluation
-    protocols design                :done, ptrd, 2023-02-24, 2023-03-20
-    Protocol submission             :milestone, done, 2023-03-14, 0d
-    preparation of eval             :done, 15d
-    Fabrication eval                :done, 85d
-    Benchmark/visual processing     :bvpr, 2023-09-25, 30d
-    
-    section HB internship
-    start HB                        :milestone, done, 2023-06-01,
-    AC integration for visuals      :done, 2023-06-01, 2023-07-15
-    start HB                        :milestone, done, 2023-08-14,
-
-    section Paper redaction
-    Redaction text/illustration     :active, pprd, after bvpr, 30d
-    Paper submission                :milestone, after pprd, 1d
-    
-    section Maintenance
-    Profiling of tslam                  :done, opti, 2023-04-19, 10d
-    Optimization of tslam               :done, 2023-06-01, 2023-09-01
-    Windows compatibility               :active, wincomp, 2023-12-11, 2024-01-20
-    Python wrapping                     :pywrap, 2024-01-20, 2024-02-20
-    Grasshopper integration (not confirmed)  :crit, after pywrap, 4w
 ```
