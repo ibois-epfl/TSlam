@@ -7,7 +7,7 @@
     <img src="https://img.shields.io/badge/license-GPL--v3-brightgreen">
 </p>
 
-<div align = "center">
+<div align="center">
     <img src = "./assets/logo/ibosiTraspBlack.png" height="30"/>
     <img src = "./assets/logo/50x50-00000000.png" height="20"/>
     <img src = "./assets/logo/logoEPFLblack.png" height="30"/>
@@ -25,9 +25,13 @@
 
 ↳ `TSlam` can be imported as a C++ API in your project. If you just want to use TSlam, grap a webcam, a machine with Ubuntu 22.04 installed and follow our [Wiki](https://github.com/ibois-epfl/TSlam/wiki).
 
-</p align="center">
+<p align="center">
     <img src="assets/gif/video_sequence_fab.gif">
-<p>
+</p>
+<p align="center">
+    <i>TSlam is a navigation system able to track a camera and the timber to fabricate during woodworking, close-range operations. </i>
+</p>
+
 
 
 ## Benchmark
@@ -44,7 +48,7 @@ https://github.com/ibois-epfl/TSlam/assets/50238678/557149ee-6f63-4261-916d-d3cf
   <img src=assets/img/stripetag.png> </img>
 </p>
 <p align = "center">
-  <i>Fig.: Example of a stripe as sticker employed in TSlam. Each stripe contains 50 fiducial markers of 20mm width. </i>
+  <i>Example of a stripe as sticker employed in TSlam. Each stripe contains 50 fiducial markers of 20mm width. </i>
 </p>
 
 There are two ways you can consume the tags:
