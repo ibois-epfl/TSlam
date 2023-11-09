@@ -28,58 +28,18 @@
 
 🖧 `TSlam` leverages and combines multiple open-source projects ([UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62), [STag](https://github.com/bbenligiray/stag), [CGAL](https://www.cgal.org/)) to obtain a functional pipeline that can map, 3D reconstruct, and finally provide a robust camera pose stream at fabrication time to overlay an execution model with its digital twin model.
 
-🔖 `TSlam` was under development and testing for more than a year For more details about the development go in the [Dev Log](./dev_log)
+🔖 `TSlam` was under development and testing for more than a year. For more details about the development go in the [Dev Log](./dev_log)
 
 ↳ `TSlam` can be imported as a C++ API in your project. If you just want to use TSlam, grap a webcam, a machine with Ubuntu 22.04 installed and follow our [Wiki](https://github.com/ibois-epfl/TSlam/wiki).
 
-## RoadMap
-```mermaid
-gantt
-    dateFormat  YYYY-MM-DD
-    title       TSlam Roadmap
-    axisFormat %Y-%m
-
-    section Core development
-    Base code modification          :done, ucm, 2022-06-01, 2022-08-10
-    RTag integration                :done, rti, 2022-07-30, 2022-10-01
-    Mapping                         :done, map, 2022-08-20, 2022-12-20
-    Tracking                        :done, trck, 2022-10-20, 2023-01-30
-    Reconstruction                  :done, rec, 2022-10-30, 2023-03-05
-    AC integration                  :done, aci, 2022-09-10, 2022-12-10
-    Stand-up demo                   :milestone, done, 2023-02-24, 0d
-
-    section Evaluation
-    protocols design                :done, ptrd, 2023-02-24, 2023-03-20
-    Protocol submission             :milestone, done, 2023-03-14, 0d
-    preparation of eval             :done, 15d
-    Fabrication eval                :done, 85d
-    Benchmark/visual processing     :bvpr, 2023-09-25, 30d
-    
-    section HB internship
-    start HB                        :milestone, done, 2023-06-01,
-    AC integration for visuals      :done, 2023-06-01, 2023-07-15
-    start HB                        :milestone, done, 2023-08-14,
-
-    section Paper redaction
-    Redaction text/illustration     :active, pprd, after bvpr, 30d
-    Paper submission                :milestone, after pprd, 1d
-    
-    section Maintenance
-    Profiling of tslam                  :done, opti, 2023-04-19, 10d
-    Optimization of tslam               :done, 2023-06-01, 2023-09-01
-    Windows compatibility               :active, wincomp, 2023-12-11, 2024-01-20
-    Python wrapping                     :pywrap, 2024-01-20, 2024-02-20
-    Grasshopper integration (not confirmed)  :crit, after pywrap, 4w
-```
-
 ## Benchmark
-<text-to-be-filled>
-To benchmark the proposed navigation system under real fabrication scenarios, we produced a dataset of 1344 close-up different woodworking operations with multiple tools, tool heads, and varying parameters such as tags' layout and area density. The evaluation campaign indicates that TSlam is satisfyingly capable of detecting the camera's millimetric position and sub-angular rotation during the fabrication sequences to the exception of the saber saw. The [dataset can be found here](https://zenodo.org/record/8377793).
+
+To benchmark the proposed navigation system under real fabrication scenarios, we produced a dataset of 1344 close-up different woodworking operations with multiple tools, tool heads, and varying parameters such as tags' layout and area density. The evaluation campaign indicates that TSlam is satisfyingly capable of detecting the camera's millimetric position and sub-angular rotation during the fabrication sequences to the exception of the saber saw. The dataset can be found [here](https://zenodo.org/record/8377793).
 
 https://github.com/ibois-epfl/TSlam/assets/50238678/557149ee-6f63-4261-916d-d3cf4825473e
 
 
-<p align="center"><i>One of the sub-sequences of the dataset evaluated with an Optitrack system to obtain ground truth trajectories. In magenta: the ground-truth, in dark cyan: tslam tracking. </i></p>
+<p align="center"><i>One of the sub-sequences of the dataset was evaluated with an Optitrack system to obtain ground truth trajectories. In magenta: the ground-truth, in dark cyan: tslam tracking. </i></p>
     
 ## Tag stickers
 <p align = "center">
@@ -384,4 +344,43 @@ clang: error: linker command failed with exit code 1 (use -v to see invocation)
 Please manually unlink GMP:
 ```bash
 brew unlink gmp
+```
+## RoadMap
+```mermaid
+gantt
+    dateFormat  YYYY-MM-DD
+    title       TSlam Roadmap
+    axisFormat %Y-%m
+
+    section Core development
+    Base code modification          :done, ucm, 2022-06-01, 2022-08-10
+    RTag integration                :done, rti, 2022-07-30, 2022-10-01
+    Mapping                         :done, map, 2022-08-20, 2022-12-20
+    Tracking                        :done, trck, 2022-10-20, 2023-01-30
+    Reconstruction                  :done, rec, 2022-10-30, 2023-03-05
+    AC integration                  :done, aci, 2022-09-10, 2022-12-10
+    Stand-up demo                   :milestone, done, 2023-02-24, 0d
+
+    section Evaluation
+    protocols design                :done, ptrd, 2023-02-24, 2023-03-20
+    Protocol submission             :milestone, done, 2023-03-14, 0d
+    preparation of eval             :done, 15d
+    Fabrication eval                :done, 85d
+    Benchmark/visual processing     :bvpr, 2023-09-25, 30d
+    
+    section HB internship
+    start HB                        :milestone, done, 2023-06-01,
+    AC integration for visuals      :done, 2023-06-01, 2023-07-15
+    start HB                        :milestone, done, 2023-08-14,
+
+    section Paper redaction
+    Redaction text/illustration     :active, pprd, after bvpr, 30d
+    Paper submission                :milestone, after pprd, 1d
+    
+    section Maintenance
+    Profiling of tslam                  :done, opti, 2023-04-19, 10d
+    Optimization of tslam               :done, 2023-06-01, 2023-09-01
+    Windows compatibility               :active, wincomp, 2023-12-11, 2024-01-20
+    Python wrapping                     :pywrap, 2024-01-20, 2024-02-20
+    Grasshopper integration (not confirmed)  :crit, after pywrap, 4w
 ```
