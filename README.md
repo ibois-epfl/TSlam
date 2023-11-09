@@ -30,7 +30,7 @@
 
 🔖 `TSlam` was under development and testing for more than a year. For more details about the development go in the [Dev Log](./dev_log)
 
-↳ `TSlam` can be imported as a C++ API in your project. If you just want to use TSlam, grap a webcam, a machine with Ubuntu 22.04 installed and follow our [Wiki](https://github.com/ibois-epfl/TSlam/wiki).
+↳ `TSlam` can be imported as a C++ API in your project or used as an executable.
 
 ## Benchmark
 
@@ -54,9 +54,6 @@ There are two ways you can consume the tags:
 - `generate your custom stripes`: if you need a specific tags layout you can run the python script from the terminal (from UNIX):
   `calibration_webcam.yml -voc ../../orb.fbow -out test`
 
-## TSlam vocabulary
-To be fully functional, TSlam needs a vocabulary that can be downloaded [here](https://zenodo.org/record/7738721/files/orb.fbow?download=1) and stored preferably into the folder `TSlam/assets/voc/orb.fbow`.
-
 ## Build
 ```bash
 # install library (compile from source opencv 4.5.5)
@@ -72,11 +69,13 @@ make -j$(nproc)
 sudo make install  # if building as API
 ```
 
-## Run monocular slam:
+## Run monocular slam as executable:
 In this project, we provide you an example executable to run the monocular slam.
 After building, an executable `tslam_monocular` will be generated in `build/utils`. You can run it with the following commend. Note that two extra parameters are needed: **video source** and path to the **camera calibration file**. 
 
 In the `example` folder, we provide you an example video, a camera calibration file, and a map for you to test.
+
+You first need to stick the tags your timber piece, do the mapping and later use the output map and reconstructed model to run the tracking.
 
 ``` bash
 cd build/util
@@ -115,10 +114,10 @@ Some utility programs will be built by default in `build/utils`
 ```bash
 ./tslam_map_viewer input.map
 ```
-<!-- #### Combine Maps
+#### Combine Maps
 ```bash
 ./tslam_combine_map A.map B.map AB_comb.map
-``` -->
+```
 #### Export Maps
 ```bash
 ./tslam_map_export input.map output.[pcd|ply|yml]
@@ -134,7 +133,7 @@ This runs `tslam_reconstruct.cc`.
 It's possible to input the parameters for the geometric solver. To see them, run `./tslam_reconstruct -h`
 
 
-## APIs
+## Run TSlam as API
 ### Header
 All interface is included in `tslam.h`.
 ```cpp
