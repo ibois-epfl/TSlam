@@ -7,18 +7,30 @@
     <img src="https://img.shields.io/badge/license-GPL--v3-brightgreen">
 </p>
 
-🪵🌲 **TSlam** is developed at the [**Laboratory for Timber Construction**](https://www.epfl.ch/labs/ibois/)(director: Prof.Yves Weinand), at EPFL, Lausanne, Switzerland. The project is part of the [**Augmented Carpentry Research**](https://www.epfl.ch/labs/ibois/augmented-carpentry/).
+<div align = "center">
+    <img src = "./assets/logo/ibosiTraspBlack.png" height="30"/>
+    <img src = "./assets/logo/50x50-00000000.png" height="20"/>
+    <img src = "./assets/logo/logoEPFLblack.png" height="30"/>
+</div>
 
-🪚🔨 **TSlam** is an object-centered, tag-based visual **navigation software for monocular** RGB cameras specifically developed to support a robust and accurate augmented reality pipeline for close-range, noisy, and cluttered fabrication sequences involving **wood-working operations** such as cutting, drilling, sawing and screwing with multiple tools and end-effectors.
+<br>
 
-🖧 **TSlam** leverages and combines multiple open-source projects ([UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62), [STag](https://github.com/bbenligiray/stag), [CGAL](https://www.cgal.org/)) to obtain a functional pipeline that can map, 3D reconstruct, and finally provide a robust camera pose stream at fabrication time to overlay an execution model with its digital twin model.
+🪵🌲 `TSlam` is developed at the [**Laboratory for Timber Construction**](https://www.epfl.ch/labs/ibois/)(director: Prof.Yves Weinand), at EPFL, Lausanne, Switzerland. The project is part of the [**Augmented Carpentry Research**](https://www.epfl.ch/labs/ibois/augmented-carpentry/).
 
-🔖 For more details about the development go in the [Dev Log](./dev_log)
+🪚🔨 `TSlam` is an open-source object-centered, tag-based visual **navigation software for monocular RGB cameras** specifically developed in C++ and for UNIX systems to support a robust and accurate augmented reality pipeline for close-range, noisy, and cluttered fabrication sequences involving **wood-working operations** such as cutting, drilling, sawing and screwing with multiple tools and end-effectors.
 
-↳ If you just want to use TSlam, grap a webcam, a machine with Ubuntu 22.04 installed and follow our [Wiki](https://github.com/ibois-epfl/TSlam/wiki).
+🖧 `TSlam` leverages and combines multiple open-source projects ([UcoSLAM](http://www.uco.es/investiga/grupos/ava/node/62), [STag](https://github.com/bbenligiray/stag), [CGAL](https://www.cgal.org/)) to obtain a functional pipeline that can map, 3D reconstruct, and finally provide a robust camera pose stream at fabrication time to overlay an execution model with its digital twin model.
+
+🔖 `TSlam` was under development and testing for more than a year For more details about the development go in the [Dev Log](./dev_log)
+
+↳ `TSlam` can be imported as a C++ API in your project. If you just want to use TSlam, grap a webcam, a machine with Ubuntu 22.04 installed and follow our [Wiki](https://github.com/ibois-epfl/TSlam/wiki).
+
+</p align="center">
+    <img src="assets/gif/video_sequence_fab.gif">
+<p>
 
 
-## Evaluation
+## Benchmark
 <text-to-be-filled>
 To benchmark the proposed navigation system under real fabrication scenarios, we produced a dataset of 1344 close-up different woodworking operations with multiple tools, tool heads, and varying parameters such as tags' layout and area density. The evaluation campaign indicates that TSlam is satisfyingly capable of detecting the camera's millimetric position and sub-angular rotation during the fabrication sequences to the exception of the saber saw. The [dataset can be found here](https://zenodo.org/record/8377793).
 
