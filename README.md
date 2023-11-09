@@ -19,7 +19,7 @@
     <img src="assets/img/une_image.png" width="80%">
 </p>
 <p align="center">
-    <i>Augmented interface for woodworking powered by the TSlam's navigation system for subtractive fabrication. </i>
+    <i>Augmented interface for woodworking powered by the TSlam's navigation system for subtractive fabrication.</i>
 </p>
 
 🪵🌲 `TSlam` is developed at the [**Laboratory for Timber Construction**](https://www.epfl.ch/labs/ibois/)(director: Prof.Yves Weinand), at EPFL, Lausanne, Switzerland. The project is part of the [**Augmented Carpentry Research**](https://www.epfl.ch/labs/ibois/augmented-carpentry/).
