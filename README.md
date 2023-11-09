@@ -15,6 +15,13 @@
 
 <br>
 
+<p align="center">
+    <img src="assets/img/une_image.png" width="80%">
+</p>
+<p align="center">
+    <i>Augmented interface for woodworking powered by the TSlam's navigation system for subtractive fabrication. </i>
+</p>
+
 🪵🌲 `TSlam` is developed at the [**Laboratory for Timber Construction**](https://www.epfl.ch/labs/ibois/)(director: Prof.Yves Weinand), at EPFL, Lausanne, Switzerland. The project is part of the [**Augmented Carpentry Research**](https://www.epfl.ch/labs/ibois/augmented-carpentry/).
 
 🪚🔨 `TSlam` is an open-source object-centered, tag-based visual **navigation software for monocular RGB cameras** specifically developed in C++ and for UNIX systems to support a robust and accurate augmented reality pipeline for close-range, noisy, and cluttered fabrication sequences involving **wood-working operations** such as cutting, drilling, sawing and screwing with multiple tools and end-effectors.
@@ -24,13 +31,6 @@
 🔖 `TSlam` was under development and testing for more than a year For more details about the development go in the [Dev Log](./dev_log)
 
 ↳ `TSlam` can be imported as a C++ API in your project. If you just want to use TSlam, grap a webcam, a machine with Ubuntu 22.04 installed and follow our [Wiki](https://github.com/ibois-epfl/TSlam/wiki).
-
-<p align="center">
-    <img src="assets/gif/video_sequence_fab.gif">
-</p>
-<p align="center">
-    <i>TSlam is a navigation system able to track a camera and the timber to fabricate during woodworking, close-range operations. </i>
-</p>
 
 ## RoadMap
 ```mermaid
