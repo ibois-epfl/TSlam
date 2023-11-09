@@ -347,34 +347,6 @@ brew unlink gmp
 ## License
 GPLv3
 
-## Bibitex citation
-This is the citation for the software:
-```bibitex
-@software{TSlam2023,
-  author = {Andrea, Settimi and Hong-Bin, Yang},
-  doi = {},
-  title = {{Software Repository for TSlam: TSlam: a Hybrid Tag-based Object-Centered Monocular Navigation System for Augmented Manual Wood-working Fabrication}},
-  url = {https://github.com/ibois-epfl/TSlam},
-  version = {beta},
-  year = {2023}
-}
-```
-To cite the dataset:
-```bibitex
-@misc{TSlamDataset2023,
-  doi = {10.5281/ZENODO.8377793},
-  url = {https://zenodo.org/record/8377793},
-  author = {Settimi,  Andrea and Yang,  Hong-Bin and Gamerro,  Julien and Weinand,  Yves},
-  keywords = {augmented-reality,  computer-vision,  digital-fabrication,  slam,  3D-vision,  evaluation-method,  timber-construction},
-  language = {en},
-  title = {TSlam-dataset},
-  publisher = {Zenodo},
-  year = {2023},
-  copyright = {Creative Commons Attribution 4.0 International}
-}
-```
-The citation for the paper is coming..
-
 ## RoadMap
 ```mermaid
 gantt
