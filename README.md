@@ -40,9 +40,9 @@
 
 To benchmark the proposed navigation system under real fabrication scenarios, we produced a dataset of 1344 close-up different woodworking operations with multiple tools, tool heads, and varying parameters such as tags' layout and area density. The evaluation campaign indicates that TSlam is satisfyingly capable of detecting the camera's millimetric position and sub-angular rotation during the fabrication sequences to the exception of the saber saw. The dataset can be found [here](https://zenodo.org/record/8377793).
 
-https://github.com/ibois-epfl/TSlam/assets/50238678/557149ee-6f63-4261-916d-d3cf4825473e
-
-
+<p align="center">
+<img src="./assets/img/gif_eval.gif" width="500">
+</p>
 <p align="center"><i><small>One of the sub-sequences of the dataset was evaluated with an Optitrack system to obtain ground truth trajectories. In magenta: the ground-truth, in dark cyan: tslam tracking. </i></small></p>
     
 ## Tag stickers
