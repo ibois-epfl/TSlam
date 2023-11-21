@@ -368,7 +368,7 @@ gantt
     Protocol submission             :milestone, done, 2023-03-14, 0d
     preparation of eval             :done, 15d
     Fabrication eval                :done, 85d
-    Benchmark/visual processing     :bvpr, 2023-09-25, 30d
+    Benchmark/visual processing     :done, bvpr, 2023-09-25, 30d
     
     section HB internship
     start HB                        :milestone, done, 2023-06-01,
@@ -383,6 +383,6 @@ gantt
     Profiling of tslam                  :done, opti, 2023-04-19, 10d
     Optimization of tslam               :done, 2023-06-01, 2023-09-01
     Windows compatibility               :active, wincomp, 2023-12-11, 2024-01-20
-    Python wrapping                     :pywrap, 2024-01-20, 2024-02-20
+    Python wrapping                     :crit, pywrap, 2024-01-20, 2024-02-20
     Grasshopper integration (not confirmed)  :crit, after pywrap, 4w
 ```
