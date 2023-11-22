@@ -69,9 +69,12 @@ sudo make install  # if building as API
 ## Run TSlam as executable:
 
 <p align="center">
-<img src="./assets/img/sticker-crop.gif" width="500">
+    <img src="./assets/img/sticker-crop.gif" height="200">
+    <img src="./assets/img/video_sequence_fab.gif" height="200">
 </p>
-<p align="center"><i><small>Mapping operation of a timber piece. Next the reconstructed 3D model, together with some extra execution info, can be overlayed on top of the physical piece. </i></small></p>
+<p align="center">
+    <i><small>Left: Mapping operation of a timber piece. Next the reconstructed 3D model, together with some extra execution info, can be overlayed on top of the physical piece. Right: TSlam self localization in action during fabrication. </small></i>
+</p>
 
 In this project, we provide you an example executable to run the TSlam.
 After building, an executable `tslam_monocular` will be generated in `build/utils`. You can run it with the following command. Note that two extra parameters are needed: **video source** and path to the **camera calibration file**. 
