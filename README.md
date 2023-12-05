@@ -381,7 +381,7 @@ gantt
     start HB                        :milestone, done, 2023-08-14,
 
     section Paper redaction
-    Redaction text/illustration     :active, pprd, after bvpr, 30d
+    Redaction text/illustration     :active, pprd, after bvpr, 50d
     Paper submission                :milestone, after pprd, 1d
     
     section Maintenance
