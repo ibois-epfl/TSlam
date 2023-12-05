@@ -73,7 +73,7 @@ sudo make install  # if building as API
     <img src="./assets/img/video_sequence_fab.gif" height="200">
 </p>
 <p align="center">
-    <i><small>Left: Mapping operation of a timber piece. Next the reconstructed 3D model, together with some extra execution info, can be overlayed on top of the physical piece. Right: TSlam self localization in action during fabrication. </small></i>
+    <i><small>Left: Mapping operation of a timber piece. Right: TSlam self localization in action during fabrication. </small></i>
 </p>
 
 In this project, we provide you an example executable to run the TSlam.
