@@ -208,105 +208,111 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
         float MaxChi=0;
         void *ptr;
     };
+
     std::vector<edgeinfo> edgesInfo(map_matches.size());
 
+    //now, markers
+    std::vector<std::pair<tslam::Marker,tslam::MarkerObservation> > marker_poses;
+    if ( frame.markers.size()!=0 && currentKeyFrame!=-1){
+        //get all neighbors
+        auto neigh=TheMap->getNeighborKeyFrames(currentKeyFrame,true);
+        //get all the valid markers in the neighbors
+        std::set<uint32_t> markerInNeighbors;
+        for(auto n:neigh){
+            for(const auto &m:TheMap->keyframes[n].markers){
+                if (TheMap->map_markers.is(m.id) && TheMap->map_markers[m.id].pose_g2m.isValid())
+                    markerInNeighbors.insert(m.id);
+            }
+        }
+
+        //create the vector with marker poses
+        for(auto &m:frame.markers){
+            if ( markerInNeighbors.count(m.id)==0)continue;
+            marker_poses.emplace_back(TheMap->map_markers[m.id],m);
+        }
+    }
 
     vector<bool> vBadMatches(map_matches.size(),false);
     double KpWeightSum=0;
-    for(size_t i=0 ; i<map_matches.size() ; i++){
-        // workaround to get rid of bug #2
-        if (map_matches[i].trainIdx >= TheMap->map_points.data_size()) return 0;
-
-        auto kpt=frame.und_kpts[ map_matches[i].queryIdx];
-        float edge_weight=1;
-        
-        auto &mp=TheMap->map_points[ map_matches[i].trainIdx ];
-        auto p3d=mp.getCoordinates();
-        if( !mp.isStable()) edge_weight=0.5;
 
 
-        float depth=frame.getDepth(map_matches[i].queryIdx);
-        //Monocular point
-        if(depth<=0){
+        for(size_t i=0 ; i<map_matches.size() ; i++){
+            // workaround to get rid of bug #2
+            if (map_matches[i].trainIdx >= TheMap->map_points.data_size()) return 0;
 
-            Eigen::Matrix<double,2,1> obs;
-            obs << kpt.pt.x , kpt.pt.y;
+            auto kpt=frame.und_kpts[ map_matches[i].queryIdx];
+            float edge_weight=1;
 
-            EdgeSE3ProjectXYZOnlyPose* e = new EdgeSE3ProjectXYZOnlyPose(p3d.x,p3d.y,p3d.z,fx,fy,cx,cy);
-
-            e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(G2oVertexCamera));
-            e->setMeasurement(obs);
-
-            const float invSigma2 = invScaleFactor[kpt.octave];
-            e->setInformation(Eigen::Matrix2d::Identity()*invSigma2);
-
-            WeightedHubberRobustKernel* rk = new WeightedHubberRobustKernel;
-            rk->set(thHuber2D,edge_weight);
-            e->setRobustKernel(rk);
-
-            optimizer.addEdge(e);
-
-            edgesInfo[i].ptr=(void*)e;
-            edgesInfo[i].MaxChi=Chi2D;
-        }
-        //stereo point
-        else{
-            //SET EDGE
-            Eigen::Matrix<double,3,1> obs;
-            //compute the right proyection difference
-            float mbf=frame.imageParams.bl*frame.imageParams.fx();
-            const float kp_ur = kpt.pt.x - mbf/depth;
-            obs << kpt.pt.x, kpt.pt.y, kp_ur;
-
-            EdgeStereoSE3ProjectXYZOnlyPose* e = new  EdgeStereoSE3ProjectXYZOnlyPose();
-            e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(G2oVertexCamera));
-            e->setMeasurement(obs);
-            const float invSigma2 = 1./frame.scaleFactors[kpt.octave];
-            Eigen::Matrix3d Info = Eigen::Matrix3d::Identity()*invSigma2;
-            e->setInformation(Info);
+            auto &mp=TheMap->map_points[ map_matches[i].trainIdx ];
+            auto p3d=mp.getCoordinates();
+            if( !mp.isStable()) edge_weight=0.5;
 
 
-            edge_weight*=2;
-            WeightedHubberRobustKernel* rk = new WeightedHubberRobustKernel;
-            rk->set(thHuber3D,edge_weight);
-            e->setRobustKernel(rk);
+            float depth=frame.getDepth(map_matches[i].queryIdx);
+            //Monocular point
+            if(depth<=0){
 
-            e->fx = fx;
-            e->fy = fy;
-            e->cx = cx;
-            e->cy = cy;
-            e->bf = mbf;
-            e->Xw[0] = p3d.x;
-            e->Xw[1] = p3d.y;
-            e->Xw[2] = p3d.z;
+                Eigen::Matrix<double,2,1> obs;
+                obs << kpt.pt.x , kpt.pt.y;
 
-            optimizer.addEdge(e);
+                EdgeSE3ProjectXYZOnlyPose* e = new EdgeSE3ProjectXYZOnlyPose(p3d.x,p3d.y,p3d.z,fx,fy,cx,cy);
 
-            edgesInfo[i].ptr=(void*)e;
-            edgesInfo[i].MaxChi=Chi3D;
-        }
-        KpWeightSum+=edge_weight;
+                e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(G2oVertexCamera));
+                e->setMeasurement(obs);
 
-    }
-        //now, markers
-        std::vector<std::pair<tslam::Marker,tslam::MarkerObservation> > marker_poses;
-        if ( frame.markers.size()!=0 && currentKeyFrame!=-1){
-            //get all neighbors
-            auto neigh=TheMap->getNeighborKeyFrames(currentKeyFrame,true);
-            //get all the valid markers in the neighbors
-            std::set<uint32_t> markerInNeighbors;
-            for(auto n:neigh){
-                for(const auto &m:TheMap->keyframes[n].markers){
-                    if (TheMap->map_markers.is(m.id) && TheMap->map_markers[m.id].pose_g2m.isValid())
-                        markerInNeighbors.insert(m.id);
+                const float invSigma2 = invScaleFactor[kpt.octave];
+                e->setInformation(Eigen::Matrix2d::Identity()*invSigma2);
+
+                WeightedHubberRobustKernel* rk = new WeightedHubberRobustKernel;
+                rk->set(thHuber2D,edge_weight);
+                e->setRobustKernel(rk);
+                if (marker_poses.size() < 7) {
+                    optimizer.addEdge(e);
                 }
-            }
 
-            //create the vector with marker poses
-            for(auto m:frame.markers){
-                if ( markerInNeighbors.count(m.id)==0)continue;
-                marker_poses.push_back({TheMap->map_markers[m.id],m});
+                edgesInfo[i].ptr=(void*)e;
+                edgesInfo[i].MaxChi=Chi2D;
             }
+                //stereo point
+            else{
+                //SET EDGE
+                Eigen::Matrix<double,3,1> obs;
+                //compute the right proyection difference
+                float mbf=frame.imageParams.bl*frame.imageParams.fx();
+                const float kp_ur = kpt.pt.x - mbf/depth;
+                obs << kpt.pt.x, kpt.pt.y, kp_ur;
+
+                EdgeStereoSE3ProjectXYZOnlyPose* e = new  EdgeStereoSE3ProjectXYZOnlyPose();
+                e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(G2oVertexCamera));
+                e->setMeasurement(obs);
+                const float invSigma2 = 1./frame.scaleFactors[kpt.octave];
+                Eigen::Matrix3d Info = Eigen::Matrix3d::Identity()*invSigma2;
+                e->setInformation(Info);
+
+
+                edge_weight*=2;
+                WeightedHubberRobustKernel* rk = new WeightedHubberRobustKernel;
+                rk->set(thHuber3D,edge_weight);
+                e->setRobustKernel(rk);
+
+                e->fx = fx;
+                e->fy = fy;
+                e->cx = cx;
+                e->cy = cy;
+                e->bf = mbf;
+                e->Xw[0] = p3d.x;
+                e->Xw[1] = p3d.y;
+                e->Xw[2] = p3d.z;
+
+                if (marker_poses.size() < 7) {
+                    optimizer.addEdge(e);
+                }
+
+                edgesInfo[i].ptr=(void*)e;
+                edgesInfo[i].MaxChi=Chi3D;
+            }
+            KpWeightSum+=edge_weight;
+
         }
 
         //Let us add the markers
@@ -316,9 +322,14 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
         //compute the weight of markers considering that w_markers+w_points must be 1.
         //the total sum of poits weigh is so far totalNEdges.
         //So first, count nunmber of marker edges
-        float w_markers=0.3;
-        int totalNEdges=map_matches.size()+ marker_poses.size();
-        double weight_marker= ((w_markers *totalNEdges)/ (1.- w_markers))/float(KpWeightSum);
+        double weight_marker;
+        if (KpWeightSum == 0){
+            weight_marker = 1;
+        } else {
+            float w_markers = 0.5;
+            int totalNEdges = map_matches.size()+ marker_poses.size();
+            weight_marker = ((w_markers *totalNEdges)/ (1.- w_markers))/float(KpWeightSum);
+        }
 
         uint32_t vid=1;
 
@@ -349,7 +360,7 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
             e->setInformation( Eigen::Matrix< double, 8, 8 >::Identity());
             WeightedHubberRobustKernel* rk = new  WeightedHubberRobustKernel;
             e->setRobustKernel(rk);
-            rk->set(thHuber8D,weight_marker);
+            rk->set(thHuber8D, weight_marker);
 
 
             optimizer.addEdge(e);
