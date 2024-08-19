@@ -10,7 +10,7 @@ RUN apt-get -qq update && apt-get -qq -y install \
 
 # install tslam deps
 RUN apt-get -qq update && apt-get -qq -y install \
-    libopencv-dev=4.5.4+dfsg-9ubuntu4 \
+    libopencv-dev \
     libgmp-dev \
     libmpfr-dev \
     libeigen3-dev \
