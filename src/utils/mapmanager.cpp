@@ -238,7 +238,7 @@ void MapManager::reset(){
 
 
 
-Frame& MapManager::addKeyFrame(Frame *newPtrFrame){
+Frame& MapManager::addKeyFrame(Frame *newPtrFrame, bool forceAddNewMarker){
     auto getNOFValidMarkers=[this](){
         int nValidMarkers=0;
         for(auto &m:TheMap->map_markers)
@@ -247,9 +247,9 @@ Frame& MapManager::addKeyFrame(Frame *newPtrFrame){
     };
 
     // in localizeOnly mode, filter out the marker that is not in the map
-    if(System::getParams().localizeOnly){
+    if(!forceAddNewMarker && System::getParams().localizeOnly){
         std::vector<tslam::MarkerObservation> filteredMarkers;
-        for(auto m : newPtrFrame->markers) {
+        for(const auto &m : newPtrFrame->markers) {
             if (TheMap->map_markers.count(m.id)!=0){
                 filteredMarkers.push_back(m);
             }

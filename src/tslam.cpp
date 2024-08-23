@@ -28,6 +28,7 @@ authors and should not be interpreted as representing official policies, either 
 or implied Andrea Settimi and Hong-Bin Yang.
 */
 #include <regex>
+#include <filesystem>
 
 #include "tslam.h"
 #include "utils/system.h"
@@ -183,15 +184,18 @@ namespace tslam{
             *estimatedImageParam = TheMapA->keyframes.begin()->imageParams;
         }
 
-        string basePath = outputPath;
-        if(std::regex_match(basePath, std::regex("\\.map$"))){
-            basePath.substr(0, basePath.length() - 4);
-        }
+        std::filesystem::path basePath = outputPath;
+
         if(exportYml){
-            TheMapA->saveToMarkerMap(basePath + ".yml");
+            TheMapA->saveToMarkerMap(basePath.replace_extension("yml"));
         }
         if(exportPly){
-            TheMapA->exportToFile(basePath + ".ply",cv::Scalar(125,125,125),cv::Scalar(255,0,0),cv::Scalar(0,0,255),{1111,1195,1129,1196,1141},cv::Scalar(0,255,0));
+            TheMapA->exportToFile(basePath.replace_extension("ply"),
+                                  cv::Scalar(125,125,125),
+                                  cv::Scalar(255,0,0),
+                                  cv::Scalar(0,0,255),
+                                  {},
+                                  cv::Scalar(0,255,0));
         }
 
         TheMapA->saveToFile(std::move(outputPath));
