@@ -69,7 +69,7 @@ public:
     //call whenever a new frame is avaiable.
     //return 0 if nothing is done
     int newFrame(Frame &kf,  int32_t curkeyFrame);
-    Frame &addKeyFrame(Frame *f);
+    Frame &addKeyFrame(Frame *f, bool forceAddNewMarker = false);
 
     //applies the changes to map require tracking to be stoped, such as removing frames  or points
     bool mapUpdate(void);

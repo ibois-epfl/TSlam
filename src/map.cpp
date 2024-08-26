@@ -1516,7 +1516,7 @@ void Map::merge(std::shared_ptr<Map> mapB){
                 kfIter->ids[i] = pointIdB2A[kfIter->ids[i]];
             }
         }
-        mapManager->addKeyFrame(&(*kfIter));
+        mapManager->addKeyFrame(&(*kfIter), true);
     }
 }
 
