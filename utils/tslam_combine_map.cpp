@@ -45,90 +45,54 @@ or implied Andrea Settimi and Hong-Bin Yang.
 #include "utils/mapmanager.h"
 
 class CmdLineParser{int argc; char **argv;
-                public: CmdLineParser(int _argc,char **_argv):argc(_argc),argv(_argv){}  bool operator[] ( string param ) {int idx=-1;  for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i;    return ( idx!=-1 ) ;    } string operator()(string param,string defvalue=""){int idx=-1;    for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i; if ( idx==-1 ) return defvalue;   else  return ( argv[  idx+1] ); }
-                    std::vector<std::string> getAllInstances(string str){
-                        std::vector<std::string> ret;
-                        for(int i=0;i<argc-1;i++){
-                            if (string(argv[i])==str)
-                                ret.push_back(argv[i+1]);
-                        }
-                        return ret;
-                    }
-                   };
-
-namespace tslam {
-struct DebugTest{
-    static void removeMapPointObservation(tslam::Map &map,uint32_t point_idx,uint32_t frame_idx){
-        map.removeMapPointObservation(point_idx,frame_idx,3);
+public: CmdLineParser(int _argc,char **_argv):argc(_argc),argv(_argv){}  bool operator[] ( string param ) {int idx=-1;  for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i;    return ( idx!=-1 ) ;    } string operator()(string param,string defvalue=""){int idx=-1;    for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i; if ( idx==-1 ) return defvalue;   else  return ( argv[  idx+1] ); }
+    std::vector<std::string> getAllInstances(string str){
+        std::vector<std::string> ret;
+        for(int i=0;i<argc-1;i++){
+            if (string(argv[i])==str)
+                ret.push_back(argv[i+1]);
+        }
+        return ret;
     }
 };
+
+namespace tslam {
+    struct DebugTest{
+        static void removeMapPointObservation(tslam::Map &map,uint32_t point_idx,uint32_t frame_idx){
+            map.removeMapPointObservation(point_idx,frame_idx,3);
+        }
+    };
 }
 
 int main(int argc,char **argv){
     try {
         if(argc<4)throw std::runtime_error("Usage: inmap_A inmap_B outmap [iterations]");
+        string mapAPath=argv[1];
+        string mapBPath=argv[2];
+        string outputPath=argv[3];
 
-        std::shared_ptr<tslam::Map> TheMapA, TheMapB;
-        TheMapA = std::make_shared<tslam::Map>();
-        TheMapB = std::make_shared<tslam::Map>();
+        int niters = 50;
+        if(argc>=5)niters = stoi(argv[4]);
 
-        TheMapA->readFromFile(argv[1]);
-        TheMapB->readFromFile(argv[2]);
+        std::shared_ptr<tslam::Map> mapA, mapB;
+        mapA = std::make_shared<tslam::Map>();
+        mapB = std::make_shared<tslam::Map>();
 
-        int niters=50;
-        if(argc>=5)niters=stoi(argv[4]);
+        mapA->readFromFile(mapAPath);
+        mapB->readFromFile(mapBPath);
 
-        TheMapA->merge(TheMapB);
+        mapA->merge(mapB);
 
-        // TheMapB->projectTo(*TheMapA);
+        auto outputBasePath = outputPath.substr(0, outputPath.find_last_of("."));
+        // mapA->saveToFile(outputBasePath+".no-opt.map");
+        mapA->optimize(50);
 
-        // std::shared_ptr<tslam::MapManager> TheMapManager;
-        // TheMapManager = std::make_shared<tslam::MapManager>();
-        // TheMapManager->setParams(TheMapA, true);
+        mapA->saveToFile(outputPath);
+        mapA->saveToMarkerMap(outputBasePath + ".yml");
 
-        // std::map<uint32_t, tslam::Frame*> frameMapB; // idx of TheMapB -> TheMapA
-        // std::map<uint32_t, tslam::MapPoint*> pointMapB;
-
-        // // Add point first
-        // cout << "Total points in A: " << TheMapA->map_points.size() << "points." << endl;
-        // cout << "Total points in B: " << TheMapB->map_points.size() << "points." << endl;
-
-        // for(auto ptIter = TheMapB->map_points.begin(); ptIter != TheMapB->map_points.end(); ++ptIter){
-        //     if(pointMapB.count(ptIter->id) == 0){
-        //         pointMapB[ptIter->id] = &TheMapA->addNewPoint(0);
-        //         pointMapB[ptIter->id]->setCoordinates(ptIter->getCoordinates());
-        //         pointMapB[ptIter->id]->setStable(true);
-        //         pointMapB[ptIter->id]->setBad(false);
-        //         pointMapB[ptIter->id]->setSeen();
-        //         pointMapB[ptIter->id]->setVisible();
-        //     }
-        // }
-
-        // for(auto kfIter = TheMapB->keyframes.begin(); kfIter != TheMapB->keyframes.end(); ++kfIter){
-        //     for(int i = 0 ; i < kfIter->ids.size() ; i++){
-        //         if (kfIter->ids[i] != std::numeric_limits<uint32_t>::max()){
-        //             kfIter->ids[i] = pointMapB[kfIter->ids[i]]->id;
-        //         }
-        //     }
-        //     TheMapManager->addKeyFrame(&(*kfIter));
-        // }
-
-        // cout << "Markers: ";
-        // for(auto markerIter = TheMapA->map_markers.begin(); markerIter != TheMapA->map_markers.end(); ++markerIter){
-        //     cout << markerIter->first << " ";
-        // }
-        // cout << endl;
-
-        string filename = argv[3];
-        TheMapA->saveToFile(filename+".no-opt");
-
-        TheMapA->optimize(50);
-
-        cout<<"Final Camera Params "<<endl;
-        cout<<TheMapA->keyframes.begin()->imageParams.CameraMatrix<<endl;
-        cout<<TheMapA->keyframes.begin()->imageParams.Distorsion<<endl;
-
-        TheMapA->saveToFile(argv[3]);
+        cout << "Camera Params After Combine" << endl;
+        cout << mapA->keyframes.begin()->imageParams.CameraMatrix << endl;
+        cout << mapA->keyframes.begin()->imageParams.Distorsion << endl;
 
     } catch (const std::exception &ex) {
         std::cerr<<ex.what()<<std::endl;

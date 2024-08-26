@@ -316,7 +316,7 @@ int PnPSolver::solvePnp( const Frame &frame, std::shared_ptr<Map> TheMap, std::v
         //compute the weight of markers considering that w_markers+w_points must be 1.
         //the total sum of poits weigh is so far totalNEdges.
         //So first, count nunmber of marker edges
-        float w_markers=0.3;
+        float w_markers=0.95;
         int totalNEdges=map_matches.size()+ marker_poses.size();
         double weight_marker= ((w_markers *totalNEdges)/ (1.- w_markers))/float(KpWeightSum);
 
